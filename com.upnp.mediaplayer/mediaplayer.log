@@ -1,0 +1,144 @@
+2013-06-04 18:10:23,763 [main] INFO  [org.rpi.main.StartMe] Starting......
+2013-06-04 18:10:23,763 [main] INFO  [org.rpi.main.StartMe] JVM Version: 1.7.0_17
+2013-06-04 18:10:23,763 [main] WARN  [org.rpi.main.StartMe] #####Start of System Properties#########
+2013-06-04 18:10:23,765 [main] WARN  [org.rpi.main.StartMe] awt.toolkit=sun.awt.windows.WToolkit
+2013-06-04 18:10:23,765 [main] WARN  [org.rpi.main.StartMe] file.encoding=Cp1252
+2013-06-04 18:10:23,765 [main] WARN  [org.rpi.main.StartMe] file.encoding.pkg=sun.io
+2013-06-04 18:10:23,765 [main] WARN  [org.rpi.main.StartMe] file.separator=\
+2013-06-04 18:10:23,766 [main] WARN  [org.rpi.main.StartMe] java.awt.graphicsenv=sun.awt.Win32GraphicsEnvironment
+2013-06-04 18:10:23,766 [main] WARN  [org.rpi.main.StartMe] java.awt.printerjob=sun.awt.windows.WPrinterJob
+2013-06-04 18:10:23,766 [main] WARN  [org.rpi.main.StartMe] java.class.path=C:\Keep\Code\UPNP\upnp\workspace\com.upnp.mediaplayer\bin;C:\temp\TOH\Java\libs\ohnet-Pete.jar;C:\Keep\Repository\java\log4j\log4j\1.2.16\apache-log4j-1.2.16\log4j-1.2.16.jar;C:\Keep\Repository\java\jspf\dist\jspf.core-1.0.2.jar;C:\Keep\Repository\java\quartz\quartz\2.1.1\quartz-2.1.1.jar;C:\Keep\Repository\java\quartz\quartz\2.1.1\lib\slf4j-api-1.6.1.jar;C:\Keep\Repository\java\quartz\quartz\2.1.1\lib\slf4j-log4j12-1.6.1.jar
+2013-06-04 18:10:23,766 [main] WARN  [org.rpi.main.StartMe] java.class.version=51.0
+2013-06-04 18:10:23,766 [main] WARN  [org.rpi.main.StartMe] java.endorsed.dirs=C:\Program Files (x86)\Java\jre7\lib\endorsed
+2013-06-04 18:10:23,766 [main] WARN  [org.rpi.main.StartMe] java.ext.dirs=C:\Program Files (x86)\Java\jre7\lib\ext;C:\Windows\Sun\Java\lib\ext
+2013-06-04 18:10:23,766 [main] WARN  [org.rpi.main.StartMe] java.home=C:\Program Files (x86)\Java\jre7
+2013-06-04 18:10:23,766 [main] WARN  [org.rpi.main.StartMe] java.io.tmpdir=C:\Users\phoyle\AppData\Local\Temp\
+2013-06-04 18:10:23,766 [main] WARN  [org.rpi.main.StartMe] java.library.path=C:\Program Files (x86)\Java\jre7\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Perl\bin\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\WIDCOMM\Bluetooth Software\;C:\Program Files\WIDCOMM\Bluetooth Software\syswow64;C:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\DTS\Binn\;C:\Program Files\SlikSvn\bin;C:\Program Files\TortoiseSVN\bin;C:\Program Files\SourceGear\Common\DiffMerge\;C:\Keep\LinnDevelopment\Mono\Mono-2.10.8\bin\;C:\Keep\LinnDevelopment\Python\;C:\Keep\LinnDevelopment\Python\Scripts;C:\Keep\LinnDevelopment\NSIS\;C:\Keep\LinnDevelopment\GnuWin32\GnuWin32\bin\;C:\Keep\LinnDevelopment\xsltproc\bin\;C:\Keep\LinnDevelopment\Doxygen\doxygen\bin;C:\Keep\LinnDevelopment\Doxygen\doxygen\bin;C:\Windows\Microsoft.NET\Framework\v4.0.30319;C:\Keep\LinnDevelopment\ZIP\bin;C:\Program Files\TortoiseHg\;C:\Program Files (x86)\msi2xml\;C:\temp\TOH\Java\libs\;.
+2013-06-04 18:10:23,767 [main] WARN  [org.rpi.main.StartMe] java.runtime.name=Java(TM) SE Runtime Environment
+2013-06-04 18:10:23,767 [main] WARN  [org.rpi.main.StartMe] java.runtime.version=1.7.0_17-b02
+2013-06-04 18:10:23,767 [main] WARN  [org.rpi.main.StartMe] java.specification.name=Java Platform API Specification
+2013-06-04 18:10:23,767 [main] WARN  [org.rpi.main.StartMe] java.specification.vendor=Oracle Corporation
+2013-06-04 18:10:23,767 [main] WARN  [org.rpi.main.StartMe] java.specification.version=1.7
+2013-06-04 18:10:23,767 [main] WARN  [org.rpi.main.StartMe] java.vendor=Oracle Corporation
+2013-06-04 18:10:23,767 [main] WARN  [org.rpi.main.StartMe] java.vendor.url=http://java.oracle.com/
+2013-06-04 18:10:23,767 [main] WARN  [org.rpi.main.StartMe] java.vendor.url.bug=http://bugreport.sun.com/bugreport/
+2013-06-04 18:10:23,767 [main] WARN  [org.rpi.main.StartMe] java.version=1.7.0_17
+2013-06-04 18:10:23,767 [main] WARN  [org.rpi.main.StartMe] java.vm.info=mixed mode
+2013-06-04 18:10:23,767 [main] WARN  [org.rpi.main.StartMe] java.vm.name=Java HotSpot(TM) Client VM
+2013-06-04 18:10:23,767 [main] WARN  [org.rpi.main.StartMe] java.vm.specification.name=Java Virtual Machine Specification
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] java.vm.specification.vendor=Oracle Corporation
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] java.vm.specification.version=1.7
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] java.vm.vendor=Oracle Corporation
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] java.vm.version=23.7-b01
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] line.separator=
+
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] os.arch=x86
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] os.name=Windows 7
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] os.version=6.1
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] path.separator=;
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] sun.arch.data.model=32
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] sun.boot.class.path=C:\Program Files (x86)\Java\jre7\lib\resources.jar;C:\Program Files (x86)\Java\jre7\lib\rt.jar;C:\Program Files (x86)\Java\jre7\lib\sunrsasign.jar;C:\Program Files (x86)\Java\jre7\lib\jsse.jar;C:\Program Files (x86)\Java\jre7\lib\jce.jar;C:\Program Files (x86)\Java\jre7\lib\charsets.jar;C:\Program Files (x86)\Java\jre7\lib\jfr.jar;C:\Program Files (x86)\Java\jre7\classes
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] sun.boot.library.path=C:\Program Files (x86)\Java\jre7\bin
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] sun.cpu.endian=little
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] sun.cpu.isalist=pentium_pro+mmx pentium_pro pentium+mmx pentium i486 i386 i86
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] sun.desktop=windows
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] sun.io.unicode.encoding=UnicodeLittle
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] sun.java.command=org.rpi.main.StartMe
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] sun.java.launcher=SUN_STANDARD
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] sun.jnu.encoding=Cp1252
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] sun.management.compiler=HotSpot Client Compiler
+2013-06-04 18:10:23,768 [main] WARN  [org.rpi.main.StartMe] sun.os.patch.level=Service Pack 1
+2013-06-04 18:10:23,769 [main] WARN  [org.rpi.main.StartMe] user.country=GB
+2013-06-04 18:10:23,769 [main] WARN  [org.rpi.main.StartMe] user.dir=C:\Keep\Code\UPNP\upnp\workspace\com.upnp.mediaplayer
+2013-06-04 18:10:23,769 [main] WARN  [org.rpi.main.StartMe] user.home=C:\Users\phoyle
+2013-06-04 18:10:23,769 [main] WARN  [org.rpi.main.StartMe] user.language=en
+2013-06-04 18:10:23,769 [main] WARN  [org.rpi.main.StartMe] user.name=phoyle
+2013-06-04 18:10:23,769 [main] WARN  [org.rpi.main.StartMe] user.script=
+2013-06-04 18:10:23,769 [main] WARN  [org.rpi.main.StartMe] user.timezone=Europe/London
+2013-06-04 18:10:23,769 [main] WARN  [org.rpi.main.StartMe] user.variant=
+2013-06-04 18:10:23,769 [main] WARN  [org.rpi.main.StartMe] #####End of System Properties#########
+2013-06-04 18:10:23,769 [main] WARN  [org.rpi.main.StartMe] 
+2013-06-04 18:10:23,770 [main] WARN  [org.rpi.main.StartMe] #####Start of System Variables#########
+2013-06-04 18:10:23,771 [main] WARN  [org.rpi.main.StartMe] USERPROFILE=C:\Users\phoyle
+2013-06-04 18:10:23,771 [main] WARN  [org.rpi.main.StartMe] ProgramData=C:\ProgramData
+2013-06-04 18:10:23,771 [main] WARN  [org.rpi.main.StartMe] USERDNSDOMAIN=EMEA.INT.GENESYSLAB.COM
+2013-06-04 18:10:23,771 [main] WARN  [org.rpi.main.StartMe] PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC
+2013-06-04 18:10:23,771 [main] WARN  [org.rpi.main.StartMe] SSH_AGENT_PID=8944
+2013-06-04 18:10:23,771 [main] WARN  [org.rpi.main.StartMe] JAVA_HOME=C:\Keep\Java\jdk1.5.0_01
+2013-06-04 18:10:23,771 [main] WARN  [org.rpi.main.StartMe] ProgramFiles(x86)=C:\Program Files (x86)
+2013-06-04 18:10:23,771 [main] WARN  [org.rpi.main.StartMe] TEMP=C:\Users\phoyle\AppData\Local\Temp
+2013-06-04 18:10:23,771 [main] WARN  [org.rpi.main.StartMe] SystemDrive=C:
+2013-06-04 18:10:23,771 [main] WARN  [org.rpi.main.StartMe] ProgramFiles=C:\Program Files (x86)
+2013-06-04 18:10:23,771 [main] WARN  [org.rpi.main.StartMe] Path=C:\Perl\bin\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\WIDCOMM\Bluetooth Software\;C:\Program Files\WIDCOMM\Bluetooth Software\syswow64;C:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\DTS\Binn\;C:\Program Files\SlikSvn\bin;C:\Program Files\TortoiseSVN\bin;C:\Program Files\SourceGear\Common\DiffMerge\;C:\Keep\LinnDevelopment\Mono\Mono-2.10.8\bin\;C:\Keep\LinnDevelopment\Python\;C:\Keep\LinnDevelopment\Python\Scripts;C:\Keep\LinnDevelopment\NSIS\;C:\Keep\LinnDevelopment\GnuWin32\GnuWin32\bin\;C:\Keep\LinnDevelopment\xsltproc\bin\;C:\Keep\LinnDevelopment\Doxygen\doxygen\bin;C:\Keep\LinnDevelopment\Doxygen\doxygen\bin;C:\Windows\Microsoft.NET\Framework\v4.0.30319;C:\Keep\LinnDevelopment\ZIP\bin;C:\Program Files\TortoiseHg\;C:\Program Files (x86)\msi2xml\;C:\temp\TOH\Java\libs\
+2013-06-04 18:10:23,771 [main] WARN  [org.rpi.main.StartMe] HOMEDRIVE=C:
+2013-06-04 18:10:23,771 [main] WARN  [org.rpi.main.StartMe] PROCESSOR_REVISION=2a07
+2013-06-04 18:10:23,771 [main] WARN  [org.rpi.main.StartMe] USERDOMAIN=GENESYS_EUROPE
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] ALLUSERSPROFILE=C:\ProgramData
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] SSH_AUTH_SOCK=/tmp/ssh-CzxsPx8872/agent.8872
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] ProgramW6432=C:\Program Files
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 42 Stepping 7, GenuineIntel
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] SESSIONNAME=Console
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] TMP=C:\Users\phoyle\AppData\Local\Temp
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] CommonProgramFiles=C:\Program Files (x86)\Common Files
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] =::=::\
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] LOGONSERVER=\\US-DC-EMEADC
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] PROCESSOR_ARCHITECTURE=x86
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] FP_NO_HOST_CHECK=NO
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] OS=Windows_NT
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] PROCESSOR_ARCHITEW6432=AMD64
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] HOMEPATH=\Users\phoyle
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] VS100COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools\
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] PROCESSOR_LEVEL=6
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] CommonProgramW6432=C:\Program Files\Common Files
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] USERDOMAIN_ROAMINGPROFILE=GENESYS_EUROPE
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] HOME=C:\temp\Mono
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] LOCALAPPDATA=C:\Users\phoyle\AppData\Local
+2013-06-04 18:10:23,772 [main] WARN  [org.rpi.main.StartMe] COMPUTERNAME=D067E5492684
+2013-06-04 18:10:23,773 [main] WARN  [org.rpi.main.StartMe] windir=C:\Windows
+2013-06-04 18:10:23,773 [main] WARN  [org.rpi.main.StartMe] SystemRoot=C:\Windows
+2013-06-04 18:10:23,773 [main] WARN  [org.rpi.main.StartMe] DellClientSystemUpdatePath=C:\Program Files (x86)\Dell\ClientSystemUpdate\
+2013-06-04 18:10:23,773 [main] WARN  [org.rpi.main.StartMe] NUMBER_OF_PROCESSORS=4
+2013-06-04 18:10:23,773 [main] WARN  [org.rpi.main.StartMe] USERNAME=phoyle
+2013-06-04 18:10:23,773 [main] WARN  [org.rpi.main.StartMe] PUBLIC=C:\Users\Public
+2013-06-04 18:10:23,773 [main] WARN  [org.rpi.main.StartMe] PSModulePath=C:\Windows\system32\WindowsPowerShell\v1.0\Modules\
+2013-06-04 18:10:23,773 [main] WARN  [org.rpi.main.StartMe] CommonProgramFiles(x86)=C:\Program Files (x86)\Common Files
+2013-06-04 18:10:23,773 [main] WARN  [org.rpi.main.StartMe] ComSpec=C:\Windows\system32\cmd.exe
+2013-06-04 18:10:23,773 [main] WARN  [org.rpi.main.StartMe] APPDATA=C:\Users\phoyle\AppData\Roaming
+2013-06-04 18:10:23,773 [main] WARN  [org.rpi.main.StartMe] #####End of System Variables#########
+2013-06-04 18:10:23,773 [main] WARN  [org.rpi.main.StartMe] 
+2013-06-04 18:10:23,783 [main] DEBUG [org.rpi.main.SimpleDevice] Creating Simple Device version: 0.0.0.1
+2013-06-04 18:10:24,123 [main] DEBUG [org.rpi.main.SimpleDevice] Created StandardDevice: device-Default Room-D067E5492684-MediaRenderer
+2013-06-04 18:10:24,192 [main] DEBUG [org.rpi.providers.PrvProduct] Creating CustomProduct
+2013-06-04 18:10:24,223 [main] DEBUG [org.rpi.providers.PrvProduct] SourceXML 
+ <SourceList><Source><Name>Playlist</Name><Type>Playlist</Type><Visible>true</Visible></Source></SourceList>
+2013-06-04 18:10:24,223 [main] DEBUG [org.rpi.providers.PrvProduct] SourceXML 
+ <SourceList><Source><Name>Playlist</Name><Type>Playlist</Type><Visible>true</Visible></Source><Source><Name>Radio</Name><Type>Radio</Type><Visible>true</Visible></Source></SourceList>
+2013-06-04 18:10:24,223 [main] DEBUG [org.rpi.providers.PrvProduct] SourceXML 
+ <SourceList><Source><Name>Playlist</Name><Type>Playlist</Type><Visible>true</Visible></Source><Source><Name>Radio</Name><Type>Radio</Type><Visible>true</Visible></Source><Source><Name>Receiver</Name><Type>Receiver</Type><Visible>true</Visible></Source></SourceList>
+2013-06-04 18:10:24,227 [main] DEBUG [org.rpi.providers.PrvVolume] Creating CustomVolume
+2013-06-04 18:10:24,242 [main] DEBUG [org.rpi.providers.PrvPlayList] Creating CustomPlayList
+2013-06-04 18:10:24,276 [main] DEBUG [org.rpi.providers.PrvInfo] Creating Info
+2013-06-04 18:10:24,282 [main] DEBUG [org.rpi.providers.PrvTime] Creating CustomTime
+2013-06-04 18:10:24,288 [main] DEBUG [org.rpi.providers.PrvRadio] Creating CustomRadio
+2013-06-04 18:10:24,299 [main] DEBUG [org.rpi.providers.PrvReceiver] Creating Template
+2013-06-04 18:10:24,320 [main] ERROR [org.rpi.radio.ChannelReader] Error Getting Radio List
+java.io.FileNotFoundException: C:\Keep\Code\UPNP\upnp\workspace\com.upnp.mediaplayer\RadioList.xml (The system cannot find the file specified)
+	at java.io.FileInputStream.open(Native Method)
+	at java.io.FileInputStream.<init>(Unknown Source)
+	at java.io.FileInputStream.<init>(Unknown Source)
+	at sun.net.www.protocol.file.FileURLConnection.connect(Unknown Source)
+	at sun.net.www.protocol.file.FileURLConnection.getInputStream(Unknown Source)
+	at com.sun.org.apache.xerces.internal.impl.XMLEntityManager.setupCurrentEntity(Unknown Source)
+	at com.sun.org.apache.xerces.internal.impl.XMLVersionDetector.determineDocVersion(Unknown Source)
+	at com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(Unknown Source)
+	at com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(Unknown Source)
+	at com.sun.org.apache.xerces.internal.parsers.XMLParser.parse(Unknown Source)
+	at com.sun.org.apache.xerces.internal.parsers.DOMParser.parse(Unknown Source)
+	at com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderImpl.parse(Unknown Source)
+	at javax.xml.parsers.DocumentBuilder.parse(Unknown Source)
+	at org.rpi.radio.ChannelReader.getChannels(ChannelReader.java:42)
+	at org.rpi.main.SimpleDevice.<init>(SimpleDevice.java:95)
+	at org.rpi.main.StartMe.main(StartMe.java:43)
+2013-06-04 18:10:24,324 [main] DEBUG [org.rpi.providers.PrvRadio] Added Channels: 0
+2013-06-04 18:10:24,325 [main] DEBUG [org.rpi.main.SimpleDevice] Device Enabled UDN: device-Default Room-D067E5492684-MediaRenderer
+2013-06-04 18:10:24,441 [main] DEBUG [org.rpi.main.SimpleDevice] Shut Down Hook Attached.

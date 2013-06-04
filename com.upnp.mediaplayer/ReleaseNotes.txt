@@ -1,0 +1,2 @@
+23 April 
+Fixed bugs with volume and mute when starting playing tracks.

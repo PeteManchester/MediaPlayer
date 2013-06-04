@@ -1,0 +1,113 @@
+
+
+#Play and queue tracks
+mplayer -slave -quiet http://192.168.1.205:26125/content/c2/b16/f44100/d67188-co32752.mp3 http://192.168.1.205:26125/content/c2/b16/f44100/d67189-co32752.mp3
+
+
+PATH="$PATH:/home/pete/Downloads/Java/MediaPlayer/mediaplayer_lib"
+
+#Ubuntu
+
+Copy libohNet.so and libohNetJni.so to the directory /usr/local/lib
+export LD_LIBRARY_PATH=/usr/local/lib/
+java -jar mediaplayer.jar 
+
+
+#Raspberry Pi 
+
+root user
+then do a 'sudo su - '
+enter your pi user password
+now as root enter 'passwd'
+and set the root password
+
+Install Java
+http://www.savagehomeautomation.com/projects/raspberry-pi-installing-oracle-java-development-kit-jdk-170u-1.html
+Download from - http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html
+copy to /home/pi directory
+sudo mkdir -p -v /opt/java
+tar xvzf ~/jdk-7u10-linux-arm-sfp.gz
+sudo mv -v ~/jdk1.7.0_10 /opt/java
+rm ~/jdk-7u10-linux-arm-sfp.gz
+sudo update-alternatives --install "/usr/bin/java" "java" "/opt/java/jdk1.7.0_10/bin/java" 1
+sudo update-alternatives --set java /opt/java/jdk1.7.0_10/bin/java
+JAVA_HOME="/opt/java/jdk1.7.0_10"
+
+Sound out of Audio Jack
+sudo amixer cset numid=3 1
+cd /opt/vc/src/hello_pi/hello_audio
+./hello_audio.bin
+
+Update Firmware to fix pop between audio tracks.
+http://raspberrypi.stackexchange.com/questions/3626/how-to-get-better-audio-quality-from-audio-jack-output
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install git
+sudo wget http://goo.gl/1BOfJ -O /usr/bin/rpi-update
+sudo sudo chmod +x /usr/bin/rpi-update
+sudo rpi-update
+sudo shutdown -r now
+
+#Configure USB Sound Card
+sudo nano /etc/modprobe.d/alsa-base.conf 
+Made the following entries in the file
+#options snd-usb-audio index=-2
+options snd_bcm2835 index=-2
+
+#Fix ALSA Sound problem 
+http://www.raspberrypi.org/phpBB3/viewtopic.php?f=66&t=7107
+Ok, found system wide solution. I'm don't know yet why it's working, though. Just configure alsa-lib with standard:
+CODE: SELECT ALL
+pcm.!default {
+        type hw
+        card 0
+}
+
+ctl.!default {
+        type hw
+        card 0
+}
+
+and it will work for both mplayer and vlc (and others). Just save that file in /etc/asound.conf (system wide) or in 
+
+
+http://root42.blogspot.co.uk/2013/03/attaching-usb-sound-card-to-raspberry-pi.html
+alsamixer
+
+#Autostart
+sudo nano /etc/rc.local
+
+#
+# By default this script does nothing.
+
+# Print the IP address
+_IP=$(hostname -I) || true
+if [ "$_IP" ]; then
+  printf "My IP address is %s\n" "$_IP"
+fi
+/home/pi/mediaplayer/run.sh
+exit 0
+
+
+#Not showing time in BST
+sudo dpkg-reconfigure tzdata
+
+#Change HostName
+http://simonthepiman.com/how_to_rename_my_raspberry_pi.php
+
+
+#Making ohNet files
+git clone https://github.com/openhome/ohNet.git
+make 
+
+
+#Making Java Files
+JRE configured as JAVA_HOME so change to
+JAVA_HOME="/usr/lib/jvm/java-7-oracle"
+
+make ohNetJavaAll
+
+#Lyrics
+http://lyrics.wikia.com/Joy_Division:Isolation
+http://lyrics.wikia.com/LyricWiki:Page_Names#Capitalization
+
