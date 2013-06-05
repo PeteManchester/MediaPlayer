@@ -111,3 +111,12 @@ make ohNetJavaAll
 http://lyrics.wikia.com/Joy_Division:Isolation
 http://lyrics.wikia.com/LyricWiki:Page_Names#Capitalization
 
+#Able to resolve HostName from a Windows PC
+Install Bonour for Windows
+http://elinux.org/RPi_Advanced_Setup
+sudo apt-get install avahi-daemon
+sudo insserv avahi-daemon
+sudo /etc/init.d/avahi-daemon restart
+
+
+

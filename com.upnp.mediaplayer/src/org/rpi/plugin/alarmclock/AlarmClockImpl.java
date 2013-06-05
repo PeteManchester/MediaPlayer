@@ -33,10 +33,7 @@ public class AlarmClockImpl implements AlarmClockInterface {
 	private static Logger log = Logger.getLogger(AlarmClockImpl.class);
 	
 	private PlayManager iPlayer = null;
-	private int seconds = 120;
 	private Scheduler scheduler;
-	
-	private TriggerKey tr_key_daily = new TriggerKey("daily", "wfm");
 	
 	public AlarmClockImpl()
 	{
@@ -63,7 +60,7 @@ public class AlarmClockImpl implements AlarmClockInterface {
 			TriggerKey tr_key = new TriggerKey(name, "radioPlugin");
 		JobDetail job = JobBuilder.newJob(AlarmClockJob.class).withIdentity(name, "group1").build();
 		Map dataMap = job.getJobDataMap();
-		dataMap.put("name", job);
+		dataMap.put("id", name);
 		dataMap.put("Volume", volume);
 		dataMap.put("Shuffle", shuffle);
 		dataMap.put("type", type);
