@@ -102,6 +102,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 {
 	private void initSources() {
 		addSource(Config.friendly_name, "Playlist", "Playlist", true);
 		addSource(Config.friendly_name, "Radio", "Radio", true);
+		addSource(Config.friendly_name, "Radio","Pete Radio", true);
 		addSource(Config.friendly_name, "Receiver", "Receiver", true);
 	}
 

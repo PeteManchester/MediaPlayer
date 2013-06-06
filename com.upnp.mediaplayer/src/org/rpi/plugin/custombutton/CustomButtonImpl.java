@@ -47,7 +47,7 @@ public class CustomButtonImpl implements CustomButtonInterface {
 				@Override
 				public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
 					// display pin state on console
-					log.debug(" --> GPIO PIN STATE CHANGE: " + event.getPin() + " = " + event.getState());
+					log.info(" --> GPIO PIN STATE CHANGE: " + event.getPin() + " = " + event.getState());
 				}
 			});
 		} catch (Exception e) {

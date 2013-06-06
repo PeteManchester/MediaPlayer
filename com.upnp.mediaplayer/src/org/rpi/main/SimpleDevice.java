@@ -3,10 +3,10 @@ package org.rpi.main;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.log4j.Logger;
 import org.openhome.net.core.DebugLevel;
 import org.openhome.net.core.DeviceStack;
@@ -22,11 +22,11 @@ import org.rpi.config.Config;
 import org.rpi.playlist.PlayManager;
 import org.rpi.providers.PrvAVTransport;
 import org.rpi.providers.PrvConnectionManager;
+import org.rpi.providers.PrvInfo;
 import org.rpi.providers.PrvPlayList;
 import org.rpi.providers.PrvProduct;
 import org.rpi.providers.PrvRadio;
 import org.rpi.providers.PrvReceiver;
-import org.rpi.providers.PrvInfo;
 import org.rpi.providers.PrvRenderingControl;
 import org.rpi.providers.PrvTime;
 import org.rpi.providers.PrvVolume;
@@ -169,14 +169,6 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		log.debug("Shut Down Hook Attached.");
 	}
 	
-//	private void disable()
-//	{
-//		if(iDevice !=null)
-//		{
-//			log.debug("Call Disable");
-//			iDevice.setDisabled(this);
-//		}
-//	}
 
 	public void dispose() {
 		
