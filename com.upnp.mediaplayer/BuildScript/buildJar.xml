@@ -3,12 +3,15 @@
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
     <target name="create_run_jar">
-        <jar destfile="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer.jar">
+        <jar destfile="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer.jar" update="false">
             <manifest>
                 <attribute name="Main-Class" value="org.rpi.main.StartMe"/>
-                <attribute name="Class-Path" value=". mediaplayer_lib/*"/>
+            	<attribute name="Class-Path" value=". mediaplayer_lib/ohnet-Pete.jar mediaplayer_lib/log4j-1.2.16.jar mediaplayer_lib/jspf.core-1.0.2.jar mediaplayer_lib/quartz-2.1.1.jar mediaplayer_lib/slf4j-api-1.6.1.jar mediaplayer_lib/slf4j-log4j12-1.6.1.jar mediaplayer_lib/pi4j-core.jar"/>
             </manifest>
-            <fileset dir="C:/Keep/git/repository/MediaPlayer/com.upnp.mediaplayer/bin"/>
+            <fileset dir="C:/Keep/git/repository/MediaPlayer/com.upnp.mediaplayer/bin">
+            	<exclude name="**/plugin/**"/>
+            </fileset>
+
         </jar>
         <delete dir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib"/>
         <mkdir dir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib"/>

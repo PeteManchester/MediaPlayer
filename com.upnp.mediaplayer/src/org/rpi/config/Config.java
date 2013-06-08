@@ -19,6 +19,7 @@ public class Config {
 	public static int mplayer_cache_min = 70;
 	public static String loglevel;
 	public static String logconsole;
+	public static int playlist_max = 1000;
 	
 	
 	public static String getProtocolInfo() {

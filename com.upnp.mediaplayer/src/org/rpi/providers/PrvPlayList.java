@@ -15,6 +15,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 {
 	private Logger log = Logger.getLogger(PrvPlayList.class);
 	private int next_id;
 	private PlayListWriter plw = null;
+	private int playlist_max = Config.playlist_max;
 
 	private CopyOnWriteArrayList<CustomTrack> tracks = new CopyOnWriteArrayList<CustomTrack>();
 
@@ -39,7 +40,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 {
 		setPropertyProtocolInfo(Config.getProtocolInfo());
 		setPropertyRepeat(false);
 		setPropertyShuffle(false);
-		setPropertyTracksMax(100);
+		setPropertyTracksMax(playlist_max);
 		setPropertyTransportState("");
 		setPropertyIdArray(array);
 
@@ -112,6 +113,11 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 {
 	}
 
 	protected long insert(org.openhome.net.device.IDvInvocation arg0, long aAfterId, String aUri, String aMetaData) {
+		if(tracks.size() >= playlist_max)
+		{
+			log.error("Maximum Size of PlayList Reached...");
+			return -1;
+		}
 		log.debug("Insert After: " + aAfterId + " URI: " + aUri + " MetaDate: \r\n" + aMetaData);
 		int id = getNext_id();
 		CustomTrack track = new CustomTrack(aUri, aMetaData, id);
@@ -310,7 +316,6 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 {
 
 			}
 			setPropertyIdArray(bytes);
-			//iPlayer.setTracks(tracks);
 			if (bUpdateFile) {
 				plw.trigger(tracks);
 			}

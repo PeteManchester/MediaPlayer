@@ -129,6 +129,7 @@ public class StartMe {
 			Config.port = Config.converStringToInt(pr.getProperty("openhome.port"));
 			Config.mplayer_cache = Config.converStringToInt(pr.getProperty("mplayer.cache"));
 			Config.mplayer_cache_min = Config.converStringToInt(pr.getProperty("mplayer.cache_min"));
+			Config.playlist_max = Config.converStringToInt(pr.getProperty("playlist.max"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
