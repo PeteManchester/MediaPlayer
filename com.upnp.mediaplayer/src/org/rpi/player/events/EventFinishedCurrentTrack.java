@@ -12,8 +12,7 @@ public class EventFinishedCurrentTrack extends EventObject {
 	boolean bQuit = false;
 
 	public void setQuit(boolean b) {
-		bQuit = b;
-		
+		bQuit = b;		
 	}
 	
 	public boolean isQuit()

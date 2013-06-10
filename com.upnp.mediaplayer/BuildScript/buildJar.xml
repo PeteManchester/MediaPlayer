@@ -11,7 +11,6 @@
             <fileset dir="C:/Keep/git/repository/MediaPlayer/com.upnp.mediaplayer/bin">
             	<exclude name="**/plugin/**"/>
             </fileset>
-
         </jar>
         <delete dir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib"/>
         <mkdir dir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib"/>

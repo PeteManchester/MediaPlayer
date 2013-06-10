@@ -39,7 +39,6 @@ public class StartMe {
 		log.info("Starting......");
 		log.info("JVM Version: " + System.getProperty("java.version"));
 		printSystemProperties();
-
 		SimpleDevice sd = new SimpleDevice();
 		loadPlugins();
 		sd.attachShutDownHook();

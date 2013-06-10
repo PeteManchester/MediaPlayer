@@ -130,8 +130,10 @@ public class PlayManager implements IPlayerEventClassListener {
 					}
 					if (getShuffledTracks().size() > i + offset) {
 						if (i + offset >= 0) {
-							String track_id = getShuffledTracks().get(i + offset);
-							CustomTrack newTrack = getTrackFromId(Integer.parseInt(track_id));
+							String track_id = getShuffledTracks().get(
+									i + offset);
+							CustomTrack newTrack = getTrackFromId(Integer
+									.parseInt(track_id));
 							return (newTrack);
 						}
 					} else {
@@ -141,7 +143,8 @@ public class PlayManager implements IPlayerEventClassListener {
 							shuffleTracks();
 							if (getShuffledTracks().size() > 0) {
 								String track_id = getShuffledTracks().get(0);
-								CustomTrack newTrack = getTrackFromId(Integer.parseInt(track_id));
+								CustomTrack newTrack = getTrackFromId(Integer
+										.parseInt(track_id));
 								return newTrack;
 							}
 						} else {
@@ -271,9 +274,8 @@ public class PlayManager implements IPlayerEventClassListener {
 			shuffleTracks();
 		this.shuffle = shuffle;
 	}
-	
-	public void updateShuffle(boolean shuffle)
-	{
+
+	public void updateShuffle(boolean shuffle) {
 		setShuffle(shuffle);
 		iPlayList.updateShuffle(shuffle);
 	}
@@ -430,8 +432,9 @@ public class PlayManager implements IPlayerEventClassListener {
 	}
 
 	/**
-	 * Play track with Index Determine if shuffle is enabled, if we are not playin anything shuffle the
-	 * tracks and set this track as the top track, else set this track as the top track and play
+	 * Play track with Index Determine if shuffle is enabled, if we are not
+	 * playin anything shuffle the tracks and set this track as the top track,
+	 * else set this track as the top track and play
 	 * 
 	 * @param index
 	 */
@@ -484,14 +487,15 @@ public class PlayManager implements IPlayerEventClassListener {
 		log.debug("Play Radio Id:  " + c.getId());
 		playThis(c);
 	}
-	
+
 	/**
 	 * Used by Alarm Plugin to Start Playing a radio channel by name
+	 * 
 	 * @param name
 	 */
 	public synchronized void playRadio(String name) {
 		CustomChannel channel = iRadio.getChannel(name);
-		if(channel !=null)
+		if (channel != null)
 			playFile(channel);
 	}
 
@@ -542,13 +546,13 @@ public class PlayManager implements IPlayerEventClassListener {
 			}
 		}
 	}
-	
+
 	/**
 	 * Change and Update the Volume.
+	 * 
 	 * @param volume
 	 */
-	public synchronized void updateVolume(long volume)
-	{
+	public synchronized void updateVolume(long volume) {
 		setVolume(volume);
 		iVolume.updateVolume(volume);
 	}
@@ -757,7 +761,7 @@ public class PlayManager implements IPlayerEventClassListener {
 			setInfoTrack(current_track);
 			playingTrack(current_track.getId());
 			ev.setTrack(current_track);
-			
+
 		}
 		if (current_track instanceof CustomChannel) {
 			iRadio.setStatus(status);
@@ -843,9 +847,15 @@ public class PlayManager implements IPlayerEventClassListener {
 	 */
 	public void handleMyEventClassEvent(EventObject e) {
 		if (e instanceof EventFinishedCurrentTrack) {
-			CustomTrack t = getNextTrack(1);
-			if (t != null) {
-				playThis(t);
+			EventFinishedCurrentTrack evct = (EventFinishedCurrentTrack)e;	
+			if (evct.isQuit()) {
+				log.debug("Track was Stopped, do not select Next Track");
+			} else {
+				log.debug("Track Stopped, get Next Track");
+				CustomTrack t = getNextTrack(1);
+				if (t != null) {
+					playThis(t);
+				}
 			}
 		} else if (e instanceof EventTimeUpdate) {
 			EventTimeUpdate et = (EventTimeUpdate) e;
@@ -859,25 +869,28 @@ public class PlayManager implements IPlayerEventClassListener {
 			// current_duration = ed.getDuration();
 		} else if (e instanceof EventUpdateTrackInfo) {
 			TrackInfo i = (TrackInfo) e.getSource();
-			iInfo.setDetails(i.getDuration(), i.getBitrate(), 16, i.getSampleRate(), false, i.getCodec());
+			iInfo.setDetails(i.getDuration(), i.getBitrate(), 16,
+					i.getSampleRate(), false, i.getCodec());
 		} else if (e instanceof EventUpdateTrackMetaData) {
 			EventUpdateTrackMetaData et = (EventUpdateTrackMetaData) e;
 			fireEvent(et);
-			String metadata = current_track.updateTrack(et.getArtist(), et.getTitle());
+			String metadata = current_track.updateTrack(et.getArtist(),
+					et.getTitle());
 			if (metadata != null)
 				setInfoMetaData(metadata);
 		} else if (e instanceof EventLoaded) {
 			log.debug("Track Loaded");
 		}
 	}
-	
+
 	private List<IPlayerEventClassListener> _listeners = new ArrayList<IPlayerEventClassListener>();
-	
+
 	public synchronized void addEventListener(IPlayerEventClassListener listener) {
 		_listeners.add(listener);
 	}
 
-	public synchronized void removeEventListener(IPlayerEventClassListener listener) {
+	public synchronized void removeEventListener(
+			IPlayerEventClassListener listener) {
 		_listeners.remove(listener);
 	}
 
@@ -895,22 +908,21 @@ public class PlayManager implements IPlayerEventClassListener {
 	}
 
 	/**
-	 * @param iVolume the iVolume to set
+	 * @param iVolume
+	 *            the iVolume to set
 	 */
 	public void setiVolume(PrvVolume iVolume) {
 		this.iVolume = iVolume;
 	}
 
-	
 	private PrvProduct iProduct = null;
+
 	public void setProduct(PrvProduct iProduct) {
-		this.iProduct = iProduct;	
+		this.iProduct = iProduct;
 	}
 
 	public void updateStandby(boolean value) {
-		iProduct.updateStandby(value);	
+		iProduct.updateStandby(value);
 	}
-
-
 
 }
