@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project com.upnp.mediaplayer">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="C:/Keep/Code/UPNP/mediaplayer/Beta/plugins/AlarmClock.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="C:/Keep/git/repository/MediaPlayer/com.upnp.mediaplayer/bin">
+                <include name = "/org/rpi/plugin/alarmclock/*" />
+            </fileset>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Keep/Repository/java/quartz/quartz/2.1.1/quartz-2.1.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Keep/Repository/java/quartz/quartz/2.1.1/lib/slf4j-api-1.6.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Keep/Repository/java/quartz/quartz/2.1.1/lib/slf4j-log4j12-1.6.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="C:/Keep/Repository/java/pi4j/pi4j-1.0-SNAPSHOT/lib/pi4j-core.jar"/>
+        </jar>
+    </target>
+</project>

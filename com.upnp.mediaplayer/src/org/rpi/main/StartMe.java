@@ -4,20 +4,21 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeSet;
-
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
-
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 import org.rpi.config.Config;
+
 
 public class StartMe {
 
@@ -28,6 +29,7 @@ public class StartMe {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		// loadClassPath();
 		boolean bInput = false;
 		for (String s : args) {
 			if (s.equalsIgnoreCase("-input")) {
@@ -44,7 +46,8 @@ public class StartMe {
 		sd.attachShutDownHook();
 		if (bInput) {
 
-			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					System.in));
 			String line = "";
 
 			try {
@@ -68,19 +71,67 @@ public class StartMe {
 		}
 		System.exit(0);
 	}
+
 	
-	private static void loadPlugins()
-    {
-		try
-		{
+//	private static void loadClassPath() {
+//		String path = "/home/pi/mediaplayer/mediaplayer_lib";
+//		String files;
+//		File folder = new File(path);
+//		File[] listOfFiles = folder.listFiles();
+//		System.out.println("Number of Files: " + listOfFiles.length);
+//		for (int i = 0; i < listOfFiles.length; i++) {
+//
+//			if (listOfFiles[i].isFile()) {
+//				files = listOfFiles[i].getName();
+//				if (files.toUpperCase().endsWith(".JAR")) {
+//					try {
+//						System.out.println("File: " + files);
+//						ClassPathHack.addFile(path + "\\" + files);
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//					}
+//				}
+//			}
+//		}
+//	}
+
+	/***
+	 * Load the Plugins
+	 */
+	private static void loadPlugins() {
+		log.info("Start of LoadPlugnis");
 		PluginManager pm = PluginManagerFactory.createPluginManager();
-		pm.addPluginsFrom(new File("plugins/").toURI());
+		List<File> files = listFiles("plugins");
+		for (File file : files) {
+			try {
+				if (file.getName().toUpperCase().endsWith(".JAR")) {
+					pm.addPluginsFrom(file.toURI());
+				}
+			} catch (Exception e) {
+				log.error("Unable to load Plugins", e);
+			}
 		}
-		catch(Exception e)
-		{
-			log.error("Unable to load Plugins",e);
+		log.info("End of LoadPlugnis");
+	}
+
+	/***
+	 * List all the files in this directory and sub directories.
+	 * @param directoryName
+	 * @return
+	 */
+	public static List<File> listFiles(String directoryName) {
+		File directory = new File(directoryName);
+		List<File> resultList = new ArrayList<File>();
+		File[] fList = directory.listFiles();
+		resultList.addAll(Arrays.asList(fList));
+		for (File file : fList) {
+			if (file.isFile()) {
+			} else if (file.isDirectory()) {
+				resultList.addAll(listFiles(file.getAbsolutePath()));
+			}
 		}
-    }
+		return resultList;
+	}
 
 	/***
 	 * Print out the System Properties.
@@ -125,10 +176,14 @@ public class StartMe {
 			Config.logconsole = pr.getProperty("log.console.level");
 			Config.mplayer_path = pr.getProperty("mplayer.path");
 			Config.setSaveLocalPlayList(pr.getProperty("save.local.playlist"));
-			Config.port = Config.converStringToInt(pr.getProperty("openhome.port"));
-			Config.mplayer_cache = Config.converStringToInt(pr.getProperty("mplayer.cache"));
-			Config.mplayer_cache_min = Config.converStringToInt(pr.getProperty("mplayer.cache_min"));
-			Config.playlist_max = Config.converStringToInt(pr.getProperty("playlist.max"));
+			Config.port = Config.converStringToInt(pr
+					.getProperty("openhome.port"));
+			Config.mplayer_cache = Config.converStringToInt(pr
+					.getProperty("mplayer.cache"));
+			Config.mplayer_cache_min = Config.converStringToInt(pr
+					.getProperty("mplayer.cache_min"));
+			Config.playlist_max = Config.converStringToInt(pr
+					.getProperty("playlist.max"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -156,6 +211,5 @@ public class StartMe {
 		consoleAppender.setThreshold(Config.getLogConsoleLevel());
 		Logger.getRootLogger().addAppender(consoleAppender);
 	}
-	
-	
+
 }

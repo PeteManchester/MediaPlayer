@@ -22,6 +22,7 @@ import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
 import org.rpi.playlist.PlayManager;
+import org.scratchpad.FilePath;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -29,92 +30,84 @@ import org.w3c.dom.NodeList;
 
 @PluginImplementation
 public class AlarmClockImpl implements AlarmClockInterface {
-	
+
 	private static Logger log = Logger.getLogger(AlarmClockImpl.class);
-	
+
 	private PlayManager iPlayer = null;
 	private Scheduler scheduler;
-	
-	public AlarmClockImpl()
-	{
+
+	public AlarmClockImpl() {
 		log.debug("AlarmClock");
 		this.iPlayer = PlayManager.getInstance();
-		try
-		{
-		scheduler = StdSchedulerFactory.getDefaultScheduler();
-		scheduler.start();
-		}
-		catch(Exception e)
-		{
+		try {
+			scheduler = StdSchedulerFactory.getDefaultScheduler();
+			scheduler.start();
+		} catch (Exception e) {
 			log.error("Error Starting Scheduler");
 		}
 		getConfig();
-		//intAlarmClock();	
+		// intAlarmClock();
 	}
-	
 
-	
-	private void createSchedule(String name,String time, String type, String channel,String volume, String shuffle) {
-		try
-		{
+	private void createSchedule(String name, String time, String type,
+			String channel, String volume, String shuffle) {
+		try {
 			TriggerKey tr_key = new TriggerKey(name, "radioPlugin");
-		JobDetail job = JobBuilder.newJob(AlarmClockJob.class).withIdentity(name, "group1").build();
-		Map dataMap = job.getJobDataMap();
-		dataMap.put("id", name);
-		dataMap.put("Volume", volume);
-		dataMap.put("Shuffle", shuffle);
-		dataMap.put("type", type);
-		dataMap.put("channel", channel);
-		Trigger trigger = TriggerBuilder.newTrigger().withIdentity(tr_key).withSchedule(CronScheduleBuilder.cronSchedule(time)).forJob(job).build();
-		if (scheduler.checkExists(tr_key)) {
-			Date next_time = scheduler.rescheduleJob(tr_key, trigger);
-			log.info("Schedule has been changed, next execution time : " + next_time.toString() + " -- Job: " + name  );
-		} else {
-			Date next_time = scheduler.scheduleJob(job, trigger);
-			log.info("Job has been scheduled, next execution time : " + next_time.toString() + " -- Job: " + name);
-		}
-		}
-		catch(Exception e)
-		{
-			log.error("Error Creating Job: " ,e);
+			JobDetail job = JobBuilder.newJob(AlarmClockJob.class).withIdentity(name, "group1").build();
+			Map dataMap = job.getJobDataMap();
+			dataMap.put("id", name);
+			dataMap.put("Volume", volume);
+			dataMap.put("Shuffle", shuffle);
+			dataMap.put("type", type);
+			dataMap.put("channel", channel);
+			Trigger trigger = TriggerBuilder.newTrigger().withIdentity(tr_key)
+					.withSchedule(CronScheduleBuilder.cronSchedule(time))
+					.forJob(job).build();
+			if (scheduler.checkExists(tr_key)) {
+				Date next_time = scheduler.rescheduleJob(tr_key, trigger);
+				log.info("Schedule has been changed, next execution time : "
+						+ next_time.toString() + " -- Job: " + name);
+			} else {
+				Date next_time = scheduler.scheduleJob(job, trigger);
+				log.info("Job has been scheduled, next execution time : "
+						+ next_time.toString() + " -- Job: " + name);
+			}
+		} catch (Exception e) {
+			log.error("Error Creating Job: ", e);
 		}
 	}
-	
 
-	
-	private void getConfig()
-	{
-		try
-		{
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = factory.newDocumentBuilder();
-		Document doc = builder.parse(new File("AlarmClock.xml"));
-		NodeList listOfChannels = doc.getElementsByTagName("Alarm");
-		int i = 1;
-		for (int s = 0; s < listOfChannels.getLength(); s++) {
-			String name = null;
-			String time = null;
-			String type = null;
-			String channel = "";
-			String volume = "";
-			String shuffle = "";
+	private void getConfig() {
+		try {
+			String path = FilePath.getFilePath(this.getClass().getName());
+			log.debug("Getting AlarmClock.xml from Directory: " + path);
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document doc = builder.parse(new File(path + "AlarmClock.xml"));
+			NodeList listOfChannels = doc.getElementsByTagName("Alarm");
+			int i = 1;
+			for (int s = 0; s < listOfChannels.getLength(); s++) {
+				String name = null;
+				String time = null;
+				String type = null;
+				String channel = "";
+				String volume = "";
+				String shuffle = "";
 
-			Node alarm = listOfChannels.item(s);
-			if (alarm.getNodeType() == Node.ELEMENT_NODE) {
-				Element element = (Element) alarm;
-				name = getElementTest(element, "name");
-				time = getElementTest(element, "time");
-				type = getElementTest(element, "type");
-				volume = getElementTest(element, "volume");
-				shuffle = getElementTest(element, "shuffle");
-				channel = getElementTest(element, "channel");
+				Node alarm = listOfChannels.item(s);
+				if (alarm.getNodeType() == Node.ELEMENT_NODE) {
+					Element element = (Element) alarm;
+					name = getElementTest(element, "name");
+					time = getElementTest(element, "time");
+					type = getElementTest(element, "type");
+					volume = getElementTest(element, "volume");
+					shuffle = getElementTest(element, "shuffle");
+					channel = getElementTest(element, "channel");
+				}
+
+				createSchedule(name, time, type, channel, volume, shuffle);
 			}
-
-			createSchedule(name,time,type,channel,volume,shuffle);
-		}
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			log.error("Error Reading AlarmClock.xml");
 		}
 	}
@@ -134,16 +127,15 @@ public class AlarmClockImpl implements AlarmClockInterface {
 			Element fid = (Element) nid.item(0);
 			if (fid != null) {
 				res = fid.getTextContent();
-				//log.debug("ElementName: " + name + " Value: " + res);
+				// log.debug("ElementName: " + name + " Value: " + res);
 				return res;
 
 			}
 		}
 		return res;
 	}
-	
-	private String getAlarmTime()
-	{
+
+	private String getAlarmTime() {
 		Properties pr = new Properties();
 		try {
 			pr.load(new FileInputStream("app.properties"));
@@ -153,12 +145,12 @@ public class AlarmClockImpl implements AlarmClockInterface {
 		}
 		return "";
 	}
-	
+
 	class RemindTask extends TimerTask {
-        public void run() {
-            log.debug("Time For Next Track");
-            iPlayer.nextTrack();
-        }
-    }
+		public void run() {
+			log.debug("Time For Next Track");
+			iPlayer.nextTrack();
+		}
+	}
 
 }
