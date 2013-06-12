@@ -2,7 +2,7 @@
 <Alarms>
 	<Alarm>
 		<name>Absolute</name>
-		<time>00 30 15 ? * 1-5</time>
+		<time>00 30 07 ? * 1-5</time>
 		<volume>80</volume>
 		<shuffle>false</shuffle>
 		<type>Radio</type>
@@ -11,7 +11,7 @@
 
 	<Alarm>
 		<name>News Beat</name>
-		<time>00 10 15 ? * 1-5</time>
+		<time>00 45 12 ? * 1-5</time>
 		<volume>100</volume>
 		<shuffle>false</shuffle>
 		<type>Radio</type>

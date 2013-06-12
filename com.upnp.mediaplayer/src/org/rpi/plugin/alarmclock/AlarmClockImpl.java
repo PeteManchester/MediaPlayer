@@ -2,6 +2,7 @@ package org.rpi.plugin.alarmclock;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URL;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
@@ -22,7 +23,6 @@ import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
 import org.rpi.playlist.PlayManager;
-import org.scratchpad.FilePath;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -49,11 +49,21 @@ public class AlarmClockImpl implements AlarmClockInterface {
 		// intAlarmClock();
 	}
 
+	/***
+	 * User Quartz to set up a schedule
+	 * @param name
+	 * @param time
+	 * @param type
+	 * @param channel
+	 * @param volume
+	 * @param shuffle
+	 */
 	private void createSchedule(String name, String time, String type,
 			String channel, String volume, String shuffle) {
 		try {
 			TriggerKey tr_key = new TriggerKey(name, "radioPlugin");
-			JobDetail job = JobBuilder.newJob(AlarmClockJob.class).withIdentity(name, "group1").build();
+			JobDetail job = JobBuilder.newJob(AlarmClockJob.class)
+					.withIdentity(name, "group1").build();
 			Map dataMap = job.getJobDataMap();
 			dataMap.put("id", name);
 			dataMap.put("Volume", volume);
@@ -77,11 +87,17 @@ public class AlarmClockImpl implements AlarmClockInterface {
 		}
 	}
 
+	/***
+	 * So my AlarmClock.xml file is in a subdirectory of Plugins, we have to find it the read it and schedule the triggers..
+	 */
 	private void getConfig() {
 		try {
-			String path = FilePath.getFilePath(this.getClass().getName());
+			String class_name = this.getClass().getName();
+			log.debug("Find Class, ClassName: " + class_name);
+			String path = getFilePath(class_name);
 			log.debug("Getting AlarmClock.xml from Directory: " + path);
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilderFactory factory = DocumentBuilderFactory
+					.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			Document doc = builder.parse(new File(path + "AlarmClock.xml"));
 			NodeList listOfChannels = doc.getElementsByTagName("Alarm");
@@ -111,8 +127,58 @@ public class AlarmClockImpl implements AlarmClockInterface {
 			log.error("Error Reading AlarmClock.xml");
 		}
 	}
-	
 
+	/***
+	 * Get the Path of this ClassFile
+	 * Must be easier ways to do this!!!!
+	 * @param className
+	 * @return
+	 */
+	private String getFilePath(String className) {
+		if (!className.startsWith("/")) {
+			className = "/" + className;
+		}
+		className = className.replace('.', '/');
+		className = className + ".class";
+		log.debug("Find Class, Full ClassName: " + className);
+		String[] splits = className.split("/");
+		String properName = splits[splits.length - 1];
+		log.debug("Find Class, ClassName: " + properName);
+		URL classUrl = new FilePath().getClass().getResource(className);
+		if (classUrl != null) {
+			String temp = classUrl.getFile();
+			log.debug("Find Class, ClassURL: " + temp);
+			if (temp.startsWith("file:")) {
+				temp = temp.substring(5);
+			}
+
+			if (temp.toUpperCase().contains(".JAR!")) {
+				log.debug("Find Class, This is a JarFile: " + temp);
+				String[] parts = temp.split("/");
+				String jar_path = "";
+				for (String part : parts) {
+					if (!part.toUpperCase().endsWith(".JAR!")) {
+						jar_path +=  part + "/";
+					} else {
+						log.debug("Find File: Returning JarPath: " + jar_path);
+						return jar_path;
+					}
+				}
+			} else {
+				log.debug("Find Class, This is NOT a Jar File: " + temp);
+				if (temp.endsWith(properName)) {
+					temp = temp.substring(0,
+							(temp.length() - properName.length()));
+				}
+			}
+			log.debug("Find File: Returning FilePath: " + temp);
+			return temp;
+		} else {
+			log.debug("Find Class, URL Not Found");
+			return "\nClass '" + className + "' not found in \n'"
+					+ System.getProperty("java.class.path") + "'";
+		}
+	}
 
 	/***
 	 * 

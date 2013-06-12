@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
+import java.util.Observable;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -28,7 +29,7 @@ import org.rpi.providers.PrvTime;
 import org.rpi.providers.PrvVolume;
 import org.rpi.radio.CustomChannel;
 
-public class PlayManager implements IPlayerEventClassListener {
+public class PlayManager extends Observable implements IPlayerEventClassListener {
 
 	private CustomTrack current_track = null;
 	private CopyOnWriteArrayList<CustomTrack> tracks = new CopyOnWriteArrayList<CustomTrack>();
@@ -130,10 +131,8 @@ public class PlayManager implements IPlayerEventClassListener {
 					}
 					if (getShuffledTracks().size() > i + offset) {
 						if (i + offset >= 0) {
-							String track_id = getShuffledTracks().get(
-									i + offset);
-							CustomTrack newTrack = getTrackFromId(Integer
-									.parseInt(track_id));
+							String track_id = getShuffledTracks().get(i + offset);
+							CustomTrack newTrack = getTrackFromId(Integer.parseInt(track_id));
 							return (newTrack);
 						}
 					} else {
@@ -143,8 +142,7 @@ public class PlayManager implements IPlayerEventClassListener {
 							shuffleTracks();
 							if (getShuffledTracks().size() > 0) {
 								String track_id = getShuffledTracks().get(0);
-								CustomTrack newTrack = getTrackFromId(Integer
-										.parseInt(track_id));
+								CustomTrack newTrack = getTrackFromId(Integer.parseInt(track_id));
 								return newTrack;
 							}
 						} else {
@@ -334,7 +332,10 @@ public class PlayManager implements IPlayerEventClassListener {
 	private int generateRandonNumber(int min, int max) {
 		long seed = System.nanoTime();
 		Random rand = new Random(seed);
-		int res = rand.nextInt(max - min) + min;
+		int limit = (max - min) + min;
+		if (limit == 0)
+			limit = 1;
+		int res = rand.nextInt(limit);
 		log.debug("Random Number in range " + min + " - " + max + " = " + res);
 		return res;
 	}
@@ -540,6 +541,8 @@ public class PlayManager implements IPlayerEventClassListener {
 	 */
 	public synchronized void setVolume(long volume) {
 		this.volume = volume;
+		//setChanged();
+		//notifyObservers(arg)
 		{
 			if (mPlayer != null) {
 				mPlayer.setVolume(volume);
@@ -768,7 +771,9 @@ public class PlayManager implements IPlayerEventClassListener {
 		} else {
 			iPlayList.SetStatus(status);
 		}
-		fireEvent(ev);
+		//fireEvent(ev);
+		setChanged();
+		notifyObservers(ev);
 	}
 
 	/***
@@ -847,7 +852,7 @@ public class PlayManager implements IPlayerEventClassListener {
 	 */
 	public void handleMyEventClassEvent(EventObject e) {
 		if (e instanceof EventFinishedCurrentTrack) {
-			EventFinishedCurrentTrack evct = (EventFinishedCurrentTrack)e;	
+			EventFinishedCurrentTrack evct = (EventFinishedCurrentTrack) e;
 			if (evct.isQuit()) {
 				log.debug("Track was Stopped, do not select Next Track");
 			} else {
@@ -869,13 +874,12 @@ public class PlayManager implements IPlayerEventClassListener {
 			// current_duration = ed.getDuration();
 		} else if (e instanceof EventUpdateTrackInfo) {
 			TrackInfo i = (TrackInfo) e.getSource();
-			iInfo.setDetails(i.getDuration(), i.getBitrate(), 16,
-					i.getSampleRate(), false, i.getCodec());
+			iInfo.setDetails(i.getDuration(), i.getBitrate(), 16, i.getSampleRate(), false, i.getCodec());
 		} else if (e instanceof EventUpdateTrackMetaData) {
 			EventUpdateTrackMetaData et = (EventUpdateTrackMetaData) e;
-			fireEvent(et);
-			String metadata = current_track.updateTrack(et.getArtist(),
-					et.getTitle());
+			setChanged();
+			notifyObservers(et);
+			String metadata = current_track.updateTrack(et.getArtist(), et.getTitle());
 			if (metadata != null)
 				setInfoMetaData(metadata);
 		} else if (e instanceof EventLoaded) {
@@ -883,22 +887,21 @@ public class PlayManager implements IPlayerEventClassListener {
 		}
 	}
 
-	private List<IPlayerEventClassListener> _listeners = new ArrayList<IPlayerEventClassListener>();
-
-	public synchronized void addEventListener(IPlayerEventClassListener listener) {
-		_listeners.add(listener);
-	}
-
-	public synchronized void removeEventListener(
-			IPlayerEventClassListener listener) {
-		_listeners.remove(listener);
-	}
-
-	public synchronized void fireEvent(EventObject ev) {
-		for (IPlayerEventClassListener l : _listeners) {
-			l.handleMyEventClassEvent(ev);
-		}
-	}
+//	private List<IPlayerEventClassListener> _listeners = new ArrayList<IPlayerEventClassListener>();
+//
+//	public synchronized void addEventListener(IPlayerEventClassListener listener) {
+//		_listeners.add(listener);
+//	}
+//
+//	public synchronized void removeEventListener(IPlayerEventClassListener listener) {
+//		_listeners.remove(listener);
+//	}
+//
+//	public synchronized void fireEvent(EventObject ev) {
+//		for (IPlayerEventClassListener l : _listeners) {
+//			l.handleMyEventClassEvent(ev);
+//		}
+//	}
 
 	/**
 	 * @return the iVolume
