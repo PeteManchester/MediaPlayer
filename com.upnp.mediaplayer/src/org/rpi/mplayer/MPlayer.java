@@ -5,19 +5,20 @@ import java.lang.Thread.State;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
+import java.util.Observable;
+
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
 import org.rpi.player.IPlayer;
-import org.rpi.player.IPlayerEventClassListener;
+import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventFinishedCurrentTrack;
 import org.rpi.player.events.EventStatusChanged;
 import org.rpi.player.events.EventUpdateTrackMetaData;
 import org.rpi.playlist.CustomTrack;
 
-public class MPlayer implements IPlayer {
+public class MPlayer extends Observable   implements IPlayer  {
 
 	private Logger log = Logger.getLogger(MPlayer.class);
-	private List<IPlayerEventClassListener> _listeners = new ArrayList<IPlayerEventClassListener>();
 	private Process process = null;
 	private OutputReader reader = null;
 	private InputWriter writer = null;
@@ -104,19 +105,19 @@ public class MPlayer implements IPlayer {
 		startPlaying();
 	}
 
-	/***
-	 * Attempt to Stop if already running If Position Thread is running,
-	 * interrupt it
-	 */
-	private void init() {
-		stop();
-		if (position != null) {
-			position.interrupt();
-			position = null;
-		} else {
-			log.debug("Position Thread was null");
-		}
-	}
+//	/***
+//	 * Attempt to Stop if already running If Position Thread is running,
+//	 * interrupt it
+//	 */
+//	private void init() {
+//		stop();
+//		if (position != null) {
+//			position.interrupt();
+//			position = null;
+//		} else {
+//			log.debug("Position Thread was null");
+//		}
+//	}
 
 	/***
 	 * Build the string to start the process
@@ -245,7 +246,7 @@ public class MPlayer implements IPlayer {
 		position.interrupt();
 		position = null;
 		reader = null;
-		EventFinishedCurrentTrack ev = new EventFinishedCurrentTrack(this);
+		EventFinishedCurrentTrack ev = new EventFinishedCurrentTrack();
 		fireEvent(ev);
 	}
 
@@ -255,7 +256,7 @@ public class MPlayer implements IPlayer {
 	 * @param status
 	 */
 	public synchronized void setStatus(String status) {
-		EventStatusChanged ev = new EventStatusChanged(this);
+		EventStatusChanged ev = new EventStatusChanged();
 		ev.setStatus(status);
 		ev.setTrack(current_track);
 		fireEvent(ev);
@@ -304,7 +305,7 @@ public class MPlayer implements IPlayer {
 	 * @param title
 	 */
 	public synchronized void updateInfo(String artist, String title) {
-		EventUpdateTrackMetaData ev = new EventUpdateTrackMetaData(this);
+		EventUpdateTrackMetaData ev = new EventUpdateTrackMetaData();
 		ev.setArtist(artist);
 		ev.setTitle(title);
 		fireEvent(ev);
@@ -347,18 +348,9 @@ public class MPlayer implements IPlayer {
 		}
 	}
 
-	public synchronized void addEventListener(IPlayerEventClassListener listener) {
-		_listeners.add(listener);
-	}
-
-	public synchronized void removeEventListener(IPlayerEventClassListener listener) {
-		_listeners.remove(listener);
-	}
-
-	public synchronized void fireEvent(EventObject ev) {
-		for (IPlayerEventClassListener l : _listeners) {
-			l.handleMyEventClassEvent(ev);
-		}
+	public synchronized void fireEvent(EventBase ev) {
+		setChanged();
+		notifyObservers(ev);
 	}
 
 	public boolean isLoading() {
@@ -378,5 +370,6 @@ public class MPlayer implements IPlayer {
 		sb.append("Reader: " + reader.toString());
 		return sb.toString();
 	}
+
 
 }

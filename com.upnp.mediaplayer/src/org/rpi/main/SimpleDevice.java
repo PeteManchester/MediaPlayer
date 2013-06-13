@@ -100,11 +100,11 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			log.error("Error Reading Radio Channels");
 		}
 
-		iPlayer.setTime(iTime);
-		iPlayer.setInfo(iInfo);
-		iPlayer.setPlayList(iPlayList);
+		//iPlayer.setTime(iTime);
+		//iPlayer.setInfo(iInfo);
+		//iPlayer.setPlayList(iPlayList);
 		iPlayer.setRadio(iRadio);
-		iPlayer.setiVolume(iVolume);
+		//iPlayer.setiVolume(iVolume);
 		iPlayer.setProduct(iProduct);
 
 		iDevice.setEnabled();

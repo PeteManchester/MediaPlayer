@@ -1,12 +1,16 @@
 package org.rpi.player.events;
 
-import java.util.EventObject;
 
-public class EventLoaded extends EventObject {
+public class EventLoaded implements EventBase {
 	
-	public EventLoaded(Object source) {
-		super(source);
-
+//	public EventLoaded(Object source) {
+//		super(source);
+//
+//	}
+	
+	public EnumPlayerEvents getType()
+	{
+		return EnumPlayerEvents.EVENTLOADED;
 	}
 
 }

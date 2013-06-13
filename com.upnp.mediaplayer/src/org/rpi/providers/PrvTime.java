@@ -1,11 +1,18 @@
 package org.rpi.providers;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgTime1;
+import org.rpi.player.events.EventBase;
+import org.rpi.player.events.EventDurationUpdate;
+import org.rpi.player.events.EventTimeUpdate;
+import org.rpi.playlist.PlayManager;
 
-public class PrvTime extends DvProviderAvOpenhomeOrgTime1 {
+public class PrvTime extends DvProviderAvOpenhomeOrgTime1 implements Observer {
 
 	private Logger log = Logger.getLogger(PrvTime.class);
 
@@ -21,6 +28,7 @@ public class PrvTime extends DvProviderAvOpenhomeOrgTime1 {
 		setPropertySeconds(0);
 
 		enableActionTime();
+		PlayManager.getInstance().observTimeEvents(this);
 
 	}
 
@@ -52,6 +60,23 @@ public class PrvTime extends DvProviderAvOpenhomeOrgTime1 {
 		long seconds = getPropertySeconds();
 		Time time = new Time(trackCount, duration, seconds);
 		return time;
+	}
+
+	@Override
+	public void update(Observable paramObservable, Object obj) {
+		EventBase eb = (EventBase)obj;
+		switch(eb.getType())
+		{
+		case EVENTTIMEUPDATED:
+			EventTimeUpdate et = (EventTimeUpdate) eb;
+			setSeconds(et.getTime());
+			break;
+		case EVENTDURATIONUPDATE:
+			EventDurationUpdate ed = (EventDurationUpdate) eb;
+			setDuration(ed.getDuration());
+			break;
+		}
+		
 	}
 
 }

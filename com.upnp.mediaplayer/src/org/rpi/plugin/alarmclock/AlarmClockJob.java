@@ -35,7 +35,7 @@ public class AlarmClockJob implements Job {
 		}
 
 		try {
-			PlayManager.getInstance().updateVolume(Long.parseLong(volume));
+			PlayManager.getInstance().setVolume(Long.parseLong(volume));
 		} catch (Exception e) {
 
 		}

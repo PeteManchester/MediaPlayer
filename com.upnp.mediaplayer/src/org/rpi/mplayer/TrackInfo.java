@@ -73,7 +73,8 @@ public class TrackInfo {
 		{
 			if(!bSentUpdate)
 			{
-				EventUpdateTrackInfo ev = new EventUpdateTrackInfo(this);
+				EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
+				ev.setTrackInfo(this);
 				mPlayer.fireEvent(ev);
 				bSentUpdate = true;
 			}

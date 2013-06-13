@@ -1,16 +1,19 @@
 package org.rpi.player.events;
 
-import java.util.EventObject;
-
 import org.rpi.playlist.CustomTrack;
 
-public class EventStatusChanged extends EventObject {
+public class EventStatusChanged implements EventBase {
+	
+	public EnumPlayerEvents getType()
+	{
+		return EnumPlayerEvents.EVENTSTATUSCHANGED;
+	}
 	
 	private CustomTrack current_track = null;
 
-	public EventStatusChanged(Object source) {
-		super(source);
-	}
+//	public EventStatusChanged(Object source) {
+//		super(source);
+//	}
 	
 	/**
 	 * @return the status

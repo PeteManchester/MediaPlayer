@@ -1,12 +1,21 @@
 package org.rpi.providers;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgInfo1;
+import org.rpi.mplayer.TrackInfo;
+import org.rpi.player.events.EventBase;
+import org.rpi.player.events.EventTrackChanged;
+import org.rpi.player.events.EventUpdateTrackInfo;
+import org.rpi.player.events.EventUpdateTrackMetaData;
 import org.rpi.playlist.CustomTrack;
+import org.rpi.playlist.PlayManager;
 
-public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 {
+public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer {
 
 	private Logger log = Logger.getLogger(PrvInfo.class);
 
@@ -44,6 +53,7 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 {
 		enableActionTrack();
 		enableActionDetails();
 		enableActionMetatext();
+		PlayManager.getInstance().observInfoEvents(this);
 	}
 
 	/***
@@ -51,8 +61,10 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 {
 	 * 
 	 * @param track
 	 */
-	public void setTrack(CustomTrack track) {
+	private void setTrack(CustomTrack track) {
 		try {
+			if(track ==null)
+				return;
 			long trackCount = getPropertyTrackCount();
 			trackCount++;
 			propertiesLock();
@@ -67,7 +79,7 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 {
 			setPropertyDetailsCount(0);
 			setPropertyMetatextCount(0);
 			propertiesUnlock();
-			//if(!track.getMetaText().equalsIgnoreCase(""))
+			if(!track.getMetaText().equalsIgnoreCase(""))
 				setMetaText(track.getMetaText());
 		} catch (Exception e) {
 			log.error("Error: setTrack", e);
@@ -150,6 +162,29 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 {
 		String metaExt = getPropertyMetatext();
 		log.debug("Return metatext: " + metaExt);
 		return metaExt;
+	}
+
+	@Override
+	public void update(Observable paramObservable, Object obj) {
+		EventBase e = (EventBase)obj;
+		switch(e.getType())
+		{
+		case EVENTUPDATETRACKINFO:
+			EventUpdateTrackInfo euti = (EventUpdateTrackInfo)e;
+			TrackInfo i = (TrackInfo) euti.getTrackInfo();
+			setDetails(i.getDuration(), i.getBitrate(), 16, i.getSampleRate(), false, i.getCodec());
+			break;	
+
+		case EVENTUPDATETRACKMETADATA:
+			EventUpdateTrackMetaData etm = (EventUpdateTrackMetaData)e;
+			setMetaText(etm.getMetaData());
+			break;
+		case EVENTTRACKCHANGED:
+			EventTrackChanged etc = (EventTrackChanged)e;
+			setTrack(etc.getTrack());
+			break;
+		}
+		
 	}
 
 }

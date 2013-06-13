@@ -1,16 +1,24 @@
 package org.rpi.providers;
 
+import java.util.Observable;
+import java.util.Observer;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgPlaylist1;
 import org.rpi.config.Config;
+import org.rpi.player.events.EventBase;
+import org.rpi.player.events.EventPlayListPlayingTrackID;
+import org.rpi.player.events.EventPlayListStatusChanged;
+import org.rpi.player.events.EventPlayListUpdateShuffle;
+import org.rpi.player.events.EventRadioPlayingTrackID;
+import org.rpi.player.events.EventRadioStatusChanged;
 import org.rpi.playlist.CustomTrack;
 import org.rpi.playlist.PlayListReader;
 import org.rpi.playlist.PlayListWriter;
 import org.rpi.playlist.PlayManager;
 
-public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 {
+public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Observer {
 
 	private Logger log = Logger.getLogger(PrvPlayList.class);
 	private int next_id;
@@ -68,6 +76,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 {
 		enableActionIdArray();
 		enableActionIdArrayChanged();
 		enableActionProtocolInfo();
+		PlayManager.getInstance().observPlayListEvents(this);
 		loadPlayList();
 	}
 
@@ -349,7 +358,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 {
 		return true;
 	}
 
-	public void PlayingTrack(int iD) {
+	private void playingTrack(int iD) {
 		setPropertyId(iD);
 	}
 
@@ -359,7 +368,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 {
 		UpdateIdArray(false);
 	}
 
-	public void SetStatus(String status) {
+	public void setStatus(String status) {
 		setPropertyTransportState(status);
 	}
 
@@ -384,6 +393,31 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 {
 
 	public void updateShuffle(boolean shuffle) {
 		setPropertyShuffle(shuffle);		
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		EventBase e = (EventBase)arg;
+		switch(e.getType())
+		{
+		
+		case EVENTPLAYLISTSTATUSCHANGED:
+			EventPlayListStatusChanged ers = (EventPlayListStatusChanged)e;
+			setStatus(ers.getStatus());
+			break;
+		
+		case EVENTPLAYLISTPLAYINGTRACKID:
+			EventPlayListPlayingTrackID eri = (EventPlayListPlayingTrackID)e;
+			playingTrack(eri.getId());
+			break;
+		
+		case EVENTPLAYLISTUPDATESHUFFLE:
+			EventPlayListUpdateShuffle eps = (EventPlayListUpdateShuffle)e;
+			updateShuffle(eps.isShuffle());
+			break;
+			
+		}
+		
 	}
 
 

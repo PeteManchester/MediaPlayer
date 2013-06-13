@@ -1,5 +1,7 @@
 package org.rpi.providers;
 
+import java.util.Observable;
+import java.util.Observer;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.log4j.Logger;
@@ -7,15 +9,17 @@ import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgProduct1;
 import org.rpi.config.Config;
+import org.rpi.player.events.EventBase;
+import org.rpi.playlist.EventStandbyChanged;
 import org.rpi.playlist.PlayManager;
 
-public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 {
+public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Observer {
 
 	private Logger log = Logger.getLogger(PrvProduct.class);
 	private String  friendly_name = Config.friendly_name;
 	//private String iSourceXml = "<SourceList><Source><Name>Playlist</Name><Type>Playlist</Type><Visible>1</Visible></Source><Source><Name>Receiver</Name><Type>Receiver</Type><Visible>1</Visible></Source><Source><Name>Radio</Name><Type>Radio</Type><Visible>1</Visible></Source></SourceList>";
 	private String iSourceXml = "";
-	private boolean standby = true;
+	//private boolean standby = true;
 	private String attributes = "Info Time Volume Radio";
 	private String man_name = "Java Inc";
 	private String man_info = "Developed in Java using OpenHome and MPlayer";
@@ -58,7 +62,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 {
 		enablePropertySourceCount();
 		enablePropertySourceXml();
 
-		setPropertyStandby(standby);
+		setPropertyStandby(PlayManager.getInstance().isStandby());
 		setPropertyAttributes(attributes);
 
 		setPropertyManufacturerName(man_name);
@@ -94,6 +98,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 {
 		enableActionSource();
 		enableActionAttributes();
 		enableActionSourceXmlChangeCount();
+		PlayManager.getInstance().observeProductEvents(this);
 		initSources();
 	}
 
@@ -140,14 +145,16 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 {
 	@Override
 	protected void setStandby(IDvInvocation paramIDvInvocation, boolean paramBoolean) {
 		log.debug("SetStandby: " + paramBoolean);
-		standby = paramBoolean;
-		setPropertyStandby(standby);
-		if (paramBoolean)
-			iPlayer.stop();
+		PlayManager.getInstance().setStandby(paramBoolean);
+		
+		//if (paramBoolean)
+		//	iPlayer.stop();
 	}
+	
 
 	@Override
 	protected boolean standby(IDvInvocation paramIDvInvocation) {
+		boolean standby = PlayManager.getInstance().isStandby();
 		log.debug("GetStandby: " + standby);
 		return standby;
 	}
@@ -229,8 +236,23 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 {
 		return iSourceXMLChangeCount;
 	}
 	
-	public void updateStandby(boolean value)
+	public void updateStandby(boolean standby)
 	{
-		setPropertyStandby(value);
+		propertiesLock();
+		setPropertyStandby(standby);
+		propertiesUnlock();
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		EventBase e = (EventBase)arg;
+		switch(e.getType())
+		{
+		case EVENTSTANDBYCHANGED:
+			EventStandbyChanged ev = (EventStandbyChanged)e;
+			updateStandby(ev.isStandby());
+			break;
+		}
+		
 	}
 }

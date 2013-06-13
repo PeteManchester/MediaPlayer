@@ -40,7 +40,7 @@ public class OutputReader extends Thread {
 		
 		else if(line.startsWith("Cache fill:"))
 		{
-			EventStatusChanged ev = new EventStatusChanged(this);
+			EventStatusChanged ev = new EventStatusChanged();
 			ev.setStatus("Buffering");
 			mPlayer.fireEvent(ev);
 		}
@@ -50,7 +50,7 @@ public class OutputReader extends Thread {
 			if (lengths.length > 1) {
 				long l = stringToLong(lengths[1]);
 				if (l != -99) {
-					EventDurationUpdate e = new EventDurationUpdate(this);
+					EventDurationUpdate e = new EventDurationUpdate();
 					e.setDuratoin(l);
 					mPlayer.fireEvent(e);
 				}
@@ -66,7 +66,7 @@ public class OutputReader extends Thread {
 		else if (line.startsWith("ANS_TIME_POSITION")) {
 			String lengths[] = line.split("=");
 			if (lengths.length > 1) {
-				EventTimeUpdate ev = new EventTimeUpdate(this);
+				EventTimeUpdate ev = new EventTimeUpdate();
 				ev.setTime(stringToLong(lengths[1]));
 				mPlayer.fireEvent(ev);
 			}
@@ -107,7 +107,7 @@ public class OutputReader extends Thread {
 			if (isUpdate()) {
 				mPlayer.setStatus("Stopped");
 			}
-			EventFinishedCurrentTrack ev = new EventFinishedCurrentTrack(this);
+			EventFinishedCurrentTrack ev = new EventFinishedCurrentTrack();
 			ev.setQuit(true);
 			mPlayer.fireEvent(ev);
 		}

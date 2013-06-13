@@ -1,35 +1,34 @@
 package org.rpi.playlist;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EventObject;
-import java.util.List;
 import java.util.Observable;
+import java.util.Observer;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.log4j.Logger;
 import org.rpi.mplayer.MPlayer;
-import org.rpi.mplayer.TrackInfo;
 import org.rpi.player.IPlayer;
-import org.rpi.player.IPlayerEventClassListener;
-import org.rpi.player.events.EventDurationUpdate;
+import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventFinishedCurrentTrack;
-import org.rpi.player.events.EventLoaded;
+import org.rpi.player.events.EventMuteChanged;
+import org.rpi.player.events.EventPlayListPlayingTrackID;
+import org.rpi.player.events.EventPlayListStatusChanged;
+import org.rpi.player.events.EventPlayListUpdateShuffle;
+import org.rpi.player.events.EventRadioPlayingTrackID;
+import org.rpi.player.events.EventRadioStatusChanged;
 import org.rpi.player.events.EventStatusChanged;
-import org.rpi.player.events.EventTimeUpdate;
 import org.rpi.player.events.EventTrackChanged;
-import org.rpi.player.events.EventUpdateTrackInfo;
 import org.rpi.player.events.EventUpdateTrackMetaData;
+import org.rpi.player.events.EventVolumeChanged;
 import org.rpi.providers.PrvInfo;
 import org.rpi.providers.PrvPlayList;
 import org.rpi.providers.PrvProduct;
 import org.rpi.providers.PrvRadio;
-import org.rpi.providers.PrvTime;
 import org.rpi.providers.PrvVolume;
 import org.rpi.radio.CustomChannel;
 
-public class PlayManager extends Observable implements IPlayerEventClassListener {
+public class PlayManager implements Observer {
 
 	private CustomTrack current_track = null;
 	private CopyOnWriteArrayList<CustomTrack> tracks = new CopyOnWriteArrayList<CustomTrack>();
@@ -43,10 +42,11 @@ public class PlayManager extends Observable implements IPlayerEventClassListener
 	private boolean shuffle = false;
 	private boolean bPaused;
 	private PrvRadio iRadio;
-	private PrvPlayList iPlayList;
-	private PrvInfo iInfo;
-	private PrvTime iTime;
-	private PrvVolume iVolume;
+	private boolean standby = true;
+	//private PrvPlayList iPlayList;
+	//private PrvInfo iInfo;
+	//private PrvTime iTime;
+	//private PrvVolume iVolume;
 
 	// For nearly Gapless playback..
 	// private long current_duration = 0;
@@ -57,8 +57,18 @@ public class PlayManager extends Observable implements IPlayerEventClassListener
 	// For Volume
 	private long volume = 100;
 	private boolean bMute;
+	
+	//Observable Classes
+	private ObservsableTime obsvTime = new ObservsableTime();
+	private ObservableInfo obsvInfo = new ObservableInfo();
+	private ObservableVolume obsvVolume = new ObservableVolume();
+	private ObservableRadio obsvRadio = new ObservableRadio();
+	private ObservablePlayList obsvPlayList = new ObservablePlayList(); 
+	private ObservableProduct obsvProduct = new ObservableProduct();
 
 	private static PlayManager instance = null;
+	
+	
 
 	/**
 	 * SingleInstance of the PlayManager
@@ -76,7 +86,7 @@ public class PlayManager extends Observable implements IPlayerEventClassListener
 	 * 
 	 */
 	private PlayManager() {
-
+		
 	}
 
 	/**
@@ -93,7 +103,7 @@ public class PlayManager extends Observable implements IPlayerEventClassListener
 				mPlayer = null;
 			}
 			mPlayer = new MPlayer();
-			mPlayer.addEventListener(this);
+			mPlayer.addObserver(this);
 			mPlayer.playTrack(t, volume, bMute);
 		}
 	}
@@ -239,6 +249,19 @@ public class PlayManager extends Observable implements IPlayerEventClassListener
 		}
 		return null;
 	}
+	
+	public  synchronized boolean isStandby() {
+		return standby;
+	}
+
+	public synchronized void setStandby(boolean standby) {
+		this.standby = standby;
+		EventStandbyChanged ev = new EventStandbyChanged();
+		ev.setStandby(standby);
+		obsvProduct.notifyChange(ev);
+		if (standby)
+			stop();
+	}
 
 	/**
 	 * 
@@ -275,7 +298,10 @@ public class PlayManager extends Observable implements IPlayerEventClassListener
 
 	public void updateShuffle(boolean shuffle) {
 		setShuffle(shuffle);
-		iPlayList.updateShuffle(shuffle);
+		//iPlayList.updateShuffle(shuffle);
+		EventPlayListUpdateShuffle ev = new EventPlayListUpdateShuffle();
+		ev.setShuffle(shuffle);
+		obsvPlayList.notifyChange(ev);
 	}
 
 	/**
@@ -541,8 +567,9 @@ public class PlayManager extends Observable implements IPlayerEventClassListener
 	 */
 	public synchronized void setVolume(long volume) {
 		this.volume = volume;
-		//setChanged();
-		//notifyObservers(arg)
+		EventVolumeChanged ev = new EventVolumeChanged();
+		ev.setVolume(volume);
+		obsvVolume.notifyChange(ev);
 		{
 			if (mPlayer != null) {
 				mPlayer.setVolume(volume);
@@ -550,15 +577,15 @@ public class PlayManager extends Observable implements IPlayerEventClassListener
 		}
 	}
 
-	/**
-	 * Change and Update the Volume.
-	 * 
-	 * @param volume
-	 */
-	public synchronized void updateVolume(long volume) {
-		setVolume(volume);
-		iVolume.updateVolume(volume);
-	}
+//	/**
+//	 * Change and Update the Volume.
+//	 * 
+//	 * @param volume
+//	 */
+//	public synchronized void updateVolume(long volume) {
+//		setVolume(volume);
+//		iVolume.updateVolume(volume);
+//	}
 
 	/**
 	 * Set Mute
@@ -567,6 +594,10 @@ public class PlayManager extends Observable implements IPlayerEventClassListener
 	 */
 	public synchronized void setMute(boolean mute) {
 		this.bMute = mute;
+		EventMuteChanged em = new EventMuteChanged();
+		em.setMute(mute);
+		obsvProduct.notifyChange(em);
+		obsvVolume.notifyChange(em);
 		if (mPlayer != null) {
 			mPlayer.setMute(mute);
 		}
@@ -693,32 +724,32 @@ public class PlayManager extends Observable implements IPlayerEventClassListener
 			}
 	}
 
-	/**
-	 * Time provider
-	 * 
-	 * @param iTime
-	 */
-	public synchronized void setTime(PrvTime iTime) {
-		this.iTime = iTime;
-	}
+//	/**
+//	 * Time provider
+//	 * 
+//	 * @param iTime
+//	 */
+//	public synchronized void setTime(PrvTime iTime) {
+//		this.iTime = iTime;
+//	}
 
-	/**
-	 * Info Provider
-	 * 
-	 * @param iInfo
-	 */
-	public synchronized void setInfo(PrvInfo iInfo) {
-		this.iInfo = iInfo;
-	}
+//	/**
+//	 * Info Provider
+//	 * 
+//	 * @param iInfo
+//	 */
+//	public synchronized void setInfo(PrvInfo iInfo) {
+//		this.iInfo = iInfo;
+//	}
 
-	/**
-	 * Playlist Provider
-	 * 
-	 * @param iPlayList
-	 */
-	public synchronized void setPlayList(PrvPlayList iPlayList) {
-		this.iPlayList = iPlayList;
-	}
+//	/**
+//	 * Playlist Provider
+//	 * 
+//	 * @param iPlayList
+//	 */
+//	public synchronized void setPlayList(PrvPlayList iPlayList) {
+//		this.iPlayList = iPlayList;
+//	}
 
 	/**
 	 * Radio Provider
@@ -755,25 +786,30 @@ public class PlayManager extends Observable implements IPlayerEventClassListener
 	 * @param status
 	 */
 	public synchronized void setStatus(String status, CustomTrack t) {
-		EventTrackChanged ev = new EventTrackChanged(this);
+		EventTrackChanged ev = new EventTrackChanged();
 		ev.setTrack(t);
 		if (status.equalsIgnoreCase("PLAYING")) {
 			if (t != null) {
 				current_track = t;
 			}
-			setInfoTrack(current_track);
+			//setInfoTrack(current_track);
 			playingTrack(current_track.getId());
 			ev.setTrack(current_track);
 
 		}
 		if (current_track instanceof CustomChannel) {
-			iRadio.setStatus(status);
+			//iRadio.setStatus(status);
+			EventRadioStatusChanged evr = new EventRadioStatusChanged();
+			evr.setStatus(status);
+			obsvRadio.notifyChange(evr);
 		} else {
-			iPlayList.SetStatus(status);
+			EventPlayListStatusChanged evr = new EventPlayListStatusChanged();
+			evr.setStatus(status);
+			obsvPlayList.notifyChange(evr);
+			//iPlayList.SetStatus(status);
 		}
-		//fireEvent(ev);
-		setChanged();
-		notifyObservers(ev);
+		// fireEvent(ev);
+		obsvInfo.notifyChange(ev);
 	}
 
 	/***
@@ -783,33 +819,39 @@ public class PlayManager extends Observable implements IPlayerEventClassListener
 	 */
 	public synchronized void playingTrack(int iD) {
 		if (current_track instanceof CustomChannel) {
-			iRadio.playingTrack(iD);
+			EventRadioPlayingTrackID evrp = new EventRadioPlayingTrackID();
+			evrp.setId(iD);
+			obsvRadio.notifyChange(evrp);
+			//iRadio.playingTrack(iD);
 		} else {
-			iPlayList.PlayingTrack(iD);
+			EventPlayListPlayingTrackID evrp = new EventPlayListPlayingTrackID();
+			evrp.setId(iD);
+			obsvPlayList.notifyChange(evrp);
+			//iPlayList.PlayingTrack(iD);
 		}
 	}
 
-	/***
-	 * Set the Track MetaText
-	 * 
-	 * @param metadata
-	 */
-	public synchronized void setInfoMetaData(String metadata) {
-		if (current_track != null)
-			// current_track.setMetaText(metadata);
-			iInfo.setMetaText(metadata);
-	}
+//	/***
+//	 * Set the Track MetaText
+//	 * 
+//	 * @param metadata
+//	 */
+//	public synchronized void setInfoMetaData(String metadata) {
+//		if (current_track != null)
+//			// current_track.setMetaText(metadata);
+//			iInfo.setMetaText(metadata);
+//	}
 
-	/***
-	 * Set the Track Info
-	 * 
-	 * @param track
-	 */
-	public synchronized void setInfoTrack(CustomTrack track) {
-		if (track != null) {
-			iInfo.setTrack(track);
-		}
-	}
+//	/***
+//	 * Set the Track Info
+//	 * 
+//	 * @param track
+//	 */
+//	public synchronized void setInfoTrack(CustomTrack track) {
+//		if (track != null) {
+//			iInfo.setTrack(track);
+//		}
+//	}
 
 	/***
 	 * Increase the Volume
@@ -846,12 +888,21 @@ public class PlayManager extends Observable implements IPlayerEventClassListener
 		return volume;
 	}
 
+	private PrvProduct iProduct = null;
+
+	public void setProduct(PrvProduct iProduct) {
+		this.iProduct = iProduct;
+	}
+
+	public void updateStandby(boolean value) {
+		iProduct.updateStandby(value);
+	}
+
 	@Override
-	/**
-	 * Handle Events
-	 */
-	public void handleMyEventClassEvent(EventObject e) {
-		if (e instanceof EventFinishedCurrentTrack) {
+	public void update(Observable paramObservable, Object obj) {
+		EventBase e = (EventBase) obj;
+		switch (e.getType()) {
+		case EVENTFINISHEDCURRENTTRACK:
 			EventFinishedCurrentTrack evct = (EventFinishedCurrentTrack) e;
 			if (evct.isQuit()) {
 				log.debug("Track was Stopped, do not select Next Track");
@@ -862,70 +913,66 @@ public class PlayManager extends Observable implements IPlayerEventClassListener
 					playThis(t);
 				}
 			}
-		} else if (e instanceof EventTimeUpdate) {
-			EventTimeUpdate et = (EventTimeUpdate) e;
-			iTime.setSeconds(et.getTime());
-		} else if (e instanceof EventStatusChanged) {
+			break;
+		case EVENTTIMEUPDATED:
+			obsvTime.notifyChange(e);
+			//notifyChange(e);
+			break;
+		case EVENTSTATUSCHANGED:
 			EventStatusChanged es = (EventStatusChanged) e;
 			setStatus(es.getStatus());
-		} else if (e instanceof EventDurationUpdate) {
-			EventDurationUpdate ed = (EventDurationUpdate) e;
-			iTime.setDuration(ed.getDuration());
-			// current_duration = ed.getDuration();
-		} else if (e instanceof EventUpdateTrackInfo) {
-			TrackInfo i = (TrackInfo) e.getSource();
-			iInfo.setDetails(i.getDuration(), i.getBitrate(), 16, i.getSampleRate(), false, i.getCodec());
-		} else if (e instanceof EventUpdateTrackMetaData) {
-			EventUpdateTrackMetaData et = (EventUpdateTrackMetaData) e;
-			setChanged();
-			notifyObservers(et);
-			String metadata = current_track.updateTrack(et.getArtist(), et.getTitle());
-			if (metadata != null)
-				setInfoMetaData(metadata);
-		} else if (e instanceof EventLoaded) {
+			break;
+		case EVENTDURATIONUPDATE:
+			obsvTime.notifyChange(e);
+			break;
+		case EVENTUPDATETRACKINFO:
+			obsvInfo.notifyChange(e);
+			break;
+		case EVENTUPDATETRACKMETADATA:
+			EventUpdateTrackMetaData etm = (EventUpdateTrackMetaData) e;
+			String metadata = current_track.updateTrack(etm.getArtist(), etm.getTitle());
+			etm.setMetaData(metadata);
+			obsvInfo.notifyChange(etm);
+			//if (metadata != null)
+			//	setInfoMetaData(metadata);
+			break;
+		case EVENTLOADED:
 			log.debug("Track Loaded");
+			break;
 		}
 	}
+	
 
-//	private List<IPlayerEventClassListener> _listeners = new ArrayList<IPlayerEventClassListener>();
-//
-//	public synchronized void addEventListener(IPlayerEventClassListener listener) {
-//		_listeners.add(listener);
-//	}
-//
-//	public synchronized void removeEventListener(IPlayerEventClassListener listener) {
-//		_listeners.remove(listener);
-//	}
-//
-//	public synchronized void fireEvent(EventObject ev) {
-//		for (IPlayerEventClassListener l : _listeners) {
-//			l.handleMyEventClassEvent(ev);
-//		}
-//	}
-
-	/**
-	 * @return the iVolume
-	 */
-	public PrvVolume getiVolume() {
-		return iVolume;
+	public synchronized void observTimeEvents(Observer o)
+	{
+		obsvTime.addObserver(o);
+	}
+	
+	public synchronized void observInfoEvents(Observer o)
+	{
+		obsvInfo.addObserver(o);
+	}
+	
+	public synchronized void observVolumeEvents(Observer o)
+	{
+		obsvVolume.addObserver(o);
+	}
+	
+	public synchronized void observPlayListEvents(Observer o)
+	{
+		obsvPlayList.addObserver(o);
+	}
+	
+	public synchronized void observeProductEvents(Observer o)
+	{
+		obsvProduct.addObserver(o);
+	}
+	
+	public synchronized void observRadioEvents(Observer o)
+	{
+		obsvRadio.addObserver(o);
 	}
 
-	/**
-	 * @param iVolume
-	 *            the iVolume to set
-	 */
-	public void setiVolume(PrvVolume iVolume) {
-		this.iVolume = iVolume;
-	}
 
-	private PrvProduct iProduct = null;
-
-	public void setProduct(PrvProduct iProduct) {
-		this.iProduct = iProduct;
-	}
-
-	public void updateStandby(boolean value) {
-		iProduct.updateStandby(value);
-	}
 
 }

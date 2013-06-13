@@ -1,5 +1,7 @@
 package org.rpi.player;
 
+import java.util.Observer;
+
 import org.rpi.playlist.CustomTrack;
 
 public interface IPlayer {
@@ -20,8 +22,8 @@ public interface IPlayer {
 	
 	public void seekAbsolute(long seconds);
 	
-	public  void addEventListener(IPlayerEventClassListener listener);
-	public  void removeEventListener(IPlayerEventClassListener listener);
+	public void addObserver(Observer obj);
+
 	public void startTrack();
 	public boolean isPlaying();
 	

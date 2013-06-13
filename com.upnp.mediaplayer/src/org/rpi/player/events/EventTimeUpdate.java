@@ -1,12 +1,16 @@
 package org.rpi.player.events;
 
-import java.util.EventObject;
 
-public class EventTimeUpdate extends EventObject {
+public class EventTimeUpdate implements EventBase {
 
-	public EventTimeUpdate(Object source) {
-		super(source);
-
+//	public EventTimeUpdate(Object source) {
+//		super(source);
+//
+//	}
+	
+	public EnumPlayerEvents getType()
+	{
+		return EnumPlayerEvents.EVENTTIMEUPDATED;
 	}
 	
 	/**

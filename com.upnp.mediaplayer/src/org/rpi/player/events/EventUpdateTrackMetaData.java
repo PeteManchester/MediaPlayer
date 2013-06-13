@@ -1,15 +1,20 @@
 package org.rpi.player.events;
 
-import java.util.EventObject;
 
-public class EventUpdateTrackMetaData extends EventObject {
+public class EventUpdateTrackMetaData implements EventBase {
 	
 
 	private String title = null;
 	private String artist = null;
+	private String metaData = "";
 
-	public EventUpdateTrackMetaData(Object source) {
-		super(source);
+//	public EventUpdateTrackMetaData(Object source) {
+//		super(source);
+//	}
+	
+	public EnumPlayerEvents getType()
+	{
+		return EnumPlayerEvents.EVENTUPDATETRACKMETADATA;
 	}
 	
 	/**
@@ -37,6 +42,14 @@ public class EventUpdateTrackMetaData extends EventObject {
 	 */
 	public void setArtist(String artist) {
 		this.artist = artist;
+	}
+
+	public String getMetaData() {
+		return metaData;
+	}
+
+	public void setMetaData(String metaData) {
+		this.metaData = metaData;
 	}
 
 

@@ -1,15 +1,17 @@
 package org.rpi.player.events;
 
-import java.util.EventObject;
 
-public class EventDurationUpdate extends EventObject {
+public class EventDurationUpdate implements EventBase {
 
-	public EventDurationUpdate(Object source) {
-		super(source);
-		// TODO Auto-generated constructor stub
-	}
+//	public EventDurationUpdate(Object source) {
+//		super(source);
+//		// TODO Auto-generated constructor stub
+//	}
 	
-
+	public EnumPlayerEvents getType()
+	{
+		return EnumPlayerEvents.EVENTDURATIONUPDATE;
+	}
 	
 	/**
 	 * @return the time

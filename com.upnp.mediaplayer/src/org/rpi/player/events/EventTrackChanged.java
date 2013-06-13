@@ -4,10 +4,15 @@ import java.util.EventObject;
 
 import org.rpi.playlist.CustomTrack;
 
-public class EventTrackChanged extends EventObject {
+public class EventTrackChanged implements EventBase {
 	
-	public EventTrackChanged(Object source) {
-		super(source);
+//	public EventTrackChanged(Object source) {
+//		super(source);
+//	}
+	
+	public EnumPlayerEvents getType()
+	{
+		return EnumPlayerEvents.EVENTTRACKCHANGED;
 	}
 	
 	/**

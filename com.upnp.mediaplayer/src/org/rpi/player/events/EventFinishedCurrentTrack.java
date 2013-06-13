@@ -1,11 +1,15 @@
 package org.rpi.player.events;
 
-import java.util.EventObject;
 
-public class EventFinishedCurrentTrack extends EventObject {
+public class EventFinishedCurrentTrack implements EventBase {
 
-	public EventFinishedCurrentTrack(Object source) {
-		super(source);
+//	public EventFinishedCurrentTrack(Object source) {
+//		super(source);
+//	}
+	
+	public EnumPlayerEvents getType()
+	{
+		return EnumPlayerEvents.EVENTFINISHEDCURRENTTRACK;
 	}
 	
 	//Did we force the stop..
