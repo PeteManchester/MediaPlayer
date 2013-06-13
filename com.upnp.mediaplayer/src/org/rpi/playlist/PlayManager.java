@@ -21,11 +21,8 @@ import org.rpi.player.events.EventStatusChanged;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackMetaData;
 import org.rpi.player.events.EventVolumeChanged;
-import org.rpi.providers.PrvInfo;
-import org.rpi.providers.PrvPlayList;
 import org.rpi.providers.PrvProduct;
 import org.rpi.providers.PrvRadio;
-import org.rpi.providers.PrvVolume;
 import org.rpi.radio.CustomChannel;
 
 public class PlayManager implements Observer {
@@ -43,10 +40,10 @@ public class PlayManager implements Observer {
 	private boolean bPaused;
 	private PrvRadio iRadio;
 	private boolean standby = true;
-	//private PrvPlayList iPlayList;
-	//private PrvInfo iInfo;
-	//private PrvTime iTime;
-	//private PrvVolume iVolume;
+	// private PrvPlayList iPlayList;
+	// private PrvInfo iInfo;
+	// private PrvTime iTime;
+	// private PrvVolume iVolume;
 
 	// For nearly Gapless playback..
 	// private long current_duration = 0;
@@ -56,19 +53,19 @@ public class PlayManager implements Observer {
 
 	// For Volume
 	private long volume = 100;
+	private long mplayer_volume = 100;
 	private boolean bMute;
-	
-	//Observable Classes
+	private boolean bExternalVolume = false;
+
+	// Observable Classes
 	private ObservsableTime obsvTime = new ObservsableTime();
 	private ObservableInfo obsvInfo = new ObservableInfo();
 	private ObservableVolume obsvVolume = new ObservableVolume();
 	private ObservableRadio obsvRadio = new ObservableRadio();
-	private ObservablePlayList obsvPlayList = new ObservablePlayList(); 
+	private ObservablePlayList obsvPlayList = new ObservablePlayList();
 	private ObservableProduct obsvProduct = new ObservableProduct();
 
 	private static PlayManager instance = null;
-	
-	
 
 	/**
 	 * SingleInstance of the PlayManager
@@ -86,7 +83,7 @@ public class PlayManager implements Observer {
 	 * 
 	 */
 	private PlayManager() {
-		
+
 	}
 
 	/**
@@ -104,7 +101,10 @@ public class PlayManager implements Observer {
 			}
 			mPlayer = new MPlayer();
 			mPlayer.addObserver(this);
-			mPlayer.playTrack(t, volume, bMute);
+			long v = mplayer_volume;
+			if (!bExternalVolume)
+				v = volume;
+			mPlayer.playTrack(t, v, bMute);
 		}
 	}
 
@@ -249,8 +249,8 @@ public class PlayManager implements Observer {
 		}
 		return null;
 	}
-	
-	public  synchronized boolean isStandby() {
+
+	public synchronized boolean isStandby() {
 		return standby;
 	}
 
@@ -298,7 +298,7 @@ public class PlayManager implements Observer {
 
 	public void updateShuffle(boolean shuffle) {
 		setShuffle(shuffle);
-		//iPlayList.updateShuffle(shuffle);
+		// iPlayList.updateShuffle(shuffle);
 		EventPlayListUpdateShuffle ev = new EventPlayListUpdateShuffle();
 		ev.setShuffle(shuffle);
 		obsvPlayList.notifyChange(ev);
@@ -567,25 +567,28 @@ public class PlayManager implements Observer {
 	 */
 	public synchronized void setVolume(long volume) {
 		this.volume = volume;
+
 		EventVolumeChanged ev = new EventVolumeChanged();
+
 		ev.setVolume(volume);
 		obsvVolume.notifyChange(ev);
 		{
 			if (mPlayer != null) {
-				mPlayer.setVolume(volume);
+				if (!bExternalVolume)
+					mPlayer.setVolume(volume);
 			}
 		}
 	}
 
-//	/**
-//	 * Change and Update the Volume.
-//	 * 
-//	 * @param volume
-//	 */
-//	public synchronized void updateVolume(long volume) {
-//		setVolume(volume);
-//		iVolume.updateVolume(volume);
-//	}
+	// /**
+	// * Change and Update the Volume.
+	// *
+	// * @param volume
+	// */
+	// public synchronized void updateVolume(long volume) {
+	// setVolume(volume);
+	// iVolume.updateVolume(volume);
+	// }
 
 	/**
 	 * Set Mute
@@ -598,8 +601,10 @@ public class PlayManager implements Observer {
 		em.setMute(mute);
 		obsvProduct.notifyChange(em);
 		obsvVolume.notifyChange(em);
+
 		if (mPlayer != null) {
-			mPlayer.setMute(mute);
+			if (!bExternalVolume)
+				mPlayer.setMute(mute);
 		}
 		bMute = mute;
 	}
@@ -724,32 +729,32 @@ public class PlayManager implements Observer {
 			}
 	}
 
-//	/**
-//	 * Time provider
-//	 * 
-//	 * @param iTime
-//	 */
-//	public synchronized void setTime(PrvTime iTime) {
-//		this.iTime = iTime;
-//	}
+	// /**
+	// * Time provider
+	// *
+	// * @param iTime
+	// */
+	// public synchronized void setTime(PrvTime iTime) {
+	// this.iTime = iTime;
+	// }
 
-//	/**
-//	 * Info Provider
-//	 * 
-//	 * @param iInfo
-//	 */
-//	public synchronized void setInfo(PrvInfo iInfo) {
-//		this.iInfo = iInfo;
-//	}
+	// /**
+	// * Info Provider
+	// *
+	// * @param iInfo
+	// */
+	// public synchronized void setInfo(PrvInfo iInfo) {
+	// this.iInfo = iInfo;
+	// }
 
-//	/**
-//	 * Playlist Provider
-//	 * 
-//	 * @param iPlayList
-//	 */
-//	public synchronized void setPlayList(PrvPlayList iPlayList) {
-//		this.iPlayList = iPlayList;
-//	}
+	// /**
+	// * Playlist Provider
+	// *
+	// * @param iPlayList
+	// */
+	// public synchronized void setPlayList(PrvPlayList iPlayList) {
+	// this.iPlayList = iPlayList;
+	// }
 
 	/**
 	 * Radio Provider
@@ -792,13 +797,13 @@ public class PlayManager implements Observer {
 			if (t != null) {
 				current_track = t;
 			}
-			//setInfoTrack(current_track);
+			// setInfoTrack(current_track);
 			playingTrack(current_track.getId());
 			ev.setTrack(current_track);
 
 		}
 		if (current_track instanceof CustomChannel) {
-			//iRadio.setStatus(status);
+			// iRadio.setStatus(status);
 			EventRadioStatusChanged evr = new EventRadioStatusChanged();
 			evr.setStatus(status);
 			obsvRadio.notifyChange(evr);
@@ -806,7 +811,7 @@ public class PlayManager implements Observer {
 			EventPlayListStatusChanged evr = new EventPlayListStatusChanged();
 			evr.setStatus(status);
 			obsvPlayList.notifyChange(evr);
-			//iPlayList.SetStatus(status);
+			// iPlayList.SetStatus(status);
 		}
 		// fireEvent(ev);
 		obsvInfo.notifyChange(ev);
@@ -822,36 +827,36 @@ public class PlayManager implements Observer {
 			EventRadioPlayingTrackID evrp = new EventRadioPlayingTrackID();
 			evrp.setId(iD);
 			obsvRadio.notifyChange(evrp);
-			//iRadio.playingTrack(iD);
+			// iRadio.playingTrack(iD);
 		} else {
 			EventPlayListPlayingTrackID evrp = new EventPlayListPlayingTrackID();
 			evrp.setId(iD);
 			obsvPlayList.notifyChange(evrp);
-			//iPlayList.PlayingTrack(iD);
+			// iPlayList.PlayingTrack(iD);
 		}
 	}
 
-//	/***
-//	 * Set the Track MetaText
-//	 * 
-//	 * @param metadata
-//	 */
-//	public synchronized void setInfoMetaData(String metadata) {
-//		if (current_track != null)
-//			// current_track.setMetaText(metadata);
-//			iInfo.setMetaText(metadata);
-//	}
+	// /***
+	// * Set the Track MetaText
+	// *
+	// * @param metadata
+	// */
+	// public synchronized void setInfoMetaData(String metadata) {
+	// if (current_track != null)
+	// // current_track.setMetaText(metadata);
+	// iInfo.setMetaText(metadata);
+	// }
 
-//	/***
-//	 * Set the Track Info
-//	 * 
-//	 * @param track
-//	 */
-//	public synchronized void setInfoTrack(CustomTrack track) {
-//		if (track != null) {
-//			iInfo.setTrack(track);
-//		}
-//	}
+	// /***
+	// * Set the Track Info
+	// *
+	// * @param track
+	// */
+	// public synchronized void setInfoTrack(CustomTrack track) {
+	// if (track != null) {
+	// iInfo.setTrack(track);
+	// }
+	// }
 
 	/***
 	 * Increase the Volume
@@ -916,7 +921,6 @@ public class PlayManager implements Observer {
 			break;
 		case EVENTTIMEUPDATED:
 			obsvTime.notifyChange(e);
-			//notifyChange(e);
 			break;
 		case EVENTSTATUSCHANGED:
 			EventStatusChanged es = (EventStatusChanged) e;
@@ -933,46 +937,59 @@ public class PlayManager implements Observer {
 			String metadata = current_track.updateTrack(etm.getArtist(), etm.getTitle());
 			etm.setMetaData(metadata);
 			obsvInfo.notifyChange(etm);
-			//if (metadata != null)
-			//	setInfoMetaData(metadata);
 			break;
 		case EVENTLOADED:
 			log.debug("Track Loaded");
 			break;
 		}
 	}
-	
 
-	public synchronized void observTimeEvents(Observer o)
-	{
+	/**
+	 * Register for Time Events
+	 * @param o
+	 */
+	public synchronized void observTimeEvents(Observer o) {
 		obsvTime.addObserver(o);
 	}
-	
-	public synchronized void observInfoEvents(Observer o)
-	{
+
+	/**
+	 * Register for Info Events
+	 * @param o
+	 */
+	public synchronized void observInfoEvents(Observer o) {
 		obsvInfo.addObserver(o);
 	}
-	
-	public synchronized void observVolumeEvents(Observer o)
-	{
+
+	/**
+	 * Register for Volume Events
+	 * @param o
+	 */
+	public synchronized void observVolumeEvents(Observer o) {
 		obsvVolume.addObserver(o);
 	}
-	
-	public synchronized void observPlayListEvents(Observer o)
-	{
+
+	/**
+	 * Register for PlayList Events
+	 * @param o
+	 */
+	public synchronized void observPlayListEvents(Observer o) {
 		obsvPlayList.addObserver(o);
 	}
-	
-	public synchronized void observeProductEvents(Observer o)
-	{
+
+	/**
+	 * Register for Product Events
+	 * @param o
+	 */
+	public synchronized void observeProductEvents(Observer o) {
 		obsvProduct.addObserver(o);
 	}
-	
-	public synchronized void observRadioEvents(Observer o)
-	{
+
+	/**
+	 * Register for Radio Events 
+	 *  @param o
+	 */
+	public synchronized void observRadioEvents(Observer o) {
 		obsvRadio.addObserver(o);
 	}
-
-
 
 }

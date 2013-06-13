@@ -1,14 +1,11 @@
 package org.rpi.plugin.lcddisplay;
 
-import java.util.EventObject;
 import java.util.Observable;
 import java.util.Observer;
 
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 
 import org.apache.log4j.Logger;
-import org.rpi.player.IPlayerEventClassListener;
-import org.rpi.player.events.EnumPlayerEvents;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackMetaData;
@@ -25,7 +22,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 		log.debug("Init LCDDisplayImpl");
 		PlayManager.getInstance().observInfoEvents(this);
 		PlayManager.getInstance().observVolumeEvents(this);
-		PlayManager.getInstance().observTimeEvents(this);
+		//PlayManager.getInstance().observTimeEvents(this);
 		
 	}
 

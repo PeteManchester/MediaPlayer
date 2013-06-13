@@ -13,6 +13,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
@@ -37,6 +39,14 @@ public class AlarmClockImpl implements AlarmClockInterface {
 	private Scheduler scheduler;
 
 	public AlarmClockImpl() {
+		
+		try {
+			LogManager.getLogger(Class.forName("org.quartz.core.QuartzSchedulerThread")).setLevel(Level.INFO);
+			LogManager.getLogger(Class.forName("org.quartz.utils.UpdateChecker")).setLevel(Level.ERROR);
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		log.debug("AlarmClock");
 		this.iPlayer = PlayManager.getInstance();
 		try {

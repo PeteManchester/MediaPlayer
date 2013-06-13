@@ -47,7 +47,9 @@ public class PrvTime extends DvProviderAvOpenhomeOrgTime1 implements Observer {
 
 	public void setSeconds(long seconds) {
 		try {
+			propertiesLock();
 			setPropertySeconds(seconds);
+			propertiesUnlock();
 		} catch (Exception e) {
 			log.error("Error: setDetails", e);
 		}
