@@ -1,6 +1,8 @@
 package org.rpi.config;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Level;
 
@@ -12,7 +14,7 @@ public class Config {
 	public static String debug = "None";
 	public static String mplayer_path;
 	public static boolean save_local_playlist = false;
-	public static String version = "0.0.0.1";
+	public static String version = "0.0.0.2";
 	public static String logfile = "mediaplayer.log";
 	public static int port = -99;
 	public static int mplayer_cache = 500;
@@ -20,6 +22,8 @@ public class Config {
 	public static String loglevel;
 	public static String logconsole;
 	public static int playlist_max = 1000;
+	
+	private static Calendar cal = Calendar.getInstance();
 	
 	
 	public static String getProtocolInfo() {
@@ -136,5 +140,34 @@ public class Config {
 			
 		}
 		return -99;
+	}
+
+	public static int converStringToInt(String s, int iDefault) {
+		try
+		{
+			return Integer.parseInt(s);
+		}
+		catch(Exception e)
+		{
+			
+		}
+		return iDefault;
+	}
+	
+	public static void setStartTime()
+	{
+		try
+		{
+		Date date = new Date();
+		cal.setTime(date);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public static Date getStartTime() {
+		return cal.getTime();
 	}
 }

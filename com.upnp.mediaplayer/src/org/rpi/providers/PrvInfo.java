@@ -11,13 +11,15 @@ import org.rpi.mplayer.TrackInfo;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackInfo;
-import org.rpi.player.events.EventUpdateTrackMetaData;
+import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.playlist.CustomTrack;
 import org.rpi.playlist.PlayManager;
 
 public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer {
 
 	private Logger log = Logger.getLogger(PrvInfo.class);
+	
+	private int meta_text_id = -99;
 
 	public PrvInfo(DvDevice iDevice) {
 		super(iDevice);
@@ -71,16 +73,18 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer {
 			setPropertyTrackCount(trackCount);
 			setPropertyUri(track.getUri());
 			String metaData = track.getMetadata();
-			//log.info(metaData);
 			//<DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"><item id="d55942-co887" parentID="co887" restricted="0"><dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">Rendez-Vu</dc:title><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Basement Jaxx</dc:creator><dc:date xmlns:dc="http://purl.org/dc/elements/1.1/">1999-01-01</dc:date><upnp:artist role="AlbumArtist" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Basement Jaxx</upnp:artist><upnp:artist role="Composer" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Felix Buxton</upnp:artist><upnp:artist role="Composer" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Simon Ratcliffe</upnp:artist><upnp:artist role="Performer" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Basement Jaxx</upnp:artist><upnp:album xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Remedy</upnp:album><upnp:genre xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Electronica</upnp:genre><upnp:albumArtURI dlna:profileID="JPEG_TN" xmlns:dlna="urn:schemas-dlna-org:metadata-1-0/" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">http://192.168.1.205:26125/aa/29203/1957278084/cover.jpg?size=0</upnp:albumArtURI><upnp:originalTrackNumber xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">1</upnp:originalTrackNumber><res duration="0:05:44.000" size="5593088" bitrate="16213" bitsPerSample="16" sampleFrequency="44100" nrAudioChannels="2" protocolInfo="http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01">http://192.168.1.205:26125/content/c2/b16/f44100/d55942-co887.mp3</res><res duration="0:05:44.000" size="60850988" bitrate="176400" bitsPerSample="16" sampleFrequency="44100" nrAudioChannels="2" protocolInfo="http-get:*:audio/wav:DLNA.ORG_PN=WAV;DLNA.ORG_OP=01">http://192.168.1.205:26125/content/c2/b16/f44100/d55942-co887.forced.wav</res><res duration="0:05:44.000" size="60850944" bitrate="176400" bitsPerSample="16" sampleFrequency="44100" nrAudioChannels="2" protocolInfo="http-get:*:audio/L16:DLNA.ORG_PN=LPCM;DLNA.ORG_OP=01;DLNA.ORG_CI=1">http://192.168.1.205:26125/content/c2/b16/f44100/d55942-co887.forced.l16</res><res duration="0:05:44.000" size="5593088" bitrate="16213" bitsPerSample="16" sampleFrequency="44100" nrAudioChannels="2" protocolInfo="http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01">http://192.168.1.205:26125/content/c2/b16/f44100/d55942-co887.mp3</res><upnp:class xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">object.item.audioItem.musicTrack</upnp:class></item></DIDL-Lite>
 			//String metaData = "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id='d73430-co1811' parentID='co1811' restricted='0'><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'> dctitle</dc:title><dc:creator xmlns:dc='http://purl.org/dc/elements/1.1/'>dc creator</dc:creator><dc:date xmlns:dc='http://purl.org/dc/elements/1.1/'>1998-01-01</dc:date><upnp:artist role='AlbumArtist' xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>AlbumArtest</upnp:artist><upnp:artist role='Composer' xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>Ian Curtis</upnp:artist><upnp:artist role='Composer' xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>Peter Hook</upnp:artist><upnp:artist role='Composer' xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>Stephen Morris</upnp:artist><upnp:artist role='Composer' xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>Bernard Sumner</upnp:artist><upnp:artist role='Performer' xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>Performer</upnp:artist><upnp:album xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>Album</upnp:album><upnp:genre xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>Pop/Rock</upnp:genre><upnp:albumArtURI dlna:profileID='JPEG_TN' xmlns:dlna='urn:schemas-dlna-org:metadata-1-0/' xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>http://192.168.1.205:26125/aa/157341/656268630/cover.jpg?size=0</upnp:albumArtURI><upnp:originalTrackNumber xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>1</upnp:originalTrackNumber><upnp:originalDiscNumber xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>1</upnp:originalDiscNumber><upnp:originalDiscCount xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>4</upnp:originalDiscCount><res duration='0:02:52.000' size='30430100' bitrate='176400' bitsPerSample='16' sampleFrequency='44100' nrAudioChannels='2' protocolInfo='http-get:*:audio/wav:DLNA.ORG_PN=WAV;DLNA.ORG_OP=01'>http://192.168.1.205:26125/content/c2/b16/f44100/d73430-co1811.forced.wav</res><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem.musicTrack</upnp:class></item></DIDL-Lite>";
 			setPropertyMetadata(metaData);
-			//setPropertyMetatext(track.getMetaText());
-			setPropertyDetailsCount(0);
-			setPropertyMetatextCount(0);
-			propertiesUnlock();
+			setPropertyDetailsCount(0);			
 			if(!track.getMetaText().equalsIgnoreCase(""))
-				setMetaText(track.getMetaText());
+			{
+				long meta_text_count = getPropertyMetatextCount();
+				meta_text_count++;
+				setPropertyMetatextCount(meta_text_count);
+				setPropertyMetatext(track.getMetaText());
+			}
+			propertiesUnlock();
 		} catch (Exception e) {
 			log.error("Error: setTrack", e);
 		}
@@ -175,9 +179,9 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer {
 			setDetails(i.getDuration(), i.getBitrate(), 16, i.getSampleRate(), false, i.getCodec());
 			break;	
 
-		case EVENTUPDATETRACKMETADATA:
-			EventUpdateTrackMetaData etm = (EventUpdateTrackMetaData)e;
-			setMetaText(etm.getMetaData());
+		case EVENTUPDATETRACKMETATEXT:
+			EventUpdateTrackMetaText etm = (EventUpdateTrackMetaText)e;
+			setMetaText(etm.getMetaText());
 			break;
 		case EVENTTRACKCHANGED:
 			EventTrackChanged etc = (EventTrackChanged)e;

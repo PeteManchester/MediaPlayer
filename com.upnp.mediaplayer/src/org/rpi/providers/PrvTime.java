@@ -45,11 +45,13 @@ public class PrvTime extends DvProviderAvOpenhomeOrgTime1 implements Observer {
 		}
 	}
 
-	public void setSeconds(long seconds) {
+	public synchronized void setSeconds(long seconds) {
 		try {
-			propertiesLock();
-			setPropertySeconds(seconds);
-			propertiesUnlock();
+			//if ((seconds % 2) == 0) {
+				//propertiesLock();
+				setPropertySeconds(seconds);
+				//propertiesUnlock();
+			//}
 		} catch (Exception e) {
 			log.error("Error: setDetails", e);
 		}
@@ -66,9 +68,8 @@ public class PrvTime extends DvProviderAvOpenhomeOrgTime1 implements Observer {
 
 	@Override
 	public void update(Observable paramObservable, Object obj) {
-		EventBase eb = (EventBase)obj;
-		switch(eb.getType())
-		{
+		EventBase eb = (EventBase) obj;
+		switch (eb.getType()) {
 		case EVENTTIMEUPDATED:
 			EventTimeUpdate et = (EventTimeUpdate) eb;
 			setSeconds(et.getTime());
@@ -78,7 +79,7 @@ public class PrvTime extends DvProviderAvOpenhomeOrgTime1 implements Observer {
 			setDuration(ed.getDuration());
 			break;
 		}
-		
+
 	}
 
 }

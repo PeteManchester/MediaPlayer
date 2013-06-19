@@ -26,12 +26,12 @@ http://www.savagehomeautomation.com/projects/raspberry-pi-installing-oracle-java
 Download from - http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html
 copy to /home/pi directory
 sudo mkdir -p -v /opt/java
-tar xvzf ~/jdk-7u10-linux-arm-sfp.gz
-sudo mv -v ~/jdk1.7.0_10 /opt/java
-rm ~/jdk-7u10-linux-arm-sfp.gz
-sudo update-alternatives --install "/usr/bin/java" "java" "/opt/java/jdk1.7.0_10/bin/java" 1
-sudo update-alternatives --set java /opt/java/jdk1.7.0_10/bin/java
-JAVA_HOME="/opt/java/jdk1.7.0_10"
+tar xvzf ~/jdk-7u40-linux-arm-sfp.gz
+sudo mv -v ~/jdk1.7.0_40 /opt/java
+rm ~/jdk-7u40-linux-arm-sfp.gz
+sudo update-alternatives --install "/usr/bin/java" "java" "/opt/java/jdk1.7.0_40/bin/java" 1
+sudo update-alternatives --set java /opt/java/jdk1.7.0_40/bin/java
+JAVA_HOME="/opt/java/jdk1.7.0_40"
 
 Sound out of Audio Jack
 sudo amixer cset numid=3 1
@@ -103,7 +103,10 @@ make
 
 #Making Java Files
 JRE configured as JAVA_HOME so change to
-JAVA_HOME="/usr/lib/jvm/java-7-oracle"
+export JAVA_HOME="/usr/lib/jvm/java-7-oracle"
+Edit Makefile 
+from libjvm_dir ?= $(JAVA_HOME)/jre/lib/i386/server
+to   libjvm_dir ?= $(JAVA_HOME)/jre/lib/arm/server
 
 make ohNetJavaAll
 
@@ -117,6 +120,10 @@ http://elinux.org/RPi_Advanced_Setup
 sudo apt-get install avahi-daemon
 sudo insserv avahi-daemon
 sudo /etc/init.d/avahi-daemon restart
+
+#WIFI Configuration
+Using the GUI in Wheezy means that when MediaPlayer starts the network interface is not yet configured, use this simple method..
+http://learn.adafruit.com/pi-wifi-radio/raspberry-pi-setup-1-of-3
 
 
 

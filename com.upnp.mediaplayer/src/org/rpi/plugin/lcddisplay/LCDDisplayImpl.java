@@ -8,7 +8,7 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 import org.apache.log4j.Logger;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventTrackChanged;
-import org.rpi.player.events.EventUpdateTrackMetaData;
+import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.player.events.EventVolumeChanged;
 import org.rpi.playlist.CustomTrack;
 import org.rpi.playlist.PlayManager;
@@ -58,8 +58,8 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 				log.debug("Track was NULL");
 			}
 			break;
-		case EVENTUPDATETRACKMETADATA:
-			EventUpdateTrackMetaData et = (EventUpdateTrackMetaData) e;
+		case EVENTUPDATETRACKMETATEXT:
+			EventUpdateTrackMetaText et = (EventUpdateTrackMetaText) e;
 			log.debug("Track Changed: " + et.getArtist() + " : " + et.getTitle());
 			break;
 		case EVENTVOLUMECHNANGED:

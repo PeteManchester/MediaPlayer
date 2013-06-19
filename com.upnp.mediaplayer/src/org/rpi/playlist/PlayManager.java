@@ -15,14 +15,14 @@ import org.rpi.player.events.EventMuteChanged;
 import org.rpi.player.events.EventPlayListPlayingTrackID;
 import org.rpi.player.events.EventPlayListStatusChanged;
 import org.rpi.player.events.EventPlayListUpdateShuffle;
+import org.rpi.player.events.EventRadioPlayName;
 import org.rpi.player.events.EventRadioPlayingTrackID;
 import org.rpi.player.events.EventRadioStatusChanged;
 import org.rpi.player.events.EventStatusChanged;
 import org.rpi.player.events.EventTrackChanged;
-import org.rpi.player.events.EventUpdateTrackMetaData;
+import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.player.events.EventVolumeChanged;
 import org.rpi.providers.PrvProduct;
-import org.rpi.providers.PrvRadio;
 import org.rpi.radio.CustomChannel;
 
 public class PlayManager implements Observer {
@@ -38,7 +38,7 @@ public class PlayManager implements Observer {
 	private boolean repeatPlayList = false;
 	private boolean shuffle = false;
 	private boolean bPaused;
-	private PrvRadio iRadio;
+	//private PrvRadio iRadio;
 	private boolean standby = true;
 	// private PrvPlayList iPlayList;
 	// private PrvInfo iInfo;
@@ -102,7 +102,7 @@ public class PlayManager implements Observer {
 			mPlayer = new MPlayer();
 			mPlayer.addObserver(this);
 			long v = mplayer_volume;
-			if (!bExternalVolume)
+			if (!isUseExternalVolume())
 				v = volume;
 			mPlayer.playTrack(t, v, bMute);
 		}
@@ -521,9 +521,12 @@ public class PlayManager implements Observer {
 	 * @param name
 	 */
 	public synchronized void playRadio(String name) {
-		CustomChannel channel = iRadio.getChannel(name);
-		if (channel != null)
-			playFile(channel);
+		//CustomChannel channel = iRadio.getChannel(name);
+		//if (channel != null)
+		//	playFile(channel);
+		EventRadioPlayName ev = new EventRadioPlayName();
+		ev.setName(name);
+		obsvRadio.notifyChange(ev);
 	}
 
 	/***
@@ -574,7 +577,7 @@ public class PlayManager implements Observer {
 		obsvVolume.notifyChange(ev);
 		{
 			if (mPlayer != null) {
-				if (!bExternalVolume)
+				if (!isUseExternalVolume())
 					mPlayer.setVolume(volume);
 			}
 		}
@@ -603,7 +606,7 @@ public class PlayManager implements Observer {
 		obsvVolume.notifyChange(em);
 
 		if (mPlayer != null) {
-			if (!bExternalVolume)
+			if (!isUseExternalVolume())
 				mPlayer.setMute(mute);
 		}
 		bMute = mute;
@@ -756,14 +759,14 @@ public class PlayManager implements Observer {
 	// this.iPlayList = iPlayList;
 	// }
 
-	/**
-	 * Radio Provider
-	 * 
-	 * @param iRadio
-	 */
-	public synchronized void setRadio(PrvRadio iRadio) {
-		this.iRadio = iRadio;
-	}
+//	/**
+//	 * Radio Provider
+//	 * 
+//	 * @param iRadio
+//	 */
+//	public synchronized void setRadio(PrvRadio iRadio) {
+//		this.iRadio = iRadio;
+//	}
 
 	/***
 	 * Destroy
@@ -893,15 +896,6 @@ public class PlayManager implements Observer {
 		return volume;
 	}
 
-	private PrvProduct iProduct = null;
-
-	public void setProduct(PrvProduct iProduct) {
-		this.iProduct = iProduct;
-	}
-
-	public void updateStandby(boolean value) {
-		iProduct.updateStandby(value);
-	}
 
 	@Override
 	public void update(Observable paramObservable, Object obj) {
@@ -932,10 +926,11 @@ public class PlayManager implements Observer {
 		case EVENTUPDATETRACKINFO:
 			obsvInfo.notifyChange(e);
 			break;
-		case EVENTUPDATETRACKMETADATA:
-			EventUpdateTrackMetaData etm = (EventUpdateTrackMetaData) e;
-			String metadata = current_track.updateTrack(etm.getArtist(), etm.getTitle());
-			etm.setMetaData(metadata);
+		case EVENTUPDATETRACKMETATEXT:
+			EventUpdateTrackMetaText etm = (EventUpdateTrackMetaText) e;
+			String metatext = current_track.updateTrack(etm.getArtist(), etm.getTitle());
+			//current_track.setMetaText(metatext);
+			etm.setMetaText(metatext);
 			obsvInfo.notifyChange(etm);
 			break;
 		case EVENTLOADED:
@@ -990,6 +985,14 @@ public class PlayManager implements Observer {
 	 */
 	public synchronized void observRadioEvents(Observer o) {
 		obsvRadio.addObserver(o);
+	}
+
+	public synchronized  boolean isUseExternalVolume() {
+		return bExternalVolume;
+	}
+
+	public synchronized void setUseExternalVolume(boolean bExternalVolume) {
+		this.bExternalVolume = bExternalVolume;
 	}
 
 }

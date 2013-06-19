@@ -18,7 +18,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 import org.rpi.config.Config;
-
+import org.rpi.log.CustomPatternLayout;
+import org.rpi.log.CustomRollingFileAppender;
 
 public class StartMe {
 
@@ -29,7 +30,7 @@ public class StartMe {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// loadClassPath();
+		Config.setStartTime();
 		boolean bInput = false;
 		for (String s : args) {
 			if (s.equalsIgnoreCase("-input")) {
@@ -46,8 +47,7 @@ public class StartMe {
 		sd.attachShutDownHook();
 		if (bInput) {
 
-			BufferedReader in = new BufferedReader(new InputStreamReader(
-					System.in));
+			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 			String line = "";
 
 			try {
@@ -72,28 +72,6 @@ public class StartMe {
 		System.exit(0);
 	}
 
-	
-//	private static void loadClassPath() {
-//		String path = "/home/pi/mediaplayer/mediaplayer_lib";
-//		String files;
-//		File folder = new File(path);
-//		File[] listOfFiles = folder.listFiles();
-//		System.out.println("Number of Files: " + listOfFiles.length);
-//		for (int i = 0; i < listOfFiles.length; i++) {
-//
-//			if (listOfFiles[i].isFile()) {
-//				files = listOfFiles[i].getName();
-//				if (files.toUpperCase().endsWith(".JAR")) {
-//					try {
-//						System.out.println("File: " + files);
-//						ClassPathHack.addFile(path + "\\" + files);
-//					} catch (Exception e) {
-//						e.printStackTrace();
-//					}
-//				}
-//			}
-//		}
-//	}
 
 	/***
 	 * Load the Plugins
@@ -116,6 +94,7 @@ public class StartMe {
 
 	/***
 	 * List all the files in this directory and sub directories.
+	 * 
 	 * @param directoryName
 	 * @return
 	 */
@@ -176,14 +155,10 @@ public class StartMe {
 			Config.logconsole = pr.getProperty("log.console.level");
 			Config.mplayer_path = pr.getProperty("mplayer.path");
 			Config.setSaveLocalPlayList(pr.getProperty("save.local.playlist"));
-			Config.port = Config.converStringToInt(pr
-					.getProperty("openhome.port"));
-			Config.mplayer_cache = Config.converStringToInt(pr
-					.getProperty("mplayer.cache"));
-			Config.mplayer_cache_min = Config.converStringToInt(pr
-					.getProperty("mplayer.cache_min"));
-			Config.playlist_max = Config.converStringToInt(pr
-					.getProperty("playlist.max"));
+			Config.port = Config.converStringToInt(pr.getProperty("openhome.port"));
+			Config.mplayer_cache = Config.converStringToInt(pr.getProperty("mplayer.cache"));
+			Config.mplayer_cache_min = Config.converStringToInt(pr.getProperty("mplayer.cache_min"));
+			Config.playlist_max = Config.converStringToInt(pr.getProperty("playlist.max"),1000);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -193,15 +168,19 @@ public class StartMe {
 	 * Set up our logging
 	 */
 	private static void ConfigureLogging() {
+
+		try
+		{
+		CustomPatternLayout pl = new CustomPatternLayout();
+		pl.setConversionPattern("%d [%t] %-5p [%-10c] %m%n");
+		pl.activateOptions();
+		//CustomRollingFileAppender fileAppender = new CustomRollingFileAppender(pl,Config.logfile,".log",true);
 		RollingFileAppender fileAppender = new RollingFileAppender();
 		fileAppender.setAppend(true);
 		fileAppender.setMaxFileSize("5mb");
 		fileAppender.setMaxBackupIndex(5);
 		fileAppender.setFile(Config.logfile);
 		fileAppender.setThreshold(Config.getLogFileLevel());
-		PatternLayout pl = new PatternLayout();
-		pl.setConversionPattern("%d [%t] %-5p [%-10c] %m%n");
-		pl.activateOptions();
 		fileAppender.setLayout(pl);
 		fileAppender.activateOptions();
 		Logger.getRootLogger().addAppender(fileAppender);
@@ -210,6 +189,11 @@ public class StartMe {
 		consoleAppender.activateOptions();
 		consoleAppender.setThreshold(Config.getLogConsoleLevel());
 		Logger.getRootLogger().addAppender(consoleAppender);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 }

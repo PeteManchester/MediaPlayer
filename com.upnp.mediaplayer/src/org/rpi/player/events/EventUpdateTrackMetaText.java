@@ -1,12 +1,13 @@
 package org.rpi.player.events;
 
 
-public class EventUpdateTrackMetaData implements EventBase {
+public class EventUpdateTrackMetaText implements EventBase {
 	
 
 	private String title = null;
 	private String artist = null;
 	private String metaData = "";
+	private int id;
 
 //	public EventUpdateTrackMetaData(Object source) {
 //		super(source);
@@ -14,7 +15,7 @@ public class EventUpdateTrackMetaData implements EventBase {
 	
 	public EnumPlayerEvents getType()
 	{
-		return EnumPlayerEvents.EVENTUPDATETRACKMETADATA;
+		return EnumPlayerEvents.EVENTUPDATETRACKMETATEXT;
 	}
 	
 	/**
@@ -44,12 +45,21 @@ public class EventUpdateTrackMetaData implements EventBase {
 		this.artist = artist;
 	}
 
-	public String getMetaData() {
+	public String getMetaText() {
 		return metaData;
 	}
 
-	public void setMetaData(String metaData) {
+	public void setMetaText(String metaData) {
 		this.metaData = metaData;
+	}
+
+	public void setCurrentTrackId(int id) {
+		this.id = id;	
+	}
+	
+	public int getCurrentTrackId()
+	{
+		return id;
 	}
 
 

@@ -1,11 +1,8 @@
 package org.rpi.main;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.URL;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -64,6 +61,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		if (Config.port > 0) {
 			initParams.setDvServerPort(Config.port);
 		}
+		//initParams.setDvEnableBonjour();
 		initParams.setFatalErrorHandler(this);
 		lib = Library.create(initParams);
 		lib.setDebugLevel(getDebugLevel(Config.debug));
@@ -99,13 +97,6 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		} catch (Exception e) {
 			log.error("Error Reading Radio Channels");
 		}
-
-		//iPlayer.setTime(iTime);
-		//iPlayer.setInfo(iInfo);
-		//iPlayer.setPlayList(iPlayList);
-		iPlayer.setRadio(iRadio);
-		//iPlayer.setiVolume(iVolume);
-		iPlayer.setProduct(iProduct);
 
 		iDevice.setEnabled();
 		log.debug("Device Enabled UDN: " + iDevice.getUdn());
@@ -145,8 +136,6 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			return DebugLevel.DvEvent.intValue();
 		} else if (sLevel.equalsIgnoreCase("DvWebSocket")) {
 			return DebugLevel.DvWebSocket.intValue();
-		} else if (sLevel.equalsIgnoreCase("Media")) {
-			return DebugLevel.Media.intValue();
 		} else if (sLevel.equalsIgnoreCase("Bonjour")) {
 			return DebugLevel.Bonjour.intValue();
 		} else if (sLevel.equalsIgnoreCase("DvDevice")) {

@@ -13,7 +13,7 @@ import org.rpi.player.IPlayer;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventFinishedCurrentTrack;
 import org.rpi.player.events.EventStatusChanged;
-import org.rpi.player.events.EventUpdateTrackMetaData;
+import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.playlist.CustomTrack;
 
 public class MPlayer extends Observable   implements IPlayer  {
@@ -36,7 +36,9 @@ public class MPlayer extends Observable   implements IPlayer  {
 	private String uniqueId = "";
 
 	private CustomTrack current_track = null;
-	private boolean bMute;
+	private boolean bMute;//Used to mute when playing a track
+	
+	private boolean mute = false; //Used to keep track of mute status
 
 	/***
 	 * Plays the Custom Track
@@ -275,6 +277,7 @@ public class MPlayer extends Observable   implements IPlayer  {
 
 	@Override
 	public void setMute(boolean mute) {
+		this.mute = mute;
 		if (mute) {
 			sendCommand("pausing_keep mute");
 			// Bug Fix for MPlayer on Raspberry
@@ -290,9 +293,10 @@ public class MPlayer extends Observable   implements IPlayer  {
 	@Override
 	public void setVolume(long volume) {
 		this.volume = volume;
-		sendCommand("pausing_keep volume " + volume + " 1");
+		if(!mute)
+			sendCommand("pausing_keep volume " + volume + " 1");
 	}
-
+	
 	@Override
 	public void seekAbsolute(long seconds) {
 		sendCommand("seek " + seconds + " 2");
@@ -305,9 +309,10 @@ public class MPlayer extends Observable   implements IPlayer  {
 	 * @param title
 	 */
 	public synchronized void updateInfo(String artist, String title) {
-		EventUpdateTrackMetaData ev = new EventUpdateTrackMetaData();
+		EventUpdateTrackMetaText ev = new EventUpdateTrackMetaText();
 		ev.setArtist(artist);
 		ev.setTitle(title);
+		//ev.setCurrentTrackId(current_track.getId());
 		fireEvent(ev);
 	}
 

@@ -53,12 +53,12 @@ public class AlarmClockJob implements Job {
 		if (type.equalsIgnoreCase("Radio")) {
 			log.info("ALARM# Playing Radio " + job_name);
 			String channel = map.getString("channel");
-			PlayManager.getInstance().updateStandby(false);
+			PlayManager.getInstance().setStandby(false);
 			PlayManager.getInstance().playRadio(channel);
 		} else if (type.equalsIgnoreCase("OFF")) {
 			log.info("ALARM# TURN OFF " + job_name);
 			PlayManager.getInstance().stop();
-			PlayManager.getInstance().updateStandby(true);
+			PlayManager.getInstance().setStandby(true);
 		} else {
 			log.info("ALARM# StartPlayList " + job_name);
 			if (shuffle.equalsIgnoreCase("TRUE")) {
@@ -66,7 +66,7 @@ public class AlarmClockJob implements Job {
 			} else {
 				PlayManager.getInstance().updateShuffle(false);
 			}
-			PlayManager.getInstance().updateStandby(false);
+			PlayManager.getInstance().setStandby(false);
 			PlayManager.getInstance().play();
 		}
 	}
