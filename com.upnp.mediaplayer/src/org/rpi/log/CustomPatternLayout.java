@@ -116,7 +116,7 @@ public class CustomPatternLayout extends Layout {
 		sb.append(nl);
 		sb.append("Version :\t\t\t" + Config.version);
 		sb.append(nl);
-		sb.append("Host name  : \t\t" + getHostName().trim());
+		sb.append("Host name  : \t\t\t" + getHostName().trim());
 		sb.append(nl);		
 		sb.append("StartTime :\t\t\t" + Config.getStartTime());
 		sb.append(nl);
