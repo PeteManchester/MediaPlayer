@@ -3,7 +3,7 @@
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
     <target name="create_run_jar">
-        <jar destfile="C:/Keep/Code/UPNP/mediaplayer/Beta/plugins/AlarmClock.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="C:/Keep/Code/UPNP/mediaplayer/Beta/plugins/AlarmClock/AlarmClock.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Class-Path" value="."/>
             </manifest>
@@ -15,5 +15,6 @@
             <zipfileset excludes="META-INF/*.SF" src="C:/Keep/Repository/java/quartz/quartz/2.1.1/lib/slf4j-log4j12-1.6.1.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="C:/Keep/Repository/java/pi4j/pi4j-1.0-SNAPSHOT/lib/pi4j-core.jar"/>
         </jar>
+        <copy file="C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\src\org\rpi\plugin\alarmclock\AlarmClock.xml" todir="C:\Keep\Code\UPNP\mediaplayer\Beta\plugins\AlarmClock"/>
     </target>
 </project>

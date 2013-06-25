@@ -17,9 +17,12 @@
         <copy file="C:/temp/TOH/Java/libs/ohnet-Pete.jar" todir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib"/>
         <copy file="C:/Keep/Repository/java/log4j/log4j/1.2.16/apache-log4j-1.2.16/log4j-1.2.16.jar" todir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib"/>
         <copy file="C:/Keep/Repository/java/jspf/dist/jspf.core-1.0.2.jar" todir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib"/>
+    	<!--
         <copy file="C:/Keep/Repository/java/quartz/quartz/2.1.1/quartz-2.1.1.jar" todir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib"/>
         <copy file="C:/Keep/Repository/java/quartz/quartz/2.1.1/lib/slf4j-api-1.6.1.jar" todir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib"/>
         <copy file="C:/Keep/Repository/java/quartz/quartz/2.1.1/lib/slf4j-log4j12-1.6.1.jar" todir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib"/>
         <copy file="C:/Keep/Repository/java/pi4j/pi4j-1.0-SNAPSHOT/lib/pi4j-core.jar" todir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib"/>
+    	-->
+    	<copy file="C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\license.txt" todir="C:/Keep/Code/UPNP/mediaplayer/Beta"/>
     </target>
 </project>
