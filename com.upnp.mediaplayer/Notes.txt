@@ -103,7 +103,8 @@ make
 
 #Making Java Files
 JRE configured as JAVA_HOME so change to
-export JAVA_HOME="/usr/lib/jvm/java-7-oracle"
+export JAVA_HOME="/opt/java/jdk1.7.0_21" -SOFT FLOAT
+export JAVA_HOME="/opt/java/jdk1.7.0_40" -HARD FLOAT
 Edit Makefile 
 from libjvm_dir ?= $(JAVA_HOME)/jre/lib/i386/server
 to   libjvm_dir ?= $(JAVA_HOME)/jre/lib/arm/server
