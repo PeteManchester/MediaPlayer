@@ -19,10 +19,10 @@ import org.rpi.player.events.EventRadioPlayName;
 import org.rpi.player.events.EventRadioPlayingTrackID;
 import org.rpi.player.events.EventRadioStatusChanged;
 import org.rpi.player.events.EventStatusChanged;
+import org.rpi.player.events.EventTimeUpdate;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.player.events.EventVolumeChanged;
-import org.rpi.providers.PrvProduct;
 import org.rpi.radio.CustomChannel;
 
 public class PlayManager implements Observer {
@@ -38,18 +38,7 @@ public class PlayManager implements Observer {
 	private boolean repeatPlayList = false;
 	private boolean shuffle = false;
 	private boolean bPaused;
-	//private PrvRadio iRadio;
 	private boolean standby = true;
-	// private PrvPlayList iPlayList;
-	// private PrvInfo iInfo;
-	// private PrvTime iTime;
-	// private PrvVolume iVolume;
-
-	// For nearly Gapless playback..
-	// private long current_duration = 0;
-	// private boolean bPreLoading = false;
-	// private IPlayer tempPlayer = null;
-	// private CustomTrack tempTrack = null;
 
 	// For Volume
 	private long volume = 100;
@@ -521,9 +510,6 @@ public class PlayManager implements Observer {
 	 * @param name
 	 */
 	public synchronized void playRadio(String name) {
-		//CustomChannel channel = iRadio.getChannel(name);
-		//if (channel != null)
-		//	playFile(channel);
 		EventRadioPlayName ev = new EventRadioPlayName();
 		ev.setName(name);
 		obsvRadio.notifyChange(ev);
@@ -543,6 +529,15 @@ public class PlayManager implements Observer {
 	 * Play the Previous Track
 	 */
 	public synchronized void previousTrack() {
+		if(current_track !=null)
+		{
+			if(current_track.getTime()>0 && current_track.getTime() >=3)
+			{
+				playThis(current_track);
+				return;
+			}
+			
+		}
 		CustomTrack t = getNextTrack(-1);
 		if (t != null) {
 			playThis(t);
@@ -583,15 +578,6 @@ public class PlayManager implements Observer {
 		}
 	}
 
-	// /**
-	// * Change and Update the Volume.
-	// *
-	// * @param volume
-	// */
-	// public synchronized void updateVolume(long volume) {
-	// setVolume(volume);
-	// iVolume.updateVolume(volume);
-	// }
 
 	/**
 	 * Set Mute
@@ -732,41 +718,6 @@ public class PlayManager implements Observer {
 			}
 	}
 
-	// /**
-	// * Time provider
-	// *
-	// * @param iTime
-	// */
-	// public synchronized void setTime(PrvTime iTime) {
-	// this.iTime = iTime;
-	// }
-
-	// /**
-	// * Info Provider
-	// *
-	// * @param iInfo
-	// */
-	// public synchronized void setInfo(PrvInfo iInfo) {
-	// this.iInfo = iInfo;
-	// }
-
-	// /**
-	// * Playlist Provider
-	// *
-	// * @param iPlayList
-	// */
-	// public synchronized void setPlayList(PrvPlayList iPlayList) {
-	// this.iPlayList = iPlayList;
-	// }
-
-//	/**
-//	 * Radio Provider
-//	 * 
-//	 * @param iRadio
-//	 */
-//	public synchronized void setRadio(PrvRadio iRadio) {
-//		this.iRadio = iRadio;
-//	}
 
 	/***
 	 * Destroy
@@ -800,13 +751,11 @@ public class PlayManager implements Observer {
 			if (t != null) {
 				current_track = t;
 			}
-			// setInfoTrack(current_track);
 			playingTrack(current_track.getId());
 			ev.setTrack(current_track);
 
 		}
 		if (current_track instanceof CustomChannel) {
-			// iRadio.setStatus(status);
 			EventRadioStatusChanged evr = new EventRadioStatusChanged();
 			evr.setStatus(status);
 			obsvRadio.notifyChange(evr);
@@ -814,9 +763,7 @@ public class PlayManager implements Observer {
 			EventPlayListStatusChanged evr = new EventPlayListStatusChanged();
 			evr.setStatus(status);
 			obsvPlayList.notifyChange(evr);
-			// iPlayList.SetStatus(status);
 		}
-		// fireEvent(ev);
 		obsvInfo.notifyChange(ev);
 	}
 
@@ -830,36 +777,13 @@ public class PlayManager implements Observer {
 			EventRadioPlayingTrackID evrp = new EventRadioPlayingTrackID();
 			evrp.setId(iD);
 			obsvRadio.notifyChange(evrp);
-			// iRadio.playingTrack(iD);
 		} else {
 			EventPlayListPlayingTrackID evrp = new EventPlayListPlayingTrackID();
 			evrp.setId(iD);
 			obsvPlayList.notifyChange(evrp);
-			// iPlayList.PlayingTrack(iD);
 		}
 	}
 
-	// /***
-	// * Set the Track MetaText
-	// *
-	// * @param metadata
-	// */
-	// public synchronized void setInfoMetaData(String metadata) {
-	// if (current_track != null)
-	// // current_track.setMetaText(metadata);
-	// iInfo.setMetaText(metadata);
-	// }
-
-	// /***
-	// * Set the Track Info
-	// *
-	// * @param track
-	// */
-	// public synchronized void setInfoTrack(CustomTrack track) {
-	// if (track != null) {
-	// iInfo.setTrack(track);
-	// }
-	// }
 
 	/***
 	 * Increase the Volume
@@ -915,6 +839,11 @@ public class PlayManager implements Observer {
 			break;
 		case EVENTTIMEUPDATED:
 			obsvTime.notifyChange(e);
+			if(current_track !=null)
+			{
+				EventTimeUpdate ed = (EventTimeUpdate)e;
+				current_track.setTime(ed.getTime());
+			}
 			break;
 		case EVENTSTATUSCHANGED:
 			EventStatusChanged es = (EventStatusChanged) e;
@@ -993,6 +922,10 @@ public class PlayManager implements Observer {
 
 	public synchronized void setUseExternalVolume(boolean bExternalVolume) {
 		this.bExternalVolume = bExternalVolume;
+	}
+
+	public synchronized void toggleMute() {
+		setMute(!bMute);	
 	}
 
 }

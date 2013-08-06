@@ -32,7 +32,7 @@ public class CustomButtonImpl implements CustomButtonInterface {
 		try {
 			
 			gpio = GpioFactory.getInstance();
-			myButton = gpio.provisionDigitalInputPin(RaspiPin.GPIO_00, PinPullResistance.PULL_DOWN);
+			myButton = gpio.provisionDigitalInputPin(RaspiPin.GPIO_02, PinPullResistance.PULL_DOWN);
 			addButtons();
 		} catch (Exception e) {
 			log.error("Error Initializing Pi4J" + e.getMessage());

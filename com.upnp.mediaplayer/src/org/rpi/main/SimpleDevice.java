@@ -1,11 +1,17 @@
 package org.rpi.main;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import net.xeoh.plugins.base.PluginManager;
+import net.xeoh.plugins.base.impl.PluginManagerFactory;
 
 import org.apache.log4j.Logger;
 import org.openhome.net.core.DebugLevel;
@@ -45,11 +51,14 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	private PrvInfo iInfo = null;
 	private PrvTime iTime = null;
 	private PrvRadio iRadio;
+	private PrvRadio iInput;
 	private PrvReceiver iReceiver = null;
 	private PrvAVTransport iAVTransport = null;
 	private PrvRenderingControl iRenderingControl = null;
 
 	private PlayManager iPlayer = PlayManager.getInstance();
+
+	private PluginManager pm = null;
 
 	/***
 	 * Constructor for our Simple Device
@@ -61,7 +70,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		if (Config.port > 0) {
 			initParams.setDvServerPort(Config.port);
 		}
-		//initParams.setDvEnableBonjour();
+		// initParams.setDvEnableBonjour();
 		initParams.setFatalErrorHandler(this);
 		lib = Library.create(initParams);
 		lib.setDebugLevel(getDebugLevel(Config.debug));
@@ -77,8 +86,8 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		iDevice.setAttribute("Upnp.Manufacturer", "Pete");
 		iDevice.setAttribute("Upnp.ModelName", "Open Home Java Render v" + Config.version);
 		iDevice.setAttribute("Upnp.ModelDescription", "Simple Java Renderer based on OpenHome API and MPlayer");
-		//iDevice.setAttribute("Upnp.ModelUri", "www.google.co.uk");
-		//iDevice.setAttribute("Upnp.ModelImageUri","http://upload.wikimedia.org/wikipedia/en/thumb/0/04/Joy_Division.JPG/220px-Joy_Division.JPG");
+		// iDevice.setAttribute("Upnp.ModelUri", "www.google.co.uk");
+		// iDevice.setAttribute("Upnp.ModelImageUri","http://upload.wikimedia.org/wikipedia/en/thumb/0/04/Joy_Division.JPG/220px-Joy_Division.JPG");
 
 		iConnectionManager = new PrvConnectionManager(iDevice);
 		iProduct = new PrvProduct(iDevice);
@@ -87,9 +96,10 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		iInfo = new PrvInfo(iDevice);
 		iTime = new PrvTime(iDevice);
 		iRadio = new PrvRadio(iDevice);
+		//iInput = new PrvRadio(iDevice);
 		iReceiver = new PrvReceiver(iDevice);
-		//iAVTransport = new PrvAVTransport(iDevice);
-		//iRenderingControl = new PrvRenderingControl(iDevice);
+		// iAVTransport = new PrvAVTransport(iDevice);
+		// iRenderingControl = new PrvRenderingControl(iDevice);
 
 		try {
 			ChannelReader cr = new ChannelReader();
@@ -100,6 +110,46 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 		iDevice.setEnabled();
 		log.debug("Device Enabled UDN: " + iDevice.getUdn());
+		loadPlugins();
+	}
+
+	/***
+	 * Load the Plugins
+	 */
+	private void loadPlugins() {
+		log.info("Start of LoadPlugnis");
+		pm = PluginManagerFactory.createPluginManager();
+		List<File> files = listFiles("plugins");
+		for (File file : files) {
+			try {
+				if (file.getName().toUpperCase().endsWith(".JAR")) {
+					pm.addPluginsFrom(file.toURI());
+				}
+			} catch (Exception e) {
+				log.error("Unable to load Plugins", e);
+			}
+		}
+		log.info("End of LoadPlugnis");
+	}
+
+	/***
+	 * List all the files in this directory and sub directories.
+	 * 
+	 * @param directoryName
+	 * @return
+	 */
+	public List<File> listFiles(String directoryName) {
+		File directory = new File(directoryName);
+		List<File> resultList = new ArrayList<File>();
+		File[] fList = directory.listFiles();
+		resultList.addAll(Arrays.asList(fList));
+		for (File file : fList) {
+			if (file.isFile()) {
+			} else if (file.isDirectory()) {
+				resultList.addAll(listFiles(file.getAbsolutePath()));
+			}
+		}
+		return resultList;
 	}
 
 	private int getDebugLevel(String sLevel) {
@@ -160,10 +210,17 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		});
 		log.debug("Shut Down Hook Attached.");
 	}
-	
 
 	public void dispose() {
-		
+
+		try {
+			if (pm != null) {
+				pm.shutdown();
+			}
+		} catch (Exception e) {
+
+		}
+
 		if (iPlayer != null) {
 			log.info("Destroying IPlayer");
 			try {
@@ -173,7 +230,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 				log.error("Error Destroying IPlayer", e);
 			}
 		}
-		
+
 		if (iDevice != null) {
 			log.info("Destroying device");
 
@@ -290,8 +347,6 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 		}
 
-
-		
 		if (lib != null) {
 			try {
 				log.info("Attempting to Close DeviceStack");
@@ -302,7 +357,6 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			}
 		}
 
-
 	}
 
 	@Override
@@ -312,6 +366,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 	/***
 	 * Get the MAC Address..
+	 * 
 	 * @return
 	 */
 	private String getMacAddress() {
@@ -350,30 +405,29 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 				break;
 
 			}
-			//System.out.println(line);
+			// System.out.println(line);
 		} catch (Exception e) {
 			log.debug("Error MAC Address: ", e);
 		}
 		return mac;
 	}
-	
+
 	/***
 	 * Get the HostName, if any problem attempt to get the MAC Address
+	 * 
 	 * @return
 	 */
-	private String GetHostName()
-	{
+	private String GetHostName() {
 		try {
 			InetAddress iAddress = InetAddress.getLocalHost();
 			String hostName = iAddress.getHostName();
-		    //String canonicalHostName = iAddress.getCanonicalHostName();
-		    return hostName;
+			// String canonicalHostName = iAddress.getCanonicalHostName();
+			return hostName;
 		} catch (Exception e) {
-			log.error("Error Getting HostName: ",e);
+			log.error("Error Getting HostName: ", e);
 		}
-	    return getMacAddress();
+		return getMacAddress();
 	}
-
 
 	public PrvVolume getCustomVolume() {
 		return iVolume;
@@ -387,6 +441,6 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 	@Override
 	public void message(String paramString) {
-		log.fatal("Fatal Error: " + paramString);	
+		log.fatal("Fatal Error: " + paramString);
 	}
 }

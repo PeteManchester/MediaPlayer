@@ -51,7 +51,7 @@ public class OutputReader extends Thread {
 				long l = stringToLong(lengths[1]);
 				if (l != -99) {
 					EventDurationUpdate e = new EventDurationUpdate();
-					e.setDuratoin(l);
+					e.setDuration(l);
 					mPlayer.fireEvent(e);
 				}
 				mPlayer.getTrackInfo().setDuration(l);

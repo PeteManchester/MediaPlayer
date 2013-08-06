@@ -1,2 +1,5 @@
 23 April 
 Fixed bugs with volume and mute when starting playing tracks.
+5th August 2013 v0.0.0.3 
+Changed Previous Track control to restart same track if the play time is greater than 3 seconds, if less than 3 seconds the previous track is started
+Added default path the mplayer on a raspi, so that mediaplayer should still work if the app.properties file is not present

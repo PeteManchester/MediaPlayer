@@ -12,6 +12,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.xeoh.plugins.base.annotations.PluginImplementation;
+import net.xeoh.plugins.base.annotations.events.Shutdown;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -221,6 +222,11 @@ public class AlarmClockImpl implements AlarmClockInterface {
 		}
 		return "";
 	}
+	
+	@Shutdown
+    public void bye() {
+		log.debug("ShutDown Called");
+    }
 
 	class RemindTask extends TimerTask {
 		public void run() {

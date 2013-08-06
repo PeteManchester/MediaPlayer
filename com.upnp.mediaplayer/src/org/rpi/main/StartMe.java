@@ -20,16 +20,20 @@ import org.apache.log4j.RollingFileAppender;
 import org.rpi.config.Config;
 import org.rpi.log.CustomPatternLayout;
 import org.rpi.log.CustomRollingFileAppender;
+import org.scratchpad.NativeLibraryLoader;
 
 public class StartMe {
 
 	private static boolean stop = false;
 	private static Logger log = Logger.getLogger(StartMe.class);
+	//private static PluginManager pm = null;
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		//NativeLibraryLoader.load("mssql", "mssqlserver.jar");
+		//NativeLibraryLoader.load("pi4j", "libpi4j.so");
 		Config.setStartTime();
 		boolean bInput = false;
 		for (String s : args) {
@@ -43,7 +47,7 @@ public class StartMe {
 		log.info("JVM Version: " + System.getProperty("java.version"));
 		printSystemProperties();
 		SimpleDevice sd = new SimpleDevice();
-		loadPlugins();
+		//loadPlugins();
 		sd.attachShutDownHook();
 		if (bInput) {
 
@@ -73,24 +77,24 @@ public class StartMe {
 	}
 
 
-	/***
-	 * Load the Plugins
-	 */
-	private static void loadPlugins() {
-		log.info("Start of LoadPlugnis");
-		PluginManager pm = PluginManagerFactory.createPluginManager();
-		List<File> files = listFiles("plugins");
-		for (File file : files) {
-			try {
-				if (file.getName().toUpperCase().endsWith(".JAR")) {
-					pm.addPluginsFrom(file.toURI());
-				}
-			} catch (Exception e) {
-				log.error("Unable to load Plugins", e);
-			}
-		}
-		log.info("End of LoadPlugnis");
-	}
+//	/***
+//	 * Load the Plugins
+//	 */
+//	private static void loadPlugins() {
+//		log.info("Start of LoadPlugnis");
+//		pm = PluginManagerFactory.createPluginManager();
+//		List<File> files = listFiles("plugins");
+//		for (File file : files) {
+//			try {
+//				if (file.getName().toUpperCase().endsWith(".JAR")) {
+//					pm.addPluginsFrom(file.toURI());
+//				}
+//			} catch (Exception e) {
+//				log.error("Unable to load Plugins", e);
+//			}
+//		}
+//		log.info("End of LoadPlugnis");
+//	}
 
 	/***
 	 * List all the files in this directory and sub directories.

@@ -47,6 +47,7 @@ public class CustomTrack {
 
 	private int Id;
 	private String metatext= "";
+	private long time = -99;
 
 	private String GetFullString() {
 		StringBuilder sb = new StringBuilder();
@@ -341,6 +342,16 @@ public class CustomTrack {
 	public String getMetaText()
 	{
 		return metatext;
+	}
+
+	public void setTime(long duration) {
+		// TODO Auto-generated method stub
+		this.time = duration;
+	}
+	
+	public long getTime()
+	{
+		return time;
 	}
 
 	// public void updateTitle(String title) {

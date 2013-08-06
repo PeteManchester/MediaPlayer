@@ -9,7 +9,8 @@
             </manifest>
             <fileset dir="C:/Keep/git/repository/MediaPlayer/com.upnp.mediaplayer/bin">
                 <include name = "/org/rpi/plugin/lcddisplay/*" />
-            </fileset>      
+            </fileset>  
+            <zipfileset excludes="META-INF/*.SF" src="C:/Keep/Repository/java/pi4j/pi4j-1.0-SNAPSHOT/lib/pi4j-core.jar"/>    
         </jar>
     </target>
 </project>

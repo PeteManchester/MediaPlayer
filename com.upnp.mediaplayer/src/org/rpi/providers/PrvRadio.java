@@ -84,10 +84,6 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer 
 		log.debug("Added Channels: " + channels.size());
 	}
 
-//	public void aChannel(int id, String url, String metadata) {
-//		CustomChannel channel = new CustomChannel(url, metadata, id,"");
-//		channels.add(channel);
-//	}
 
 	protected Channel channel(org.openhome.net.device.IDvInvocation arg0) {
 		log.debug("Channel");

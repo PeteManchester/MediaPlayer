@@ -12,9 +12,9 @@ public class Config {
 	public static String friendly_name = "Default Room";
 	public static List<String> playlists = new ArrayList<String>();
 	public static String debug = "None";
-	public static String mplayer_path;
+	public static String mplayer_path= "/usr/bin/mplayer";
 	public static boolean save_local_playlist = false;
-	public static String version = "0.0.0.2";
+	public static String version = "0.0.0.3";
 	public static String logfile = "mediaplayer.log";
 	public static int port = -99;
 	public static int mplayer_cache = 500;
