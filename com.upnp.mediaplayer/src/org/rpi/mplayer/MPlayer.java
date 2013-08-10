@@ -3,7 +3,6 @@ package org.rpi.mplayer;
 import java.io.IOException;
 import java.lang.Thread.State;
 import java.util.ArrayList;
-import java.util.EventObject;
 import java.util.List;
 import java.util.Observable;
 

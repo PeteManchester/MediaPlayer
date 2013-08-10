@@ -47,9 +47,9 @@ public class PositionThread extends Thread {
 	/**
 	 * @return the bNewTrack
 	 */
-	private boolean isNewTrack() {
-		return bNewTrack;
-	}
+//	private boolean isNewTrack() {
+//		return bNewTrack;
+//	}
 
 	/**
 	 * @param bNewTrack

@@ -217,8 +217,8 @@ public class OutputReader extends Thread {
 	/**
 	 * @param bUpdate the bUpdate to set
 	 */
-	private void setUpdate(boolean bUpdate) {
-		this.bUpdate = bUpdate;
-	}
+//	private void setUpdate(boolean bUpdate) {
+//		this.bUpdate = bUpdate;
+//	}
 
 }

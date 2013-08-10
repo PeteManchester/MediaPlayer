@@ -1,7 +1,5 @@
 package org.rpi.player.events;
 
-import java.util.EventObject;
-
 import org.rpi.playlist.CustomTrack;
 
 public class EventTrackChanged implements EventBase {

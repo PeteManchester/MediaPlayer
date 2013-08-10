@@ -126,5 +126,15 @@ sudo /etc/init.d/avahi-daemon restart
 Using the GUI in Wheezy means that when MediaPlayer starts the network interface is not yet configured, use this simple method..
 http://learn.adafruit.com/pi-wifi-radio/raspberry-pi-setup-1-of-3
 
+#Java Remote Debug
+java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005  -jar mediaplayer.jar
+http://www.raspberrypi.org/phpBB3/viewtopic.php?f=81&t=51999
+Wiring Pi Pins
+http://wiringpi.com/pins/
+My 20X2 Display
+http://www.farnell.com/datasheets/1485419.pdf
+
+
+
 
 
