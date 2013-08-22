@@ -98,7 +98,7 @@ public class ChannelReader {
 		String m = createMetaData(name, url, image);
 		CustomChannel channel = new CustomChannel(url, m, id,name);
 		channels.add(channel);
-		log.debug("Added Channel: " + channel.getUri());
+		log.debug("Added Channel: " + channel.getUri() + " " + channel.getFullDetails());
 	}
 	
 	/***

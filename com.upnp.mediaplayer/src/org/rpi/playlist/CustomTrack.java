@@ -12,6 +12,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -30,6 +31,9 @@ public class CustomTrack {
 	private String metaStart = "<Metadata>";
 	private String metaEnd = "</Metadata>";
 	private String title = "";
+	private String album = "";
+	private String artist = "";
+	private String performer = "";
 	private String full_text = "";
 
 	public CustomTrack(String uri, String metadata, int id) {
@@ -37,6 +41,8 @@ public class CustomTrack {
 		setMetadata(metadata);
 		setId(id);
 		full_text = GetFullString();
+		getTrackDetails();
+		setFullDetails();
 	}
 
 	public String getUniqueId() {
@@ -48,6 +54,7 @@ public class CustomTrack {
 	private int Id;
 	private String metatext= "";
 	private long time = -99;
+	private String full_details;
 
 	private String GetFullString() {
 		StringBuilder sb = new StringBuilder();
@@ -266,10 +273,8 @@ public class CustomTrack {
 		// getId(), getUri(), getMetadata());
 	}
 
-	public String getArtist() {
+	public void getTrackDetails() {
 		try {
-			Vector<Node> removeNodes = new Vector<Node>();
-			StringBuilder temp = new StringBuilder();
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			InputSource insrc = new InputSource(new StringReader(Metadata));
@@ -277,15 +282,15 @@ public class CustomTrack {
 			Node node = doc.getFirstChild();
 			Node item = node.getFirstChild();
 			NodeList childs = item.getChildNodes();
-			temp.append("<item>");
 			for (int i = 0; i < childs.getLength(); i++) {
 				Node n = childs.item(i);
 				boolean remove = true;
 				if (n.getNodeName() == "dc:title") {
-					remove = true;
+					setTitle(n.getTextContent());
+					//remove = true;
 				}
 				else if (n.getNodeName() == "upnp:album") {
-					remove = false;
+					setAlbum(n.getTextContent());
 				}
 				
 				else if (n.getNodeName() == "upnp:artist") {
@@ -294,44 +299,34 @@ public class CustomTrack {
 					String role_type = role.getTextContent();
 					if(role.getTextContent().equalsIgnoreCase("AlbumArtist"))
 					{
-						remove = true;
+						setArtist(n.getTextContent());
 					}	
 					if(role.getTextContent().equalsIgnoreCase("Performer"))
 					{
-						remove = false;
+						setPerformer(n.getTextContent());
 					}
 				}
-				
-				else if(n.getNodeName() == "upnp:class")
-				{
-					remove =false;
-				}
-				
-				else if(n.getNodeName() == "upnp:albumArtURI")
-				{
-					remove = false;
-				}
-				
-				
-				if (remove)
-				{
-					removeNodes.add(n);
-				}
 			}
-			for(Node n : removeNodes)
-			{
-				item.removeChild(n);
-			}
-			Transformer transformer = TransformerFactory.newInstance().newTransformer();
-			StreamResult result = new StreamResult(new StringWriter());
-			DOMSource source = new DOMSource(doc);
-			transformer.transform(source, result);
-			return result.getWriter().toString();
+
 		} catch (Exception e) {
 			log.error("Erorr TidyMetaData",e);
 		}
-		
-		return Metadata;
+	}
+	
+	
+	private String getElementTest(Element element, String name) {
+		String res = "";
+		NodeList nid = element.getElementsByTagName(name);
+		if (nid != null) {
+			Element fid = (Element) nid.item(0);
+			if (fid != null) {
+				res = fid.getTextContent();
+				// log.debug("ElementName: " + name + " Value: " + res);
+				return res;
+
+			}
+		}
+		return res;
 	}
 
 	public void setMetaText(String metatext) {
@@ -352,6 +347,68 @@ public class CustomTrack {
 	public long getTime()
 	{
 		return time;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title.trim();
+	}
+
+	public String getAlbum() {
+		return album;
+	}
+
+	public void setAlbum(String album) {
+		this.album = album.trim();
+	}
+	
+	public String getArtist()
+	{
+		return artist;
+	}
+
+	public void setArtist(String artist) {
+		this.artist = artist.trim();
+	}
+
+	public String getPerformer() {
+		return performer;
+	}
+
+	public void setPerformer(String performer) {
+		this.performer = performer.trim();
+	}
+	
+	private void setFullDetails()
+	{
+		StringBuffer sb = new StringBuffer();
+		sb.append(getTitle());
+		sb.append(" - ");
+		if(!getPerformer().equalsIgnoreCase(""))
+		{
+			sb.append(getPerformer());
+			sb.append(" - ");
+		}
+		if(!getPerformer().equalsIgnoreCase(getArtist()))
+		{
+			sb.append(getArtist());
+			sb.append(" - ");
+		}
+		sb.append(getAlbum());
+		full_details =  sb.toString();
+		if(full_details.endsWith(" - "))
+		{
+			full_details = full_details.substring(0, full_details.length()-3);
+			full_details.trim();
+		}
+	}
+	
+	public String getFullDetails()
+	{
+		return full_details;
 	}
 
 	// public void updateTitle(String title) {

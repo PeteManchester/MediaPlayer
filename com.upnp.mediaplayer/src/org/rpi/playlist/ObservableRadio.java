@@ -16,8 +16,15 @@ public class ObservableRadio extends Observable {
 	 * @param obj
 	 */
 	public void notifyChange(Object obj) {
-		setChanged();
-		notifyObservers(obj);
+		try
+		{
+			setChanged();
+			notifyObservers(obj);
+		}
+		catch(Exception e)
+		{
+		}
+		
 	}
 
 }

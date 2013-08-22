@@ -69,51 +69,51 @@
 
 	<Channel>
 		<id>BBC Radio 1</id>
-		<url>http://www.bbc.co.uk/radio/listen/live/r1.asx</url>
+		<url>http://www.bbc.co.uk/radio/listen/live/r1_aaclca.pls</url>
 		<image>http://bbc.co.uk/iplayer/img/radio/bbc_radio_one.gif</image>
 	</Channel>
 
 	<Channel>
 		<id>BBC Radio 2</id>
-		<url>http://www.bbc.co.uk/radio/listen/live/r2.asx</url>
+		<url>http://www.bbc.co.uk/radio/listen/live/r2_aaclca.pls</url>
 		<image>http://bbc.co.uk/iplayer/img/radio/bbc_radio_two.gif</image>
 	</Channel>
 
 	<Channel>
 		<id>BBC Radio 3</id>
-		<url>http://www.bbc.co.uk/radio/listen/live/r3.asx</url>
+		<url>http://www.bbc.co.uk/radio/listen/live/r3_aaclca.pls</url>
 		<image>http://bbc.co.uk/iplayer/img/radio/bbc_radio_three.gif</image>
 	</Channel>
 
 	<Channel>
 		<id>BBC Radio 4</id>
-		<url>http://www.bbc.co.uk/radio/listen/live/r4.asx</url>
+		<url>http://www.bbc.co.uk/radio/listen/live/r4_aaclca.pls</url>
 		<image>http://bbc.co.uk/iplayer/img/radio/bbc_radio_four.gif</image>
 	</Channel>
 
 	<Channel>
 		<id>BBC Radio 4 Extra</id>
-		<url>http://www.bbc.co.uk/radio/listen/live/r4x.asx</url>
+		<url>http://www.bbc.co.uk/radio/listen/live/r4x_aaclca.pls</url>
 		<image>http://bbc.co.uk/iplayer/img/radio/bbc_radio_four.gif</image>
 	</Channel>
 
 	<Channel>
 		<id>BBC Radio 5 Live</id>
-		<url>http://www.bbc.co.uk/radio/listen/live/r5l.asx</url>
+		<url>http://www.bbc.co.uk/radio/listen/live/r5l_aaclca.pls</url>
 		<image>http://bbc.co.uk/iplayer/img/radio/bbc_radio_five_live.gif
 		</image>
 	</Channel>
 
 	<Channel>
 		<id>BBC Radio 5 Live Extra</id>
-		<url>http://www.bbc.co.uk/radio/listen/live/r5lsp.asx</url>
+		<url>http://www.bbc.co.uk/radio/listen/live/r5lsp_aaclca.pls</url>
 		<image>http://bbc.co.uk/iplayer/img/radio/bbc_radio_five_live_sports_extra.gif
 		</image>
 	</Channel>
 
 	<Channel>
 		<id>BBC Radio 6</id>
-		<url>http://www.bbc.co.uk/radio/listen/live/r6.asx</url>
+		<url>http://www.bbc.co.uk/radio/listen/live/r6_aaclca.pls</url>
 		<image>http://bbc.co.uk/iplayer/img/radio/bbc_6music.gif</image>
 	</Channel>
 

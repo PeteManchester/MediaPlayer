@@ -529,14 +529,12 @@ public class PlayManager implements Observer {
 	 * Play the Previous Track
 	 */
 	public synchronized void previousTrack() {
-		if(current_track !=null)
-		{
-			if(current_track.getTime()>0 && current_track.getTime() >=3)
-			{
+		if (current_track != null) {
+			if (current_track.getTime() > 0 && current_track.getTime() >= 5) {
 				playThis(current_track);
 				return;
 			}
-			
+
 		}
 		CustomTrack t = getNextTrack(-1);
 		if (t != null) {
@@ -577,7 +575,6 @@ public class PlayManager implements Observer {
 			}
 		}
 	}
-
 
 	/**
 	 * Set Mute
@@ -718,7 +715,6 @@ public class PlayManager implements Observer {
 			}
 	}
 
-
 	/***
 	 * Destroy
 	 */
@@ -764,7 +760,11 @@ public class PlayManager implements Observer {
 			evr.setStatus(status);
 			obsvPlayList.notifyChange(evr);
 		}
-		obsvInfo.notifyChange(ev);
+		try {
+			obsvInfo.notifyChange(ev);
+		} catch (Exception e) {
+			log.error("Error Notify: " + e);
+		}
 	}
 
 	/***
@@ -783,7 +783,6 @@ public class PlayManager implements Observer {
 			obsvPlayList.notifyChange(evrp);
 		}
 	}
-
 
 	/***
 	 * Increase the Volume
@@ -820,56 +819,83 @@ public class PlayManager implements Observer {
 		return volume;
 	}
 
-
 	@Override
 	public void update(Observable paramObservable, Object obj) {
 		EventBase e = (EventBase) obj;
 		switch (e.getType()) {
 		case EVENTFINISHEDCURRENTTRACK:
-			EventFinishedCurrentTrack evct = (EventFinishedCurrentTrack) e;
-			if (evct.isQuit()) {
-				log.debug("Track was Stopped, do not select Next Track");
-			} else {
-				log.debug("Track Stopped, get Next Track");
-				CustomTrack t = getNextTrack(1);
-				if (t != null) {
-					playThis(t);
+			try {
+				EventFinishedCurrentTrack evct = (EventFinishedCurrentTrack) e;
+				if (evct.isQuit()) {
+					log.debug("Track was Stopped, do not select Next Track");
+				} else {
+					log.debug("Track Stopped, get Next Track");
+					CustomTrack t = getNextTrack(1);
+					if (t != null) {
+						playThis(t);
+					}
 				}
+			} catch (Exception etf) {
+				log.error("Error EVENTFINISHEDCURRENTTRACK", etf);
 			}
 			break;
 		case EVENTTIMEUPDATED:
-			obsvTime.notifyChange(e);
-			if(current_track !=null)
-			{
-				EventTimeUpdate ed = (EventTimeUpdate)e;
-				current_track.setTime(ed.getTime());
+			try {
+				obsvTime.notifyChange(e);
+				if (current_track != null) {
+					EventTimeUpdate ed = (EventTimeUpdate) e;
+					current_track.setTime(ed.getTime());
+				}
+			} catch (Exception etu) {
+				log.error("Error EVENTTIMEUPDATED", etu);
 			}
 			break;
 		case EVENTSTATUSCHANGED:
-			EventStatusChanged es = (EventStatusChanged) e;
-			setStatus(es.getStatus());
+			try {
+				EventStatusChanged es = (EventStatusChanged) e;
+				setStatus(es.getStatus());
+			} catch (Exception esc) {
+				log.error("Error EVENTSTATUSCHANGED", esc);
+			}
 			break;
 		case EVENTDURATIONUPDATE:
-			obsvTime.notifyChange(e);
+			try {
+				obsvTime.notifyChange(e);
+			} catch (Exception edu) {
+				log.error("Error EVENTDURATIONUPDATE", edu);
+			}
 			break;
 		case EVENTUPDATETRACKINFO:
-			obsvInfo.notifyChange(e);
+			try {
+				obsvInfo.notifyChange(e);
+			} catch (Exception eut) {
+				log.error("Error EVENTUPDATETRACKINFO", eut);
+			}
 			break;
 		case EVENTUPDATETRACKMETATEXT:
-			EventUpdateTrackMetaText etm = (EventUpdateTrackMetaText) e;
-			String metatext = current_track.updateTrack(etm.getArtist(), etm.getTitle());
-			//current_track.setMetaText(metatext);
-			etm.setMetaText(metatext);
-			obsvInfo.notifyChange(etm);
+			try {
+				EventUpdateTrackMetaText etm = (EventUpdateTrackMetaText) e;
+				String metatext = current_track.updateTrack(etm.getArtist(), etm.getTitle());
+				// current_track.setMetaText(metatext);
+				etm.setMetaText(metatext);
+				obsvInfo.notifyChange(etm);
+			} catch (Exception etm) {
+				log.error("Error EVENTUPDATETRACKMETATEXT", etm);
+			}
 			break;
 		case EVENTLOADED:
-			log.debug("Track Loaded");
+			try {
+				log.debug("Track Loaded");
+			} catch (Exception etl) {
+				log.error("Error EVENTLOADED", etl);
+			}
 			break;
 		}
 	}
 
 	/**
 	 * Register for Time Events
+	 * 
 	 * @param o
 	 */
 	public synchronized void observTimeEvents(Observer o) {
@@ -878,6 +904,7 @@ public class PlayManager implements Observer {
 
 	/**
 	 * Register for Info Events
+	 * 
 	 * @param o
 	 */
 	public synchronized void observInfoEvents(Observer o) {
@@ -886,6 +913,7 @@ public class PlayManager implements Observer {
 
 	/**
 	 * Register for Volume Events
+	 * 
 	 * @param o
 	 */
 	public synchronized void observVolumeEvents(Observer o) {
@@ -894,6 +922,7 @@ public class PlayManager implements Observer {
 
 	/**
 	 * Register for PlayList Events
+	 * 
 	 * @param o
 	 */
 	public synchronized void observPlayListEvents(Observer o) {
@@ -902,6 +931,7 @@ public class PlayManager implements Observer {
 
 	/**
 	 * Register for Product Events
+	 * 
 	 * @param o
 	 */
 	public synchronized void observeProductEvents(Observer o) {
@@ -909,14 +939,15 @@ public class PlayManager implements Observer {
 	}
 
 	/**
-	 * Register for Radio Events 
-	 *  @param o
+	 * Register for Radio Events
+	 * 
+	 * @param o
 	 */
 	public synchronized void observRadioEvents(Observer o) {
 		obsvRadio.addObserver(o);
 	}
 
-	public synchronized  boolean isUseExternalVolume() {
+	public synchronized boolean isUseExternalVolume() {
 		return bExternalVolume;
 	}
 
@@ -925,7 +956,7 @@ public class PlayManager implements Observer {
 	}
 
 	public synchronized void toggleMute() {
-		setMute(!bMute);	
+		setMute(!bMute);
 	}
 
 }

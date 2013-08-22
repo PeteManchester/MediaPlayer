@@ -50,7 +50,7 @@ public class MPlayer extends Observable   implements IPlayer  {
 		this.volume = volume;
 		this.bMute = mute;
 		current_track = track;
-		log.info("Starting to playTrack Id: " + uniqueId);
+		log.info("Starting to playTrack Id: " + uniqueId + " " + track.getFullDetails());
 		String url = track.getUri();
 		try {
 			initProcess(url);

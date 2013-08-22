@@ -47,7 +47,7 @@ public class PlayListReader {
 				String metadata = getElementTest(element, "Metadata");
 				CustomTrack t = new CustomTrack(url, metadata, Integer.parseInt(id));
 				tracks.add(t);
-				log.debug("Adding Track Id: " + id + " URL: " + url);
+				log.debug("Adding Track Id: " + id + " URL: " + url +  " " + t.getFullDetails());
 			}
 			iPlayList.setNextId(max_id);
 			iPlayList.setTracks(tracks);
