@@ -449,7 +449,7 @@ public class PlayManager implements Observer {
 
 	/**
 	 * Play track with Index Determine if shuffle is enabled, if we are not
-	 * playin anything shuffle the tracks and set this track as the top track,
+	 * playing anything shuffle the tracks and set this track as the top track,
 	 * else set this track as the top track and play
 	 * 
 	 * @param index

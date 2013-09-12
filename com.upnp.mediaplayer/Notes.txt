@@ -85,6 +85,7 @@ _IP=$(hostname -I) || true
 if [ "$_IP" ]; then
   printf "My IP address is %s\n" "$_IP"
 fi
+iwconfig wlan0 power off
 /home/pi/mediaplayer/run.sh
 exit 0
 
@@ -114,6 +115,10 @@ make ohNetJavaAll
 #Lyrics
 http://lyrics.wikia.com/Joy_Division:Isolation
 http://lyrics.wikia.com/LyricWiki:Page_Names#Capitalization
+
+#WIFI
+Turn off power save
+iwconfig wlan0 power off
 
 #Able to resolve HostName from a Windows PC
 Install Bonour for Windows

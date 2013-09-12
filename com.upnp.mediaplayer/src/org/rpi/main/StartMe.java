@@ -4,8 +4,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +47,24 @@ public class StartMe {
 		getConfig();
 		ConfigureLogging();
 		log.info("Starting......");
+		try {
+			log.info("Getting Network Interfaces");
+			Enumeration e=NetworkInterface.getNetworkInterfaces();
+            while(e.hasMoreElements())
+            {
+                NetworkInterface n=(NetworkInterface) e.nextElement();
+                Enumeration ee = n.getInetAddresses();
+                log.info("Network Interface Name: " + n.getDisplayName());
+                while(ee.hasMoreElements())
+                {
+                    InetAddress i= (InetAddress) ee.nextElement();
+                    log.info("IPAddress for Network Interface: " + n.getDisplayName() + " : " + i.getHostAddress());
+                }
+            }
+			} catch (Exception e) {
+				log.error("Error Getting IPAddress",e);
+			}
+		log.info("End Of Network Interfaces");
 		log.info("JVM Version: " + System.getProperty("java.version"));
 		printSystemProperties();
 		SimpleDevice sd = new SimpleDevice();
