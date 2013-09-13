@@ -22,6 +22,9 @@ public class Config {
 	public static String loglevel;
 	public static String logconsole;
 	public static int playlist_max = 1000;
+	public static String mpd_host = "";
+	public static int mpd_port = 6600;
+	public static String player = "mpd";
 	
 	private static Calendar cal = Calendar.getInstance();
 	

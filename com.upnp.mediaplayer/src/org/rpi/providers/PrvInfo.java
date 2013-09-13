@@ -177,7 +177,7 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer {
 		case EVENTUPDATETRACKINFO:
 			EventUpdateTrackInfo euti = (EventUpdateTrackInfo)e;
 			TrackInfo i = (TrackInfo) euti.getTrackInfo();
-			setDetails(i.getDuration(), i.getBitrate(), 16, i.getSampleRate(), false, i.getCodec());
+			setDetails(i.getDuration(), i.getBitrate(), i.getBitDepth(), i.getSampleRate(), false, i.getCodec());
 			break;	
 
 		case EVENTUPDATETRACKMETATEXT:

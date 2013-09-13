@@ -143,6 +143,29 @@ http://www.farnell.com/datasheets/1485419.pdf
 https://projects.drogon.net/raspberry-pi/wiringpi/lcd-library/
 
 
+MPD
+Status values
+volume: -1
+repeat: 0
+random: 0
+single: 0
+consume: 1
+playlist: 1697
+playlistlength: 2
+xfade: 0
+mixrampdb: 0.000000
+mixrampdelay: nan
+state: play
+song: 0
+songid: 31
+time: 23:287
+elapsed: 22.848
+bitrate: 677
+audio: 44100:16:2
+nextsong: 1
+nextsongid: 32
+
+
 
 
 

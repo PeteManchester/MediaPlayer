@@ -26,6 +26,17 @@ public class EventTrackChanged implements EventBase {
 	public void setTrack(CustomTrack track) {
 		this.track = track;
 	}
+	
+	public String getMPD_id() {
+		return mpd_id;
+	}
+
+	public void setMPD_id(String mpd_id) {
+		this.mpd_id = mpd_id;
+	}
+
+	private String mpd_id = "";
+	
 
 	private CustomTrack track = null;
 

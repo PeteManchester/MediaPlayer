@@ -184,6 +184,9 @@ public class StartMe {
 			Config.mplayer_cache = Config.converStringToInt(pr.getProperty("mplayer.cache"));
 			Config.mplayer_cache_min = Config.converStringToInt(pr.getProperty("mplayer.cache_min"));
 			Config.playlist_max = Config.converStringToInt(pr.getProperty("playlist.max"),1000);
+			Config.mpd_host = pr.getProperty("mpd.host");
+			Config.mpd_port = Config.converStringToInt(pr.getProperty("mpd.port"),6600);
+			Config.player = pr.getProperty("player");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

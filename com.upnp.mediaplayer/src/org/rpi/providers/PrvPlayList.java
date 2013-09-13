@@ -3,6 +3,7 @@ package org.rpi.providers;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgPlaylist1;
@@ -11,8 +12,6 @@ import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventPlayListPlayingTrackID;
 import org.rpi.player.events.EventPlayListStatusChanged;
 import org.rpi.player.events.EventPlayListUpdateShuffle;
-import org.rpi.player.events.EventRadioPlayingTrackID;
-import org.rpi.player.events.EventRadioStatusChanged;
 import org.rpi.playlist.CustomTrack;
 import org.rpi.playlist.PlayListReader;
 import org.rpi.playlist.PlayListWriter;

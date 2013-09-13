@@ -2,16 +2,18 @@ package org.rpi.player;
 
 import java.util.Observer;
 
-import org.rpi.player.events.EventBase;
 import org.rpi.playlist.CustomTrack;
 
-public interface IPlayer {
+public interface IPlayerController {
 	
 	public void preLoadTrack(CustomTrack track);
 	public  void loaded();
 	
-	public boolean playTrack(CustomTrack track,long volume, boolean mute);
+	//public boolean playTrack(CustomTrack track,long volume, boolean mute);
 	public void openFile(CustomTrack track);
+	public void playThis(CustomTrack t,long v,boolean bMute);
+	//public void playIndex(long index);
+	//public void play();
 	public void pause(boolean bPause);	
 	public void resume();
 	public void stop();
@@ -22,15 +24,10 @@ public interface IPlayer {
 	public void setVolume(long volume);
 	
 	public void seekAbsolute(long seconds);
-	
 	public void addObserver(Observer obj);
-
-	public void startTrack();
+	//public void startTrack();
 	public boolean isPlaying();
-	
-	public  void fireEvent(EventBase ev);
-	public void updateInfo(String artist, String title);
-	public void setStatus(String status);
+	public boolean isActive();
 	
 	public String getUniqueId();
 

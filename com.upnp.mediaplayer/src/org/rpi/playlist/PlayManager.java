@@ -7,8 +7,12 @@ import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.log4j.Logger;
-import org.rpi.mplayer.MPlayer;
-import org.rpi.player.IPlayer;
+import org.rpi.config.Config;
+import org.rpi.mpdplayer.MPDPlayerController;
+//import org.rpi.mplayer.MPlayer;
+//import org.rpi.player.IPlayer;
+import org.rpi.player.IPlayerController;
+import org.rpi.player.MPlayerController;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventFinishedCurrentTrack;
 import org.rpi.player.events.EventMuteChanged;
@@ -33,7 +37,8 @@ public class PlayManager implements Observer {
 
 	private static Logger log = Logger.getLogger(PlayManager.class);
 
-	private IPlayer mPlayer = null;
+	// private IPlayer mPlayer = null;
+	private IPlayerController mPlayer = null;
 
 	private boolean repeatPlayList = false;
 	private boolean shuffle = false;
@@ -72,7 +77,14 @@ public class PlayManager implements Observer {
 	 * 
 	 */
 	private PlayManager() {
-
+		if (Config.player.equalsIgnoreCase("MPD")) {
+			log.debug("MPD Player Selected");
+			mPlayer = new MPDPlayerController();
+		} else {
+			log.debug("MPlayer Selected");
+			mPlayer = new MPlayerController();
+		}
+		mPlayer.addObserver(this);
 	}
 
 	/**
@@ -83,18 +95,25 @@ public class PlayManager implements Observer {
 	private void playThis(CustomTrack t) {
 		if (t != null) {
 			current_track = t;
-			log.debug("Destroy current MPlayer");
-			if (mPlayer != null) {
-				mPlayer.destroy();
-				mPlayer = null;
-			}
-			mPlayer = new MPlayer();
-			mPlayer.addObserver(this);
 			long v = mplayer_volume;
 			if (!isUseExternalVolume())
 				v = volume;
-			mPlayer.playTrack(t, v, bMute);
+			mPlayer.playThis(t, v, bMute);
 		}
+		// if (t != null) {
+		// current_track = t;
+		// log.debug("Destroy current MPlayer");
+		// if (mPlayer != null) {
+		// mPlayer.destroy();
+		// mPlayer = null;
+		// }
+		// mPlayer = new MPlayer();
+		// mPlayer.addObserver(this);
+		// long v = mplayer_volume;
+		// if (!isUseExternalVolume())
+		// v = volume;
+		// mPlayer.playTrack(t, v, bMute);
+		// }
 	}
 
 	/**
@@ -415,11 +434,12 @@ public class PlayManager implements Observer {
 	 * @param bPause
 	 */
 	public synchronized void pause(boolean bPause) {
-		if (mPlayer != null) {
+		// if (mPlayer != null) {
+		if (mPlayer.isPlaying()) {
 			mPlayer.pause(bPause);
+			setPaused(bPause);
+			setStatus("Paused");
 		}
-		setPaused(bPause);
-		setStatus("Paused");
 	}
 
 	/**
@@ -442,7 +462,8 @@ public class PlayManager implements Observer {
 	 * Stop playin Track
 	 */
 	public synchronized void stop() {
-		if (mPlayer != null) {
+		// if (mPlayer != null) {
+		if (mPlayer.isPlaying()) {
 			mPlayer.stop();
 		}
 	}
@@ -457,13 +478,13 @@ public class PlayManager implements Observer {
 	public synchronized void playIndex(long index) {
 		CustomTrack t = getTrackFromIndex((int) index);
 		if (shuffle) {
-			if (mPlayer == null) {
+			// if (mPlayer == null) {
+			// shuffleTracks();
+			// } else {
+			if (!mPlayer.isPlaying()) {
 				shuffleTracks();
-			} else {
-				if (!mPlayer.isPlaying()) {
-					shuffleTracks();
-				}
 			}
+			// }
 			addAsNextShuffleTrack(t);
 		}
 		if (t != null) {
@@ -479,7 +500,8 @@ public class PlayManager implements Observer {
 	 */
 	public synchronized void play() {
 		if (isPaused()) {
-			if (mPlayer != null) {
+			// if (mPlayer != null) {
+			if (mPlayer.isPlaying()) {
 				mPlayer.resume();
 			}
 			setStatus("Playing");
@@ -549,7 +571,8 @@ public class PlayManager implements Observer {
 	 * @param seconds
 	 */
 	public synchronized void seekAbsolute(long seconds) {
-		if (mPlayer != null) {
+		// if (mPlayer != null) {
+		if (mPlayer.isPlaying()) {
 			mPlayer.seekAbsolute(seconds);
 		}
 	}
@@ -569,7 +592,8 @@ public class PlayManager implements Observer {
 		ev.setVolume(volume);
 		obsvVolume.notifyChange(ev);
 		{
-			if (mPlayer != null) {
+			// if (mPlayer != null) {
+			if (mPlayer.isActive()) {
 				if (!isUseExternalVolume())
 					mPlayer.setVolume(volume);
 			}
@@ -588,7 +612,8 @@ public class PlayManager implements Observer {
 		obsvProduct.notifyChange(em);
 		obsvVolume.notifyChange(em);
 
-		if (mPlayer != null) {
+		// if (mPlayer != null) {
+		if (mPlayer.isActive()) {
 			if (!isUseExternalVolume())
 				mPlayer.setMute(mute);
 		}
@@ -690,7 +715,8 @@ public class PlayManager implements Observer {
 		deletedAllTracks();
 		if (!(getCurrentTrack() instanceof CustomChannel)) {
 			current_track = null;
-			if (mPlayer != null) {
+			// if (mPlayer != null) {
+			if (mPlayer.isPlaying()) {
 				mPlayer.stop();
 				setStatus("Stopped");
 			}
@@ -708,7 +734,8 @@ public class PlayManager implements Observer {
 		CustomTrack t = getCurrentTrack();
 		if (t != null)
 			if (t.getId() == iD && !(t instanceof CustomChannel)) {
-				if (mPlayer != null) {
+				// if (mPlayer != null) {
+				if (mPlayer.isPlaying()) {
 					mPlayer.stop();
 				}
 				setStatus("Stopped");
@@ -720,7 +747,8 @@ public class PlayManager implements Observer {
 	 */
 	public synchronized void destroy() {
 		log.debug("Start of destroy");
-		if (mPlayer != null) {
+		// if (mPlayer != null) {
+		if (mPlayer.isActive()) {
 			log.debug("Attempt to Destroy MPlayer");
 			mPlayer.destroy();
 		}
@@ -747,8 +775,10 @@ public class PlayManager implements Observer {
 			if (t != null) {
 				current_track = t;
 			}
-			playingTrack(current_track.getId());
-			ev.setTrack(current_track);
+			if (current_track != null) {
+				playingTrack(current_track.getId());
+				ev.setTrack(current_track);
+			}
 
 		}
 		if (current_track instanceof CustomChannel) {
@@ -839,6 +869,15 @@ public class PlayManager implements Observer {
 				log.error("Error EVENTFINISHEDCURRENTTRACK", etf);
 			}
 			break;
+		case EVENTCURRENTTRACKFINISHING:
+			CustomTrack t = getNextTrack(1);
+			if (t != null) {
+				mPlayer.preLoadTrack(t);
+			}
+			break;
+		case EVENTPLAYLISTPLAYINGTRACKID:
+			obsvPlayList.notifyChange(e);
+			break;
 		case EVENTTIMEUPDATED:
 			try {
 				obsvTime.notifyChange(e);
@@ -875,10 +914,13 @@ public class PlayManager implements Observer {
 		case EVENTUPDATETRACKMETATEXT:
 			try {
 				EventUpdateTrackMetaText etm = (EventUpdateTrackMetaText) e;
-				String metatext = current_track.updateTrack(etm.getArtist(), etm.getTitle());
-				// current_track.setMetaText(metatext);
-				etm.setMetaText(metatext);
-				obsvInfo.notifyChange(etm);
+				if (current_track != null) {
+					if (current_track instanceof CustomChannel) {
+						String metatext = current_track.updateTrack(etm.getArtist(), etm.getTitle());
+						etm.setMetaText(metatext);
+						obsvInfo.notifyChange(etm);
+					}
+				}
 			} catch (Exception etm) {
 				log.error("Error EVENTUPDATETRACKMETATEXT", etm);
 			}
@@ -888,6 +930,22 @@ public class PlayManager implements Observer {
 				log.debug("Track Loaded");
 			} catch (Exception etl) {
 				log.error("Error EVENTLOADED", etl);
+			}
+			break;
+		case EVENTTRACKCHANGED:
+			EventTrackChanged etc = (EventTrackChanged) e;
+			current_track = etc.getTrack();
+			break;
+		case EVENTVOLUMECHNANGED:
+			try
+			{
+				EventVolumeChanged ev = (EventVolumeChanged)e;
+				volume = ev.getVolume();
+				obsvVolume.notifyChange(e);
+			}	
+			catch(Exception ex)
+			{
+				
 			}
 			break;
 		}
