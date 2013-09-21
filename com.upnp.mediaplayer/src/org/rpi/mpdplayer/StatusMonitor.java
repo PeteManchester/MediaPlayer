@@ -4,18 +4,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
+import java.util.Observer;
 
 import org.apache.log4j.Logger;
+import org.rpi.config.Config;
 import org.rpi.mplayer.TrackInfo;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventCurrentTrackFinishing;
 import org.rpi.player.events.EventDurationUpdate;
-import org.rpi.player.events.EventPlayListPlayingTrackID;
+import org.rpi.player.events.EventStatusChanged;
 import org.rpi.player.events.EventTimeUpdate;
 import org.rpi.player.events.EventTrackChanged;
+import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.player.events.EventVolumeChanged;
 
-public class StatusMonitor extends Observable implements Runnable {
+public class StatusMonitor extends Observable implements Runnable, Observer {
 
 	private static Logger log = Logger.getLogger(StatusMonitor.class);
 
@@ -36,11 +39,13 @@ public class StatusMonitor extends Observable implements Runnable {
 
 	public StatusMonitor(TCPConnector tcp) {
 		this.tcp = tcp;
-		ti = new TrackInfo(tcp.getiPlayer());
+		ti = new TrackInfo();
+		ti.addObserver(this);
 	}
 
 	@Override
 	public void run() {
+		int iCount = 0;
 		while (isRunning()) {
 			List<String> commands = new ArrayList<String>();
 			commands.add(tcp.createCommand("status"));
@@ -48,7 +53,6 @@ public class StatusMonitor extends Observable implements Runnable {
 			boolean bSongChanged = false;
 			HashMap<String, String> res = tcp.sendCommand(tcp.createCommandList(commands));
 			String value = "";
-			//log.debug(res);
 			if (res.containsKey("songid")) {
 				value = res.get("songid");
 				if (!current_songid.equalsIgnoreCase(value)) {
@@ -77,11 +81,13 @@ public class StatusMonitor extends Observable implements Runnable {
 				if (value != null && !current_state.equalsIgnoreCase(value)) {
 					log.debug("Status Changed From : " + current_state + " To: " + value);
 					current_state = value;
-					tcp.getiPlayer().setStatus(value);
+					setStatus(value);
+					// tcp.getiPlayer().setStatus(value);
 				} else {
 					if (bSongChanged) {
 						if (value != null) {
-							tcp.getiPlayer().setStatus(value);
+							// tcp.getiPlayer().setStatus(value);
+							setStatus(value);
 						}
 					}
 				}
@@ -99,19 +105,21 @@ public class StatusMonitor extends Observable implements Runnable {
 					EventTimeUpdate e = new EventTimeUpdate();
 					lTime = Long.valueOf(mTime).longValue();
 					e.setTime(lTime);
-					tcp.getiPlayer().fireEvent(e);
+					fireEvent(e);
+					// tcp.getiPlayer().fireEvent(e);
 					current_time = mTime;
 				}
 
 				if (mDuration != null && !current_duration.equalsIgnoreCase(mDuration)) {
 					EventDurationUpdate e = new EventDurationUpdate();
 					e.setDuration(lDuration);
-					tcp.getiPlayer().fireEvent(e);
+					fireEvent(e);
+					// tcp.getiPlayer().fireEvent(e);
 					current_duration = mDuration;
 				}
 
 				if (lTime > 0 && lDuration > 0) {
-					if (lDuration - lTime < 10) {
+					if ((lDuration - lTime) < Config.mpd_preload_timer) {
 						if (!sentFinishingEvent) {
 							EventCurrentTrackFinishing ev = new EventCurrentTrackFinishing();
 							fireEvent(ev);
@@ -120,16 +128,14 @@ public class StatusMonitor extends Observable implements Runnable {
 					}
 				}
 			}
-			
-			if(res.containsKey("volume"))
-			{
+
+			if (res.containsKey("volume")) {
 				String volume = res.get("volume");
-				if(!current_volume.equalsIgnoreCase(volume))
-				{
+				if (!current_volume.equalsIgnoreCase(volume)) {
 					EventVolumeChanged ev = new EventVolumeChanged();
 					long l = Long.valueOf(volume).longValue();
 					ev.setVolume(l);
-					tcp.getiPlayer().fireEvent(ev);
+					fireEvent(ev);
 					current_volume = volume;
 				}
 			}
@@ -151,7 +157,11 @@ public class StatusMonitor extends Observable implements Runnable {
 					} catch (Exception e) {
 
 					}
-					tcp.getiPlayer().updateInfo(title, artist);
+					EventUpdateTrackMetaText ev = new EventUpdateTrackMetaText();
+					ev.setArtist(artist);
+					ev.setTitle(title);
+					fireEvent(ev);
+					// tcp.getiPlayer().updateInfo(title, artist);
 					current_title = full_title;
 				}
 			}
@@ -159,11 +169,14 @@ public class StatusMonitor extends Observable implements Runnable {
 			if (bSongChanged) {
 				ti.setUpdated(false);
 			}
-			
-			if(!ti.isUpdated())
-			{
 
-				if (res.containsKey("audio")) {
+			if (res.containsKey("audio")) {
+				if (!ti.isUpdated() || iCount > 5) {
+
+					if (iCount > 5) {
+						ti.setUpdated(false);
+						iCount = 0;
+					}
 					String audio = res.get("audio");
 					String[] splits = audio.split(":");
 					try {
@@ -177,6 +190,7 @@ public class StatusMonitor extends Observable implements Runnable {
 							String depth = splits[1];
 							long dep = Long.valueOf(depth).longValue();
 							ti.setBitDepth(dep);
+							ti.setCodec(""+ dep + " bits");
 						}
 					} catch (Exception e) {
 
@@ -192,11 +206,10 @@ public class StatusMonitor extends Observable implements Runnable {
 
 					}
 				}
-				if (ti.isSet())
-				{
+				if (ti.isSet()) {
 					ti.setUpdated(true);
 				}
-					
+				iCount++;
 			}
 
 			try {
@@ -208,13 +221,13 @@ public class StatusMonitor extends Observable implements Runnable {
 
 	}
 
-	private String getValue(String s, String name) {
-		String value = "";
-		if (s.startsWith(name)) {
-			return value = s.substring(name.length(), s.length()).trim();
-		}
-		return null;
-	}
+	// private String getValue(String s, String name) {
+	// String value = "";
+	// if (s.startsWith(name)) {
+	// return value = s.substring(name.length(), s.length()).trim();
+	// }
+	// return null;
+	// }
 
 	public boolean isRunning() {
 		return isRunning;
@@ -224,8 +237,20 @@ public class StatusMonitor extends Observable implements Runnable {
 		this.isRunning = isRunning;
 	}
 
+	public synchronized void setStatus(String value) {
+		EventStatusChanged ev = new EventStatusChanged();
+		ev.setStatus(value);
+		fireEvent(ev);
+	}
+
 	private void fireEvent(EventBase ev) {
 		setChanged();
 		notifyObservers(ev);
+	}
+
+	@Override
+	public void update(Observable o, Object evt) {
+		EventBase e = (EventBase) evt;
+		fireEvent(e);
 	}
 }

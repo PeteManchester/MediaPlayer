@@ -8,6 +8,9 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.Shutdown;
 
 import org.apache.log4j.Logger;
+import org.rpi.player.EventStandbyChanged;
+import org.rpi.player.ObservableVolume;
+import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventMuteChanged;
 import org.rpi.player.events.EventTimeUpdate;
@@ -15,8 +18,6 @@ import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.player.events.EventVolumeChanged;
 import org.rpi.playlist.CustomTrack;
-import org.rpi.playlist.EventStandbyChanged;
-import org.rpi.playlist.PlayManager;
 
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
@@ -54,25 +55,22 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 
 	public LCDDisplayImpl() {
 		log.debug("Init LCDDisplayImpl");
-		try{
-		PlayManager.getInstance().observInfoEvents(this);
-		PlayManager.getInstance().observVolumeEvents(this);
-		PlayManager.getInstance().observTimeEvents(this);
-		PlayManager.getInstance().observeProductEvents(this);
-		initPi4J();
-		scroller = new LCDScroller();
-		if (lcdHandle != -1) {
-			scroller.setLCDHandle(lcdHandle);
-			scroller.start();
-			welcomeMessage();
-		}
-		}
-		catch(Exception e)
-		{
-			log.error("Error Init LCDDisplayImpl",e);
+		try {
+			PlayManager.getInstance().observInfoEvents(this);
+			PlayManager.getInstance().observVolumeEvents(this);
+			PlayManager.getInstance().observTimeEvents(this);
+			PlayManager.getInstance().observeProductEvents(this);
+			initPi4J();
+			scroller = new LCDScroller();
+			if (lcdHandle != -1) {
+				scroller.setLCDHandle(lcdHandle);
+				scroller.start();
+				welcomeMessage();
+			}
+		} catch (Exception e) {
+			log.error("Error Init LCDDisplayImpl", e);
 		}
 	}
-
 
 	private void initPi4J() {
 		try {
@@ -176,9 +174,11 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 			updateVolume();
 			break;
 		case EVENTMUTECHANGED:
-			EventMuteChanged em = (EventMuteChanged) e;
-			log.debug("MuteStateChanged: " + em.isMute());
-			isMute = em.isMute();
+			if (o instanceof ObservableVolume) {
+				EventMuteChanged em = (EventMuteChanged) e;
+				log.debug("MuteStateChanged: " + em.isMute());
+				isMute = em.isMute();
+			}
 
 			// if (myMuteLed != null) {
 			// if (em.isMute()) {
@@ -218,6 +218,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 
 	/***
 	 * Convert seconds to Hours:Seconds
+	 * 
 	 * @param lTime
 	 * @return
 	 */
@@ -256,23 +257,21 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 	 */
 	private void updateVolume() {
 		StringBuilder sb = new StringBuilder();
-		if(isMute)
-		{
+		if (isMute) {
 			sb.append("Mute");
 			sb.append(" ");
-		}
-		else
-		{
+		} else {
 			sb.append("Vol:" + mVolume);
 			sb.append(" ");
 		}
 		sb.append("Time:" + mTime);
-		//String text = "Vol:" + mVolume + " Time:" + mTime;
+		// String text = "Vol:" + mVolume + " Time:" + mTime;
 		UpdateScroller(sb.toString(), 1);
 	}
 
 	/***
 	 * Update the Scroller Row Text
+	 * 
 	 * @param text
 	 * @param row
 	 */
@@ -282,15 +281,14 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 				scroller.setText(text, row);
 			}
 		} catch (Exception e) {
-			log.error("Error UpdateScroller: " , e);
+			log.error("Error UpdateScroller: ", e);
 		}
 	}
-	
+
 	/***
 	 * Create the Welcome Message
 	 */
-	private void welcomeMessage()
-	{
+	private void welcomeMessage() {
 		String sWelcome = "Welcome";
 		String sStatus = "";
 		try {
@@ -301,8 +299,6 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 		UpdateScroller(sWelcome, 0);
 		UpdateScroller(sStatus, 1);
 	}
-	
-
 
 	@Shutdown
 	public void bye() {

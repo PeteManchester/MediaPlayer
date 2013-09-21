@@ -1,4 +1,4 @@
-package org.rpi.playlist;
+package org.rpi.player;
 
 import java.util.Collections;
 import java.util.Observable;
@@ -9,10 +9,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
 import org.rpi.mpdplayer.MPDPlayerController;
+import org.rpi.mplayer.MPlayerController;
 //import org.rpi.mplayer.MPlayer;
 //import org.rpi.player.IPlayer;
-import org.rpi.player.IPlayerController;
-import org.rpi.player.MPlayerController;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventFinishedCurrentTrack;
 import org.rpi.player.events.EventMuteChanged;
@@ -27,6 +26,7 @@ import org.rpi.player.events.EventTimeUpdate;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.player.events.EventVolumeChanged;
+import org.rpi.playlist.CustomTrack;
 import org.rpi.radio.CustomChannel;
 
 public class PlayManager implements Observer {
@@ -438,7 +438,7 @@ public class PlayManager implements Observer {
 		if (mPlayer.isPlaying()) {
 			mPlayer.pause(bPause);
 			setPaused(bPause);
-			setStatus("Paused");
+			// setStatus("Paused");
 		}
 	}
 
@@ -500,11 +500,10 @@ public class PlayManager implements Observer {
 	 */
 	public synchronized void play() {
 		if (isPaused()) {
-			// if (mPlayer != null) {
 			if (mPlayer.isPlaying()) {
 				mPlayer.resume();
 			}
-			setStatus("Playing");
+			// setStatus("Playing");
 			setPaused(false);
 		} else {
 			if (shuffle)
@@ -585,17 +584,16 @@ public class PlayManager implements Observer {
 	 * @param volume
 	 */
 	public synchronized void setVolume(long volume) {
-		this.volume = volume;
-
-		EventVolumeChanged ev = new EventVolumeChanged();
-
-		ev.setVolume(volume);
-		obsvVolume.notifyChange(ev);
-		{
-			// if (mPlayer != null) {
-			if (mPlayer.isActive()) {
-				if (!isUseExternalVolume())
-					mPlayer.setVolume(volume);
+		if (!bMute) {
+			this.volume = volume;
+			EventVolumeChanged ev = new EventVolumeChanged();
+			ev.setVolume(volume);
+			obsvVolume.notifyChange(ev);
+			{
+				if (mPlayer.isActive()) {
+					if (!isUseExternalVolume())
+						mPlayer.setVolume(volume);
+				}
 			}
 		}
 	}
@@ -718,7 +716,7 @@ public class PlayManager implements Observer {
 			// if (mPlayer != null) {
 			if (mPlayer.isPlaying()) {
 				mPlayer.stop();
-				setStatus("Stopped");
+				// setStatus("Stopped");
 			}
 		}
 
@@ -738,7 +736,7 @@ public class PlayManager implements Observer {
 				if (mPlayer.isPlaying()) {
 					mPlayer.stop();
 				}
-				setStatus("Stopped");
+				// setStatus("Stopped");
 			}
 	}
 
@@ -759,22 +757,23 @@ public class PlayManager implements Observer {
 	 * 
 	 * @param status
 	 */
-	public synchronized void setStatus(String status) {
-		setStatus(status, null);
-	}
+	// public synchronized void setStatus(String status) {
+	// setStatus(status, null);
+	// }
 
 	/***
 	 * Set the Status of the Track
 	 * 
 	 * @param status
 	 */
-	public synchronized void setStatus(String status, CustomTrack t) {
+	public synchronized void setStatus(String status) {
+		log.debug("SetStatus: " + status);
 		EventTrackChanged ev = new EventTrackChanged();
-		ev.setTrack(t);
+		// ev.setTrack(t);
 		if (status.equalsIgnoreCase("PLAYING")) {
-			if (t != null) {
-				current_track = t;
-			}
+			// if (t != null) {
+			// current_track = t;
+			// }
 			if (current_track != null) {
 				playingTrack(current_track.getId());
 				ev.setTrack(current_track);
@@ -892,6 +891,7 @@ public class PlayManager implements Observer {
 		case EVENTSTATUSCHANGED:
 			try {
 				EventStatusChanged es = (EventStatusChanged) e;
+				log.debug("EventStatusChanged: " + es.getStatus());
 				setStatus(es.getStatus());
 			} catch (Exception esc) {
 				log.error("Error EVENTSTATUSCHANGED", esc);
@@ -937,17 +937,21 @@ public class PlayManager implements Observer {
 			current_track = etc.getTrack();
 			break;
 		case EVENTVOLUMECHNANGED:
-			try
-			{
-				EventVolumeChanged ev = (EventVolumeChanged)e;
+			try {
+				EventVolumeChanged ev = (EventVolumeChanged) e;
 				volume = ev.getVolume();
 				obsvVolume.notifyChange(e);
-			}	
-			catch(Exception ex)
-			{
-				
+			} catch (Exception ex) {
+
 			}
 			break;
+		case EVENTMUTECHANGED:
+			try {
+				EventMuteChanged emc = (EventMuteChanged) e;
+
+			} catch (Exception exm) {
+
+			}
 		}
 	}
 

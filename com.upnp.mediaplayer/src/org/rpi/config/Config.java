@@ -25,8 +25,10 @@ public class Config {
 	public static String mpd_host = "";
 	public static int mpd_port = 6600;
 	public static String player = "mpd";
+	public static int mpd_preload_timer = 10;
 	
 	private static Calendar cal = Calendar.getInstance();
+	
 	
 	
 	public static String getProtocolInfo() {

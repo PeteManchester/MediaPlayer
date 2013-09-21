@@ -2,15 +2,21 @@ package org.rpi.mpdplayer;
 
 import java.util.Observable;
 import java.util.Observer;
+
+import org.apache.log4j.Logger;
 import org.rpi.player.IPlayerController;
+import org.rpi.player.events.EnumPlayerEvents;
+import org.rpi.player.events.EventBase;
+import org.rpi.player.events.EventStatusChanged;
 import org.rpi.playlist.CustomTrack;
 
+
 public class MPDPlayerController extends Observable implements IPlayerController, Observer {
-	
-	MPDPlayer mpdPlayer = null;
-	
-	public MPDPlayerController()
-	{
+
+	private static Logger log = Logger.getLogger(MPDPlayerController.class);
+	private MPDPlayer mpdPlayer = null;
+
+	public MPDPlayerController() {
 		mpdPlayer = new MPDPlayer();
 		mpdPlayer.addObserver(this);
 	}
@@ -70,7 +76,6 @@ public class MPDPlayerController extends Observable implements IPlayerController
 		mpdPlayer.seekAbsolute(seconds);
 	}
 
-
 	@Override
 	public boolean isPlaying() {
 		return mpdPlayer.isPlaying();
@@ -78,7 +83,6 @@ public class MPDPlayerController extends Observable implements IPlayerController
 
 	@Override
 	public boolean isActive() {
-		//return mpdPlayer.isActive()
 		return true;
 	}
 
@@ -89,8 +93,8 @@ public class MPDPlayerController extends Observable implements IPlayerController
 
 	@Override
 	public void update(Observable arg0, Object obj) {
+		EventBase e = (EventBase)obj;
 		setChanged();
 		notifyObservers(obj);
 	}
-
 }

@@ -9,9 +9,9 @@ import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgProduct1;
 import org.rpi.config.Config;
+import org.rpi.player.EventStandbyChanged;
+import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
-import org.rpi.playlist.EventStandbyChanged;
-import org.rpi.playlist.PlayManager;
 
 public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Observer {
 

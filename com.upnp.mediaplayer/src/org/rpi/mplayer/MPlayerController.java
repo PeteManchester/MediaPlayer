@@ -1,10 +1,13 @@
-package org.rpi.player;
+package org.rpi.mplayer;
 
 import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.log4j.Logger;
-import org.rpi.mplayer.MPlayer;
+import org.quartz.impl.jdbcjobstore.FiredTriggerRecord;
+import org.rpi.player.IPlayer;
+import org.rpi.player.IPlayerController;
+import org.rpi.player.events.EventStatusChanged;
 import org.rpi.playlist.CustomTrack;
 
 public class MPlayerController extends Observable implements IPlayerController, Observer {
@@ -66,7 +69,9 @@ public class MPlayerController extends Observable implements IPlayerController, 
 	@Override
 	public void pause(boolean bPause) {
 		if(mPlayer!=null)
+		{
 			mPlayer.pause(bPause);
+		}
 
 	}
 

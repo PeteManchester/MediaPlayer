@@ -5,6 +5,7 @@ import java.lang.Thread.State;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
+import java.util.Observer;
 
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
@@ -15,7 +16,7 @@ import org.rpi.player.events.EventStatusChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.playlist.CustomTrack;
 
-public class MPlayer extends Observable   implements IPlayer  {
+public class MPlayer extends Observable   implements IPlayer, Observer  {
 
 	private Logger log = Logger.getLogger(MPlayer.class);
 	private Process process = null;
@@ -141,7 +142,8 @@ public class MPlayer extends Observable   implements IPlayer  {
 				params.add("" + Config.mplayer_cache_min);
 			}
 
-			trackInfo = new TrackInfo(this);
+			trackInfo = new TrackInfo();
+			trackInfo.addObserver(this);
 			if (isPlayList(url)) {
 				params.add("-playlist");
 			}
@@ -183,13 +185,18 @@ public class MPlayer extends Observable   implements IPlayer  {
 		bPaused = true;
 		log.debug("Sending: pause");
 		sendCommand("pause");
-
+		EventStatusChanged ev = new EventStatusChanged();
+		ev.setStatus("Paused");
+		fireEvent(ev);
 	}
 
 	@Override
 	public synchronized void stop() {
 		log.debug("Sending: quit");
 		sendCommand("quit");
+		EventStatusChanged ev = new EventStatusChanged();
+		ev.setStatus("Stopped");
+		fireEvent(ev);
 	}
 
 	@Override
@@ -335,6 +342,9 @@ public class MPlayer extends Observable   implements IPlayer  {
 	public synchronized void resume() {
 		bPaused = false;
 		sendCommand("pause");
+		EventStatusChanged ev = new EventStatusChanged();
+		ev.setStatus("Playing");
+		fireEvent(ev);
 	}
 
 	/***
@@ -373,6 +383,12 @@ public class MPlayer extends Observable   implements IPlayer  {
 		sb.append("Writer: " + writer.toString());
 		sb.append("Reader: " + reader.toString());
 		return sb.toString();
+	}
+
+	@Override
+	public void update(Observable o, Object evt) {
+		EventBase e = (EventBase)evt;
+		fireEvent(e);
 	}
 
 

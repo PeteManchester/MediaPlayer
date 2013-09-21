@@ -6,7 +6,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.rpi.playlist.PlayManager;
+import org.rpi.player.PlayManager;
 
 public class AlarmClockJob implements Job {
 

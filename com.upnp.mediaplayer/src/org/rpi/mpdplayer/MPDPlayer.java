@@ -9,13 +9,14 @@ import java.util.Observer;
 import org.apache.log4j.Logger;
 import org.rpi.player.IPlayer;
 import org.rpi.player.events.EventBase;
-import org.rpi.player.events.EventCurrentTrackFinishing;
+import org.rpi.player.events.EventMuteChanged;
 import org.rpi.player.events.EventPlayListPlayingTrackID;
 import org.rpi.player.events.EventStatusChanged;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.player.events.EventVolumeChanged;
 import org.rpi.playlist.CustomTrack;
+import org.rpi.radio.parsers.FileParser;
 
 public class MPDPlayer extends Observable implements IPlayer, Observer {
 
@@ -27,6 +28,7 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 	private String current_status = "";
 	private long current_volume = 100;
 	private long mute_volume = 100;
+	private boolean bMute = false;
 
 	public MPDPlayer() {
 		tcp = new TCPConnector(this);
@@ -39,7 +41,8 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 	@Override
 	public void preLoadTrack(CustomTrack track) {
 		List<String> params = new ArrayList<String>();
-		params.add(track.getUri());
+		String url = checkURL(track.getUri());
+		params.add(url);
 		params.add("1");
 		HashMap<String, String> res = tcp.sendCommand(tcp.createCommand("addid", params));
 		if (res.containsKey("Id")) {
@@ -56,19 +59,18 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 	@Override
 	public boolean playTrack(CustomTrack track, long volume, boolean mute) {
 		current_track = track;
-		// tcp.sendCommand("clear");
-		// tcp.sendCommand("addid \"" + track.getUri() + "\" \"0\"");
-		// tcp.sendCommand("play 0");
 		List<String> commands = new ArrayList<String>();
 		commands.add(tcp.createCommand("clear"));
 		List<String> params = new ArrayList<String>();
-		params.add(track.getUri());
+		String url = checkURL(track.getUri());
+		params.add(url);
 		params.add("0");
 		commands.add(tcp.createCommand("addid", params));
 		params.clear();
 		params.add("0");
 		commands.add(tcp.createCommand("play", params));
 		HashMap<String, String> res = tcp.sendCommand(tcp.createCommandList(commands));
+		tracks.clear();
 		if (res.containsKey("Id")) {
 			tracks.put(res.get("Id"), track);
 		}
@@ -112,23 +114,31 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 
 	@Override
 	public void setMute(boolean mute) {
-		if(mute)
-		{
+		bMute = mute;
+		if (mute) {
 			mute_volume = current_volume;
-			setVolume(0);
-		}
-		else
-		{
-			setVolume(mute_volume);
+			setVolumeInternal(0);
+		} else {
+			if (mute_volume == 100) {
+				setVolumeInternal(99);
+			}
+			setVolumeInternal(mute_volume);
 		}
 
+	}
+	
+	private void setVolumeInternal(long volume)
+	{
+		List<String> params = new ArrayList<String>();
+		params.add("" + volume);
+		tcp.sendCommand(tcp.createCommand("setvol", params));
 	}
 
 	@Override
 	public void setVolume(long volume) {
-		List<String> params = new ArrayList<String>();
-		params.add(""+volume);
-		tcp.sendCommand(tcp.createCommand("setvol", params));
+		if (!bMute) {
+			setVolumeInternal(volume);
+		}
 	}
 
 	@Override
@@ -160,13 +170,9 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 	}
 
 	public synchronized void setStatus(String value) {
-		current_status = value;
-		EventStatusChanged ev = new EventStatusChanged();
-		ev.setStatus(value);
-		ev.setTrack(current_track);
-		fireEvent(ev);
+		log.warn("DONT DO ANYTHING");
 	}
-	
+
 	/***
 	 * Used by the ICY info to update the track being played on the Radio
 	 * 
@@ -177,14 +183,12 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 		EventUpdateTrackMetaText ev = new EventUpdateTrackMetaText();
 		ev.setArtist(artist);
 		ev.setTitle(title);
-		//ev.setCurrentTrackId(current_track.getId());
 		fireEvent(ev);
 	}
 
 	public synchronized void fireEvent(EventBase ev) {
-		if(ev instanceof EventVolumeChanged)
-		{
-			EventVolumeChanged e = (EventVolumeChanged)ev;
+		if (ev instanceof EventVolumeChanged) {
+			EventVolumeChanged e = (EventVolumeChanged) ev;
 			current_volume = e.getVolume();
 		}
 		setChanged();
@@ -199,6 +203,7 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 			EventTrackChanged ev = (EventTrackChanged) e;
 			if (tracks.containsKey(ev.getMPD_id())) {
 				CustomTrack t = tracks.get(ev.getMPD_id());
+				removeTrack(ev.getMPD_id());
 				ev.setTrack(t);
 				fireEvent(ev);
 				EventPlayListPlayingTrackID ep = new EventPlayListPlayingTrackID();
@@ -209,8 +214,47 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 		case EVENTCURRENTTRACKFINISHING:
 			fireEvent(e);
 			break;
+		case EVENTSTATUSCHANGED:
+			EventStatusChanged es = (EventStatusChanged) e;
+			log.debug("Status Changed: " + es.getStatus());
+			current_status = es.getStatus();
+			es.setTrack(current_track);
+			fireEvent(es);
+			break;
+		case EVENTVOLUMECHNANGED:
+			if(!bMute)
+			{
+				//If we are not on Mute forward the change of volume
+				fireEvent(e);
+			}
+			break;
+		default:
+		
+			
+			fireEvent(e);
 		}
 
+	}
+
+	private void removeTrack(String track_id) {
+		try {
+			if (tracks.containsKey(track_id)) {
+				tracks.remove(track_id);
+			}
+		} catch (Exception e) {
+			log.error("Error Remvoing Track: " + track_id, e);
+		}
+	}
+
+	/**
+	 * MPD Player will not play .pls,.m3u or .asx so we check here first
+	 * 
+	 * @param url
+	 * @return
+	 */
+	private String checkURL(String url) {
+		FileParser fp = new FileParser();
+		return fp.getURL(url);
 	}
 
 }

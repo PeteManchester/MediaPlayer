@@ -25,7 +25,7 @@ import org.openhome.net.device.IDvDeviceListener;
 import org.openhome.net.device.IResourceManager;
 import org.openhome.net.device.IResourceWriter;
 import org.rpi.config.Config;
-import org.rpi.playlist.PlayManager;
+import org.rpi.player.PlayManager;
 import org.rpi.providers.PrvAVTransport;
 import org.rpi.providers.PrvConnectionManager;
 import org.rpi.providers.PrvInfo;

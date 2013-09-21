@@ -1,0 +1,34 @@
+.ASX
+##############################################
+<ASX version="3.0">
+  <ABSTRACT>http://www.bbc.co.uk/</ABSTRACT>
+  <TITLE>BBC</TITLE>
+  <AUTHOR>BBC</AUTHOR>
+  <COPYRIGHT>(c) British Broadcasting Corporation</COPYRIGHT>
+  <MoreInfo href="http://www.bbc.co.uk/"/>
+  <Entry>
+    <ref href="mms://wm-acl.bbc.co.uk/wms/6musiccoyopa/6music_-_saturday_0300.wma"/>
+    <ref href="mms://wm-acl.bbc.co.uk/wms2/6musiccoyopa/6music_-_saturday_0300.wma"/>
+    <MoreInfo href="http://www.bbc.co.uk/"/>
+    <Abstract>BBC </Abstract>
+  </Entry>
+</ASX>
+##############################################
+
+.M3U
+##############################################
+http://icy-e-05.sharp-stream.com:80/key.mp3
+##############################################
+
+.PLS
+##############################################
+[playlist]
+Title1=ABC Adelaide
+File1=http://shoutmedia.abc.net.au:10352/
+Length1=-1
+NumberOfEntries=1
+Version=2
+##############################################
+
+
+http://www.bbc.co.uk/mediaselector/4/asx/b039vd9f/iplayer_intl_stream_wma_uk_concrete

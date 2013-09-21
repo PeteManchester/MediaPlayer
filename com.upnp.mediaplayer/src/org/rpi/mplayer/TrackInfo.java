@@ -1,15 +1,17 @@
 package org.rpi.mplayer;
 
+import java.util.Observable;
+
 import org.rpi.player.IPlayer;
+import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventUpdateTrackInfo;
 
-public class TrackInfo {
+public class TrackInfo extends Observable {
 
 	private boolean bSentUpdate = false;
-	private IPlayer mPlayer = null;
 
-	public TrackInfo(IPlayer mPlayer) {
-		this.mPlayer = mPlayer;
+	public TrackInfo() {
+
 	}
 
 	private String codec = null;
@@ -83,10 +85,8 @@ public class TrackInfo {
 			if (!bSentUpdate) {
 				EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
 				ev.setTrackInfo(this);
-				if (mPlayer != null) {
-					mPlayer.fireEvent(ev);
-					bSentUpdate = true;
-				}
+				fireEvent(ev);
+				bSentUpdate = true;
 			}
 			return true;
 		}
@@ -114,6 +114,11 @@ public class TrackInfo {
 			duration = -99;
 			depth = -99;
 		}
+	}
+
+	private void fireEvent(EventBase ev) {
+		setChanged();
+		notifyObservers(ev);
 	}
 
 }

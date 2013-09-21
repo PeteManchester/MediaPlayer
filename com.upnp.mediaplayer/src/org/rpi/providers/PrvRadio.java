@@ -10,11 +10,11 @@ import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgRadio1;
 import org.rpi.config.Config;
+import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventRadioPlayName;
 import org.rpi.player.events.EventRadioPlayingTrackID;
 import org.rpi.player.events.EventRadioStatusChanged;
-import org.rpi.playlist.PlayManager;
 import org.rpi.radio.CustomChannel;
 
 public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer {

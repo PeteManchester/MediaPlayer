@@ -10,15 +10,16 @@ import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
-import org.rpi.main.StartMe;
 import org.rpi.player.IPlayer;
+import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventStatusChanged;
 
-public class TCPConnector {
+public class TCPConnector extends Observable implements Observer {
 
 	private static Logger log = Logger.getLogger(TCPConnector.class);
 
@@ -28,7 +29,7 @@ public class TCPConnector {
 
 	private String host = "";
 	private int port = 6600;
-	private int timeout = 0;
+	private int timeout = 3000;
 	private StatusMonitor sm = null;
 	private Thread th = null;
 
@@ -36,42 +37,42 @@ public class TCPConnector {
 	private IPlayer iPlayer = null;
 
 	public TCPConnector(IPlayer iPlayer) {
-		
 		this.iPlayer = iPlayer;
 		this.host = Config.mpd_host;
 		this.port = Config.mpd_port;
-		try
-		{
-		connect();
-		}
-		catch(Exception e)
-		{
+		sm = new StatusMonitor(this);
+		sm.addObserver(this);
+		th = new Thread(sm);
+		th.start();
+		try {
+			connect();
+		} catch (Exception e) {
 			log.error(e);
 		}
 	}
 
-//	public TCPConnector() {
-//
-//	}
-//
-//	public TCPConnector(String host) {
-//		this(host, 6600);
-//	}
-//
-//	public TCPConnector(String host, int port) {
-//		this(host, port, 0);
-//	}
-//
-//	public TCPConnector(String host, int port, int timeout) {
-//		try {
-//			this.host = host;
-//			this.port = port;
-//			this.timeout = timeout;
-//			connect();
-//		} catch (IOException e) {
-//			log.error(e);
-//		}
-//	}
+	// public TCPConnector() {
+	//
+	// }
+	//
+	// public TCPConnector(String host) {
+	// this(host, 6600);
+	// }
+	//
+	// public TCPConnector(String host, int port) {
+	// this(host, port, 0);
+	// }
+	//
+	// public TCPConnector(String host, int port, int timeout) {
+	// try {
+	// this.host = host;
+	// this.port = port;
+	// this.timeout = timeout;
+	// connect();
+	// } catch (IOException e) {
+	// log.error(e);
+	// }
+	// }
 
 	protected synchronized String connect() throws IOException {
 		this.socket = new Socket();
@@ -79,15 +80,11 @@ public class TCPConnector {
 		SocketAddress sockaddr = new InetSocketAddress(host, port);
 		try {
 			this.socket.connect(sockaddr, timeout);
-			sm = new StatusMonitor(this);
-			th = new Thread(sm);
-			th.start();
 		} catch (SocketTimeoutException ste) {
 			log.error(ste);
 		}
 		BufferedReader in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
 		String line = in.readLine();
-		// log.debug(line);
 		if (isOK(line)) {
 			version = removeText(line, MPD_OK);
 		}
@@ -95,21 +92,26 @@ public class TCPConnector {
 	}
 
 	public synchronized HashMap<String, String> sendCommand(String command) {
-		//log.debug( command);
+		// log.debug( command);
 		HashMap<String, String> res = new HashMap<String, String>();
 		if (!this.socket.isConnected()) {
 			try {
 				connect();
 			} catch (IOException e) {
 				log.error(e);
+				try {
+					connect();
+				} catch (Exception ex) {
+
+				}
 				return res;
 			}
 		}
 		DataOutputStream dOut = null;
 		try {
 			dOut = new DataOutputStream(socket.getOutputStream());
-			//command = formatCommand(command);
-			//command = command + "\n";
+			// command = formatCommand(command);
+			// command = command + "\n";
 			byte[] bytesToSend = command.getBytes("UTF-8");
 			dOut.write(bytesToSend);
 			BufferedReader dIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -126,16 +128,21 @@ public class TCPConnector {
 				String[] splits = line.split(":");
 				if (splits.length > 1) {
 					String key = splits[0].trim();
-					String value = line.substring(key.length()+1,line.length());
-					
+					String value = line.substring(key.length() + 1, line.length());
 
 					res.put(splits[0].trim(), value.trim());
 				}
 			}
-			//log.debug(res);
+			// log.debug(res);
 			return res;
 		} catch (Exception e) {
 			log.error(e);
+			try {
+				socket.close();
+				connect();
+			} catch (Exception ex) {
+				log.error(ex);
+			}
 		} finally {
 			if (dOut != null) {
 				try {
@@ -251,24 +258,31 @@ public class TCPConnector {
 		return iPlayer;
 	}
 
-	public void addObserver(Observer obj) {
-		sm.addObserver(obj);	
-	}
+	// public void addObserver(Observer obj) {
+	// sm.addObserver(obj);
+	// }
 
 	public void destroy() {
 		th = null;
-		if(socket.isConnected())
-		{
-			try
-			{
+		if (socket.isConnected()) {
+			try {
 				socket.close();
-			}
-			catch(Exception e)
-			{
-				
+			} catch (Exception e) {
+
 			}
 		}
-		
+
+	}
+
+	@Override
+	public void update(Observable arg0, Object ev) {
+		EventBase e = (EventBase) ev;
+		fireEvent(e);
+	}
+
+	private void fireEvent(EventBase ev) {
+		setChanged();
+		notifyObservers(ev);
 	}
 
 }

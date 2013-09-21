@@ -8,12 +8,12 @@ import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgInfo1;
 import org.rpi.mplayer.TrackInfo;
+import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackInfo;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.playlist.CustomTrack;
-import org.rpi.playlist.PlayManager;
 
 public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer {
 

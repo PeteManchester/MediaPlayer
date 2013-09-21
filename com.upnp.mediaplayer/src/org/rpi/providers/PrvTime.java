@@ -7,10 +7,10 @@ import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgTime1;
+import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventDurationUpdate;
 import org.rpi.player.events.EventTimeUpdate;
-import org.rpi.playlist.PlayManager;
 
 public class PrvTime extends DvProviderAvOpenhomeOrgTime1 implements Observer {
 

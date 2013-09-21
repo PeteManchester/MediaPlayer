@@ -165,6 +165,40 @@ audio: 44100:16:2
 nextsong: 1
 nextsongid: 32
 
+HardFloat
+
+sudo apt-get install avahi-daemon
+
+sudo apt-get install openjdk-7-jdk
+sudo apt-get install openjdk-7-jre
+sudo apt-get install mplayer
+sudo passwd root
+
+Issue with USB Soundcard
+http://raspberrypi4dummies.wordpress.com/2013/03/17/how-to-enable-usb-sound-on-a-raspberry-pi/
+
+MPD Install
+http://pi-fidelity.blogspot.co.uk/
+sudo apt-get install mpd
+sudo cp /etc/mpd.conf /etc/mpd.confORIGINAL
+
+Get bitrate and depth of current track
+cat /proc/asound/card0/pcm0p/sub0/hw_params
+
+List devices aplay -l
+
+/etc/mpd.conf
+port =6600
+audio_output {
+
+		 type 		"alsa"
+		 name 		"Output"
+		 device 	"hw:1,0"
+		 mixer_control 	"PCM"
+		 dsd_usb 	"no"
+
+}
+
 
 
 

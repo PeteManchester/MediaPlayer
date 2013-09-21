@@ -33,7 +33,7 @@ public class OutputReader extends Thread {
 
 	private void read(String line) {
 		boolean print = true;
-		
+		//log.debug(line);
 		if (line.startsWith("Starting playback...")) {
 			mPlayer.playingTrack();
 		}

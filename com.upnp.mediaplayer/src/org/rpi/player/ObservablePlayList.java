@@ -1,16 +1,15 @@
-package org.rpi.playlist;
-
-import java.util.Observable;
+package org.rpi.player;
 
 /**
  * Possible Events
- * EVENTTIMEUPDATED
- * EVENTDURATIONUPDATE
- * 
- *
+ * EVENTPLAYLISTSTATUSCHANGED
+ * EVENTPLAYLISTPLAYINGTRACKID
+ * EVENTPLAYLISTUPDATESHUFFLE
  */
 
-public class ObservsableTime extends Observable {
+import java.util.Observable;
+
+public class ObservablePlayList extends Observable {
 	
 	/**
 	 * Let the Observers know something has changed..
@@ -25,8 +24,8 @@ public class ObservsableTime extends Observable {
 		}
 		catch(Exception e)
 		{
-			String s = "";
-		}	
+		}
+		
 	}
 
 }

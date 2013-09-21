@@ -171,7 +171,7 @@ public class StartMe {
 
 			Config.friendly_name = pr.getProperty("friendly.name");
 
-			String playlists = pr.getProperty("playlist");
+			String playlists = pr.getProperty("mplayer.playlist");
 			String[] splits = playlists.split(",");
 			Config.playlists = Arrays.asList(splits);
 			Config.debug = pr.getProperty("openhome.debug.level");
@@ -186,6 +186,7 @@ public class StartMe {
 			Config.playlist_max = Config.converStringToInt(pr.getProperty("playlist.max"),1000);
 			Config.mpd_host = pr.getProperty("mpd.host");
 			Config.mpd_port = Config.converStringToInt(pr.getProperty("mpd.port"),6600);
+			Config.mpd_preload_timer = Config.converStringToInt(pr.getProperty("mpd.preload.timer"),10);
 			Config.player = pr.getProperty("player");
 		} catch (Exception e) {
 			e.printStackTrace();

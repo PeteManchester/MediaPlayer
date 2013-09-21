@@ -1,14 +1,15 @@
-package org.rpi.playlist;
+package org.rpi.player;
 
 import java.util.Observable;
 
 /**
  * Possible Events
- * EVENTVOLUMECHANGED
- * EVENTMUTECHANGED
+ * EVENTUPDATETRACKINFO
+ * EVENTUPDATETRACKMETADATA
+ * EVENTTRACKCHANGED
  */
 
-public class ObservableVolume extends Observable {
+public class ObservableInfo extends Observable {
 	
 	/**
 	 * Let the Observers know something has changed..

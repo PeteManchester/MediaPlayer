@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgPlaylist1;
 import org.rpi.config.Config;
+import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventPlayListPlayingTrackID;
 import org.rpi.player.events.EventPlayListStatusChanged;
@@ -15,7 +16,6 @@ import org.rpi.player.events.EventPlayListUpdateShuffle;
 import org.rpi.playlist.CustomTrack;
 import org.rpi.playlist.PlayListReader;
 import org.rpi.playlist.PlayListWriter;
-import org.rpi.playlist.PlayManager;
 
 public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Observer {
 

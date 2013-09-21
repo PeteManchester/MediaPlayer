@@ -1,4 +1,4 @@
-package org.rpi.playlist;
+package org.rpi.player;
 
 import org.rpi.player.events.EnumPlayerEvents;
 import org.rpi.player.events.EventBase;
