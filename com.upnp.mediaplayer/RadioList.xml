@@ -90,6 +90,12 @@
 		<url>http://www.bbc.co.uk/radio/listen/live/r4_aaclca.pls</url>
 		<image>http://bbc.co.uk/iplayer/img/radio/bbc_radio_four.gif</image>
 	</Channel>
+	
+	<Channel>
+	    <id>BBC Radio 4 LW</id>
+	    <url>http://www.bbc.co.uk/radio/listen/live/r4lw.asx</url>
+	    <image>http://bbc.co.uk/iplayer/img/radio/bbc_radio_four.gif</image>
+	</Channel>
 
 	<Channel>
 		<id>BBC Radio 4 Extra</id>
@@ -157,12 +163,6 @@
 	<Channel>
 		<id>Talk Sport</id>
 		<url>http://webradio.radiomonitor.com/m3u/talksport</url>
-		<image></image>
-	</Channel>
-	 
-	<Channel>
-		<id>Hits FM Spain</id>
-		<url>http://streaming.tst.es/stcice/4c3ice5500/play.m3u</url>
 		<image></image>
 	</Channel>
 	

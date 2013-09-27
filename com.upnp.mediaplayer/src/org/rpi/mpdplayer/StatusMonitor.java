@@ -32,9 +32,6 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 	private String current_duration = "";
 	private String current_title = "";
 	private String current_volume = "";
-	private int iCount = 0;
-
-	private List<String> songs = new ArrayList<String>();
 	private TrackInfo ti = null;
 
 	public StatusMonitor(TCPConnector tcp) {
@@ -53,48 +50,49 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 			boolean bSongChanged = false;
 			HashMap<String, String> res = tcp.sendCommand(tcp.createCommandList(commands));
 			String value = "";
-			if (res.containsKey("songid")) {
-				value = res.get("songid");
-				if (!current_songid.equalsIgnoreCase(value)) {
-					log.debug("Song Changed From : " + current_songid + " To: " + value);
-					EventTrackChanged ev = new EventTrackChanged();
-					ev.setMPD_id(value);
-					fireEvent(ev);
-					current_songid = value;
-					sentFinishingEvent = false;
-					bSongChanged = true;
+			// if (res.containsKey("songid")) {
+			value = res.get("songid");
+			if (value != null && !current_songid.equalsIgnoreCase(value)) {
+				log.debug("Song Changed From : " + current_songid + " To: " + value);
+				EventTrackChanged ev = new EventTrackChanged();
+				ev.setMPD_id(value);
+				fireEvent(ev);
+				current_songid = value;
+				sentFinishingEvent = false;
+				bSongChanged = true;
 
-				}
 			}
+			// }
 			value = "";
-			if (res.containsKey("state")) {
-				value = res.get("state");
+			// if (res.containsKey("state")) {
+			value = res.get("state");
+			if (value != null) {
 				if (value.equalsIgnoreCase("PLAY")) {
 					value = "Playing";
-				}
-				if (value.equalsIgnoreCase("STOP")) {
+				} else if (value.equalsIgnoreCase("STOP")) {
 					value = "Stopped";
-				}
-				if (value.equalsIgnoreCase("PAUSE")) {
+				} else if (value.equalsIgnoreCase("PAUSE")) {
 					value = "Paused";
 				}
 				if (value != null && !current_state.equalsIgnoreCase(value)) {
 					log.debug("Status Changed From : " + current_state + " To: " + value);
 					current_state = value;
 					setStatus(value);
-					// tcp.getiPlayer().setStatus(value);
 				} else {
 					if (bSongChanged) {
 						if (value != null) {
-							// tcp.getiPlayer().setStatus(value);
 							setStatus(value);
 						}
 					}
 				}
 			}
+			// }
 
-			if (res.containsKey("time")) {
-				value = res.get("time");
+			//if (res.containsKey("time")) {
+			value = res.get("time");
+			if(value !=null)
+			{
+				//value = res.get("time");
 				String[] splits = value.split(":");
 				String mTime = splits[0];
 				String mDuration = splits[1];
@@ -106,7 +104,6 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 					lTime = Long.valueOf(mTime).longValue();
 					e.setTime(lTime);
 					fireEvent(e);
-					// tcp.getiPlayer().fireEvent(e);
 					current_time = mTime;
 				}
 
@@ -114,7 +111,6 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 					EventDurationUpdate e = new EventDurationUpdate();
 					e.setDuration(lDuration);
 					fireEvent(e);
-					// tcp.getiPlayer().fireEvent(e);
 					current_duration = mDuration;
 				}
 
@@ -128,9 +124,12 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 					}
 				}
 			}
+			//}
 
-			if (res.containsKey("volume")) {
+			//if (res.containsKey("volume")) {
 				String volume = res.get("volume");
+				if(volume !=null)
+				{
 				if (!current_volume.equalsIgnoreCase(volume)) {
 					EventVolumeChanged ev = new EventVolumeChanged();
 					long l = Long.valueOf(volume).longValue();
@@ -138,11 +137,12 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 					fireEvent(ev);
 					current_volume = volume;
 				}
-			}
+				}
+			//}
 
-			if (res.containsKey("Title")) {
+			//if (res.containsKey("Title")) {
 				String full_title = res.get("Title");
-				if (!current_title.equalsIgnoreCase(full_title)) {
+				if (full_title !=null && !current_title.equalsIgnoreCase(full_title)) {
 					String artist = "";
 					String title = full_title;
 					try {
@@ -161,23 +161,25 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 					ev.setArtist(artist);
 					ev.setTitle(title);
 					fireEvent(ev);
-					// tcp.getiPlayer().updateInfo(title, artist);
 					current_title = full_title;
 				}
-			}
+			//}
 
 			if (bSongChanged) {
 				ti.setUpdated(false);
 			}
 
-			if (res.containsKey("audio")) {
+			//if (res.containsKey("audio")) {
+			String audio = res.get("audio");
+			if(audio !=null)
+			{
 				if (!ti.isUpdated() || iCount > 5) {
 
 					if (iCount > 5) {
 						ti.setUpdated(false);
 						iCount = 0;
 					}
-					String audio = res.get("audio");
+					//String audio = res.get("audio");
 					String[] splits = audio.split(":");
 					try {
 						String sample = splits[0];
@@ -190,7 +192,7 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 							String depth = splits[1];
 							long dep = Long.valueOf(depth).longValue();
 							ti.setBitDepth(dep);
-							ti.setCodec(""+ dep + " bits");
+							ti.setCodec("" + dep + " bits");
 						}
 					} catch (Exception e) {
 

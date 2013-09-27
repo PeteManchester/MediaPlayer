@@ -1,7 +1,5 @@
-package org.rpi.player;
+package org.rpi.player.events;
 
-import org.rpi.player.events.EnumPlayerEvents;
-import org.rpi.player.events.EventBase;
 
 public class EventStandbyChanged implements EventBase {
 

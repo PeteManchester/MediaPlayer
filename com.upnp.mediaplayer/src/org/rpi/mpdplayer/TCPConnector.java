@@ -110,14 +110,11 @@ public class TCPConnector extends Observable implements Observer {
 		DataOutputStream dOut = null;
 		try {
 			dOut = new DataOutputStream(socket.getOutputStream());
-			// command = formatCommand(command);
-			// command = command + "\n";
 			byte[] bytesToSend = command.getBytes("UTF-8");
 			dOut.write(bytesToSend);
 			BufferedReader dIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			String line = null;
 			while ((line = dIn.readLine()) != null) {
-				// log.debug(line);
 				if (isOK(line))
 					break;
 				if (line.startsWith("ACK")) {
@@ -129,11 +126,9 @@ public class TCPConnector extends Observable implements Observer {
 				if (splits.length > 1) {
 					String key = splits[0].trim();
 					String value = line.substring(key.length() + 1, line.length());
-
-					res.put(splits[0].trim(), value.trim());
+					res.put(key, value.trim());
 				}
 			}
-			// log.debug(res);
 			return res;
 		} catch (Exception e) {
 			log.error(e);

@@ -1,6 +1,5 @@
 package org.rpi.plugin.lcddisplay;
 
-import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -8,27 +7,19 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.Shutdown;
 
 import org.apache.log4j.Logger;
-import org.rpi.player.EventStandbyChanged;
-import org.rpi.player.ObservableVolume;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventMuteChanged;
+import org.rpi.player.events.EventStandbyChanged;
 import org.rpi.player.events.EventTimeUpdate;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.player.events.EventVolumeChanged;
+import org.rpi.player.observers.ObservableVolume;
 import org.rpi.playlist.CustomTrack;
 
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
-import com.pi4j.io.gpio.GpioPin;
-import com.pi4j.io.gpio.GpioPinDigitalInput;
-import com.pi4j.io.gpio.GpioPinDigitalOutput;
-import com.pi4j.io.gpio.PinPullResistance;
-import com.pi4j.io.gpio.PinState;
-import com.pi4j.io.gpio.RaspiPin;
-import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
-import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.pi4j.system.SystemInfo;
 import com.pi4j.wiringpi.Lcd;
 
@@ -292,7 +283,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 		String sWelcome = "Welcome";
 		String sStatus = "";
 		try {
-			sStatus = "CPU Temp:" + SystemInfo.getCpuTemperature() + " Memory Free:" + SystemInfo.getMemoryFree() + " Memory Used:" + SystemInfo.getMemoryFree();
+			sStatus = "CPU Temp:" + SystemInfo.getCpuTemperature() + " Memory Free:" + convertBytes(SystemInfo.getMemoryFree()) + " Memory Used:" + convertBytes(SystemInfo.getMemoryUsed());
 		} catch (Exception e) {
 			log.error(e);
 		}
@@ -311,5 +302,16 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 			Lcd.lcdClear(lcdHandle);
 		}
 		gpio.shutdown();
+	}
+	
+	private final String[] Q = new String[]{"", "Kb", "Mb", "Gb", "Tb", "Pb", "Eb"};
+	public String convertBytes(long bytes)
+	{
+	    for (int i = 6; i > 0; i--)
+	    {
+	        double step = Math.pow(1024, i);
+	        if (bytes > step) return String.format("%3.1f %s", bytes / step, Q[i]);
+	    }
+	    return Long.toString(bytes);
 	}
 }

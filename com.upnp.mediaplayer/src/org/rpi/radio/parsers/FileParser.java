@@ -26,6 +26,10 @@ public class FileParser {
 		{
 			return url;
 		}
+		else if (uURL.endsWith(".M4A"))
+		{
+			return url;
+		}
 		else if(uURL.endsWith(".PLS"))
 		{
 			PLSParser pls = new PLSParser();

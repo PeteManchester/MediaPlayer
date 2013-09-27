@@ -92,9 +92,11 @@ exit 0
 
 #Not showing time in BST
 sudo dpkg-reconfigure tzdata
+or rapsi-config
 
 #Change HostName
 http://simonthepiman.com/how_to_rename_my_raspberry_pi.php
+or raspi-config
 
 
 #Making ohNet files
@@ -106,6 +108,8 @@ make
 JRE configured as JAVA_HOME so change to
 export JAVA_HOME="/opt/java/jdk1.7.0_21" -SOFT FLOAT
 export JAVA_HOME="/opt/java/jdk1.7.0_40" -HARD FLOAT
+export JAVA_HOME="/usr/lib/jvm/java-7-openjdk-armel" -SOFT FLOAT
+export JAVA_HOME="/usr/lib/jvm/java-7-openjdk-armhf" -HARD FLOAT
 Edit Makefile 
 from libjvm_dir ?= $(JAVA_HOME)/jre/lib/i386/server
 to   libjvm_dir ?= $(JAVA_HOME)/jre/lib/arm/server
@@ -171,8 +175,12 @@ sudo apt-get install avahi-daemon
 
 sudo apt-get install openjdk-7-jdk
 sudo apt-get install openjdk-7-jre
+
+sudo apt-get install oracle-java7-jdk
 sudo apt-get install mplayer
 sudo passwd root
+
+sudo apt-get install openjdk-7-jdk avahi-daemon mpd mplayer
 
 Issue with USB Soundcard
 http://raspberrypi4dummies.wordpress.com/2013/03/17/how-to-enable-usb-sound-on-a-raspberry-pi/
@@ -193,7 +201,7 @@ audio_output {
 
 		 type 		"alsa"
 		 name 		"Output"
-		 device 	"hw:1,0"
+		 device 	"hw:0,0"
 		 mixer_control 	"PCM"
 		 dsd_usb 	"no"
 

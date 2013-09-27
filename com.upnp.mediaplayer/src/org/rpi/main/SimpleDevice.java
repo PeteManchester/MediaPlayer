@@ -83,9 +83,9 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		iDevice.setAttribute("Upnp.Type", "Music Renderer");
 		iDevice.setAttribute("Upnp.Version", "1");
 		iDevice.setAttribute("Upnp.FriendlyName", Config.friendly_name);
-		iDevice.setAttribute("Upnp.Manufacturer", "Pete");
+		iDevice.setAttribute("Upnp.Manufacturer", "Made in Manchester");
 		iDevice.setAttribute("Upnp.ModelName", "Open Home Java Render v" + Config.version);
-		iDevice.setAttribute("Upnp.ModelDescription", "Simple Java Renderer based on OpenHome API and MPlayer");
+		iDevice.setAttribute("Upnp.ModelDescription", "'We made History not Money' - Tony Wilson..");
 		// iDevice.setAttribute("Upnp.ModelUri", "www.google.co.uk");
 		// iDevice.setAttribute("Upnp.ModelImageUri","http://upload.wikimedia.org/wikipedia/en/thumb/0/04/Joy_Division.JPG/220px-Joy_Division.JPG");
 

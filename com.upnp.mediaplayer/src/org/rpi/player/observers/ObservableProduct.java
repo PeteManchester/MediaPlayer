@@ -1,4 +1,4 @@
-package org.rpi.player;
+package org.rpi.player.observers;
 
 import java.util.Observable;
 

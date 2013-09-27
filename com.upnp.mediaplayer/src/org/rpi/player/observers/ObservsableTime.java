@@ -1,15 +1,16 @@
-package org.rpi.player;
+package org.rpi.player.observers;
 
 import java.util.Observable;
 
 /**
  * Possible Events
- * EVENTUPDATETRACKINFO
- * EVENTUPDATETRACKMETADATA
- * EVENTTRACKCHANGED
+ * EVENTTIMEUPDATED
+ * EVENTDURATIONUPDATE
+ * 
+ *
  */
 
-public class ObservableInfo extends Observable {
+public class ObservsableTime extends Observable {
 	
 	/**
 	 * Let the Observers know something has changed..
@@ -24,8 +25,8 @@ public class ObservableInfo extends Observable {
 		}
 		catch(Exception e)
 		{
-		}
-		
+			String s = "";
+		}	
 	}
 
 }

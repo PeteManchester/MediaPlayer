@@ -21,11 +21,18 @@ import org.rpi.player.events.EventPlayListUpdateShuffle;
 import org.rpi.player.events.EventRadioPlayName;
 import org.rpi.player.events.EventRadioPlayingTrackID;
 import org.rpi.player.events.EventRadioStatusChanged;
+import org.rpi.player.events.EventStandbyChanged;
 import org.rpi.player.events.EventStatusChanged;
 import org.rpi.player.events.EventTimeUpdate;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.player.events.EventVolumeChanged;
+import org.rpi.player.observers.ObservableInfo;
+import org.rpi.player.observers.ObservablePlayList;
+import org.rpi.player.observers.ObservableProduct;
+import org.rpi.player.observers.ObservableRadio;
+import org.rpi.player.observers.ObservableVolume;
+import org.rpi.player.observers.ObservsableTime;
 import org.rpi.playlist.CustomTrack;
 import org.rpi.radio.CustomChannel;
 
@@ -438,7 +445,7 @@ public class PlayManager implements Observer {
 		if (mPlayer.isPlaying()) {
 			mPlayer.pause(bPause);
 			setPaused(bPause);
-			// setStatus("Paused");
+			setStatus("Paused");
 		}
 	}
 
@@ -503,7 +510,7 @@ public class PlayManager implements Observer {
 			if (mPlayer.isPlaying()) {
 				mPlayer.resume();
 			}
-			// setStatus("Playing");
+			setStatus("Playing");
 			setPaused(false);
 		} else {
 			if (shuffle)

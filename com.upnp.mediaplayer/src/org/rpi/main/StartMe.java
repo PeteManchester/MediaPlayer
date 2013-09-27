@@ -29,14 +29,15 @@ public class StartMe {
 
 	private static boolean stop = false;
 	private static Logger log = Logger.getLogger(StartMe.class);
-	//private static PluginManager pm = null;
+
+	// private static PluginManager pm = null;
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//NativeLibraryLoader.load("mssql", "mssqlserver.jar");
-		//NativeLibraryLoader.load("pi4j", "libpi4j.so");
+		// NativeLibraryLoader.load("mssql", "mssqlserver.jar");
+		// NativeLibraryLoader.load("pi4j", "libpi4j.so");
 		Config.setStartTime();
 		boolean bInput = false;
 		for (String s : args) {
@@ -49,26 +50,24 @@ public class StartMe {
 		log.info("Starting......");
 		try {
 			log.info("Getting Network Interfaces");
-			Enumeration e=NetworkInterface.getNetworkInterfaces();
-            while(e.hasMoreElements())
-            {
-                NetworkInterface n=(NetworkInterface) e.nextElement();
-                Enumeration ee = n.getInetAddresses();
-                log.info("Network Interface Name: " + n.getDisplayName());
-                while(ee.hasMoreElements())
-                {
-                    InetAddress i= (InetAddress) ee.nextElement();
-                    log.info("IPAddress for Network Interface: " + n.getDisplayName() + " : " + i.getHostAddress());
-                }
-            }
-			} catch (Exception e) {
-				log.error("Error Getting IPAddress",e);
+			Enumeration e = NetworkInterface.getNetworkInterfaces();
+			while (e.hasMoreElements()) {
+				NetworkInterface n = (NetworkInterface) e.nextElement();
+				Enumeration ee = n.getInetAddresses();
+				log.info("Network Interface Name: " + n.getDisplayName());
+				while (ee.hasMoreElements()) {
+					InetAddress i = (InetAddress) ee.nextElement();
+					log.info("IPAddress for Network Interface: " + n.getDisplayName() + " : " + i.getHostAddress());
+				}
 			}
+		} catch (Exception e) {
+			log.error("Error Getting IPAddress", e);
+		}
 		log.info("End Of Network Interfaces");
 		log.info("JVM Version: " + System.getProperty("java.version"));
 		printSystemProperties();
 		SimpleDevice sd = new SimpleDevice();
-		//loadPlugins();
+		// loadPlugins();
 		sd.attachShutDownHook();
 		if (bInput) {
 
@@ -97,25 +96,24 @@ public class StartMe {
 		System.exit(0);
 	}
 
-
-//	/***
-//	 * Load the Plugins
-//	 */
-//	private static void loadPlugins() {
-//		log.info("Start of LoadPlugnis");
-//		pm = PluginManagerFactory.createPluginManager();
-//		List<File> files = listFiles("plugins");
-//		for (File file : files) {
-//			try {
-//				if (file.getName().toUpperCase().endsWith(".JAR")) {
-//					pm.addPluginsFrom(file.toURI());
-//				}
-//			} catch (Exception e) {
-//				log.error("Unable to load Plugins", e);
-//			}
-//		}
-//		log.info("End of LoadPlugnis");
-//	}
+	// /***
+	// * Load the Plugins
+	// */
+	// private static void loadPlugins() {
+	// log.info("Start of LoadPlugnis");
+	// pm = PluginManagerFactory.createPluginManager();
+	// List<File> files = listFiles("plugins");
+	// for (File file : files) {
+	// try {
+	// if (file.getName().toUpperCase().endsWith(".JAR")) {
+	// pm.addPluginsFrom(file.toURI());
+	// }
+	// } catch (Exception e) {
+	// log.error("Unable to load Plugins", e);
+	// }
+	// }
+	// log.info("End of LoadPlugnis");
+	// }
 
 	/***
 	 * List all the files in this directory and sub directories.
@@ -168,12 +166,15 @@ public class StartMe {
 		Properties pr = new Properties();
 		try {
 			pr.load(new FileInputStream("app.properties"));
-
 			Config.friendly_name = pr.getProperty("friendly.name");
 
-			String playlists = pr.getProperty("mplayer.playlist");
-			String[] splits = playlists.split(",");
-			Config.playlists = Arrays.asList(splits);
+			try {
+				String playlists = pr.getProperty("mplayer.playlist");
+				String[] splits = playlists.split(",");
+				Config.playlists = Arrays.asList(splits);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			Config.debug = pr.getProperty("openhome.debug.level");
 			Config.logfile = pr.getProperty("log.file");
 			Config.loglevel = pr.getProperty("log.file.level");
@@ -183,10 +184,10 @@ public class StartMe {
 			Config.port = Config.converStringToInt(pr.getProperty("openhome.port"));
 			Config.mplayer_cache = Config.converStringToInt(pr.getProperty("mplayer.cache"));
 			Config.mplayer_cache_min = Config.converStringToInt(pr.getProperty("mplayer.cache_min"));
-			Config.playlist_max = Config.converStringToInt(pr.getProperty("playlist.max"),1000);
+			Config.playlist_max = Config.converStringToInt(pr.getProperty("playlist.max"), 1000);
 			Config.mpd_host = pr.getProperty("mpd.host");
-			Config.mpd_port = Config.converStringToInt(pr.getProperty("mpd.port"),6600);
-			Config.mpd_preload_timer = Config.converStringToInt(pr.getProperty("mpd.preload.timer"),10);
+			Config.mpd_port = Config.converStringToInt(pr.getProperty("mpd.port"), 6600);
+			Config.mpd_preload_timer = Config.converStringToInt(pr.getProperty("mpd.preload.timer"), 10);
 			Config.player = pr.getProperty("player");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -198,29 +199,27 @@ public class StartMe {
 	 */
 	private static void ConfigureLogging() {
 
-		try
-		{
-		CustomPatternLayout pl = new CustomPatternLayout();
-		pl.setConversionPattern("%d [%t] %-5p [%-10c] %m%n");
-		pl.activateOptions();
-		//CustomRollingFileAppender fileAppender = new CustomRollingFileAppender(pl,Config.logfile,".log",true);
-		RollingFileAppender fileAppender = new RollingFileAppender();
-		fileAppender.setAppend(true);
-		fileAppender.setMaxFileSize("5mb");
-		fileAppender.setMaxBackupIndex(5);
-		fileAppender.setFile(Config.logfile);
-		fileAppender.setThreshold(Config.getLogFileLevel());
-		fileAppender.setLayout(pl);
-		fileAppender.activateOptions();
-		Logger.getRootLogger().addAppender(fileAppender);
-		ConsoleAppender consoleAppender = new ConsoleAppender();
-		consoleAppender.setLayout(pl);
-		consoleAppender.activateOptions();
-		consoleAppender.setThreshold(Config.getLogConsoleLevel());
-		Logger.getRootLogger().addAppender(consoleAppender);
-		}
-		catch(Exception e)
-		{
+		try {
+			CustomPatternLayout pl = new CustomPatternLayout();
+			pl.setConversionPattern("%d [%t] %-5p [%-10c] %m%n");
+			pl.activateOptions();
+			// CustomRollingFileAppender fileAppender = new
+			// CustomRollingFileAppender(pl,Config.logfile,".log",true);
+			RollingFileAppender fileAppender = new RollingFileAppender();
+			fileAppender.setAppend(true);
+			fileAppender.setMaxFileSize("5mb");
+			fileAppender.setMaxBackupIndex(5);
+			fileAppender.setFile(Config.logfile);
+			fileAppender.setThreshold(Config.getLogFileLevel());
+			fileAppender.setLayout(pl);
+			fileAppender.activateOptions();
+			Logger.getRootLogger().addAppender(fileAppender);
+			ConsoleAppender consoleAppender = new ConsoleAppender();
+			consoleAppender.setLayout(pl);
+			consoleAppender.activateOptions();
+			consoleAppender.setThreshold(Config.getLogConsoleLevel());
+			Logger.getRootLogger().addAppender(consoleAppender);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
