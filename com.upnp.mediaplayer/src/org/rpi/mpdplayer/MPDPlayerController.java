@@ -1,13 +1,15 @@
 package org.rpi.mpdplayer;
+/**
+ * Used to abstract the differences between the different playes
+ * with MPD we keep the same instance all the time
+ */
 
 import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.log4j.Logger;
 import org.rpi.player.IPlayerController;
-import org.rpi.player.events.EnumPlayerEvents;
 import org.rpi.player.events.EventBase;
-import org.rpi.player.events.EventStatusChanged;
 import org.rpi.playlist.CustomTrack;
 
 

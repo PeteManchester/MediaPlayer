@@ -1,13 +1,16 @@
 package org.rpi.mplayer;
 
+/**
+ * Used to abstract the differences between the different playes
+ * with mplayer we start a new instance for each track
+ */
+
 import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.log4j.Logger;
-import org.quartz.impl.jdbcjobstore.FiredTriggerRecord;
 import org.rpi.player.IPlayer;
 import org.rpi.player.IPlayerController;
-import org.rpi.player.events.EventStatusChanged;
 import org.rpi.playlist.CustomTrack;
 
 public class MPlayerController extends Observable implements IPlayerController, Observer {

@@ -59,6 +59,9 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 	@Override
 	public boolean playTrack(CustomTrack track, long volume, boolean mute) {
 		current_track = track;
+		EventStatusChanged ev = new EventStatusChanged();
+		ev.setStatus("Buffering");
+		fireEvent(ev);
 		List<String> commands = new ArrayList<String>();
 		commands.add(tcp.createCommand("clear"));
 		List<String> params = new ArrayList<String>();

@@ -1,5 +1,9 @@
 package org.rpi.player;
 
+/**
+ * Used to abstract the differences between the different playes
+ */
+
 import java.util.Observer;
 
 import org.rpi.playlist.CustomTrack;

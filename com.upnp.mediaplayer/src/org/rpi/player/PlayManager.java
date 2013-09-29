@@ -43,9 +43,7 @@ public class PlayManager implements Observer {
 	private CopyOnWriteArrayList<String> shuffled_tracks = new CopyOnWriteArrayList<String>();
 
 	private static Logger log = Logger.getLogger(PlayManager.class);
-
-	// private IPlayer mPlayer = null;
-	private IPlayerController mPlayer = null;
+    private IPlayerController mPlayer = null;
 
 	private boolean repeatPlayList = false;
 	private boolean shuffle = false;
@@ -107,20 +105,6 @@ public class PlayManager implements Observer {
 				v = volume;
 			mPlayer.playThis(t, v, bMute);
 		}
-		// if (t != null) {
-		// current_track = t;
-		// log.debug("Destroy current MPlayer");
-		// if (mPlayer != null) {
-		// mPlayer.destroy();
-		// mPlayer = null;
-		// }
-		// mPlayer = new MPlayer();
-		// mPlayer.addObserver(this);
-		// long v = mplayer_volume;
-		// if (!isUseExternalVolume())
-		// v = volume;
-		// mPlayer.playTrack(t, v, bMute);
-		// }
 	}
 
 	/**
@@ -254,13 +238,11 @@ public class PlayManager implements Observer {
 	 * @return
 	 */
 	public CustomTrack getTrackFromId(int id) {
-		// int i = 0;
 		log.debug("GetTrakcFromId: " + id);
 		for (CustomTrack t : tracks) {
 			if (t.getId() == id) {
 				return t;
 			}
-			// i++;
 		}
 		return null;
 	}
@@ -313,7 +295,6 @@ public class PlayManager implements Observer {
 
 	public void updateShuffle(boolean shuffle) {
 		setShuffle(shuffle);
-		// iPlayList.updateShuffle(shuffle);
 		EventPlayListUpdateShuffle ev = new EventPlayListUpdateShuffle();
 		ev.setShuffle(shuffle);
 		obsvPlayList.notifyChange(ev);
@@ -441,7 +422,6 @@ public class PlayManager implements Observer {
 	 * @param bPause
 	 */
 	public synchronized void pause(boolean bPause) {
-		// if (mPlayer != null) {
 		if (mPlayer.isPlaying()) {
 			mPlayer.pause(bPause);
 			setPaused(bPause);
@@ -469,7 +449,6 @@ public class PlayManager implements Observer {
 	 * Stop playin Track
 	 */
 	public synchronized void stop() {
-		// if (mPlayer != null) {
 		if (mPlayer.isPlaying()) {
 			mPlayer.stop();
 		}
@@ -485,13 +464,9 @@ public class PlayManager implements Observer {
 	public synchronized void playIndex(long index) {
 		CustomTrack t = getTrackFromIndex((int) index);
 		if (shuffle) {
-			// if (mPlayer == null) {
-			// shuffleTracks();
-			// } else {
 			if (!mPlayer.isPlaying()) {
 				shuffleTracks();
 			}
-			// }
 			addAsNextShuffleTrack(t);
 		}
 		if (t != null) {
@@ -577,7 +552,6 @@ public class PlayManager implements Observer {
 	 * @param seconds
 	 */
 	public synchronized void seekAbsolute(long seconds) {
-		// if (mPlayer != null) {
 		if (mPlayer.isPlaying()) {
 			mPlayer.seekAbsolute(seconds);
 		}
@@ -720,10 +694,8 @@ public class PlayManager implements Observer {
 		deletedAllTracks();
 		if (!(getCurrentTrack() instanceof CustomChannel)) {
 			current_track = null;
-			// if (mPlayer != null) {
 			if (mPlayer.isPlaying()) {
 				mPlayer.stop();
-				// setStatus("Stopped");
 			}
 		}
 
@@ -739,11 +711,9 @@ public class PlayManager implements Observer {
 		CustomTrack t = getCurrentTrack();
 		if (t != null)
 			if (t.getId() == iD && !(t instanceof CustomChannel)) {
-				// if (mPlayer != null) {
 				if (mPlayer.isPlaying()) {
 					mPlayer.stop();
 				}
-				// setStatus("Stopped");
 			}
 	}
 
@@ -752,21 +722,12 @@ public class PlayManager implements Observer {
 	 */
 	public synchronized void destroy() {
 		log.debug("Start of destroy");
-		// if (mPlayer != null) {
 		if (mPlayer.isActive()) {
 			log.debug("Attempt to Destroy MPlayer");
 			mPlayer.destroy();
 		}
 	}
 
-	/**
-	 * Update the Status
-	 * 
-	 * @param status
-	 */
-	// public synchronized void setStatus(String status) {
-	// setStatus(status, null);
-	// }
 
 	/***
 	 * Set the Status of the Track
@@ -776,11 +737,8 @@ public class PlayManager implements Observer {
 	public synchronized void setStatus(String status) {
 		log.debug("SetStatus: " + status);
 		EventTrackChanged ev = new EventTrackChanged();
-		// ev.setTrack(t);
 		if (status.equalsIgnoreCase("PLAYING")) {
-			// if (t != null) {
-			// current_track = t;
-			// }
+
 			if (current_track != null) {
 				playingTrack(current_track.getId());
 				ev.setTrack(current_track);
@@ -952,13 +910,13 @@ public class PlayManager implements Observer {
 
 			}
 			break;
-		case EVENTMUTECHANGED:
-			try {
-				EventMuteChanged emc = (EventMuteChanged) e;
-
-			} catch (Exception exm) {
-
-			}
+//		case EVENTMUTECHANGED:
+//			try {
+//				//EventMuteChanged emc = (EventMuteChanged) e;
+//
+//			} catch (Exception exm) {
+//
+//			}
 		}
 	}
 
