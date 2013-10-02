@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderUpnpOrgAVTransport1;
+import org.rpi.player.PlayManager;
 
 public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 {
 
@@ -83,21 +84,25 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 {
 	@Override
 	protected void next(IDvInvocation paramIDvInvocation, long paramLong) {
 		log.debug("Next");
+		PlayManager.getInstance().nextTrack();
 	}
 	
 	@Override
 	protected void pause(IDvInvocation paramIDvInvocation, long paramLong) {
 		log.debug("Pause");
+		PlayManager.getInstance().pause();
 	}
 	
 	@Override
 	protected void play(IDvInvocation paramIDvInvocation, long paramLong, String paramString) {
 		log.debug("Play");
+		PlayManager.getInstance().play();
 	}
 	
 	@Override
 	protected void previous(IDvInvocation paramIDvInvocation, long paramLong) {
 		log.debug("Previous");
+		PlayManager.getInstance().previousTrack();
 	}
 	
 	@Override
@@ -108,6 +113,7 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 {
 	@Override
 	protected void seek(IDvInvocation paramIDvInvocation, long paramLong, String paramString1, String paramString2) {
 		log.debug("Seek");
+		PlayManager.getInstance().seekAbsolute(paramLong);
 	}
 	
 	@Override
@@ -133,6 +139,7 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 {
 	@Override
 	protected void stop(IDvInvocation paramIDvInvocation, long paramLong) {
 		log.debug("Stop");
+		PlayManager.getInstance().stop();
 	}
 	
 }

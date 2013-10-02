@@ -84,7 +84,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		iDevice.setAttribute("Upnp.Version", "1");
 		iDevice.setAttribute("Upnp.FriendlyName", Config.friendly_name);
 		iDevice.setAttribute("Upnp.Manufacturer", "Made in Manchester");
-		iDevice.setAttribute("Upnp.ModelName", "Open Home Java Render v" + Config.version);
+		iDevice.setAttribute("Upnp.ModelName", "Open Home Java Renderer: v" + Config.version);
 		iDevice.setAttribute("Upnp.ModelDescription", "'We made History not Money' - Tony Wilson..");
 		// iDevice.setAttribute("Upnp.ModelUri", "www.google.co.uk");
 		// iDevice.setAttribute("Upnp.ModelImageUri","http://upload.wikimedia.org/wikipedia/en/thumb/0/04/Joy_Division.JPG/220px-Joy_Division.JPG");
@@ -99,7 +99,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		//iInput = new PrvRadio(iDevice);
 		iReceiver = new PrvReceiver(iDevice);
 		// iAVTransport = new PrvAVTransport(iDevice);
-		// iRenderingControl = new PrvRenderingControl(iDevice);
+		iRenderingControl = new PrvRenderingControl(iDevice);
 
 		try {
 			ChannelReader cr = new ChannelReader();

@@ -50,7 +50,6 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 			boolean bSongChanged = false;
 			HashMap<String, String> res = tcp.sendCommand(tcp.createCommandList(commands));
 			String value = "";
-			// if (res.containsKey("songid")) {
 			value = res.get("songid");
 			if (value != null && !current_songid.equalsIgnoreCase(value)) {
 				log.debug("Song Changed From : " + current_songid + " To: " + value);
@@ -62,9 +61,6 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 				bSongChanged = true;
 
 			}
-			// }
-			value = "";
-			// if (res.containsKey("state")) {
 			value = res.get("state");
 			if (value != null) {
 				if (value.equalsIgnoreCase("PLAY")) {
@@ -86,13 +82,9 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 					}
 				}
 			}
-			// }
-
-			//if (res.containsKey("time")) {
 			value = res.get("time");
 			if(value !=null)
 			{
-				//value = res.get("time");
 				String[] splits = value.split(":");
 				String mTime = splits[0];
 				String mDuration = splits[1];
@@ -124,9 +116,6 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 					}
 				}
 			}
-			//}
-
-			//if (res.containsKey("volume")) {
 				String volume = res.get("volume");
 				if(volume !=null)
 				{
@@ -138,9 +127,6 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 					current_volume = volume;
 				}
 				}
-			//}
-
-			//if (res.containsKey("Title")) {
 				String full_title = res.get("Title");
 				if (full_title !=null && !current_title.equalsIgnoreCase(full_title)) {
 					String artist = "";
@@ -163,13 +149,10 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 					fireEvent(ev);
 					current_title = full_title;
 				}
-			//}
 
 			if (bSongChanged) {
 				ti.setUpdated(false);
 			}
-
-			//if (res.containsKey("audio")) {
 			String audio = res.get("audio");
 			if(audio !=null)
 			{
@@ -179,7 +162,6 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 						ti.setUpdated(false);
 						iCount = 0;
 					}
-					//String audio = res.get("audio");
 					String[] splits = audio.split(":");
 					try {
 						String sample = splits[0];
@@ -223,13 +205,6 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 
 	}
 
-	// private String getValue(String s, String name) {
-	// String value = "";
-	// if (s.startsWith(name)) {
-	// return value = s.substring(name.length(), s.length()).trim();
-	// }
-	// return null;
-	// }
 
 	public boolean isRunning() {
 		return isRunning;

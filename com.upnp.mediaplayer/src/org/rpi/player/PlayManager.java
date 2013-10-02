@@ -43,7 +43,7 @@ public class PlayManager implements Observer {
 	private CopyOnWriteArrayList<String> shuffled_tracks = new CopyOnWriteArrayList<String>();
 
 	private static Logger log = Logger.getLogger(PlayManager.class);
-    private IPlayerController mPlayer = null;
+	private IPlayerController mPlayer = null;
 
 	private boolean repeatPlayList = false;
 	private boolean shuffle = false;
@@ -63,6 +63,7 @@ public class PlayManager implements Observer {
 	private ObservableRadio obsvRadio = new ObservableRadio();
 	private ObservablePlayList obsvPlayList = new ObservablePlayList();
 	private ObservableProduct obsvProduct = new ObservableProduct();
+	private String status = "";
 
 	private static PlayManager instance = null;
 
@@ -488,11 +489,21 @@ public class PlayManager implements Observer {
 			setStatus("Playing");
 			setPaused(false);
 		} else {
-			if (shuffle)
-				shuffleTracks();
-			CustomTrack t = getNextTrack(1);
-			if (t != null) {
-				playThis(t);
+			if (!(status.equalsIgnoreCase("PLAYING") || status.equalsIgnoreCase("BUFFERING"))) {
+				if(current_track ==null)
+				{
+					log.debug("CurrentTrack was NULL");
+				}
+				if (shuffle)
+					shuffleTracks();
+				CustomTrack t = getNextTrack(1);
+				if (t != null) {
+					playThis(t);
+				}
+			}
+			else
+			{
+				log.warn("Track is Already Playing, do not Play");
 			}
 		}
 	}
@@ -728,7 +739,6 @@ public class PlayManager implements Observer {
 		}
 	}
 
-
 	/***
 	 * Set the Status of the Track
 	 * 
@@ -736,6 +746,7 @@ public class PlayManager implements Observer {
 	 */
 	public synchronized void setStatus(String status) {
 		log.debug("SetStatus: " + status);
+		this.status = status;
 		EventTrackChanged ev = new EventTrackChanged();
 		if (status.equalsIgnoreCase("PLAYING")) {
 
@@ -910,13 +921,13 @@ public class PlayManager implements Observer {
 
 			}
 			break;
-//		case EVENTMUTECHANGED:
-//			try {
-//				//EventMuteChanged emc = (EventMuteChanged) e;
-//
-//			} catch (Exception exm) {
-//
-//			}
+		// case EVENTMUTECHANGED:
+		// try {
+		// //EventMuteChanged emc = (EventMuteChanged) e;
+		//
+		// } catch (Exception exm) {
+		//
+		// }
 		}
 	}
 
@@ -984,6 +995,14 @@ public class PlayManager implements Observer {
 
 	public synchronized void toggleMute() {
 		setMute(!bMute);
+	}
+
+	public synchronized boolean getMute() {
+		return bMute;
+	}
+
+	public void pause() {
+		pause(!bPaused);
 	}
 
 }

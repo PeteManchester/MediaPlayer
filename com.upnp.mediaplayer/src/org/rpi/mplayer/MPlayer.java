@@ -107,19 +107,6 @@ public class MPlayer extends Observable   implements IPlayer, Observer  {
 		startPlaying();
 	}
 
-//	/***
-//	 * Attempt to Stop if already running If Position Thread is running,
-//	 * interrupt it
-//	 */
-//	private void init() {
-//		stop();
-//		if (position != null) {
-//			position.interrupt();
-//			position = null;
-//		} else {
-//			log.debug("Position Thread was null");
-//		}
-//	}
 
 	/***
 	 * Build the string to start the process
@@ -318,7 +305,6 @@ public class MPlayer extends Observable   implements IPlayer, Observer  {
 		EventUpdateTrackMetaText ev = new EventUpdateTrackMetaText();
 		ev.setArtist(artist);
 		ev.setTitle(title);
-		//ev.setCurrentTrackId(current_track.getId());
 		fireEvent(ev);
 	}
 
