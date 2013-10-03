@@ -2,8 +2,11 @@ package org.rpi.main;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -74,18 +77,29 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		initParams.setFatalErrorHandler(this);
 		lib = Library.create(initParams);
 		lib.setDebugLevel(getDebugLevel(Config.debug));
+		StringBuffer sb = new StringBuffer();
 
 		DeviceStack ds = lib.startDv();
-		String iDeviceName = "device-" + Config.friendly_name + "-" + GetHostName() + "-MediaRenderer";
+		String iDeviceName = "device-" + Config.friendly_name + "-" + GetHostName() + "-MediaRenderer";	
 		iDevice = new DvDeviceFactory(ds).createDeviceStandard(iDeviceName, this);
 		log.debug("Created StandardDevice: " + iDevice.getUdn());
+		sb.append("<icon>");
+		sb.append("<minetype>image/png</minetype>");
+		sb.append("<width>375</width>");
+		sb.append("<height>360</height>");
+		sb.append("<depth>24</depth>");
+		sb.append("<url>/" + iDeviceName + "/Upnp/resource/mediaplayer.png</url>");
+		sb.append("</icon>");
+		iDevice.setAttribute("Upnp.IconList" , sb.toString());
+		
 		iDevice.setAttribute("Upnp.Domain", "openhome.org");
 		iDevice.setAttribute("Upnp.Type", "Music Renderer");
 		iDevice.setAttribute("Upnp.Version", "1");
 		iDevice.setAttribute("Upnp.FriendlyName", Config.friendly_name);
 		iDevice.setAttribute("Upnp.Manufacturer", "Made in Manchester");
 		iDevice.setAttribute("Upnp.ModelName", "Open Home Java Renderer: v" + Config.version);
-		iDevice.setAttribute("Upnp.ModelDescription", "'We made History not Money' - Tony Wilson..");
+		iDevice.setAttribute("Upnp.ModelDescription", "'We Made History Not Money' - Tony Wilson..");
+		//iDevice.setAttribute("Upnp.IconList" , sb.toString());
 		// iDevice.setAttribute("Upnp.ModelUri", "www.google.co.uk");
 		// iDevice.setAttribute("Upnp.ModelImageUri","http://upload.wikimedia.org/wikipedia/en/thumb/0/04/Joy_Division.JPG/220px-Joy_Division.JPG");
 
@@ -96,7 +110,6 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		iInfo = new PrvInfo(iDevice);
 		iTime = new PrvTime(iDevice);
 		iRadio = new PrvRadio(iDevice);
-		//iInput = new PrvRadio(iDevice);
 		iReceiver = new PrvReceiver(iDevice);
 		// iAVTransport = new PrvAVTransport(iDevice);
 		iRenderingControl = new PrvRenderingControl(iDevice);
@@ -360,8 +373,40 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	}
 
 	@Override
-	public void writeResource(String arg0, int arg1, List<String> arg2, IResourceWriter arg3) {
-		log.debug("writeResource Called");
+	public void writeResource(String resource_name, int arg1, List<String> arg2, IResourceWriter writer) {
+		//log.debug("writeResource Called");	
+		try {
+			File fi = new File(resource_name);
+			byte[] fileContent;
+			fileContent = Files.readAllBytes(fi.toPath());
+			String fileType = "image/png";
+			if(resource_name.toUpperCase().endsWith("JPG"))
+			{
+				fileType = "image/jpeg";
+			}
+			writer.writeResourceBegin(fileContent.length, fileType);
+			writer.writeResource(fileContent, fileContent.length);
+			writer.writeResourceEnd();
+		} catch (IOException e) {
+			log.error("Error Writing Resource: " + resource_name,e);
+		}
+		
+		
+	}
+	
+	private void writeFile(String s )
+	{
+		try {
+            File newTextFile = new File("C:/temp/thetextfile.txt");
+
+            FileWriter fw = new FileWriter(newTextFile);
+            fw.write(s);
+            fw.close();
+
+        } catch (IOException iox) {
+            //do stuff with exception
+            iox.printStackTrace();
+        }
 	}
 
 	/***
