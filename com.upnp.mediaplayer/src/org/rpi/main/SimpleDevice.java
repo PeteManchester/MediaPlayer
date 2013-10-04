@@ -1,17 +1,23 @@
 package org.rpi.main;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
@@ -85,10 +91,45 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		log.debug("Created StandardDevice: " + iDevice.getUdn());
 		sb.append("<icon>");
 		sb.append("<minetype>image/png</minetype>");
-		sb.append("<width>375</width>");
-		sb.append("<height>360</height>");
+		sb.append("<width>240</width>");
+		sb.append("<height>240</height>");
 		sb.append("<depth>24</depth>");
-		sb.append("<url>/" + iDeviceName + "/Upnp/resource/mediaplayer.png</url>");
+		sb.append("<url>/" + iDeviceName + "/Upnp/resource/org/rpi/image/mediaplayer240.png</url>");
+		sb.append("</icon>");
+		sb.append("<icon>");
+		sb.append("<minetype>image/jpeg</minetype>");
+		sb.append("<width>240</width>");
+		sb.append("<height>240</height>");
+		sb.append("<depth>24</depth>");
+		sb.append("<url>/" + iDeviceName + "/Upnp/resource/org/rpi/image/mediaplayer240.jpg</url>");
+		sb.append("</icon>");
+		sb.append("<icon>");
+		sb.append("<minetype>image/png</minetype>");
+		sb.append("<width>120</width>");
+		sb.append("<height>120</height>");
+		sb.append("<depth>24</depth>");
+		sb.append("<url>/" + iDeviceName + "/Upnp/resource/org/rpi/image/mediaplayer120.png</url>");
+		sb.append("</icon>");
+		sb.append("<icon>");
+		sb.append("<minetype>image/jpeg</minetype>");
+		sb.append("<width>120</width>");
+		sb.append("<height>120</height>");
+		sb.append("<depth>24</depth>");
+		sb.append("<url>/" + iDeviceName + "/Upnp/resource/org/rpi/image/mediaplayer120.jpg</url>");
+		sb.append("</icon>");
+		sb.append("<icon>");
+		sb.append("<minetype>image/png</minetype>");
+		sb.append("<width>50</width>");
+		sb.append("<height>50</height>");
+		sb.append("<depth>24</depth>");
+		sb.append("<url>/" + iDeviceName + "/Upnp/resource/org/rpi/image/mediaplayer50.png</url>");
+		sb.append("</icon>");
+		sb.append("<icon>");
+		sb.append("<minetype>image/jpeg</minetype>");
+		sb.append("<width>50</width>");
+		sb.append("<height>50</height>");
+		sb.append("<depth>24</depth>");
+		sb.append("<url>/" + iDeviceName + "/Upnp/resource/org/rpi/image/mediaplayer50.jpg</url>");
 		sb.append("</icon>");
 		iDevice.setAttribute("Upnp.IconList" , sb.toString());
 		
@@ -374,18 +415,23 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 	@Override
 	public void writeResource(String resource_name, int arg1, List<String> arg2, IResourceWriter writer) {
-		//log.debug("writeResource Called");	
+		log.info("writeResource Called: "  +resource_name);	
 		try {
-			File fi = new File(resource_name);
-			byte[] fileContent;
-			fileContent = Files.readAllBytes(fi.toPath());
+			resource_name = "/" + resource_name;
+			URL url = this.getClass().getResource(resource_name);	
+			BufferedImage image = ImageIO.read(url);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			String fileType = "image/png";
+			String format = "png";
 			if(resource_name.toUpperCase().endsWith("JPG"))
 			{
+				format = "jpg";
 				fileType = "image/jpeg";
 			}
-			writer.writeResourceBegin(fileContent.length, fileType);
-			writer.writeResource(fileContent, fileContent.length);
+			ImageIO.write(image, format, baos);
+			int length = baos.toByteArray().length;
+			writer.writeResourceBegin(length, fileType);
+			writer.writeResource(baos.toByteArray(), length);
 			writer.writeResourceEnd();
 		} catch (IOException e) {
 			log.error("Error Writing Resource: " + resource_name,e);

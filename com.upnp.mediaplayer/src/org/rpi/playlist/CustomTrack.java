@@ -10,6 +10,10 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -37,12 +41,16 @@ public class CustomTrack {
 	private String full_text = "";
 
 	public CustomTrack(String uri, String metadata, int id) {
+		//long startTime = System.nanoTime();
 		setUri(uri);
 		setMetadata(metadata);
 		setId(id);
 		full_text = GetFullString();
 		getTrackDetails();
 		setFullDetails();
+		//long endTime = System.nanoTime();
+		//long duration = endTime - startTime;
+		//log.warn("Time to Add CustomTrack: " + duration);
 	}
 
 	public String getUniqueId() {
@@ -52,7 +60,7 @@ public class CustomTrack {
 	private String Metadata;
 
 	private int Id;
-	private String metatext= "";
+	private String metatext = "";
 	private long time = -99;
 	private String full_details;
 
@@ -109,10 +117,11 @@ public class CustomTrack {
 		try {
 			Vector<Node> removeNodes = new Vector<Node>();
 			StringBuilder temp = new StringBuilder();
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			InputSource insrc = new InputSource(new StringReader(Metadata));
-			Document doc = builder.parse(insrc);
+			//DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			//DocumentBuilder builder = factory.newDocumentBuilder();
+			//InputSource insrc = new InputSource(new StringReader(Metadata));
+			//Document doc = builder.parse(insrc);
+			Document doc = getDocument();
 			Node node = doc.getFirstChild();
 			Node item = node.getFirstChild();
 			NodeList childs = item.getChildNodes();
@@ -122,43 +131,35 @@ public class CustomTrack {
 				boolean remove = true;
 				if (n.getNodeName() == "dc:title") {
 					remove = false;
-				}
-				else if (n.getNodeName() == "upnp:album") {
+				} else if (n.getNodeName() == "upnp:album") {
 					remove = false;
 				}
-				
+
 				else if (n.getNodeName() == "upnp:artist") {
 					NamedNodeMap map = n.getAttributes();
 					Node role = map.getNamedItem("role");
 					String role_type = role.getTextContent();
-					if(role.getTextContent().equalsIgnoreCase("AlbumArtist"))
-					{
+					if (role.getTextContent().equalsIgnoreCase("AlbumArtist")) {
 						remove = false;
-					}	
-					if(role.getTextContent().equalsIgnoreCase("Performer"))
-					{
-						//remove =false;
+					}
+					if (role.getTextContent().equalsIgnoreCase("Performer")) {
+						// remove =false;
 					}
 				}
-				
-				else if(n.getNodeName() == "upnp:class")
-				{
-					remove =false;
-				}
-				
-				else if(n.getNodeName() == "upnp:albumArtURI")
-				{
+
+				else if (n.getNodeName() == "upnp:class") {
 					remove = false;
 				}
-				
-				
-				if (remove)
-				{
+
+				else if (n.getNodeName() == "upnp:albumArtURI") {
+					remove = false;
+				}
+
+				if (remove) {
 					removeNodes.add(n);
 				}
 			}
-			for(Node n : removeNodes)
-			{
+			for (Node n : removeNodes) {
 				item.removeChild(n);
 			}
 			Transformer transformer = TransformerFactory.newInstance().newTransformer();
@@ -167,9 +168,9 @@ public class CustomTrack {
 			transformer.transform(source, result);
 			return result.getWriter().toString();
 		} catch (Exception e) {
-			log.error("Erorr TidyMetaData",e);
+			log.error("Erorr TidyMetaData", e);
 		}
-		
+
 		return "";
 	}
 
@@ -177,10 +178,11 @@ public class CustomTrack {
 		try {
 			String full_title = title + " - " + artist;
 			full_title = tidyUpString(full_title);
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			InputSource insrc = new InputSource(new StringReader(Metadata));
-			Document doc = builder.parse(insrc);
+			//DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			//DocumentBuilder builder = factory.newDocumentBuilder();
+			//InputSource insrc = new InputSource(new StringReader(Metadata));
+			//Document doc = builder.parse(insrc);
+			Document doc = getDocument();
 			Node node = doc.getFirstChild();
 			Node item = node.getFirstChild();
 			NodeList childs = item.getChildNodes();
@@ -250,92 +252,89 @@ public class CustomTrack {
 		if (anyCharactersProtected == false) {
 			return originalUnprotectedString;
 		}
-		// if(test.equals(stringBuffer.toString()))
-		// {
-		// log.debug("My Routine was the Same");
-		// }
-		// else
-		// {
-		// log.debug("Mine: " + test);
-		// log.debug("Theirs: " + stringBuffer.toString());
-		// }
 		return stringBuffer.toString();
-		// return test;
 	}
 
 	@Override
 	public String toString() {
 		String res = "Track Id: " + Id + " + URI: " + Uri + "  MetaData:\r\n " + getMetadata();
-		// log.debug(res);
 		return res;
-		// return
-		// string.Format("Track Id: {0} \r\n URI: {1} \r\n MetaData: {2}",
-		// getId(), getUri(), getMetadata());
 	}
 
-	public void getTrackDetails() {
+	private Document getDocument() {
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			InputSource insrc = new InputSource(new StringReader(Metadata));
-			Document doc = builder.parse(insrc);
+			return builder.parse(insrc);
+		} catch (Exception e) {
+
+		}
+		return null;
+	}
+
+	/**
+	 * Using XPath Queries, which are slower
+	 */
+	public void getTrackDetailsNew() {
+		try {
+			Document doc = getDocument();
+			String ex_title = "DIDL-Lite/item/title";
+			XPath xPath = XPathFactory.newInstance().newXPath();
+			String title = xPath.compile(ex_title).evaluate(doc);
+			setTitle(title);
+			String exAlbum = "DIDL-Lite/item/album";
+			String album = xPath.compile(exAlbum).evaluate(doc);
+			setAlbum(album);
+			String ex_Performer = "DIDL-Lite/item/artist[@role='Performer']";
+			String performer = xPath.compile(ex_Performer).evaluate(doc);
+			setPerformer(performer);
+			String ex_artist = "DIDL-Lite/item/artist[@role='AlbumArtist']";
+			String artist = xPath.compile(ex_artist).evaluate(doc);
+			setArtist(artist);
+		} catch (Exception e) {
+			log.error("Erorr TidyMetaData", e);
+		}
+	}
+
+	public void getTrackDetails() {
+		try {
+			Document doc = getDocument();
 			Node node = doc.getFirstChild();
 			Node item = node.getFirstChild();
 			NodeList childs = item.getChildNodes();
 			for (int i = 0; i < childs.getLength(); i++) {
 				Node n = childs.item(i);
-				boolean remove = true;
 				if (n.getNodeName() == "dc:title") {
 					setTitle(n.getTextContent());
-					//remove = true;
-				}
-				else if (n.getNodeName() == "upnp:album") {
+				} else if (n.getNodeName() == "upnp:album") {
 					setAlbum(n.getTextContent());
 				}
-				
 				else if (n.getNodeName() == "upnp:artist") {
 					NamedNodeMap map = n.getAttributes();
 					Node role = map.getNamedItem("role");
 					String role_type = role.getTextContent();
-					if(role.getTextContent().equalsIgnoreCase("AlbumArtist"))
-					{
+					if (role_type.equalsIgnoreCase("AlbumArtist")) {
 						setArtist(n.getTextContent());
-					}	
-					if(role.getTextContent().equalsIgnoreCase("Performer"))
-					{
+					}
+					if (role_type.equalsIgnoreCase("Performer")) {
 						setPerformer(n.getTextContent());
 					}
 				}
 			}
 
 		} catch (Exception e) {
-			log.error("Erorr TidyMetaData",e);
+			log.error("Error GetTrackDetails", e);
 		}
 	}
-	
-	
-	private String getElementTest(Element element, String name) {
-		String res = "";
-		NodeList nid = element.getElementsByTagName(name);
-		if (nid != null) {
-			Element fid = (Element) nid.item(0);
-			if (fid != null) {
-				res = fid.getTextContent();
-				// log.debug("ElementName: " + name + " Value: " + res);
-				return res;
 
-			}
-		}
-		return res;
-	}
 
 	public void setMetaText(String metatext) {
 		this.metatext = metatext;
-		
+
 	}
-	
-	public String getMetaText()
-	{
+
+	public String getMetaText() {
 		return metatext;
 	}
 
@@ -343,9 +342,8 @@ public class CustomTrack {
 		// TODO Auto-generated method stub
 		this.time = duration;
 	}
-	
-	public long getTime()
-	{
+
+	public long getTime() {
 		return time;
 	}
 
@@ -364,9 +362,8 @@ public class CustomTrack {
 	public void setAlbum(String album) {
 		this.album = album.trim();
 	}
-	
-	public String getArtist()
-	{
+
+	public String getArtist() {
 		return artist;
 	}
 
@@ -381,33 +378,28 @@ public class CustomTrack {
 	public void setPerformer(String performer) {
 		this.performer = performer.trim();
 	}
-	
-	private void setFullDetails()
-	{
+
+	private void setFullDetails() {
 		StringBuffer sb = new StringBuffer();
 		sb.append(getTitle());
 		sb.append(" - ");
-		if(!getPerformer().equalsIgnoreCase(""))
-		{
+		if (!getPerformer().equalsIgnoreCase("")) {
 			sb.append(getPerformer());
 			sb.append(" - ");
 		}
-		if(!getPerformer().equalsIgnoreCase(getArtist()))
-		{
+		if (!getPerformer().equalsIgnoreCase(getArtist())) {
 			sb.append(getArtist());
 			sb.append(" - ");
 		}
 		sb.append(getAlbum());
-		full_details =  sb.toString();
-		if(full_details.endsWith(" - "))
-		{
-			full_details = full_details.substring(0, full_details.length()-3);
+		full_details = sb.toString();
+		if (full_details.endsWith(" - ")) {
+			full_details = full_details.substring(0, full_details.length() - 3);
 			full_details.trim();
 		}
 	}
-	
-	public String getFullDetails()
-	{
+
+	public String getFullDetails() {
 		return full_details;
 	}
 

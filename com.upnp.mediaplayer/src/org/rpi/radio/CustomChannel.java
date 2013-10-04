@@ -47,8 +47,6 @@ public class CustomChannel extends CustomTrack {
 	}
 
 	private String protectSpecialCharacters(String originalUnprotectedString) {
-		//String test = StringEscapeUtils.escapeXml(originalUnprotectedString);
-		//return test;
 		 if (originalUnprotectedString == null) {
 		 return null;
 		 }
@@ -74,15 +72,6 @@ public class CustomChannel extends CustomTrack {
 		 if (anyCharactersProtected == false) {
 		 return originalUnprotectedString;
 		 }
-//		 if(test.equals(stringBuffer.toString()))
-//		 {
-//		 log.debug("My Routine was the Same");
-//		 }
-//		 else
-//		 {
-//		 log.debug("Mine: " + test);
-//		 log.debug("Theirs: " + stringBuffer.toString());
-//		 }
 		 return stringBuffer.toString();
 	}
 
@@ -109,50 +98,9 @@ public class CustomChannel extends CustomTrack {
 	}
 
 	public String getMetadata() {
-//		if (temp_meta != null) {
-//			if (!temp_meta.equalsIgnoreCase("")) {
-//				return temp_meta;
-//			}
-//		}
 		return super.getMetadata();
 	}
 
-	// public String getMetadata() {
-	// return getTempMeta();
-	// }
-
-	// public String updateTrack(String title, String artist) {
-	// try {
-	// title = WordUtils.capitalizeFully(title);
-	// artist = WordUtils.capitalizeFully(artist);
-	// DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-	// DocumentBuilder builder = factory.newDocumentBuilder();
-	// InputSource insrc = new InputSource(new
-	// StringReader(super.getMetadata()));
-	// Document doc = builder.parse(insrc);
-	// Node node = doc.getFirstChild();
-	// Node item = node.getFirstChild();
-	// log.debug("Item Child Nodes " + item.getChildNodes().getLength());
-	// NodeList childs = item.getChildNodes();
-	// for (int i = 0; i < childs.getLength(); i++) {
-	// Node n = childs.item(i);
-	// log.debug("Name: " + n.getNodeName() + " Value " + n.getTextContent());
-	// if (n.getNodeName() == "dc:title") {
-	// n.setTextContent(title + " - " + artist);
-	// }
-	// }
-	// Transformer transformer =
-	// TransformerFactory.newInstance().newTransformer();
-	// StreamResult result = new StreamResult(new StringWriter());
-	// DOMSource source = new DOMSource(doc);
-	// transformer.transform(source, result);
-	// temp_meta = result.getWriter().toString();
-	// return temp_meta;
-	// } catch (Exception e) {
-	// log.error("Error Creating XML Doc", e);
-	// }
-	// return null;
-	// }
 
 	/**
 	 * @return the temp_meta

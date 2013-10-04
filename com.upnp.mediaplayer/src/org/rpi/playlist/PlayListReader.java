@@ -29,6 +29,7 @@ public class PlayListReader {
 	public String getXML() {
 		tracks.clear();
 		try {
+			long startTime = System.nanoTime();
 			File file = new File("PlayList.xml");
 			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
@@ -51,6 +52,10 @@ public class PlayListReader {
 			}
 			iPlayList.setNextId(max_id);
 			iPlayList.setTracks(tracks);
+			long endTime = System.nanoTime();
+			long duration = endTime - startTime;
+			//log.warn("Time to Add CustomTracks: " + duration);
+			//log.debug("HoldHere");
 		} catch (Exception e) {
 			log.error("Error: Reading XML", e);
 		}
