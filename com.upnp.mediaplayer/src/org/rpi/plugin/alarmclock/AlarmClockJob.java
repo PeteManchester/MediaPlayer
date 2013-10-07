@@ -67,7 +67,7 @@ public class AlarmClockJob implements Job {
 				PlayManager.getInstance().updateShuffle(false);
 			}
 			PlayManager.getInstance().setStandby(false);
-			PlayManager.getInstance().play();
+			PlayManager.getInstance().playIndex(0);
 		}
 	}
 }

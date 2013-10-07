@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
 import org.rpi.config.Config;
 import org.rpi.player.IPlayer;
 import org.rpi.player.events.EventBase;
-import org.rpi.player.events.EventStatusChanged;
 
 public class TCPConnector extends Observable implements Observer {
 
@@ -51,28 +50,6 @@ public class TCPConnector extends Observable implements Observer {
 		}
 	}
 
-	// public TCPConnector() {
-	//
-	// }
-	//
-	// public TCPConnector(String host) {
-	// this(host, 6600);
-	// }
-	//
-	// public TCPConnector(String host, int port) {
-	// this(host, port, 0);
-	// }
-	//
-	// public TCPConnector(String host, int port, int timeout) {
-	// try {
-	// this.host = host;
-	// this.port = port;
-	// this.timeout = timeout;
-	// connect();
-	// } catch (IOException e) {
-	// log.error(e);
-	// }
-	// }
 
 	protected synchronized String connect() throws IOException {
 		this.socket = new Socket();
@@ -87,6 +64,7 @@ public class TCPConnector extends Observable implements Observer {
 		String line = in.readLine();
 		if (isOK(line)) {
 			version = removeText(line, MPD_OK);
+			log.info("MPD Version: " + version);
 		}
 		return line;
 	}
@@ -207,17 +185,6 @@ public class TCPConnector extends Observable implements Observer {
 		return sb.toString();
 	}
 
-	// private synchronized HashMap<String> SendCommands(List<String>)
-
-	// /***
-	// * Format the Command
-	// *
-	// * @param command
-	// * @return
-	// */
-	// private String formatCommand(String command) {
-	// return command + "\n";
-	// }
 
 	/**
 	 * Remove the String from the line of Text
@@ -229,7 +196,7 @@ public class TCPConnector extends Observable implements Observer {
 	private String removeText(String line, String remove) {
 		String res = "";
 		try {
-			line.substring(remove.length(), line.length()).trim();
+			res = line.substring(remove.length(), line.length()).trim();
 		} catch (Exception e) {
 
 		}
@@ -253,9 +220,6 @@ public class TCPConnector extends Observable implements Observer {
 		return iPlayer;
 	}
 
-	// public void addObserver(Observer obj) {
-	// sm.addObserver(obj);
-	// }
 
 	public void destroy() {
 		th = null;

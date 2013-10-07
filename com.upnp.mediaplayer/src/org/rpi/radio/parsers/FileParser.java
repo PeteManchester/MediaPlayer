@@ -100,6 +100,16 @@ public class FileParser {
 				{
 					return url;
 				}
+				else if (conn.getContentType().toUpperCase().contains("AUDIO/X-MPEGURL"))
+				{
+					log.debug("M3U File: " + url);
+					M3UParser m3u = new M3UParser();
+					LinkedList<String> urls = m3u.getStreamingUrl(url);
+					if((urls.size()>0))
+					{
+						return urls.get(0);
+					}
+				}
 				else
 				{
 					log.warn("##################Could Not Find File Type##########################");
