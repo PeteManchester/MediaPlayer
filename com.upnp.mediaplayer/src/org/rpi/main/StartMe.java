@@ -96,24 +96,6 @@ public class StartMe {
 		System.exit(0);
 	}
 
-	// /***
-	// * Load the Plugins
-	// */
-	// private static void loadPlugins() {
-	// log.info("Start of LoadPlugnis");
-	// pm = PluginManagerFactory.createPluginManager();
-	// List<File> files = listFiles("plugins");
-	// for (File file : files) {
-	// try {
-	// if (file.getName().toUpperCase().endsWith(".JAR")) {
-	// pm.addPluginsFrom(file.toURI());
-	// }
-	// } catch (Exception e) {
-	// log.error("Unable to load Plugins", e);
-	// }
-	// }
-	// log.info("End of LoadPlugnis");
-	// }
 
 	/***
 	 * List all the files in this directory and sub directories.
@@ -121,19 +103,19 @@ public class StartMe {
 	 * @param directoryName
 	 * @return
 	 */
-	public static List<File> listFiles(String directoryName) {
-		File directory = new File(directoryName);
-		List<File> resultList = new ArrayList<File>();
-		File[] fList = directory.listFiles();
-		resultList.addAll(Arrays.asList(fList));
-		for (File file : fList) {
-			if (file.isFile()) {
-			} else if (file.isDirectory()) {
-				resultList.addAll(listFiles(file.getAbsolutePath()));
-			}
-		}
-		return resultList;
-	}
+//	public static List<File> listFiles(String directoryName) {
+//		File directory = new File(directoryName);
+//		List<File> resultList = new ArrayList<File>();
+//		File[] fList = directory.listFiles();
+//		resultList.addAll(Arrays.asList(fList));
+//		for (File file : fList) {
+//			if (file.isFile()) {
+//			} else if (file.isDirectory()) {
+//				resultList.addAll(listFiles(file.getAbsolutePath()));
+//			}
+//		}
+//		return resultList;
+//	}
 
 	/***
 	 * Print out the System Properties.

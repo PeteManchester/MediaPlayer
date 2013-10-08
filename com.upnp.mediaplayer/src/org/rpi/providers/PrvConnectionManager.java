@@ -4,14 +4,15 @@ import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderUpnpOrgConnectionManager1;
+import org.rpi.config.Config;
 
 public class PrvConnectionManager extends DvProviderUpnpOrgConnectionManager1 {
 
 	private Logger log = Logger.getLogger(PrvConnectionManager.class);
 
-	private String currentConnectionIDs = "";
-	private String sinkProtocolInfo = "";
-	private String sourceProtocolInfo = "";
+	private String currentConnectionIDs = "0";
+	private String sinkProtocolInfo = Config.getProtocolInfo();
+	private String sourceProtocolInfo = "";//Config.getProtocolInfo();
 
 	public PrvConnectionManager(DvDevice device) {
 		super(device);
@@ -23,10 +24,11 @@ public class PrvConnectionManager extends DvProviderUpnpOrgConnectionManager1 {
 		setPropertySinkProtocolInfo(sinkProtocolInfo);
 		setPropertySourceProtocolInfo(sourceProtocolInfo);
 
-		enableActionConnectionComplete();
+		//enableActionConnectionComplete();
 		enableActionGetCurrentConnectionIDs();
 		enableActionGetCurrentConnectionInfo();
-		enableActionPrepareForConnection();
+		//enableActionPrepareForConnection();
+		enableActionGetProtocolInfo();
 	}
 
 	protected void connectionComplete(IDvInvocation paramIDvInvocation, int paramInt) {
@@ -49,15 +51,20 @@ public class PrvConnectionManager extends DvProviderUpnpOrgConnectionManager1 {
 
 		int iRcsID = 0;
 		int iAVTransportID = 0;
-		String iProtocolInfo = "";
-		String iPeerConnectionManager = "";
+		String iProtocolInfo = Config.getProtocolInfo();
+		String iPeerConnectionManager = "/";
 		int iPeerConnectionID = -1;
-		String iDirection = "Output";
+		String iDirection = "Input";
 		String iStatus = "Unknown";
 
 		log.debug("ConnectionManager response: GetCurrentConnectionInfo");
 		log.debug(" RcsID=" + iRcsID + " AVTransportID=" + iAVTransportID + " ProtocolInfo=" + iProtocolInfo + " PeerConnectionManager=" + iPeerConnectionManager + " PeerConnectionID=" + iPeerConnectionID + " Direction=" + iDirection + " Status=" + iStatus);
 		return new DvProviderUpnpOrgConnectionManager1.GetCurrentConnectionInfo(iRcsID, iAVTransportID, iProtocolInfo, iPeerConnectionManager, iPeerConnectionID, iDirection, iStatus);
+	}
+	
+	protected  String getProtocolInfo() {
+		log.debug("GetProtocol");
+		return Config.getProtocolInfo();
 	}
 
 }

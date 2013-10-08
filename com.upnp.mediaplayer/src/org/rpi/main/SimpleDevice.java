@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +16,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
@@ -86,7 +84,9 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		StringBuffer sb = new StringBuffer();
 
 		DeviceStack ds = lib.startDv();
-		String iDeviceName = "device-" + Config.friendly_name + "-" + GetHostName() + "-MediaRenderer";	
+		String friendly_name = Config.friendly_name.replace(":", " ");
+		String iDeviceName = "device-" + friendly_name + "-" + GetHostName() + "-MediaRenderer";
+		//String iDeviceName = "device-" + "Bob" + "-" + GetHostName() + "-MediaRenderer";	
 		iDevice = new DvDeviceFactory(ds).createDeviceStandard(iDeviceName, this);
 		log.debug("Created StandardDevice: " + iDevice.getUdn());
 		sb.append("<icon>");
@@ -152,8 +152,8 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		iTime = new PrvTime(iDevice);
 		iRadio = new PrvRadio(iDevice);
 		iReceiver = new PrvReceiver(iDevice);
-		// iAVTransport = new PrvAVTransport(iDevice);
-		iRenderingControl = new PrvRenderingControl(iDevice);
+		iAVTransport = new PrvAVTransport(iDevice);
+		//iRenderingControl = new PrvRenderingControl(iDevice);
 
 		try {
 			ChannelReader cr = new ChannelReader();
