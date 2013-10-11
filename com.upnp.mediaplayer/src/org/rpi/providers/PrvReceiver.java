@@ -78,7 +78,7 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 {
 	protected void stop(IDvInvocation arg0) {
 		log.debug("Stop");
 		// TODO Auto-generated method stub
-		super.stop(arg0);
+		//super.stop(arg0);
 	}
 	
 	@Override

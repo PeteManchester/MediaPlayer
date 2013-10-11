@@ -86,7 +86,6 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		DeviceStack ds = lib.startDv();
 		String friendly_name = Config.friendly_name.replace(":", " ");
 		String iDeviceName = "device-" + friendly_name + "-" + GetHostName() + "-MediaRenderer";
-		//String iDeviceName = "device-" + "Bob" + "-" + GetHostName() + "-MediaRenderer";	
 		iDevice = new DvDeviceFactory(ds).createDeviceStandard(iDeviceName, this);
 		log.debug("Created StandardDevice: " + iDevice.getUdn());
 		sb.append("<icon>");
@@ -133,8 +132,9 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		sb.append("</icon>");
 		iDevice.setAttribute("Upnp.IconList" , sb.toString());
 		
-		iDevice.setAttribute("Upnp.Domain", "openhome.org");
-		iDevice.setAttribute("Upnp.Type", "Music Renderer");
+		//iDevice.setAttribute("Upnp.Domain", "openhome-org");
+		iDevice.setAttribute("Upnp.Domain", "schemas-upnp-org");
+		iDevice.setAttribute("Upnp.Type", "MediaRenderer");
 		iDevice.setAttribute("Upnp.Version", "1");
 		iDevice.setAttribute("Upnp.FriendlyName", Config.friendly_name);
 		iDevice.setAttribute("Upnp.Manufacturer", "Made in Manchester");
@@ -143,7 +143,8 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		//iDevice.setAttribute("Upnp.IconList" , sb.toString());
 		// iDevice.setAttribute("Upnp.ModelUri", "www.google.co.uk");
 		// iDevice.setAttribute("Upnp.ModelImageUri","http://upload.wikimedia.org/wikipedia/en/thumb/0/04/Joy_Division.JPG/220px-Joy_Division.JPG");
-
+		
+		iAVTransport = new PrvAVTransport(iDevice);
 		iConnectionManager = new PrvConnectionManager(iDevice);
 		iProduct = new PrvProduct(iDevice);
 		iVolume = new PrvVolume(iDevice);
@@ -151,9 +152,8 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		iInfo = new PrvInfo(iDevice);
 		iTime = new PrvTime(iDevice);
 		iRadio = new PrvRadio(iDevice);
-		iReceiver = new PrvReceiver(iDevice);
-		iAVTransport = new PrvAVTransport(iDevice);
-		//iRenderingControl = new PrvRenderingControl(iDevice);
+		iReceiver = new PrvReceiver(iDevice);	
+		iRenderingControl = new PrvRenderingControl(iDevice);
 
 		try {
 			ChannelReader cr = new ChannelReader();
@@ -165,6 +165,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		iDevice.setEnabled();
 		log.debug("Device Enabled UDN: " + iDevice.getUdn());
 		loadPlugins();
+		iProduct.setSourceByname("PlayList");
 	}
 
 	/***

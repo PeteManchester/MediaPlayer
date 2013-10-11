@@ -41,16 +41,18 @@ public class CustomTrack {
 	private String full_text = "";
 
 	public CustomTrack(String uri, String metadata, int id) {
-		//long startTime = System.nanoTime();
+		// long startTime = System.nanoTime();
 		setUri(uri);
 		setMetadata(metadata);
 		setId(id);
 		full_text = GetFullString();
-		getTrackDetails();
-		setFullDetails();
-		//long endTime = System.nanoTime();
-		//long duration = endTime - startTime;
-		//log.warn("Time to Add CustomTrack: " + duration);
+		if (!metadata.equalsIgnoreCase("")) {
+			getTrackDetails();
+			setFullDetails();
+		}
+		// long endTime = System.nanoTime();
+		// long duration = endTime - startTime;
+		// log.warn("Time to Add CustomTrack: " + duration);
 	}
 
 	public String getUniqueId() {
@@ -117,10 +119,11 @@ public class CustomTrack {
 		try {
 			Vector<Node> removeNodes = new Vector<Node>();
 			StringBuilder temp = new StringBuilder();
-			//DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			//DocumentBuilder builder = factory.newDocumentBuilder();
-			//InputSource insrc = new InputSource(new StringReader(Metadata));
-			//Document doc = builder.parse(insrc);
+			// DocumentBuilderFactory factory =
+			// DocumentBuilderFactory.newInstance();
+			// DocumentBuilder builder = factory.newDocumentBuilder();
+			// InputSource insrc = new InputSource(new StringReader(Metadata));
+			// Document doc = builder.parse(insrc);
 			Document doc = getDocument();
 			Node node = doc.getFirstChild();
 			Node item = node.getFirstChild();
@@ -178,10 +181,11 @@ public class CustomTrack {
 		try {
 			String full_title = title + " - " + artist;
 			full_title = tidyUpString(full_title);
-			//DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			//DocumentBuilder builder = factory.newDocumentBuilder();
-			//InputSource insrc = new InputSource(new StringReader(Metadata));
-			//Document doc = builder.parse(insrc);
+			// DocumentBuilderFactory factory =
+			// DocumentBuilderFactory.newInstance();
+			// DocumentBuilder builder = factory.newDocumentBuilder();
+			// InputSource insrc = new InputSource(new StringReader(Metadata));
+			// Document doc = builder.parse(insrc);
 			Document doc = getDocument();
 			Node node = doc.getFirstChild();
 			Node item = node.getFirstChild();
@@ -309,8 +313,7 @@ public class CustomTrack {
 					setTitle(n.getTextContent());
 				} else if (n.getNodeName() == "upnp:album") {
 					setAlbum(n.getTextContent());
-				}
-				else if (n.getNodeName() == "upnp:artist") {
+				} else if (n.getNodeName() == "upnp:artist") {
 					NamedNodeMap map = n.getAttributes();
 					Node role = map.getNamedItem("role");
 					String role_type = role.getTextContent();
@@ -327,7 +330,6 @@ public class CustomTrack {
 			log.error("Error GetTrackDetails", e);
 		}
 	}
-
 
 	public void setMetaText(String metatext) {
 		this.metatext = metatext;

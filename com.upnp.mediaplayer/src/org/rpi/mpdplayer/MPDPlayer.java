@@ -9,6 +9,7 @@ import java.util.Observer;
 import org.apache.log4j.Logger;
 import org.rpi.player.IPlayer;
 import org.rpi.player.events.EventBase;
+import org.rpi.player.events.EventFinishedCurrentTrack;
 import org.rpi.player.events.EventMuteChanged;
 import org.rpi.player.events.EventPlayListPlayingTrackID;
 import org.rpi.player.events.EventStatusChanged;
@@ -29,6 +30,7 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 	private long current_volume = 100;
 	private long mute_volume = 100;
 	private boolean bMute = false;
+	private boolean bStopRequest = false;
 
 	public MPDPlayer() {
 		tcp = new TCPConnector(this);
@@ -105,6 +107,7 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 
 	@Override
 	public void stop() {
+		bStopRequest = true;
 		tcp.sendCommand(tcp.createCommand("stop"));
 
 	}
@@ -129,9 +132,8 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 		}
 
 	}
-	
-	private void setVolumeInternal(long volume)
-	{
+
+	private void setVolumeInternal(long volume) {
 		List<String> params = new ArrayList<String>();
 		params.add("" + volume);
 		tcp.sendCommand(tcp.createCommand("setvol", params));
@@ -222,18 +224,27 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 			log.debug("Status Changed: " + es.getStatus());
 			current_status = es.getStatus();
 			es.setTrack(current_track);
+			if (es.getStatus().equalsIgnoreCase("STOPPED")) {
+				if (!bStopRequest) {
+					bStopRequest = false;
+					EventFinishedCurrentTrack efc = new EventFinishedCurrentTrack();
+					fireEvent(efc);
+				}
+			}
+			else
+			{
+				
+			}
 			fireEvent(es);
 			break;
 		case EVENTVOLUMECHNANGED:
-			if(!bMute)
-			{
-				//If we are not on Mute forward the change of volume
+			if (!bMute) {
+				// If we are not on Mute forward the change of volume
 				fireEvent(e);
 			}
 			break;
 		default:
-		
-			
+
 			fireEvent(e);
 		}
 

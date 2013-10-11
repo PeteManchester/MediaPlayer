@@ -476,6 +476,18 @@ public class PlayManager implements Observer {
 			log.debug("Next Track was NULL");
 		}
 	}
+	
+	public synchronized void playTrackId(long id)
+	{
+		CustomTrack t = getTrackFromId((int)id);
+		if(t !=null)
+		{
+			playThis(t);
+		}
+		else {
+			log.debug("Next Track was NULL");
+		}
+	}
 
 	/**
 	 * Play Track If Paused the resume If not Paused then get Next Track and

@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderUpnpOrgAVTransport1;
+import org.openhome.net.device.providers.DvProviderUpnpOrgAVTransport2;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventPlayListPlayingTrackID;
@@ -20,10 +21,11 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 
 	private Logger log = Logger.getLogger(PrvAVTransport.class);
 	private String track_uri ="";
-	private String track_metadata ="";
+	private String track_metadata_html ="";
+	private String track_metadata = "";
 	private String track_time ="00:00:00";
 	private String track_duration="00:00:00";
-	private String mStatus="Stopped";
+	private String mStatus="STOPPED";
 	
 	
 
@@ -32,8 +34,12 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 		super(iDevice);
 		log.debug("Creating AvTransport");
 		enablePropertyLastChange();
-
-		setPropertyLastChange("");
+		createEvent();
+		//setPropertyLastChange(intitialEvent());
+		enableActionSetAVTransportURI();
+		enableActionSetNextAVTransportURI();
+		enableActionSetPlayMode();
+		enableActionSetRecordQualityMode();
 
 		enableActionGetCurrentTransportActions();
 		enableActionGetDeviceCapabilities();
@@ -41,20 +47,24 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 		enableActionGetPositionInfo();
 		enableActionGetTransportInfo();
 		enableActionGetTransportSettings();
+		enableActionSeek();
+		enableActionGetCurrentTransportActions();
+		
 		enableActionNext();
 		enableActionPause();
 		enableActionPlay();
 		enableActionPrevious();
 		// enableActionRecord();
-		enableActionSeek();
-		enableActionSetAVTransportURI();
-		enableActionSetPlayMode();
+
 		// enableActionSetRecordQualityMode();
 		enableActionStop();
 		PlayManager.getInstance().observInfoEvents(this);
 		PlayManager.getInstance().observTimeEvents(this);
 		PlayManager.getInstance().observPlayListEvents(this);
+		
 	}
+	
+
 	
 	private void createEvent()
 	{
@@ -69,7 +79,7 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 			sb.append("<CurrentMediaDuration val=\"00:00:00\" />");
 			sb.append("<AVTransportURI val=\"\" />");
 			sb.append("<TransportState val=\""+ mStatus.toUpperCase() +"\" />");
-			sb.append("<CurrentTrackMetaData val=\""+track_metadata +"\" />");
+			sb.append("<CurrentTrackMetaData val=\""+track_metadata_html +"\" />");
 			sb.append("<NextAVTransportURI val=\"NOT_IMPLEMENTED\" />");
 			sb.append("<PossibleRecordQualityModes val=\"NOT_IMPLEMENTED\" />");
 			sb.append("<CurrentTrack val=\"0\" />");
@@ -88,39 +98,21 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 			setPropertyLastChange(sb.toString());
 	}
 	
-	private void createStatus(String status)
-	{
-		StringBuilder sb = new StringBuilder();
-		sb.append("<Event xmlns=\"urn:schemas-upnp-org:metadata-1-0/AVT/\">");
-				sb.append("<InstanceID val=\"0\">");
-					sb.append("<TransportState val=\""+status + "\" />");
-				sb.append("</InstanceID>");
-				sb.append("</Event>");
-		setPropertyLastChange(sb.toString());
-	}
-	
-	private void createStatusPlaying()
-	{
-		StringBuilder sb = new StringBuilder();
-		sb.append("<Event xmlns=\"urn:schemas-upnp-org:metadata-1-0/AVT/\">");
-		sb.append("<InstanceID val=\"0\">");
-		sb.append("<TransportState val=\"PLAYING\" />");
-		sb.append("<CurrentTrackDuration val=\"0:05:34.000\" />");
-		sb.append("</InstanceID>");
-		sb.append("</Event>");
-		setPropertyLastChange(sb.toString());
-	}
 
 	@Override
 	protected String getCurrentTransportActions(IDvInvocation paramIDvInvocation, long paramLong) {
 		log.debug("Transport Actions");
 		return "Play,Pause,Stop,Seek,Next,Previous";
+		//return "";
 	}
 
 	@Override
 	protected GetDeviceCapabilities getDeviceCapabilities(IDvInvocation paramIDvInvocation, long paramLong) {
 		log.debug("GetDevice Capabilities");
-		GetDeviceCapabilities dev = new GetDeviceCapabilities("NONE,NETWORK,HDD,CD-DA,UNKNOWN", "NOT_IMPLEMENTED", "NOT_IMPLEMENTED");
+		String cap = "vendor-defined ,NOT_IMPLEMENTED,NONE,NETWORK,MICRO-MV,HDD,LD,DAT,DVD-AUDIO,DVD-RAM,DVD-RW,DVD+RW,DVD-R,DVD-VIDEO,DVD-ROM,MD-PICTURE,MD-AUDIO,SACD,VIDEO-CD,CD-RW,CD-R,CD-DA,CD-ROM,HI8,VIDEO8,VHSC,D-VHS,S-VHS,W-VHS,VHS,MINI-DV,DV,UNKNOWN";
+		String rec = " vendor-defined ,NOT_IMPLEMENTED,2:HIGH,1:MEDIUM,0:BASIC,2:SP,1:LP,0:EP";
+		//GetDeviceCapabilities dev = new GetDeviceCapabilities("NONE,NETWORK,HDD,CD-DA,UNKNOWN", "NOT_IMPLEMENTED", "NOT_IMPLEMENTED");
+		GetDeviceCapabilities dev = new GetDeviceCapabilities(cap, cap, rec);
 		return dev;
 
 	}
@@ -128,28 +120,28 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 	@Override
 	protected GetMediaInfo getMediaInfo(IDvInvocation paramIDvInvocation, long paramLong) {
 		log.debug("GetMediaInfo");
-		GetMediaInfo info = new GetMediaInfo(0, "", "", "", "", "", "", "", "");
+		GetMediaInfo info = new GetMediaInfo(0, "0", track_duration, track_metadata, "", "", "UNKNOWN", "UNKNOWN", "UNKNOWN");
 		return info;
 	}
 
 	@Override
 	protected GetPositionInfo getPositionInfo(IDvInvocation paramIDvInvocation, long paramLong) {
-		// log.debug("Get Position Info");
-		GetPositionInfo info = new GetPositionInfo(0, track_duration, track_metadata, track_uri, track_time, "00:00:00", 2147483647, 2147483647);
+		//log.debug("Get Position Info");
+		GetPositionInfo info = new GetPositionInfo(0, track_duration, track_metadata, track_uri, track_time, track_time, 2147483647, 2147483647);
 		return info;
 	}
 
 	@Override
 	protected GetTransportInfo getTransportInfo(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("GetTransport Info");
-		GetTransportInfo info = new GetTransportInfo("Playing", "OK", "1");
+		//log.debug("GetTransport Info");
+		GetTransportInfo info = new GetTransportInfo(mStatus.toUpperCase(), "OK", "1");
 		return info;
 	}
 
 	@Override
 	protected GetTransportSettings getTransportSettings(IDvInvocation paramIDvInvocation, long paramLong) {
 		log.debug("GetTransportSettings");
-		GetTransportSettings settings = new GetTransportSettings("NORMAL", "NOT_IMPLEMENTED");
+		GetTransportSettings settings = new GetTransportSettings("NORMAL", "0:BASIC");
 		return settings;
 	}
 
@@ -167,7 +159,7 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 
 	@Override
 	protected void play(IDvInvocation paramIDvInvocation, long paramLong, String paramString) {
-		log.debug("Play");
+		log.debug("Play: " + paramString);
 		PlayManager.getInstance().play();
 	}
 
@@ -221,19 +213,27 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 		case EVENTTRACKCHANGED:
 			EventTrackChanged ec = (EventTrackChanged) e;
 			CustomTrack track = ec.getTrack();
+			String m_uri = "";
+			String m_metadata = "";
 			if (track != null) {
-				track_uri = track.getUri();
-				track_metadata = stringToHTMLString(track.getMetadata());
+				m_uri = track.getUri();
+				m_metadata = track.getMetadata();
 			} else {
-				track_uri = "";
-				track_metadata = "";
+				m_uri = "";
+				m_metadata = "";
 			}
-			//createEvent();
+			if(!(m_uri.equalsIgnoreCase(track_uri))||(!m_metadata.equalsIgnoreCase(track_metadata)))
+			{
+				track_uri = m_uri;
+				track_metadata = m_metadata;
+				track_metadata_html = stringToHTMLString(m_metadata);
+				createEvent();
+			}
 			break;
 		case EVENTTIMEUPDATED:
 			EventTimeUpdate etime = (EventTimeUpdate) e;
-			long time = etime.getTime();
 			track_time  = ConvertTime(etime.getTime());
+			//createEvent();
 			break;
 		case EVENTUPDATETRACKINFO:
 			EventUpdateTrackInfo eti = (EventUpdateTrackInfo)e;
@@ -245,29 +245,18 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 			String status = eps.getStatus();
 			if(status !=null)
 			{
+				if(status.equalsIgnoreCase("PAUSED"))
+				{
+					status = "PAUSED_PLAYBACK";
+				}
 				if(!mStatus.equalsIgnoreCase(status))
 				{
-					if(status.equalsIgnoreCase("PAUSED"))
-					{
-						createStatus("PAUSED_PLAYBACK");
-					}
-					else if (status.equalsIgnoreCase("PLAYING"))
-					{
-						createStatusPlaying();
-					}
-					else
-					{
-						createStatus(status.toUpperCase());
-					}
-					
+					createEvent();
 				}
-				mStatus = status;
-				
+				mStatus = status;			
 			}
 		default:
-			log.debug(e.toString());
-		}
-		
+		}	
 	}
 	
 	/***

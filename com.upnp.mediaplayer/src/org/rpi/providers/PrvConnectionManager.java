@@ -11,6 +11,7 @@ public class PrvConnectionManager extends DvProviderUpnpOrgConnectionManager1 {
 	private Logger log = Logger.getLogger(PrvConnectionManager.class);
 
 	private String currentConnectionIDs = "0";
+	//private String sinkProtocolInfo = "http-get:*:audio/mpegurl:*,http-get:*:audio/mp3:*,http-get:*:audio/mpeg:*,http-get:*:audio/x-ms-wma:*,http-get:*:audio/wma:*,http-get:*:audio/mpeg3:*,http-get:*:video/x-ms-wmv:*,http-get:*:video/x-ms-asf:*,http-get:*:video/x-ms-avi:*,http-get:*:video/mpeg:*";
 	private String sinkProtocolInfo = Config.getProtocolInfo();
 	private String sourceProtocolInfo = "";//Config.getProtocolInfo();
 
@@ -51,7 +52,7 @@ public class PrvConnectionManager extends DvProviderUpnpOrgConnectionManager1 {
 
 		int iRcsID = 0;
 		int iAVTransportID = 0;
-		String iProtocolInfo = Config.getProtocolInfo();
+		String iProtocolInfo = ":::";
 		String iPeerConnectionManager = "/";
 		int iPeerConnectionID = -1;
 		String iDirection = "Input";
@@ -64,7 +65,7 @@ public class PrvConnectionManager extends DvProviderUpnpOrgConnectionManager1 {
 	
 	protected  String getProtocolInfo() {
 		log.debug("GetProtocol");
-		return Config.getProtocolInfo();
+		return sinkProtocolInfo;
 	}
 
 }

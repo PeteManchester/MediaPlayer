@@ -217,13 +217,21 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 
 	protected Read read(org.openhome.net.device.IDvInvocation paramIDvInvocation, long paramLong) {
 		log.debug("Read Index: " + paramLong);
+		try
+		{
 		for (CustomTrack t : tracks) {
 			if (t.getId() == paramLong) {
 				DvProviderAvOpenhomeOrgPlaylist1.Read read = new Read(t.getUri(), t.getMetadata());
 				return read;
 			}
 		}
-		return null;
+		}
+		catch(Exception e)
+		{
+			log.error("Error read Index: " + paramLong,e);
+		}
+		DvProviderAvOpenhomeOrgPlaylist1.Read read = new Read("", "");
+		return read;
 	};
 
 	protected String readList(org.openhome.net.device.IDvInvocation paramIDvInvocation, String paramString) {
@@ -241,6 +249,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 
 	protected void seekId(org.openhome.net.device.IDvInvocation paramIDvInvocation, long id) {
 		log.debug("SeekId: " + id);
+		iPlayer.playTrackId(id);
 	};
 
 	protected void seekIndex(org.openhome.net.device.IDvInvocation paramIDvInvocation, long id) {

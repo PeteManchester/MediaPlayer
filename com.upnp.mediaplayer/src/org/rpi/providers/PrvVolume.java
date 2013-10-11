@@ -59,6 +59,17 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 		PlayManager.getInstance().observVolumeEvents(this);
 	}
 	
+	@Override
+	protected Characteristics characteristics(IDvInvocation paramIDvInvocation) {
+		Characteristics charistics = new Characteristics(100, 0, 0, 0, 0, 0);
+		return charistics;
+	}
+	
+	@Override
+	protected boolean mute(IDvInvocation paramIDvInvocation) {
+		return PlayManager.getInstance().getMute();
+	}
+	
 	private void updateVolume(long volume)
 	{
 		setPropertyVolume(volume);
@@ -103,6 +114,11 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 		long volume = iPlayer.getVolume();
 		log.debug("GetVolume: " + volume);
 		return volume;
+	}
+	
+	@Override
+	protected long volumeLimit(IDvInvocation paramIDvInvocation) {
+		return 100;
 	}
 
 	@Override

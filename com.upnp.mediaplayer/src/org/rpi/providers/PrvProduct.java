@@ -81,7 +81,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 		setPropertyProductUrl(prod_url);
 		setPropertyProductImageUri(prod_image);
 
-		setPropertySourceIndex(0);
+		setPropertySourceIndex(4);
 		setPropertySourceCount(sources.size());
 		setPropertySourceXml(iSourceXml);
 
@@ -100,14 +100,16 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 		enableActionSourceXmlChangeCount();
 		PlayManager.getInstance().observeProductEvents(this);
 		initSources();
+		setPropertySourceIndex(0);
 	}
 
 	private CopyOnWriteArrayList<Source> sources = new CopyOnWriteArrayList<Source>();
 
 	private void initSources() {
-		addSource(Config.friendly_name, "Playlist", "Playlist", true);
 		addSource(Config.friendly_name, "Radio", "Radio", true);
+		addSource(Config.friendly_name, "Playlist", "Playlist", true);		
 		addSource(Config.friendly_name, "Receiver", "Receiver", true);
+		addSource(Config.friendly_name,"UpnpAV","UpnpAv",false);
 	}
 
 	private void addSource(String system_name, String type, String name, boolean visible) {
@@ -146,9 +148,6 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	protected void setStandby(IDvInvocation paramIDvInvocation, boolean paramBoolean) {
 		log.debug("SetStandby: " + paramBoolean);
 		PlayManager.getInstance().setStandby(paramBoolean);
-		
-		//if (paramBoolean)
-		//	iPlayer.stop();
 	}
 	
 
@@ -174,7 +173,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 
 	@Override
 	protected Model model(IDvInvocation paramIDvInvocation) {
-		log.debug("Manufacturer");
+		log.debug("Model");
 		Model model = new Model(model_name, model_info, model_url, model_image);
 		return model;
 	}
@@ -236,11 +235,39 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 		return iSourceXMLChangeCount;
 	}
 	
+	@Override
+	protected void setSourceIndexByName(IDvInvocation paramIDvInvocation, String paramString) {
+		log.debug("SetSourceIndexByName: " + paramString);
+		setSourceByname(paramString);
+	}
+	
 	public void updateStandby(boolean standby)
 	{
 		propertiesLock();
 		setPropertyStandby(standby);
 		propertiesUnlock();
+	}
+	
+	/**
+	 * Attempt to try and set the PlayList as Default Source
+	 * @param paramLong
+	 */
+	public synchronized void setSourceId(long paramLong)
+	{
+		setPropertySourceIndex(paramLong);
+	}
+	
+	public synchronized void setSourceByname(String name)
+	{
+		long count = 0;
+		for(Source source: sources)
+		{
+			if(source.getName().equalsIgnoreCase(name))
+			{
+				setPropertySourceIndex(count);
+			}
+			count++;
+		}
 	}
 
 	@Override

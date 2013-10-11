@@ -185,13 +185,13 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer 
 	@Override
 	protected void seekSecondAbsolute(IDvInvocation paramIDvInvocation, long paramLong) {
 		log.debug("Seek Absolute");
-		super.seekSecondAbsolute(paramIDvInvocation, paramLong);
+		//super.seekSecondAbsolute(paramIDvInvocation, paramLong);
 	}
 
 	@Override
 	protected void seekSecondRelative(IDvInvocation paramIDvInvocation, int paramInt) {
 		log.debug("Seek Relative");
-		super.seekSecondRelative(paramIDvInvocation, paramInt);
+		//super.seekSecondRelative(paramIDvInvocation, paramInt);
 	}
 
 	@Override
