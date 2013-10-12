@@ -16,22 +16,27 @@ public class FileParser {
 		String uURL = url.toUpperCase();
 		if(uURL.endsWith(".FLAC"))
 		{
+			log.debug("FLAC File: " + url);
 			return url;
 		}
 		else if(uURL.endsWith(".MP3"))
 		{
+			log.debug("MP3 File: " + url);
 			return url;
 		}
 		else if(uURL.endsWith(".WAV"))
 		{
+			log.debug("WAV File: " + url);
 			return url;
 		}
 		else if (uURL.endsWith(".M4A"))
 		{
+			log.debug("M4A File: " + url);
 			return url;
 		}
 		else if(uURL.endsWith(".PLS"))
 		{
+			log.debug("PLS File: " + url);
 			PLSParser pls = new PLSParser();
 			LinkedList<String> urls = pls.getStreamingUrl(url);
 			if(urls.size()>0)
@@ -41,6 +46,7 @@ public class FileParser {
 		}
 		else if(uURL.endsWith(".M3U"))
 		{
+			log.debug("M3U File: " + url);
 			M3UParser m3u = new M3UParser();
 			LinkedList<String> urls = m3u.getStreamingUrl(url);
 			if((urls.size()>0))
@@ -63,12 +69,17 @@ public class FileParser {
 			URLConnection conn = getConnection(url);
 			if(conn!=null)
 			{
-				log.debug("URL: "  + url + " Headers: " + conn.getHeaderFields());
+                log.debug("URL: "  + url + " Headers: " + conn.getHeaderFields());
 				String content_disp = conn.getHeaderField("Content-Disposition");
-				log.debug(content_disp);
-
+				log.debug("ContentDisposition:" + content_disp);
+				String content_type = conn.getContentType();
+				if(content_type !=null)
+				{
+					content_type = content_type.toUpperCase();
+				}
 				if(content_disp !=null && content_disp.toUpperCase().endsWith("M3U"))
 				{
+					log.debug("M3U File: " + url);
 					M3UParser m3u = new M3UParser();
 					LinkedList<String> urls = m3u.getStreamingUrl(conn);
 					if(urls.size()> 0)
@@ -77,8 +88,9 @@ public class FileParser {
 					}
 				}
 				
-				else if(conn.getContentType().toUpperCase().contains("AUDIO/X-SCPLS"))
+				else if(content_type != null && content_type.contains("AUDIO/X-SCPLS"))
 				{
+					log.debug("PLS File: " + url);
 					PLSParser pls = new PLSParser();
 					LinkedList<String> urls = pls.getStreamingUrl(conn);
 					if(urls.size()> 0)
@@ -86,7 +98,7 @@ public class FileParser {
 						return urls.getFirst();
 					}
 				}
-				else if(conn.getContentType().toUpperCase().contains("VIDEO/X-MS-ASF"))
+				else if(content_type != null && content_type.contains("VIDEO/X-MS-ASF"))
 				{
 					ASXParser asx = new ASXParser(); 
 					log.debug("ASX File: " + url);
@@ -96,11 +108,12 @@ public class FileParser {
 						return urls.get(0);
 					}
 				}
-				else if(conn.getContentType().toUpperCase().contains("AUDIO/MPEG"))
+				else if(content_type != null && content_type.contains("AUDIO/MPEG"))
 				{
+					log.debug("MPEG File: " + url);
 					return url;
 				}
-				else if (conn.getContentType().toUpperCase().contains("AUDIO/X-MPEGURL"))
+				else if (content_type != null && content_type.contains("AUDIO/X-MPEGURL"))
 				{
 					log.debug("M3U File: " + url);
 					M3UParser m3u = new M3UParser();

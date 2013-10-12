@@ -15,6 +15,12 @@ public class PrvConnectionManager extends DvProviderUpnpOrgConnectionManager1 {
 	private String sinkProtocolInfo = Config.getProtocolInfo();
 	private String sourceProtocolInfo = "";//Config.getProtocolInfo();
 
+	private int iConnectionID=0;
+
+	private int iAVTransportID=0;
+
+	private int iRcsID=0;
+
 	public PrvConnectionManager(DvDevice device) {
 		super(device);
 		enablePropertyCurrentConnectionIDs();
@@ -25,41 +31,50 @@ public class PrvConnectionManager extends DvProviderUpnpOrgConnectionManager1 {
 		setPropertySinkProtocolInfo(sinkProtocolInfo);
 		setPropertySourceProtocolInfo(sourceProtocolInfo);
 
-		//enableActionConnectionComplete();
+		enableActionPrepareForConnection();
+		enableActionConnectionComplete();
 		enableActionGetCurrentConnectionIDs();
 		enableActionGetCurrentConnectionInfo();
-		//enableActionPrepareForConnection();
 		enableActionGetProtocolInfo();
 	}
+	
+    @Override
+    protected PrepareForConnection prepareForConnection(IDvInvocation paramIDvInvocation, String paramString1, String paramString2, int paramInt, String paramString3) {
+    	log.debug("PrepareForConnection");
+    	PrepareForConnection prep = new PrepareForConnection(iConnectionID, iAVTransportID, iRcsID);
+    	return prep;
+    }
 
+    @Override
 	protected void connectionComplete(IDvInvocation paramIDvInvocation, int paramInt) {
 		log.debug("ConnectionManager  ConnectionComplete: " + paramInt);
 	}
 
+    @Override
 	protected DvProviderUpnpOrgConnectionManager1.GetProtocolInfo getProtocolInfo(IDvInvocation paramIDvInvocation) {
 		log.debug("GetProtolInfo Source=" + sourceProtocolInfo + " Sink=" + sinkProtocolInfo);
 		return new DvProviderUpnpOrgConnectionManager1.GetProtocolInfo(sourceProtocolInfo, sinkProtocolInfo);
 	}
 
+    @Override
 	protected String getCurrentConnectionIDs(IDvInvocation paramIDvInvocation) {
 		log.debug("ConnectionManager getCurrentConnectionIDs ConnectionIDs=" + currentConnectionIDs);
 		return currentConnectionIDs;
 	}
 
+    @Override
 	protected DvProviderUpnpOrgConnectionManager1.GetCurrentConnectionInfo getCurrentConnectionInfo(IDvInvocation paramIDvInvocation, int paramInt) {
-		log.debug("ConnectionManager action: GetCurrentConnectionInfo");
-		log.debug(" ConnectionID=" + paramInt);
-
-		int iRcsID = 0;
-		int iAVTransportID = 0;
-		String iProtocolInfo = ":::";
+		//log.debug("ConnectionManager action: GetCurrentConnectionInfo: " + paramInt);
+		
+		//int iRcsID = 0;
+		//int iAVTransportID = 0;
+		String iProtocolInfo = "";
 		String iPeerConnectionManager = "/";
 		int iPeerConnectionID = -1;
 		String iDirection = "Input";
 		String iStatus = "Unknown";
 
-		log.debug("ConnectionManager response: GetCurrentConnectionInfo");
-		log.debug(" RcsID=" + iRcsID + " AVTransportID=" + iAVTransportID + " ProtocolInfo=" + iProtocolInfo + " PeerConnectionManager=" + iPeerConnectionManager + " PeerConnectionID=" + iPeerConnectionID + " Direction=" + iDirection + " Status=" + iStatus);
+		log.debug("ConnectionManager response: GetCurrentConnectionInfo: RcsID=" + iRcsID + " AVTransportID=" + iAVTransportID + " ProtocolInfo=" + iProtocolInfo + " PeerConnectionManager=" + iPeerConnectionManager + " PeerConnectionID=" + iPeerConnectionID + " Direction=" + iDirection + " Status=" + iStatus);
 		return new DvProviderUpnpOrgConnectionManager1.GetCurrentConnectionInfo(iRcsID, iAVTransportID, iProtocolInfo, iPeerConnectionManager, iPeerConnectionID, iDirection, iStatus);
 	}
 	

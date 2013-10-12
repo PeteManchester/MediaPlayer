@@ -19,14 +19,16 @@ import org.rpi.player.events.EventVolumeChanged;
 public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 implements Observer  {
 
 	private Logger log = Logger.getLogger(PrvRenderingControl.class);
+	private String isMute = "0";
+	private String volume = "100";
 
 
 	public PrvRenderingControl(DvDevice iDevice) {
 		super(iDevice);
 		log.debug("Creating CustomRenderingControl");	
 		enablePropertyLastChange();
-		
-		setPropertyLastChange("<Event xmlns = \"urn:schemas-upnp-org:metadata-1-0/RCS/\"> <InstanceID val=\"0\"> <Volume val=\"100\" channel=\"RF\"/> <Volume val=\"100\" channel=\"LF\"/> </InstanceID></Event>");
+		createEvent();
+		//setPropertyLastChange("<Event xmlns = \"urn:schemas-upnp-org:metadata-1-0/RCS/\"> <InstanceID val=\"0\"> <Volume val=\"100\" channel=\"RF\"/> <Volume val=\"100\" channel=\"LF\"/> </InstanceID></Event>");
 		enableActionSetBlueVideoBlackLevel();
 		enableActionSetBlueVideoGain();
 		enableActionSetBrightness();
@@ -267,15 +269,53 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 		{
 		case EVENTVOLUMECHNANGED:
 			EventVolumeChanged ev = (EventVolumeChanged)e;
+			volume = ""+ev.getVolume();
+			createEvent();
 			//updateVolume(ev.getVolume());
-			updateVolume();
+			//updateVolume();
 			break;
 		case EVENTMUTECHANGED:
 			EventMuteChanged em = (EventMuteChanged)e;
-			updateMute();
+			//updateMute();
+			if(em.isMute())
+			{
+				isMute  = "1";
+			}
+			else
+			{
+				isMute = "0";
+			}
+			createEvent();
 			break;
 		}
 		
+	}
+	
+	private void createEvent()
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append("<Event xmlns=\"urn:schemas-upnp-org:metadata-1-0/RCS/\">");
+		sb.append("<InstanceID val=\"0\">");
+		sb.append("<VerticalKeystone val=\"\" />");
+		sb.append("<Loudness val=\"\" />");
+		sb.append("<HorizontalKeystone val=\"\" />");
+		sb.append("<BlueVideoBlackLevel val=\"\" />");
+		sb.append("<RedVideoGain val=\"\" />");
+		sb.append("<GreenVideoBlackLevel val=\"\" />");
+		sb.append("<Volume channel=\"Master\" val=\"100\" />");
+		sb.append("<Mute channel=\"Master\" val=\"0\" />");
+		sb.append("<Brightness val=\"\" />");
+				sb.append("<PresetNameList val=\"FactoryDefaults\" />");
+				sb.append("<ColorTemperature val=\"\" />");
+				sb.append("<VolumeDB channel=\"Master\" val=\"0\" />");
+				sb.append("<Contrast val=\"\" />");
+				sb.append("<GreenVideoGain val=\"\" />");
+				sb.append("<RedVideoBlackLevel val=\"\" />");
+				sb.append("<BlueVideoGain val=\"\" />");
+				sb.append("<Sharpness val=\"\" />");
+				sb.append("</InstanceID>");
+				sb.append("</Event>");
+		setPropertyLastChange(sb.toString());
 	}
 
 }

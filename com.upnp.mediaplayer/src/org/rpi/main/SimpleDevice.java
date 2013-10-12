@@ -130,9 +130,9 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		sb.append("<depth>24</depth>");
 		sb.append("<url>/" + iDeviceName + "/Upnp/resource/org/rpi/image/mediaplayer50.jpg</url>");
 		sb.append("</icon>");
-		iDevice.setAttribute("Upnp.IconList" , sb.toString());
-		
-		//iDevice.setAttribute("Upnp.Domain", "openhome-org");
+		iDevice.setAttribute("Upnp.IconList", sb.toString());
+
+		// iDevice.setAttribute("Upnp.Domain", "openhome-org");
 		iDevice.setAttribute("Upnp.Domain", "schemas-upnp-org");
 		iDevice.setAttribute("Upnp.Type", "MediaRenderer");
 		iDevice.setAttribute("Upnp.Version", "1");
@@ -140,10 +140,10 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		iDevice.setAttribute("Upnp.Manufacturer", "Made in Manchester");
 		iDevice.setAttribute("Upnp.ModelName", "Open Home Java Renderer: v" + Config.version);
 		iDevice.setAttribute("Upnp.ModelDescription", "'We Made History Not Money' - Tony Wilson..");
-		//iDevice.setAttribute("Upnp.IconList" , sb.toString());
+		// iDevice.setAttribute("Upnp.IconList" , sb.toString());
 		// iDevice.setAttribute("Upnp.ModelUri", "www.google.co.uk");
 		// iDevice.setAttribute("Upnp.ModelImageUri","http://upload.wikimedia.org/wikipedia/en/thumb/0/04/Joy_Division.JPG/220px-Joy_Division.JPG");
-		
+
 		iAVTransport = new PrvAVTransport(iDevice);
 		iConnectionManager = new PrvConnectionManager(iDevice);
 		iProduct = new PrvProduct(iDevice);
@@ -152,7 +152,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		iInfo = new PrvInfo(iDevice);
 		iTime = new PrvTime(iDevice);
 		iRadio = new PrvRadio(iDevice);
-		iReceiver = new PrvReceiver(iDevice);	
+		iReceiver = new PrvReceiver(iDevice);
 		iRenderingControl = new PrvRenderingControl(iDevice);
 
 		try {
@@ -416,16 +416,15 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 	@Override
 	public void writeResource(String resource_name, int arg1, List<String> arg2, IResourceWriter writer) {
-		log.info("writeResource Called: "  +resource_name);	
+		log.info("writeResource Called: " + resource_name);
 		try {
 			resource_name = "/" + resource_name;
-			URL url = this.getClass().getResource(resource_name);	
+			URL url = this.getClass().getResource(resource_name);
 			BufferedImage image = ImageIO.read(url);
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			String fileType = "image/png";
 			String format = "png";
-			if(resource_name.toUpperCase().endsWith("JPG"))
-			{
+			if (resource_name.toUpperCase().endsWith("JPG")) {
 				format = "jpg";
 				fileType = "image/jpeg";
 			}
@@ -435,25 +434,23 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			writer.writeResource(baos.toByteArray(), length);
 			writer.writeResourceEnd();
 		} catch (IOException e) {
-			log.error("Error Writing Resource: " + resource_name,e);
+			log.error("Error Writing Resource: " + resource_name, e);
 		}
-		
-		
+
 	}
-	
-	private void writeFile(String s )
-	{
+
+	private void writeFile(String s) {
 		try {
-            File newTextFile = new File("C:/temp/thetextfile.txt");
+			File newTextFile = new File("C:/temp/thetextfile.txt");
 
-            FileWriter fw = new FileWriter(newTextFile);
-            fw.write(s);
-            fw.close();
+			FileWriter fw = new FileWriter(newTextFile);
+			fw.write(s);
+			fw.close();
 
-        } catch (IOException iox) {
-            //do stuff with exception
-            iox.printStackTrace();
-        }
+		} catch (IOException iox) {
+			// do stuff with exception
+			iox.printStackTrace();
+		}
 	}
 
 	/***

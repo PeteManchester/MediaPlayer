@@ -21,6 +21,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	private String iSourceXml = "";
 	//private boolean standby = true;
 	private String attributes = "Info Time Volume Radio";
+	//private String attributes = "";
 	private String man_name = "Java Inc";
 	private String man_info = "Developed in Java using OpenHome and MPlayer";
 	private String man_url = "";
