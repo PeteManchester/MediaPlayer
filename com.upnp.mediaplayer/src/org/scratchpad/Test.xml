@@ -1,0 +1,69 @@
+
+
+<Event xmlns="urn:schemas-upnp-org:metadata-1-0/AVT/">
+	<InstanceID val="0">
+		<CurrentPlayMode val="NORMAL" />
+		<RecordStorageMedium val="NOT_IMPLEMENTED" />
+		<CurrentTrackURI
+			val="http://192.168.1.205:26125/content/c2/b16/f44100/d87998-co118831.flac" />
+		<CurrentTrackDuration val="00:03:05" />
+		<CurrentRecordQualityMode val="NOT_IMPLEMENTED" />
+		<CurrentMediaDuration val="00:00:00" />
+		<AVTransportURI val="" />
+		<TransportState val="PLAYING" />
+		<CurrentTrackMetaData val="&lt;<DIDL-Lite xmlns="
+			urn:schemas-upnp-org:metadata-1-0 / DIDL-Lite />
+			<item id="d87998-co118831" parentID="co118831" restricted="0">
+				<dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">Candidate</dc:title>
+				<dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Joy Division</dc:creator>
+				<dc:date xmlns:dc="http://purl.org/dc/elements/1.1/">1979-01-01</dc:date>
+				<upnp:artist role="AlbumArtist"
+					xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Joy Division</upnp:artist>
+				<upnp:artist role="Composer"
+					xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Bernard Albrecht</upnp:artist>
+				<upnp:artist role="Composer"
+					xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Ian Curtis</upnp:artist>
+				<upnp:artist role="Composer"
+					xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Peter Hook</upnp:artist>
+				<upnp:artist role="Composer"
+					xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Stephen Morris</upnp:artist>
+				<upnp:artist role="Performer"
+					xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Joy Division</upnp:artist>
+				<upnp:album xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Unknown Pleasures</upnp:album>
+				<upnp:genre xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Pop/Rock</upnp:genre>
+				<upnp:albumArtURI dlna:profileID="JPEG_TN"
+					xmlns:dlna="urn:schemas-dlna-org:metadata-1-0/" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">http://192.168.1.205:26125/aa/7911/4175365635/cover.jpg?size=0</upnp:albumArtURI>
+				<upnp:originalTrackNumber xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">3</upnp:originalTrackNumber>
+				<upnp:originalDiscNumber xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">1</upnp:originalDiscNumber>
+				<upnp:originalDiscCount xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">1</upnp:originalDiscCount>
+				<res duration="0:03:05.000" size="17842009" bitrate="176400"
+					bitsPerSample="16" sampleFrequency="44100" nrAudioChannels="2"
+					protocolInfo="http-get:*:audio/x-flac:DLNA.ORG_PN=;DLNA.ORG_OP=01">http://192.168.1.205:26125/content/c2/b16/f44100/d87998-co118831.flac</res>
+				<res duration="0:03:05.000" size="32685728" bitrate="176400"
+					bitsPerSample="16" sampleFrequency="44100" nrAudioChannels="2"
+					protocolInfo="http-get:*:audio/wav:DLNA.ORG_PN=WAV;DLNA.ORG_OP=01">http://192.168.1.205:26125/content/c2/b16/f44100/d87998-co118831.forced.wav</res>
+				<res duration="0:03:05.000" size="32685684" bitrate="176400"
+					bitsPerSample="16" sampleFrequency="44100" nrAudioChannels="2"
+					protocolInfo="http-get:*:audio/L16:DLNA.ORG_PN=LPCM;DLNA.ORG_OP=01;DLNA.ORG_CI=1">http://192.168.1.205:26125/content/c2/b16/f44100/d87998-co118831.forced.l16</res>
+				<res duration="0:03:05.000" size="17842009" bitrate="176400"
+					bitsPerSample="16" sampleFrequency="44100" nrAudioChannels="2"
+					protocolInfo="http-get:*:audio/x-flac:DLNA.ORG_PN=;DLNA.ORG_OP=01">http://192.168.1.205:26125/content/c2/b16/f44100/d87998-co118831.flac</res>
+				<upnp:class xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">object.item.audioItem.musicTrack</upnp:class>
+			</item>
+		</DIDL-Lite>
+			" />
+			<NextAVTransportURI val="NOT_IMPLEMENTED" />
+			<PossibleRecordQualityModes val="NOT_IMPLEMENTED" />
+			<CurrentTrack val="0" />
+			<NextAVTransportURIMetaData val="NOT_IMPLEMENTED" />
+			<PlaybackStorageMedium val="NONE" />
+			<CurrentTransportActions val="Play,Pause,Stop,Seek,Next,Previous" />
+			<RecordMediumWriteStatus val="NOT_IMPLEMENTED" />
+			<PossiblePlaybackStorageMedia val="NONE,NETWORK,HDD,CD-DA,UNKNOWN" />
+			<AVTransportURIMetaData val="" />
+			<NumberOfTracks val="1" />
+			<PossibleRecordStorageMedia val="NOT_IMPLEMENTED" />
+			<TransportStatus val="OK" />
+			<TransportPlaySpeed val="1" />
+	</InstanceID>
+</Event>
