@@ -144,7 +144,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		// iDevice.setAttribute("Upnp.ModelUri", "www.google.co.uk");
 		// iDevice.setAttribute("Upnp.ModelImageUri","http://upload.wikimedia.org/wikipedia/en/thumb/0/04/Joy_Division.JPG/220px-Joy_Division.JPG");
 
-		iAVTransport = new PrvAVTransport(iDevice);
+		
 		iConnectionManager = new PrvConnectionManager(iDevice);
 		iProduct = new PrvProduct(iDevice);
 		iVolume = new PrvVolume(iDevice);
@@ -153,6 +153,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		iTime = new PrvTime(iDevice);
 		iRadio = new PrvRadio(iDevice);
 		iReceiver = new PrvReceiver(iDevice);
+		iAVTransport = new PrvAVTransport(iDevice);
 		iRenderingControl = new PrvRenderingControl(iDevice);
 
 		try {

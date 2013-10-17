@@ -16,6 +16,7 @@ import org.rpi.player.events.EventRadioPlayName;
 import org.rpi.player.events.EventRadioPlayingTrackID;
 import org.rpi.player.events.EventRadioStatusChanged;
 import org.rpi.radio.CustomChannel;
+import org.rpi.utils.lt;
 
 public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer {
 
@@ -85,37 +86,37 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer 
 	}
 
 
-	protected Channel channel(org.openhome.net.device.IDvInvocation arg0) {
-		log.debug("Channel");
+	protected Channel channel(IDvInvocation paramIDvInvocation) {
+		log.debug("Channel" + lt.getLogText(paramIDvInvocation));
 		CustomChannel c = channels.get(0);
 		Channel channel = new Channel(c.getUri(), c.getMetadata());
 		return channel;
 	};
 
 	@Override
-	protected long channelsMax(IDvInvocation arg0) {
-		log.debug("ChannelsMax");
+	protected long channelsMax(IDvInvocation paramIDvInvocation) {
+		log.debug("ChannelsMax" + lt.getLogText(paramIDvInvocation));
 		return getPropertyChannelsMax();
 	}
 
 	@Override
-	protected long id(IDvInvocation arg0) {
-		log.debug("Id");
+	protected long id(IDvInvocation paramIDvInvocation) {
+		log.debug("Id" + lt.getLogText(paramIDvInvocation));
 		return getPropertyId();
 	}
 
 	@Override
-	protected boolean idArrayChanged(IDvInvocation arg0, long arg1) {
-		log.debug("idArrayChanged");
+	protected boolean idArrayChanged(IDvInvocation paramIDvInvocation, long arg1) {
+		log.debug("idArrayChanged" + lt.getLogText(paramIDvInvocation));
 		return false;
 	}
 
-	protected void pause(IDvInvocation arg0) {
-		log.debug("Pause");
+	protected void pause(IDvInvocation paramIDvInvocation) {
+		log.debug("Pause" + lt.getLogText(paramIDvInvocation));
 	};
 
-	protected void play(IDvInvocation arg0) {
-		log.debug("Play");
+	protected void play(IDvInvocation paramIDvInvocation) {
+		log.debug("Play" + lt.getLogText(paramIDvInvocation));
 		if (current_channel >= 0) {
 			log.debug("Play Channel Set: " + current_channel);
 			getChannelById();
@@ -126,21 +127,22 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer 
 		}
 	};
 
-	protected String protocolInfo(IDvInvocation arg0) {
+	protected String protocolInfo(IDvInvocation paramIDvInvocation) {
+		log.debug("protocolInfo"  +lt.getLogText(paramIDvInvocation));
 		return Config.getProtocolInfo();
 	};
 
 	@Override
 	protected IdArray idArray(IDvInvocation paramIDvInvocation) {
-		log.debug("GetIdArray");
+		log.debug("GetIdArray" + lt.getLogText(paramIDvInvocation));
 		byte[] array = getPropertyIdArray();
 		DvProviderAvOpenhomeOrgRadio1.IdArray idArray = new IdArray(0, array);
 		return idArray;
 	}
 
 	@Override
-	protected void setChannel(IDvInvocation arg0, String uri, String metadata) {
-		log.debug("SetChannel");
+	protected void setChannel(IDvInvocation paramIDvInvocation, String uri, String metadata) {
+		log.debug("SetChannel"  +lt.getLogText(paramIDvInvocation));
 		CustomChannel channel = new CustomChannel(uri, metadata, 2,"");
 		channels.add(channel);
 		UpdateIdArray();
@@ -148,8 +150,8 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer 
 	
 
 	@Override
-	protected String readList(IDvInvocation arg0, String arg1) {
-		log.debug("ReadList: " + arg1);
+	protected String readList(IDvInvocation paramIDvInvocation, String arg1) {
+		log.debug("ReadList: " + arg1 + lt.getLogText(paramIDvInvocation));
 		int i = 0;
 		log.debug("ReadList");
 		StringBuilder sb = new StringBuilder();
@@ -165,38 +167,38 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer 
 
 	@Override
 	protected String read(IDvInvocation paramIDvInvocation, long id) {
-		log.debug("Read: " + id);
+		log.debug("Read: " + id  +lt.getLogText(paramIDvInvocation));
 		CustomChannel c = channels.get((int) id);
 		return c.getMetadata();
 	}
 
 	@Override
 	protected String transportState(IDvInvocation paramIDvInvocation) {
-		log.debug("TransportState");
+		log.debug("TransportState" + lt.getLogText(paramIDvInvocation));
 		return getPropertyTransportState();
 	}
 
 	@Override
 	protected void stop(IDvInvocation paramIDvInvocation) {
-		log.debug("Stop");
+		log.debug("Stop" + lt.getLogText(paramIDvInvocation));
 		PlayManager.getInstance().stop();
 	}
 
 	@Override
 	protected void seekSecondAbsolute(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("Seek Absolute");
+		log.debug("Seek Absolute" + lt.getLogText(paramIDvInvocation));
 		//super.seekSecondAbsolute(paramIDvInvocation, paramLong);
 	}
 
 	@Override
 	protected void seekSecondRelative(IDvInvocation paramIDvInvocation, int paramInt) {
-		log.debug("Seek Relative");
+		log.debug("Seek Relative" + lt.getLogText(paramIDvInvocation));
 		//super.seekSecondRelative(paramIDvInvocation, paramInt);
 	}
 
 	@Override
 	protected void setId(IDvInvocation paramIDvInvocation, long id, String uri) {
-		log.debug("Set ID: " + id + " URI: " + uri);
+		log.debug("Set ID: " + id + " URI: " + uri + lt.getLogText(paramIDvInvocation));
 		current_channel = (int) id;
 		getChannelById();
 	}

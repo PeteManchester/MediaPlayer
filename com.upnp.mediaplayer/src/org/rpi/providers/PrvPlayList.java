@@ -6,6 +6,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
+import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgPlaylist1;
 import org.rpi.config.Config;
 import org.rpi.player.PlayManager;
@@ -16,6 +17,7 @@ import org.rpi.player.events.EventPlayListUpdateShuffle;
 import org.rpi.playlist.CustomTrack;
 import org.rpi.playlist.PlayListReader;
 import org.rpi.playlist.PlayListWriter;
+import org.rpi.utils.lt;
 
 public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Observer {
 
@@ -86,18 +88,18 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		}
 	}
 
-	protected void pause(org.openhome.net.device.IDvInvocation arg0) {
-		log.debug("Pause");
+	protected void pause(IDvInvocation paramIDvInvocation) {
+		log.debug("Pause" + lt.getLogText(paramIDvInvocation));
 		iPlayer.pause(true);
 	};
 
-	protected void play(org.openhome.net.device.IDvInvocation arg0) {
-		log.debug("Play");
+	protected void play(IDvInvocation paramIDvInvocation) {
+		log.debug("Play" + lt.getLogText(paramIDvInvocation));
 		iPlayer.play();
 	};
 
-	protected void stop(org.openhome.net.device.IDvInvocation arg0) {
-		log.debug("Stop");
+	protected void stop(IDvInvocation paramIDvInvocation) {
+		log.debug("Stop" + lt.getLogText(paramIDvInvocation));
 		iPlayer.stop();
 	};
 	
@@ -107,7 +109,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 	 */
 	public int getNext_id() {
 		next_id++;
-		log.debug("GetNextId: " + next_id);
+		log.debug("GetNextId: " + next_id );
 		return next_id;
 	}
 	
@@ -120,13 +122,13 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		
 	}
 
-	protected long insert(org.openhome.net.device.IDvInvocation arg0, long aAfterId, String aUri, String aMetaData) {
+	protected long insert(IDvInvocation paramIDvInvocation, long aAfterId, String aUri, String aMetaData) {
 		if(tracks.size() >= playlist_max)
 		{
 			log.error("Maximum Size of PlayList Reached...");
 			return -1;
 		}
-		log.debug("Insert After: " + aAfterId + " URI: " + aUri + " MetaDate: \r\n" + aMetaData);
+		log.debug("Insert After: " + aAfterId + " URI: " + aUri + " MetaDate: \r\n" + aMetaData + lt.getLogText(paramIDvInvocation));
 		int id = getNext_id();
 		CustomTrack track = new CustomTrack(aUri, aMetaData, id);
 		int iCount = 0;
@@ -150,15 +152,15 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 	};
 	
 
-	protected void deleteAll(org.openhome.net.device.IDvInvocation arg0) {
-		log.debug("DeleteAll");
+	protected void deleteAll(IDvInvocation paramIDvInvocation) {
+		log.debug("DeleteAll" + lt.getLogText(paramIDvInvocation));
 		tracks.clear();
 		UpdateIdArray();
 		iPlayer.deleteAllTracks();
 	};
 
-	protected void deleteId(org.openhome.net.device.IDvInvocation arg0, long iD) {
-		log.debug("DeleteId: " + iD);
+	protected void deleteId(IDvInvocation paramIDvInvocation, long iD) {
+		log.debug("DeleteId: " + iD + lt.getLogText(paramIDvInvocation));
 		int iCount = 0;
 		boolean found = false;
 		for (CustomTrack t : tracks) {
@@ -180,43 +182,43 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		UpdateIdArray();
 	};
 
-	protected long id(org.openhome.net.device.IDvInvocation arg0) {
-		log.debug("GetId: ");
+	protected long id(IDvInvocation paramIDvInvocation) {
+		log.debug("GetId" + lt.getLogText(paramIDvInvocation));
 		long id = getPropertyId();
 		return id;
 	};
 
-	protected String protocolInfo(org.openhome.net.device.IDvInvocation arg0) {
+	protected String protocolInfo(IDvInvocation paramIDvInvocation) {
 		String protocolInfo = getPropertyProtocolInfo();
-		log.debug("GetProtocolInfo: \r\n" + protocolInfo);
+		log.debug("GetProtocolInfo: \r\n" + protocolInfo + lt.getLogText(paramIDvInvocation));
 		return protocolInfo;
 	};
 
-	protected IdArray idArray(org.openhome.net.device.IDvInvocation arg0) {
-		log.debug("GetIdArray");
+	protected IdArray idArray(IDvInvocation paramIDvInvocation) {
+		log.debug("GetIdArray" + lt.getLogText(paramIDvInvocation));
 		byte[] array = getPropertyIdArray();
 		DvProviderAvOpenhomeOrgPlaylist1.IdArray idArray = new IdArray(0, array);
 		return idArray;
 	};
 
-	protected boolean idArrayChanged(org.openhome.net.device.IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("GetIdArrayChanged");
+	protected boolean idArrayChanged(IDvInvocation paramIDvInvocation, long paramLong) {
+		log.debug("GetIdArrayChanged" + lt.getLogText(paramIDvInvocation));
 		boolean changed = false;
 		return changed;
 	};
 
-	protected void next(org.openhome.net.device.IDvInvocation paramIDvInvocation) {
-		log.debug("Next");
+	protected void next(IDvInvocation paramIDvInvocation) {
+		log.debug("Next" + lt.getLogText(paramIDvInvocation));
 		iPlayer.nextTrack();
 	};
 
-	protected void previous(org.openhome.net.device.IDvInvocation paramIDvInvocation) {
-		log.debug("Previous");
+	protected void previous(IDvInvocation paramIDvInvocation) {
+		log.debug("Previous" + lt.getLogText(paramIDvInvocation));
 		iPlayer.previousTrack();
 	};
 
-	protected Read read(org.openhome.net.device.IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("Read Index: " + paramLong);
+	protected Read read(IDvInvocation paramIDvInvocation, long paramLong) {
+		log.debug("Read Index: " + paramLong + lt.getLogText(paramIDvInvocation));
 		try
 		{
 		for (CustomTrack t : tracks) {
@@ -234,65 +236,65 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		return read;
 	};
 
-	protected String readList(org.openhome.net.device.IDvInvocation paramIDvInvocation, String paramString) {
+	protected String readList(IDvInvocation paramIDvInvocation, String paramString) {
 
-		log.debug("ReadList");
+		log.debug("ReadList" + lt.getLogText(paramIDvInvocation));
 
 		return getList();
 	};
 
-	protected boolean repeat(org.openhome.net.device.IDvInvocation paramIDvInvocation) {
+	protected boolean repeat(IDvInvocation paramIDvInvocation) {
 		boolean repeat = getPropertyRepeat();
-		log.debug("Repeat: " + repeat);
+		log.debug("Repeat: " + repeat + lt.getLogText(paramIDvInvocation));
 		return repeat;
 	};
 
-	protected void seekId(org.openhome.net.device.IDvInvocation paramIDvInvocation, long id) {
-		log.debug("SeekId: " + id);
+	protected void seekId(IDvInvocation paramIDvInvocation, long id) {
+		log.debug("SeekId: " + id + lt.getLogText(paramIDvInvocation));
 		iPlayer.playTrackId(id);
 	};
 
-	protected void seekIndex(org.openhome.net.device.IDvInvocation paramIDvInvocation, long id) {
-		log.debug("SeekIndex: " + id);
+	protected void seekIndex(IDvInvocation paramIDvInvocation, long id) {
+		log.debug("SeekIndex: " + id + lt.getLogText(paramIDvInvocation));
 		iPlayer.playIndex(id);
 	};
 
-	protected void seekSecondAbsolute(org.openhome.net.device.IDvInvocation paramIDvInvocation, long seconds) {
-		log.debug("SeekSecondAbsolute: " + seconds);
+	protected void seekSecondAbsolute(IDvInvocation paramIDvInvocation, long seconds) {
+		log.debug("SeekSecondAbsolute: " + seconds + lt.getLogText(paramIDvInvocation));
 		iPlayer.seekAbsolute(seconds);
 	};
 
-	protected void seekSecondRelative(org.openhome.net.device.IDvInvocation paramIDvInvocation, int paramInt) {
-		log.debug("SeekSecondRelative: " + paramInt);
+	protected void seekSecondRelative(IDvInvocation paramIDvInvocation, int paramInt) {
+		log.debug("SeekSecondRelative: " + paramInt + lt.getLogText(paramIDvInvocation));
 	};
 
-	protected void setRepeat(org.openhome.net.device.IDvInvocation paramIDvInvocation, boolean repeat) {
-		log.debug("SetRepeat: " + repeat);
+	protected void setRepeat(IDvInvocation paramIDvInvocation, boolean repeat) {
+		log.debug("SetRepeat: " + repeat + lt.getLogText(paramIDvInvocation));
 		setPropertyRepeat(repeat);
 		iPlayer.setRepeatPlayList(repeat);
 	};
 
-	protected void setShuffle(org.openhome.net.device.IDvInvocation paramIDvInvocation, boolean paramBoolean) {
-		log.debug("SetShuffle: " + paramBoolean);
+	protected void setShuffle(IDvInvocation paramIDvInvocation, boolean paramBoolean) {
+		log.debug("SetShuffle: " + paramBoolean + lt.getLogText(paramIDvInvocation));
 		setPropertyShuffle(paramBoolean);
 		iPlayer.setShuffle(paramBoolean);
 	};
 
-	protected boolean shuffle(org.openhome.net.device.IDvInvocation paramIDvInvocation) {
+	protected boolean shuffle(IDvInvocation paramIDvInvocation) {
 		boolean shuffle = getPropertyShuffle();
-		log.debug("GetShuffle: " + shuffle);
+		log.debug("GetShuffle: " + shuffle + lt.getLogText(paramIDvInvocation));
 		return shuffle;
 	};
 
-	protected long tracksMax(org.openhome.net.device.IDvInvocation paramIDvInvocation) {
+	protected long tracksMax(IDvInvocation paramIDvInvocation) {
 		long tracksMax = getPropertyTracksMax();
-		log.debug("GetTracksMax: " + tracksMax);
+		log.debug("GetTracksMax: " + tracksMax + lt.getLogText(paramIDvInvocation));
 		return tracksMax;
 	};
 
-	protected String transportState(org.openhome.net.device.IDvInvocation paramIDvInvocation) {
+	protected String transportState(IDvInvocation paramIDvInvocation) {
 		String state = getPropertyTransportState();
-		log.debug("TransportState: " + state);
+		log.debug("TransportState: " + state + lt.getLogText(paramIDvInvocation));
 		return state;
 	};
 
@@ -361,10 +363,10 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		return sb.toString();
 	}
 
-	private boolean PauseTrack() {
-		iPlayer.pause(true);
-		return true;
-	}
+//	private boolean PauseTrack() {
+//		iPlayer.pause(true);
+//		return true;
+//	}
 
 	private void playingTrack(int iD) {
 		setPropertyId(iD);

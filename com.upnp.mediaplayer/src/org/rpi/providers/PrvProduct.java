@@ -12,6 +12,7 @@ import org.rpi.config.Config;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventStandbyChanged;
+import org.rpi.utils.lt;
 
 public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Observer {
 
@@ -20,7 +21,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	//private String iSourceXml = "<SourceList><Source><Name>Playlist</Name><Type>Playlist</Type><Visible>1</Visible></Source><Source><Name>Receiver</Name><Type>Receiver</Type><Visible>1</Visible></Source><Source><Name>Radio</Name><Type>Radio</Type><Visible>1</Visible></Source></SourceList>";
 	private String iSourceXml = "";
 	//private boolean standby = true;
-	private String attributes = "Info Time Volume Radio";
+	private String attributes = "Info Time Volume";
 	//private String attributes = "";
 	private String man_name = "Java Inc";
 	private String man_info = "Developed in Java using OpenHome and MPlayer";
@@ -147,7 +148,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 
 	@Override
 	protected void setStandby(IDvInvocation paramIDvInvocation, boolean paramBoolean) {
-		log.debug("SetStandby: " + paramBoolean);
+		log.debug("SetStandby: " + paramBoolean + lt.getLogText(paramIDvInvocation));
 		PlayManager.getInstance().setStandby(paramBoolean);
 	}
 	
@@ -155,40 +156,40 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	@Override
 	protected boolean standby(IDvInvocation paramIDvInvocation) {
 		boolean standby = PlayManager.getInstance().isStandby();
-		log.debug("GetStandby: " + standby);
+		log.debug("GetStandby: " + standby + lt.getLogText(paramIDvInvocation));
 		return standby;
 	}
 
 	@Override
 	protected String attributes(IDvInvocation paramIDvInvocation) {
-		log.debug("Attributes: " + attributes);
+		log.debug("Attributes: " + attributes  +lt.getLogText(paramIDvInvocation));
 		return attributes;
 	}
 
 	@Override
 	protected Manufacturer manufacturer(IDvInvocation paramIDvInvocation) {
-		log.debug("Manufacturer");
+		log.debug("Manufacturer" + lt.getLogText(paramIDvInvocation));
 		Manufacturer man = new Manufacturer(man_name, man_info, man_url, man_image);
 		return man;
 	}
 
 	@Override
 	protected Model model(IDvInvocation paramIDvInvocation) {
-		log.debug("Model");
+		log.debug("Model" + lt.getLogText(paramIDvInvocation));
 		Model model = new Model(model_name, model_info, model_url, model_image);
 		return model;
 	}
 
 	@Override
 	protected Product product(IDvInvocation paramIDvInvocation) {
-		log.debug("Product");
+		log.debug("Product" + lt.getLogText(paramIDvInvocation));
 		Product product = new Product(Config.friendly_name, prod_name, prod_info, prod_url, prod_image);
 		return product;
 	}
 
 	@Override
 	protected Source source(IDvInvocation paramIDvInvocation, long iD) {
-		log.debug("Source: " + iD);
+		log.debug("Source: " + iD + lt.getLogText(paramIDvInvocation));
 		if(sources.size()>= iD )
 		{
 			try
@@ -207,38 +208,38 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	@Override
 	protected long sourceCount(IDvInvocation paramIDvInvocation) {
 		long source_count = getPropertySourceCount();
-		log.debug("SourceCount: " + source_count);
+		log.debug("SourceCount: " + source_count + lt.getLogText(paramIDvInvocation));
 		return source_count;
 	}
 
 	@Override
 	protected void setSourceIndex(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("SetSourceIndex: " + paramLong + " Port: " + paramIDvInvocation.getClientAddress());
+		log.debug("SetSourceIndex: " + paramLong + lt.getLogText(paramIDvInvocation));
 		setPropertySourceIndex(paramLong);
 	}
 
 	@Override
 	protected long sourceIndex(IDvInvocation paramIDvInvocation) {
 		long source_index = getPropertySourceIndex();
-		log.debug("SourceIndex: " + source_index);
+		log.debug("SourceIndex: " + source_index + lt.getLogText(paramIDvInvocation));
 		return source_index;
 	}
 
 	@Override
 	protected String sourceXml(IDvInvocation paramIDvInvocation) {
-		log.debug("SourceXML: " + iSourceXml);
+		log.debug("SourceXML: " + iSourceXml  + lt.getLogText(paramIDvInvocation));
 		return iSourceXml;
 	}
 
 	@Override
 	protected long sourceXmlChangeCount(IDvInvocation paramIDvInvocation) {
-		log.debug("SourceXmlChangeCount: " + iSourceXMLChangeCount);
+		log.debug("SourceXmlChangeCount: " + iSourceXMLChangeCount + lt.getLogText(paramIDvInvocation));
 		return iSourceXMLChangeCount;
 	}
 	
 	@Override
 	protected void setSourceIndexByName(IDvInvocation paramIDvInvocation, String paramString) {
-		log.debug("SetSourceIndexByName: " + paramString);
+		log.debug("SetSourceIndexByName: " + paramString + lt.getLogText(paramIDvInvocation));
 		setSourceByname(paramString);
 	}
 	

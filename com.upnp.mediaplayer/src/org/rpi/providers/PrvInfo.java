@@ -14,6 +14,7 @@ import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackInfo;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.playlist.CustomTrack;
+import org.rpi.utils.lt;
 
 public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer {
 
@@ -131,17 +132,18 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer {
 
 	@Override
 	protected Counters counters(IDvInvocation paramIDvInvocation) {
-
+		log.debug("Counters" + lt.getLogText(paramIDvInvocation));
 		long trackCount = getPropertyTrackCount();
 		long detailsCount = getPropertyDetailsCount();
 		long metaextCount = getPropertyMetatextCount();
 		Counters counters = new Counters(trackCount, detailsCount, metaextCount);
-		log.debug("Return counters: " + counters.toString());
+		//log.debug("Return counters: " + counters.toString());
 		return counters;
 	}
 
 	@Override
-	protected Track track(IDvInvocation arg0) {
+	protected Track track(IDvInvocation paramIDvInvocation) {
+		log.debug("track " + lt.getLogText(paramIDvInvocation));
 		String uri = getPropertyUri();
 		String meta_data = getPropertyMetadata();
 		Track track = new Track(uri, meta_data);
@@ -151,6 +153,7 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer {
 
 	@Override
 	protected Details details(IDvInvocation paramIDvInvocation) {
+		log.debug("details " + lt.getLogText(paramIDvInvocation));
 		long duration = getPropertyDuration();
 		long bitRate = getPropertyBitRate();
 		long bitDepth = getPropertyBitDepth();
@@ -164,6 +167,7 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer {
 
 	@Override
 	protected String metatext(IDvInvocation paramIDvInvocation) {
+		log.debug("metatext " + lt.getLogText(paramIDvInvocation));
 		String metaExt = getPropertyMetatext();
 		log.debug("Return metatext: " + metaExt);
 		return metaExt;

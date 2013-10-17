@@ -6,6 +6,7 @@ import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgReceiver1;
 import org.rpi.config.Config;
 import org.rpi.playlist.CustomTrack;
+import org.rpi.utils.lt;
 
 public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 {
 
@@ -21,6 +22,7 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 {
 		enablePropertyProtocolInfo();
 		enablePropertyTransportState();
 		enablePropertyUri();
+
 		
 		setPropertyMetadata("");
 		setPropertyProtocolInfo(Config.getProtocolInfo());
@@ -37,22 +39,22 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 {
 	}
 	
 	@Override
-	protected String protocolInfo(IDvInvocation arg0) {
-		log.debug("getProtocolInfo");
+	protected String protocolInfo(IDvInvocation paramIDvInvocation) {
+		log.debug("getProtocolInfo" + lt.getLogText(paramIDvInvocation));
 		return getPropertyProtocolInfo();
 	}
 	
 	@Override
-	protected Sender sender(IDvInvocation arg0) {
-		log.debug("Sender");
+	protected Sender sender(IDvInvocation paramIDvInvocation) {
+		log.debug("Sender" + lt.getLogText(paramIDvInvocation));
 		Sender sender = new Sender("", "");
 		// TODO Auto-generated method stub
 		return sender;
 	}
 	
 	@Override
-	protected void play(IDvInvocation arg0) {
-		log.debug("Play");
+	protected void play(IDvInvocation paramIDvInvocation) {
+		log.debug("Play" + lt.getLogText(paramIDvInvocation));
 		bPlay = true;
 		// TODO Auto-generated method stub
 		//super.play(arg0);
@@ -61,8 +63,8 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 {
 	}
 	
 	@Override
-	protected void setSender(IDvInvocation arg0, String uri, String metadata) {
-		log.debug("SetSender, URL: " + uri + " MetaData: " + metadata);
+	protected void setSender(IDvInvocation paramIDvInvocation, String uri, String metadata) {
+		log.debug("SetSender, URL: " + uri + " MetaData: " + metadata + lt.getLogText(paramIDvInvocation));
 		propertiesLock();
 		setPropertyUri(uri);
 		propertiesUnlock();
@@ -75,15 +77,15 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 {
 	}
 	
 	@Override
-	protected void stop(IDvInvocation arg0) {
-		log.debug("Stop");
+	protected void stop(IDvInvocation paramIDvInvocation) {
+		log.debug("Stop" + lt.getLogText(paramIDvInvocation));
 		// TODO Auto-generated method stub
 		//super.stop(arg0);
 	}
 	
 	@Override
-	protected String transportState(IDvInvocation arg0) {
-		log.debug("Transport State");
+	protected String transportState(IDvInvocation paramIDvInvocation) {
+		log.debug("Transport State" + lt.getLogText(paramIDvInvocation));
 		return getPropertyTransportState();
 	}
 

@@ -11,6 +11,7 @@ import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventMuteChanged;
 import org.rpi.player.events.EventVolumeChanged;
+import org.rpi.utils.lt;
 
 public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observer {
 
@@ -61,12 +62,14 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 	
 	@Override
 	protected Characteristics characteristics(IDvInvocation paramIDvInvocation) {
+		log.debug("characteristics" + lt.getLogText(paramIDvInvocation));
 		Characteristics charistics = new Characteristics(100, 0, 0, 0, 0, 0);
 		return charistics;
 	}
 	
 	@Override
 	protected boolean mute(IDvInvocation paramIDvInvocation) {
+		log.debug("mute" + lt.getLogText(paramIDvInvocation));
 		return PlayManager.getInstance().getMute();
 	}
 	
@@ -75,13 +78,15 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 		setPropertyVolume(volume);
 	}
 
-	protected void setVolume(IDvInvocation arg0, long volume) {
-		log.debug("Volume Changed: " + volume);
+	protected void setVolume(IDvInvocation paramIDvInvocation, long volume) {
+
+		log.debug("setVolume: " + volume +lt.getLogText(paramIDvInvocation));
 		iPlayer.setVolume(volume);
 
 	}
 
-	protected void volumeInc(IDvInvocation arg0) {
+	protected void volumeInc(IDvInvocation paramIDvInvocation) {
+		log.debug("volumeInc: "  +lt.getLogText(paramIDvInvocation));
 		long volume = iPlayer.incVolume();
 		//propertiesLock();
 		//setPropertyVolume(volume);
@@ -90,7 +95,8 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 		log.debug("VolumeInc: " + volume);
 	}
 
-	protected void volumeDec(IDvInvocation arg0) {
+	protected void volumeDec(IDvInvocation paramIDvInvocation) {
+		log.debug("volumeDec: "  +lt.getLogText(paramIDvInvocation));
 		long volume = iPlayer.decVolume();
 		//propertiesLock();
 		//setPropertyVolume(volume);
@@ -99,7 +105,8 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 		log.debug("VolumeDec: " + volume);
 	}
 
-	protected void setMute(IDvInvocation arg0, boolean mute) {
+	protected void setMute(IDvInvocation paramIDvInvocation, boolean mute) {
+		log.debug("vsetMute: "  + mute  +lt.getLogText(paramIDvInvocation));
 		iPlayer.setMute(mute);
 	}
 	
@@ -111,6 +118,7 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 	}
 
 	protected long volume(IDvInvocation paramIDvInvocation) {
+		log.debug("volume: "  +lt.getLogText(paramIDvInvocation));
 		long volume = iPlayer.getVolume();
 		log.debug("GetVolume: " + volume);
 		return volume;
@@ -118,6 +126,7 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 	
 	@Override
 	protected long volumeLimit(IDvInvocation paramIDvInvocation) {
+		log.debug("volumeLimit: "  +lt.getLogText(paramIDvInvocation));
 		return 100;
 	}
 

@@ -11,6 +11,7 @@ import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventDurationUpdate;
 import org.rpi.player.events.EventTimeUpdate;
+import org.rpi.utils.lt;
 
 public class PrvTime extends DvProviderAvOpenhomeOrgTime1 implements Observer {
 
@@ -59,6 +60,7 @@ public class PrvTime extends DvProviderAvOpenhomeOrgTime1 implements Observer {
 
 	@Override
 	protected Time time(IDvInvocation paramIDvInvocation) {
+		log.debug("time" + lt.getLogText(paramIDvInvocation));
 		long trackCount = getPropertyTrackCount();
 		long duration = getPropertyDuration();
 		long seconds = getPropertySeconds();
