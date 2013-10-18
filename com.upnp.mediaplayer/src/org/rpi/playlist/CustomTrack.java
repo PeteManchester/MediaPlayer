@@ -316,12 +316,14 @@ public class CustomTrack {
 				} else if (n.getNodeName() == "upnp:artist") {
 					NamedNodeMap map = n.getAttributes();
 					Node role = map.getNamedItem("role");
-					String role_type = role.getTextContent();
-					if (role_type.equalsIgnoreCase("AlbumArtist")) {
-						setArtist(n.getTextContent());
-					}
-					if (role_type.equalsIgnoreCase("Performer")) {
-						setPerformer(n.getTextContent());
+					if (role != null) {
+						String role_type = role.getTextContent();
+						if (role_type.equalsIgnoreCase("AlbumArtist")) {
+							setArtist(n.getTextContent());
+						}
+						if (role_type.equalsIgnoreCase("Performer")) {
+							setPerformer(n.getTextContent());
+						}
 					}
 				}
 			}

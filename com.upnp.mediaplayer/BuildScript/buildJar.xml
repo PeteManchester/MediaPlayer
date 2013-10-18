@@ -1,28 +1,52 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="create_run_jar" name="Create Runnable Jar for Project com.upnp.mediaplayer with libraries in sub-folder">
-    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
-    <!--ANT 1.7 is required                                        -->
-    <target name="create_run_jar">
-        <jar destfile="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer.jar" update="false">
-            <manifest>
-                <attribute name="Main-Class" value="org.rpi.main.StartMe"/>
-            	<attribute name="Class-Path" value=". mediaplayer_lib/ohnet-Pete.jar mediaplayer_lib/log4j-1.2.16.jar mediaplayer_lib/jspf.core-1.0.2.jar"/>
-            </manifest>
-            <fileset dir="C:/Keep/git/repository/MediaPlayer/com.upnp.mediaplayer/bin">
-            	<exclude name="**/plugin/**"/>
-            </fileset>
-        </jar>
-        <delete dir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib"/>
-        <mkdir dir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib"/>
-        <copy file="C:/temp/TOH/Java/libs/ohnet-Pete.jar" todir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib"/>
-        <copy file="C:/Keep/Repository/java/log4j/log4j/1.2.16/apache-log4j-1.2.16/log4j-1.2.16.jar" todir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib"/>
-        <copy file="C:/Keep/Repository/java/jspf/dist/jspf.core-1.0.2.jar" todir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib"/>
-    	<!--
+	<!--this file was created by Eclipse Runnable JAR Export Wizard-->
+	<!--ANT 1.7 is required                                        -->
+	<target name="create_run_jar">
+		<jar destfile="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer.jar" update="false">
+			<manifest>
+				<attribute name="Main-Class" value="org.rpi.main.StartMe" />
+				<attribute name="Class-Path" value=". mediaplayer_lib/ohnet-Pete.jar mediaplayer_lib/log4j-1.2.16.jar mediaplayer_lib/jspf.core-1.0.2.jar" />
+			</manifest>
+			<fileset dir="C:/Keep/git/repository/MediaPlayer/com.upnp.mediaplayer/bin">
+				<exclude name="**/plugin/**" />
+			</fileset>
+		</jar>
+		<delete dir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib" />
+		<mkdir dir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib" />
+		<copy file="C:/temp/TOH/Java/libs/ohnet-Pete.jar" todir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib" />
+		<copy file="C:/Keep/Repository/java/log4j/log4j/1.2.16/apache-log4j-1.2.16/log4j-1.2.16.jar" todir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib" />
+		<copy file="C:/Keep/Repository/java/jspf/dist/jspf.core-1.0.2.jar" todir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib" />
+		<!--
         <copy file="C:/Keep/Repository/java/quartz/quartz/2.1.1/quartz-2.1.1.jar" todir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib"/>
         <copy file="C:/Keep/Repository/java/quartz/quartz/2.1.1/lib/slf4j-api-1.6.1.jar" todir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib"/>
         <copy file="C:/Keep/Repository/java/quartz/quartz/2.1.1/lib/slf4j-log4j12-1.6.1.jar" todir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib"/>
         <copy file="C:/Keep/Repository/java/pi4j/pi4j-1.0-SNAPSHOT/lib/pi4j-core.jar" todir="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer_lib"/>
     	-->
-    	<copy file="C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\license.txt" todir="C:/Keep/Code/UPNP/mediaplayer/Beta"/>
-    </target>
+		<copy file="C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\license.txt" todir="C:/Keep/Code/UPNP/mediaplayer/Beta" />
+	</target>
+	<target name="deployStudy">
+		<echo>Sending to Study</echo>
+		<scp remoteTodir="root:root@rpistudy.local:/home/pi/mediaplayer" trust="yes" sftp="true">
+			<fileset dir="C:/Keep/Code/UPNP/mediaplayer/Beta">
+				<include name="mediaplayer.jar" />
+			</fileset>
+		</scp>
+	</target>
+	<target name="deployLounge">
+		<echo>Sending to Lounge</echo>
+		<scp remoteTodir="root:root@rpilounge.local:/home/pi/mediaplayer" trust="yes" sftp="true">
+			<fileset dir="C:/Keep/Code/UPNP/mediaplayer/Beta">
+				<include name="mediaplayer.jar" />
+			</fileset>
+		</scp>
+	</target>
+	<target name="deployBedroom">
+		<echo>Sending to Bedroom</echo>
+		<scp remoteTodir="root:root@rpibedroom.local:/home/pi/mediaplayer" trust="yes" sftp="true">
+			<fileset dir="C:/Keep/Code/UPNP/mediaplayer/Beta">
+				<include name="mediaplayer.jar" />
+			</fileset>
+		</scp>
+	</target>
 </project>

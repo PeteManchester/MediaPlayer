@@ -210,6 +210,9 @@ audio_output {
 }
 
 
+speaker-test -c2 -D hw:0,0
+
+
 
 
 
