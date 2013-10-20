@@ -10,8 +10,6 @@ import org.apache.log4j.Logger;
 import org.rpi.config.Config;
 import org.rpi.mpdplayer.MPDPlayerController;
 import org.rpi.mplayer.MPlayerController;
-//import org.rpi.mplayer.MPlayer;
-//import org.rpi.player.IPlayer;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventFinishedCurrentTrack;
 import org.rpi.player.events.EventMuteChanged;
@@ -27,6 +25,7 @@ import org.rpi.player.events.EventTimeUpdate;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.player.events.EventVolumeChanged;
+import org.rpi.player.observers.ObservableAVTransport;
 import org.rpi.player.observers.ObservableInfo;
 import org.rpi.player.observers.ObservablePlayList;
 import org.rpi.player.observers.ObservableProduct;
@@ -35,6 +34,8 @@ import org.rpi.player.observers.ObservableVolume;
 import org.rpi.player.observers.ObservsableTime;
 import org.rpi.playlist.CustomTrack;
 import org.rpi.radio.CustomChannel;
+//import org.rpi.mplayer.MPlayer;
+//import org.rpi.player.IPlayer;
 
 public class PlayManager implements Observer {
 
@@ -63,6 +64,7 @@ public class PlayManager implements Observer {
 	private ObservableRadio obsvRadio = new ObservableRadio();
 	private ObservablePlayList obsvPlayList = new ObservablePlayList();
 	private ObservableProduct obsvProduct = new ObservableProduct();
+	private ObservableAVTransport obsvAVTransport = new ObservableAVTransport();
 	private String status = "";
 
 	private static PlayManager instance = null;
@@ -529,6 +531,12 @@ public class PlayManager implements Observer {
 		log.debug("Play Radio Id:  " + c.getId());
 		playThis(c);
 	}
+	
+	public synchronized void playAV(CustomTrack c)
+	{
+		log.debug("Play AV Track :  " + c.getUri());
+		playThis(c);
+	}
 
 	/**
 	 * Used by Alarm Plugin to Start Playing a radio channel by name
@@ -765,6 +773,11 @@ public class PlayManager implements Observer {
 			if (current_track != null) {
 				playingTrack(current_track.getId());
 				ev.setTrack(current_track);
+				try {
+					obsvInfo.notifyChange(ev);
+				} catch (Exception e) {
+					log.error("Error Notify: " + e);
+				}
 			}
 
 		}
@@ -776,11 +789,6 @@ public class PlayManager implements Observer {
 			EventPlayListStatusChanged evr = new EventPlayListStatusChanged();
 			evr.setStatus(status);
 			obsvPlayList.notifyChange(evr);
-		}
-		try {
-			obsvInfo.notifyChange(ev);
-		} catch (Exception e) {
-			log.error("Error Notify: " + e);
 		}
 	}
 
@@ -881,6 +889,7 @@ public class PlayManager implements Observer {
 				EventStatusChanged es = (EventStatusChanged) e;
 				log.debug("EventStatusChanged: " + es.getStatus());
 				setStatus(es.getStatus());
+				obsvAVTransport.notifyChange(es);
 			} catch (Exception esc) {
 				log.error("Error EVENTSTATUSCHANGED", esc);
 			}
@@ -996,6 +1005,11 @@ public class PlayManager implements Observer {
 	public synchronized void observRadioEvents(Observer o) {
 		obsvRadio.addObserver(o);
 	}
+	
+	public void observAVEvnts(Observer o) {
+		obsvAVTransport.addObserver(o);
+		
+	}
 
 	public synchronized boolean isUseExternalVolume() {
 		return bExternalVolume;
@@ -1016,5 +1030,7 @@ public class PlayManager implements Observer {
 	public void pause() {
 		pause(!bPaused);
 	}
+
+
 
 }

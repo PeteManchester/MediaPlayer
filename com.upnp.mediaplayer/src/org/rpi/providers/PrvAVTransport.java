@@ -10,10 +10,12 @@ import org.openhome.net.device.providers.DvProviderUpnpOrgAVTransport1;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventPlayListStatusChanged;
+import org.rpi.player.events.EventStatusChanged;
 import org.rpi.player.events.EventTimeUpdate;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackInfo;
 import org.rpi.playlist.CustomTrack;
+import org.rpi.radio.CustomChannel;
 import org.rpi.utils.lt;
 
 public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Observer {
@@ -57,6 +59,7 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 		PlayManager.getInstance().observInfoEvents(this);
 		PlayManager.getInstance().observTimeEvents(this);
 		PlayManager.getInstance().observPlayListEvents(this);
+		PlayManager.getInstance().observAVEvnts(this);
 
 	}
 
@@ -73,32 +76,64 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 	/**
 	 * Create a big Event that sets all our variables
 	 */
+	/*
+	 * private void createEvent() { StringBuilder sb = new StringBuilder();
+	 * sb.append("<Event xmlns = \"urn:schemas-upnp-org:metadata-1-0/AVT/\">");
+	 * sb.append("<InstanceID val=\"0\">");
+	 * sb.append("	<CurrentPlayMode val=\"NORMAL\"/>");
+	 * sb.append("<RecordStorageMedium val=\"NOT_IMPLEMENTED\"/>");
+	 * sb.append("<CurrentTrackURI	 val=\"" + track_uri + "\"/>");
+	 * //sb.append("<CurrentTrackDuration val=\"" + track_duration + "\"/>");
+	 * sb.append("<CurrentRecordQualityMode val=\"NOT_IMPLEMENTED\"/>");
+	 * sb.append("<CurrentMediaDuration val=\"" + track_time + "\"/>");
+	 * sb.append("<AVTransportURI val=\"\"/>");
+	 * sb.append("<TransportState val=\"" + mStatus.toUpperCase() + "\"/>");
+	 * sb.append("<CurrentTrackMetaData val=\"" + track_metadata_html + "\"/>");
+	 * sb.append("<NextAVTransportURI val=\"NOT_IMPLEMENTED\"/>");
+	 * sb.append("<PossibleRecordQualityModes val=\"NOT_IMPLEMENTED\"/>");
+	 * sb.append("<CurrentTrack val=\"0\" />");
+	 * sb.append("<NextAVTransportURIMetaData val=\"NOT_IMPLEMENTED\"/>");
+	 * sb.append("<PlaybackStorageMedium val=\"NONE\"/>"); sb.append(
+	 * "<CurrentTransportActions val=\"Play,Pause,Stop,Seek,Next,Previous\"/>");
+	 * sb.append("<RecordMediumWriteStatus val=\"NOT_IMPLEMENTED\"/>");
+	 * sb.append
+	 * ("<PossiblePlaybackStorageMedia val=\"NONE,NETWORK,HDD,CD-DA,UNKNOWN\"/>"
+	 * ); sb.append("<AVTransportURIMetaData val=\"\"/>");
+	 * sb.append("<NumberOfTracks val=\"0\" />");
+	 * sb.append("<PossibleRecordStorageMedia val=\"NOT_IMPLEMENTED\"/>");
+	 * sb.append("<TransportStatus val=\"OK\"/>");
+	 * sb.append("<TransportPlaySpeed val=\"1\"/>"); sb.append("</InstanceID>");
+	 * sb.append("</Event>"); setPropertyLastChange(sb.toString()); }
+	 */
+
 	private void createEvent() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("<Event xmlns = \"urn:schemas-upnp-org:metadata-1-0/AVT/\">");
+		sb.append("<Event xmlns=\"urn:schemas-upnp-org:metadata-1-0/AVT/\">");
 		sb.append("<InstanceID val=\"0\">");
-		sb.append("	<CurrentPlayMode val=\"NORMAL\"/>");
-		sb.append("<RecordStorageMedium val=\"NOT_IMPLEMENTED\"/>");
-		sb.append("<CurrentTrackURI	 val=\"" + track_uri + "\"/>");
-		sb.append("<CurrentTrackDuration val=\"" + track_duration + "\"/>");
-		sb.append("<CurrentRecordQualityMode val=\"NOT_IMPLEMENTED\"/>");
-		sb.append("<CurrentMediaDuration val=\"" + track_time + "\"/>");
-		sb.append("<AVTransportURI val=\"\"/>");
-		sb.append("<TransportState val=\"" + mStatus.toUpperCase() + "\"/>");
-		sb.append("<CurrentTrackMetaData val=\"" + track_metadata_html + "\"/>");
-		sb.append("<NextAVTransportURI val=\"NOT_IMPLEMENTED\"/>");
-		sb.append("<PossibleRecordQualityModes val=\"NOT_IMPLEMENTED\"/>");
+		sb.append("<CurrentPlayMode val=\"NORMAL\" />");
+		sb.append("<RecordStorageMedium val=\"NOT_IMPLEMENTED\" />");
+		// sb.append("<CurrentTrackURI	val=\"http://192.168.1.205:26125/content/c2/b16/f44100/d93277-co12.mp3\" />");
+		sb.append("<CurrentTrackURI	val=\"" + track_uri + "\" />");
+		sb.append("<CurrentTrackDuration val=\"" + track_duration + "\" />");
+		sb.append("<CurrentRecordQualityMode val=\"NOT_IMPLEMENTED\" />");
+		sb.append("<CurrentMediaDuration val=\"00:00:00\" />");
+		sb.append("<AVTransportURI val=\"\" />");
+		sb.append("<TransportState val=\"" + mStatus.toUpperCase() + "\" />");
+		// sb.append("<CurrentTrackMetaData val=\"&lt;DIDL-Lite xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;>&lt;item id=&quot;d93277-co12&quot; parentID=&quot;co12&quot; restricted=&quot;0&quot;>&lt;dc:title xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;>Te Siento (Version espagnole de ''Ti Sento'')&lt;/dc:title>&lt;dc:creator xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;>Matia Bazar&lt;/dc:creator>&lt;dc:date xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;>2011-01-01&lt;/dc:date>&lt;upnp:artist role=&quot;AlbumArtist&quot; xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;>Matia Bazar&lt;/upnp:artist>&lt;upnp:artist role=&quot;Performer&quot; xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;>Matia Bazar&lt;/upnp:artist>&lt;upnp:album xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;>Fantasia - Best &amp;amp; Rarities&lt;/upnp:album>&lt;upnp:genre xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;>Italian Pop&lt;/upnp:genre>&lt;upnp:originalTrackNumber xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;>8&lt;/upnp:originalTrackNumber>&lt;upnp:originalDiscNumber xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;>2&lt;/upnp:originalDiscNumber>&lt;res duration=&quot;0:04:06.000&quot; size=&quot;9855919&quot; bitrate=&quot;40006&quot; bitsPerSample=&quot;16&quot; sampleFrequency=&quot;44100&quot; nrAudioChannels=&quot;2&quot; protocolInfo=&quot;http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01&quot;>http://192.168.1.205:26125/content/c2/b16/f44100/d93277-co12.mp3&lt;/res>&lt;res duration=&quot;0:04:06.000&quot; size=&quot;43457948&quot; bitrate=&quot;176400&quot; bitsPerSample=&quot;16&quot; sampleFrequency=&quot;44100&quot; nrAudioChannels=&quot;2&quot; protocolInfo=&quot;http-get:*:audio/wav:DLNA.ORG_PN=WAV;DLNA.ORG_OP=01&quot;>http://192.168.1.205:26125/content/c2/b16/f44100/d93277-co12.forced.wav&lt;/res>&lt;res duration=&quot;0:04:06.000&quot; size=&quot;43457904&quot; bitrate=&quot;176400&quot; bitsPerSample=&quot;16&quot; sampleFrequency=&quot;44100&quot; nrAudioChannels=&quot;2&quot; protocolInfo=&quot;http-get:*:audio/L16:DLNA.ORG_PN=LPCM;DLNA.ORG_OP=01;DLNA.ORG_CI=1&quot;>http://192.168.1.205:26125/content/c2/b16/f44100/d93277-co12.forced.l16&lt;/res>&lt;res duration=&quot;0:04:06.000&quot; size=&quot;9855919&quot; bitrate=&quot;40006&quot; bitsPerSample=&quot;16&quot; sampleFrequency=&quot;44100&quot; nrAudioChannels=&quot;2&quot; protocolInfo=&quot;http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01&quot;>http://192.168.1.205:26125/content/c2/b16/f44100/d93277-co12.mp3&lt;/res>&lt;upnp:class xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;>object.item.audioItem.musicTrack&lt;/upnp:class>&lt;/item>&lt;/DIDL-Lite>\" />");
+		sb.append("<CurrentTrackMetaData val=\"" + track_metadata_html + "\" />");
+		sb.append("<NextAVTransportURI val=\"NOT_IMPLEMENTED\" />");
+		sb.append("<PossibleRecordQualityModes val=\"NOT_IMPLEMENTED\" />");
 		sb.append("<CurrentTrack val=\"0\" />");
-		sb.append("<NextAVTransportURIMetaData val=\"NOT_IMPLEMENTED\"/>");
-		sb.append("<PlaybackStorageMedium val=\"NONE\"/>");
-		sb.append("<CurrentTransportActions val=\"Play,Pause,Stop,Seek,Next,Previous\"/>");
-		sb.append("<RecordMediumWriteStatus val=\"NOT_IMPLEMENTED\"/>");
-		sb.append("<PossiblePlaybackStorageMedia val=\"NONE,NETWORK,HDD,CD-DA,UNKNOWN\"/>");
-		sb.append("<AVTransportURIMetaData val=\"\"/>");
-		sb.append("<NumberOfTracks val=\"0\" />");
-		sb.append("<PossibleRecordStorageMedia val=\"NOT_IMPLEMENTED\"/>");
-		sb.append("<TransportStatus val=\"OK\"/>");
-		sb.append("<TransportPlaySpeed val=\"1\"/>");
+		sb.append("<NextAVTransportURIMetaData val=\"NOT_IMPLEMENTED\" />");
+		sb.append("<PlaybackStorageMedium val=\"NONE\" />");
+		sb.append("<CurrentTransportActions val=\"Play,Pause,Stop,Seek,Next,Previous\" />");
+		sb.append("<RecordMediumWriteStatus val=\"NOT_IMPLEMENTED\" />");
+		sb.append("<PossiblePlaybackStorageMedia val=\"NONE,NETWORK,HDD,CD-DA,UNKNOWN\" />");
+		sb.append("<AVTransportURIMetaData val=\"\" />");
+		sb.append("<NumberOfTracks val=\"1\" />");
+		sb.append("<PossibleRecordStorageMedia val=\"NOT_IMPLEMENTED\" />");
+		sb.append("<TransportStatus val=\"OK\" />");
+		sb.append("<TransportPlaySpeed val=\"1\" />");
 		sb.append("</InstanceID>");
 		sb.append("</Event>");
 		setPropertyLastChange(sb.toString());
@@ -129,15 +164,17 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 		log.debug("GetMediaInfo" + lt.getLogText(paramIDvInvocation));
 		// createEvent();
 		GetMediaInfo info = new GetMediaInfo(0, track_duration, track_uri, track_metadata, "", "", "UNKNOWN", "UNKNOWN", "UNKNOWN");
-		//GetMediaInfo info = new GetMediaInfo(0, "00:00:00", "", "", "", "", "UNKNOWN", "UNKNOWN", "UNKNOWN");
+		// GetMediaInfo info = new GetMediaInfo(0, "00:00:00", "", "", "", "",
+		// "UNKNOWN", "UNKNOWN", "UNKNOWN");
 		return info;
 	}
 
 	@Override
 	protected GetPositionInfo getPositionInfo(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("Get Position Info" + lt.getLogText(paramIDvInvocation));
-		GetPositionInfo info = new GetPositionInfo(0, track_duration, track_metadata, track_uri, track_time, "NOT_IMPLEMENTED", 2147483647, 2147483647);
-		//GetPositionInfo info = new GetPositionInfo(1, "00:00:00", "", "", "00:00:00", "NOT_IMPLEMENTED", 2147483647, 2147483647);
+		// log.debug("Get Position Info" + lt.getLogText(paramIDvInvocation));
+		GetPositionInfo info = new GetPositionInfo(0, track_duration, track_metadata, track_uri, track_time, "00:00:00", 2147483647, 2147483647);
+		// GetPositionInfo info = new GetPositionInfo(1, "00:00:00", "", "",
+		// "00:00:00", "NOT_IMPLEMENTED", 2147483647, 2147483647);
 		return info;
 	}
 
@@ -164,19 +201,31 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 
 	@Override
 	protected void pause(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("Pause"+ paramLong + lt.getLogText(paramIDvInvocation));
+		log.debug("Pause" + paramLong + lt.getLogText(paramIDvInvocation));
 		PlayManager.getInstance().pause();
 	}
 
 	@Override
 	protected void play(IDvInvocation paramIDvInvocation, long paramLong, String paramString) {
 		log.debug("Play: " + paramString + lt.getLogText(paramIDvInvocation));
-		PlayManager.getInstance().play();
+		if (!track_uri.equalsIgnoreCase("")) {
+			if (mStatus.equalsIgnoreCase("PAUSED_PLAYBACK")) {
+				PlayManager.getInstance().play();
+			} else {
+				CustomTrack c = new CustomTrack(track_uri, track_metadata, 0);
+				PlayManager.getInstance().playAV(c);
+			}
+		} else {
+			if (mStatus.equalsIgnoreCase("PAUSED_PLAYBACK")) {
+				PlayManager.getInstance().play();
+			}
+		}
+
 	}
 
 	@Override
 	protected void previous(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("Previous: "+ paramLong + lt.getLogText(paramIDvInvocation));
+		log.debug("Previous: " + paramLong + lt.getLogText(paramIDvInvocation));
 		PlayManager.getInstance().previousTrack();
 	}
 
@@ -207,8 +256,10 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 	}
 
 	@Override
-	protected void setAVTransportURI(IDvInvocation paramIDvInvocation, long paramLong, String paramString1, String paramString2) {
-		log.debug("SetAVTransport: " + paramLong + " " + paramString1 + " " + paramString2 + lt.getLogText(paramIDvInvocation));
+	protected void setAVTransportURI(IDvInvocation paramIDvInvocation, long paramLong, String url, String meta_data) {
+		log.debug("SetAVTransport: " + paramLong + " URL: " + url + " MetaData: " + meta_data + lt.getLogText(paramIDvInvocation));
+		track_uri = url;
+		track_metadata = meta_data;
 	}
 
 	@Override
@@ -244,38 +295,55 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 			if (track != null) {
 				m_uri = track.getUri();
 				m_metadata = track.getMetadata();
+				if (!(m_uri.equalsIgnoreCase(track_uri)) || (!m_metadata.equalsIgnoreCase(track_metadata))) {
+					track_uri = m_uri;
+					track_metadata = m_metadata;
+					track_metadata_html = stringToHTMLString(m_metadata);
+					createEvent();
+				}
 			} else {
-				m_uri = "";
-				m_metadata = "";
+				// m_uri = "";
+				// m_metadata = "";
 			}
-			if (!(m_uri.equalsIgnoreCase(track_uri)) || (!m_metadata.equalsIgnoreCase(track_metadata))) {
-				track_uri = m_uri;
-				track_metadata = m_metadata;
-				track_metadata_html = stringToHTMLString(m_metadata);
-				createEvent();
-			}
+
 			break;
 		case EVENTTIMEUPDATED:
 			EventTimeUpdate etime = (EventTimeUpdate) e;
 			track_time = ConvertTime(etime.getTime());
-			createEvent();
+			// createEvent();
 			break;
 		case EVENTUPDATETRACKINFO:
 			EventUpdateTrackInfo eti = (EventUpdateTrackInfo) e;
 			track_duration = ConvertTime(eti.getTrackInfo().getDuration());
 			createEvent();
 			break;
-		case EVENTPLAYLISTSTATUSCHANGED:
-			EventPlayListStatusChanged eps = (EventPlayListStatusChanged) e;
-			String status = eps.getStatus();
-			if (status != null) {
-				if (status.equalsIgnoreCase("PAUSED")) {
-					status = "PAUSED_PLAYBACK";
+		// case EVENTPLAYLISTSTATUSCHANGED:
+		// EventPlayListStatusChanged eps = (EventPlayListStatusChanged) e;
+		// String status = eps.getStatus();
+		// if (status != null) {
+		// if (status.equalsIgnoreCase("PAUSED")) {
+		// status = "PAUSED_PLAYBACK";
+		// }
+		// if (!mStatus.equalsIgnoreCase(status)) {
+		// createEvent();
+		// }
+		// mStatus = status;
+		// }
+		case EVENTSTATUSCHANGED:
+			EventStatusChanged esc = (EventStatusChanged) e;
+			String statuss = esc.getStatus();
+			log.debug("Status: " + statuss);
+			if (statuss != null) {
+				if (statuss.equalsIgnoreCase("PAUSED")) {
+					statuss = "PAUSED_PLAYBACK";
 				}
-				if (!mStatus.equalsIgnoreCase(status)) {
+				if (statuss.equalsIgnoreCase("BUFFERING")) {
+					statuss = "TRANSITIONING";
+				}
+				if (!mStatus.equalsIgnoreCase(statuss)) {
+					mStatus = statuss;
 					createEvent();
 				}
-				mStatus = status;
 			}
 		default:
 		}
@@ -298,6 +366,9 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 
 	private String twoDigitString(int number) {
 
+		if (number < 0) {
+			number = 0;
+		}
 		if (number == 0) {
 			return "00";
 		}
