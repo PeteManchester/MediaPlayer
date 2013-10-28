@@ -4,6 +4,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.log4j.Logger;
+import org.openhome.net.device.ActionError;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderUpnpOrgRenderingControl1;
@@ -93,10 +94,10 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 	}
 
 	// #####################################################################################################################
-	 protected String listPresets(IDvInvocation paramIDvInvocation, long paramLong) {
-		 log.debug("listPresets: " + paramLong + lt.getLogText(paramIDvInvocation));
-	 return "FactoryDefaults,InstallationDefaults";
-	 }
+	protected String listPresets(IDvInvocation paramIDvInvocation, long paramLong) {
+		log.debug("listPresets: " + paramLong + lt.getLogText(paramIDvInvocation));
+		return "FactoryDefaults,InstallationDefaults";
+	}
 
 	@Override
 	protected void selectPreset(IDvInvocation paramIDvInvocation, long paramLong, String paramString) {
@@ -111,6 +112,7 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 
 	@Override
 	protected void setBrightness(IDvInvocation paramIDvInvocation, long paramLong1, long paramLong2) {
+		checkValue(paramLong2);
 		log.debug("setBrightness: " + paramLong2 + lt.getLogText(paramIDvInvocation));
 	}
 
@@ -122,6 +124,7 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 
 	@Override
 	protected void setContrast(IDvInvocation paramIDvInvocation, long paramLong1, long paramLong2) {
+		checkValue(paramLong2);
 		log.debug("setContrast: " + paramLong2 + lt.getLogText(paramIDvInvocation));
 	}
 
@@ -133,7 +136,7 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 
 	@Override
 	protected void setSharpness(IDvInvocation paramIDvInvocation, long paramLong1, long paramLong2) {
-		
+		checkValue(paramLong2);
 		log.debug("setSharpness: " + paramLong2 + lt.getLogText(paramIDvInvocation));
 	}
 
@@ -145,6 +148,7 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 
 	@Override
 	protected void setRedVideoGain(IDvInvocation paramIDvInvocation, long paramLong1, long paramLong2) {
+		checkValue(paramLong2);
 		log.debug("setRedVideoGain: " + paramLong2 + lt.getLogText(paramIDvInvocation));
 	}
 
@@ -156,6 +160,7 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 
 	@Override
 	protected void setGreenVideoGain(IDvInvocation paramIDvInvocation, long paramLong1, long paramLong2) {
+		checkValue(paramLong2);
 		log.debug("setGreenVideoGain: " + paramLong2 + lt.getLogText(paramIDvInvocation));
 	}
 
@@ -167,6 +172,7 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 
 	@Override
 	protected void setBlueVideoGain(IDvInvocation paramIDvInvocation, long paramLong1, long paramLong2) {
+		checkValue(paramLong2);
 		log.debug("setBlueVideoGain: " + paramLong2 + lt.getLogText(paramIDvInvocation));
 	}
 
@@ -178,6 +184,7 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 
 	@Override
 	protected void setRedVideoBlackLevel(IDvInvocation paramIDvInvocation, long paramLong1, long paramLong2) {
+		checkValue(paramLong2);
 		log.debug("setRedVideoBlackLevel: " + paramLong2 + lt.getLogText(paramIDvInvocation));
 	}
 
@@ -189,6 +196,7 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 
 	@Override
 	protected void setGreenVideoBlackLevel(IDvInvocation paramIDvInvocation, long paramLong1, long paramLong2) {
+		checkValue(paramLong2);
 		log.debug("setGreenVideoBlackLevel: " + paramLong2 + lt.getLogText(paramIDvInvocation));
 	}
 
@@ -200,6 +208,7 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 
 	@Override
 	protected void setBlueVideoBlackLevel(IDvInvocation paramIDvInvocation, long paramLong1, long paramLong2) {
+		checkValue(paramLong2);
 		log.debug("setBlueVideoBlackLevel: " + paramLong2 + lt.getLogText(paramIDvInvocation));
 	}
 
@@ -211,6 +220,7 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 
 	@Override
 	protected void setColorTemperature(IDvInvocation paramIDvInvocation, long paramLong1, long paramLong2) {
+		checkValue(paramLong2);
 		log.debug("setColorTemperature: " + paramLong2 + lt.getLogText(paramIDvInvocation));
 	}
 
@@ -222,6 +232,7 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 
 	@Override
 	protected void setHorizontalKeystone(IDvInvocation paramIDvInvocation, long paramLong, int paramInt) {
+		checkValue(paramInt);
 		log.debug("setHorizontalKeystone: " + paramInt + lt.getLogText(paramIDvInvocation));
 	}
 
@@ -233,7 +244,7 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 
 	@Override
 	protected void setVerticalKeystone(IDvInvocation paramIDvInvocation, long paramLong, int paramInt) {
-
+		checkValue(paramInt);
 		log.debug("setVerticalKeystone: " + paramInt + lt.getLogText(paramIDvInvocation));
 	}
 
@@ -265,6 +276,7 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 
 	@Override
 	protected void setVolumeDB(IDvInvocation paramIDvInvocation, long paramLong, String paramString, int paramInt) {
+		checkValue(paramInt);
 		log.debug("setVolumeDB: " + paramInt + lt.getLogText(paramIDvInvocation));
 	}
 
@@ -304,9 +316,12 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 
 	@Override
 	protected void setVolume(IDvInvocation paramIDvInvocation, long paramLong1, String mixer, long volume) {
+		checkValue(volume);
 		log.debug("setVolume" + lt.getLogText(paramIDvInvocation));
 		PlayManager.getInstance().setVolume(volume);
+
 	}
+
 
 	@Override
 	public boolean getMute(IDvInvocation paramIDvInvocation, long paramLong, String paramString) {
@@ -381,6 +396,16 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 			mIsMute = "1";
 		}
 		return mIsMute;
+	}
+	
+	private void checkValue(int value)
+	{
+		long l = (long)value;
+		checkValue(l);
+	}
+	private void checkValue(long value) {
+		if (value < 0 || value > 100)
+			throw new ActionError("Specified Value: " + value + " Must be &lt;= 100");		
 	}
 
 }

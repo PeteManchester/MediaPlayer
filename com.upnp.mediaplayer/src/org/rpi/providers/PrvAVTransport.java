@@ -9,13 +9,11 @@ import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderUpnpOrgAVTransport1;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
-import org.rpi.player.events.EventPlayListStatusChanged;
 import org.rpi.player.events.EventStatusChanged;
 import org.rpi.player.events.EventTimeUpdate;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackInfo;
 import org.rpi.playlist.CustomTrack;
-import org.rpi.radio.CustomChannel;
 import org.rpi.utils.lt;
 
 public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Observer {
@@ -171,7 +169,7 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 
 	@Override
 	protected GetPositionInfo getPositionInfo(IDvInvocation paramIDvInvocation, long paramLong) {
-		// log.debug("Get Position Info" + lt.getLogText(paramIDvInvocation));
+		log.debug("Get Position Info" + lt.getLogText(paramIDvInvocation));
 		GetPositionInfo info = new GetPositionInfo(0, track_duration, track_metadata, track_uri, track_time, "00:00:00", 2147483647, 2147483647);
 		// GetPositionInfo info = new GetPositionInfo(1, "00:00:00", "", "",
 		// "00:00:00", "NOT_IMPLEMENTED", 2147483647, 2147483647);
