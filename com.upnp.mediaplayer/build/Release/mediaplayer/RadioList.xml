@@ -1,0 +1,218 @@
+<ChannelList>
+	<Channel>
+		<id>Revolution 96.2</id>
+		<url>http://cast.secureradiocast.co.uk:8004/;stream.mp3</url>
+		<image>http://www.mediauk.com/logos/100/226.png</image>
+	</Channel>
+	
+	<Channel>
+		<id>Adelaide ABC</id>
+		<url>http://abc.net.au/res/streaming/audio/aac/local_adelaide.pls</url>
+		<image></image>
+	</Channel>
+	
+	<Channel>
+		<id>Adelaide 3D</id>
+		<url>http://media.on.net/radio/137.m3u</url>
+		<image></image>
+	</Channel>	
+
+	<Channel>
+		<id>Absolute DAB</id>
+		<url>http://mp3-ar-128.timlradio.co.uk</url>
+		<image>http://onegoldensquare.com/images/uploads/2010/10/Absolute-radio-logo3.jpg</image>
+	</Channel>
+
+	<Channel>
+		<id>Capital Manchester</id>
+		<url>http://media-ice.musicradio.com/CapitalManchesterMP3.m3u</url>
+		<image></image>
+	</Channel>
+	
+	<Channel>
+		<id>Key 103</id>
+		<url>http://tx.whatson.com/icecast.php?i=key.mp3.m3u</url>
+		<image></image>
+	</Channel>
+	
+	<Channel>
+		<id>Magic 1152</id>
+		<url>http://tx.whatson.com/icecast.php?i=magic1152m.mp3.m3u</url>
+		<image></image>
+	</Channel>
+	
+	<Channel>
+		<id>Linn Radio</id>
+		<url>http://radio.linnrecords.com/cast/tunein.php/linnradio/playlist.pls</url>
+		<image>http://www.linnrecords.com/img/label/Linn_logo_100x100.jpg</image>
+	</Channel>
+	
+	<Channel>
+		<id>Linn Classical</id>
+		<url>http://radio.linnrecords.com/cast/tunein.php/linnclassical/playlist.pls</url>
+		<image>http://www.linnrecords.com/img/label/Linn_logo_100x100.jpg</image>
+	</Channel>	
+
+	<Channel>
+		<id>Linn Jazz</id>
+		<url>http://radio.linnrecords.com/cast/tunein.php/linnjazz/playlist.pls</url>
+		<image>http://www.linnrecords.com/img/label/Linn_logo_100x100.jpg</image>
+	</Channel>
+	
+	
+	<Channel>
+		<id>Classic FM</id>
+		<url>http://media-ice.musicradio.com/ClassicFMMP3.m3u</url>
+		<image></image>
+	</Channel>
+
+
+	<Channel>
+		<id>BBC Radio 1</id>
+		<url>http://www.bbc.co.uk/radio/listen/live/r1_aaclca.pls</url>
+		<image>http://bbc.co.uk/iplayer/img/radio/bbc_radio_one.gif</image>
+	</Channel>
+
+	<Channel>
+		<id>BBC Radio 2</id>
+		<url>http://www.bbc.co.uk/radio/listen/live/r2_aaclca.pls</url>
+		<image>http://bbc.co.uk/iplayer/img/radio/bbc_radio_two.gif</image>
+	</Channel>
+
+	<Channel>
+		<id>BBC Radio 3</id>
+		<url>http://www.bbc.co.uk/radio/listen/live/r3_aaclca.pls</url>
+		<image>http://bbc.co.uk/iplayer/img/radio/bbc_radio_three.gif</image>
+	</Channel>
+
+	<Channel>
+		<id>BBC Radio 4</id>
+		<url>http://www.bbc.co.uk/radio/listen/live/r4_aaclca.pls</url>
+		<image>http://bbc.co.uk/iplayer/img/radio/bbc_radio_four.gif</image>
+	</Channel>
+	
+	<Channel>
+	    <id>BBC Radio 4 LW</id>
+	    <url>http://www.bbc.co.uk/radio/listen/live/r4lw.asx</url>
+	    <image>http://bbc.co.uk/iplayer/img/radio/bbc_radio_four.gif</image>
+	</Channel>
+
+	<Channel>
+		<id>BBC Radio 4 Extra</id>
+		<url>http://www.bbc.co.uk/radio/listen/live/r4x_aaclca.pls</url>
+		<image>http://bbc.co.uk/iplayer/img/radio/bbc_radio_four.gif</image>
+	</Channel>
+
+	<Channel>
+		<id>BBC Radio 5 Live</id>
+		<url>http://www.bbc.co.uk/radio/listen/live/r5l_aaclca.pls</url>
+		<image>http://bbc.co.uk/iplayer/img/radio/bbc_radio_five_live.gif
+		</image>
+	</Channel>
+
+	<Channel>
+		<id>BBC Radio 5 Live Extra</id>
+		<url>http://www.bbc.co.uk/radio/listen/live/r5lsp_aaclca.pls</url>
+		<image>http://bbc.co.uk/iplayer/img/radio/bbc_radio_five_live_sports_extra.gif
+		</image>
+	</Channel>
+
+	<Channel>
+		<id>BBC Radio 6</id>
+		<url>http://www.bbc.co.uk/radio/listen/live/r6_aaclca.pls</url>
+		<image>http://bbc.co.uk/iplayer/img/radio/bbc_6music.gif</image>
+	</Channel>
+
+	<Channel>
+		<id>BBC World Service</id>
+		<url>http://www.bbc.co.uk/worldservice/meta/live/mp3/eneuk.pls</url>
+		<image>http://bbc.co.uk/iplayer/img/radio/bbc_world_service.gif</image>
+	</Channel>
+	
+	<Channel>
+		<id>BBC Radio Manchester</id>
+		<url>http://bbc.co.uk/radio/listen/live/bbcmanchester.asx</url>
+		<image></image>
+	</Channel>
+	
+	<Channel>
+		<id>XFM Manchester</id>
+		<url>http://media-ice.musicradio.com/XFMManchesterMP3.m3u</url>
+		<image>http://img.mediaspanonline.com/5893/1328690.jpg</image>
+	</Channel>
+	
+	<Channel>
+		<id>XFM London</id>
+		<url>http://media-ice.musicradio.com/XFMMP3.m3u</url>
+		<image>http://www.contrabandmedia.co.uk/wp-content/uploads/2010/big/xfm-big.jpg</image>
+	</Channel>
+
+	<Channel>
+		<id>Real XS</id>
+		<url>http://gmgmp3.shoutcast.streamuk.com:10028/listen.pls</url>
+		<image></image>
+	</Channel>	
+	
+	
+	<Channel>
+		<id>Smooth North West</id>
+		<url>http://gmgmp3.shoutcast.streamuk.com:10022/listen.pls</url>
+		<image></image>
+	</Channel>
+	
+	<Channel>
+		<id>Talk Sport</id>
+		<url>http://webradio.radiomonitor.com/m3u/talksport</url>
+		<image></image>
+	</Channel>
+	
+	<Channel>
+		<id>Naim Radio</id>
+		<url>http://37.130.228.60:8090/listen.pls</url>
+		<image></image>
+	</Channel>	
+	
+	<Channel>
+		<id>Absolute Top 40</id>
+		<url>http://yp.shoutcast.com/sbin/tunein-station.pls?id=691274</url>
+		<image></image>
+	</Channel>	
+	
+	<Channel>
+		<id>Absolute 60's</id>
+		<url>http://network.absoluteradio.co.uk/core/audio/mp3/live.pls?service=a6bb</url>
+		<image>http://www.absoluteradio.co.uk/images/pages/10857.1/Absolute-Radio-60s-logo.jpg</image>
+	</Channel>
+
+	<Channel>
+		<id>Absolute 70's</id>
+		<url>http://network.absoluteradio.co.uk/core/audio/mp3/live.pls?service=a7bb/</url>
+		<image>http://www.absoluteradio.co.uk/images/pages/10857.1/Absolute-Radio-70s-logo.jpg</image>
+	</Channel>
+	
+	<Channel>
+		<id>Absolute 80's</id>
+		<url>http://network.absoluteradio.co.uk/core/audio/mp3/live.pls?service=a8bb</url>
+		<image>http://www.absoluteradio.co.uk/images/pages/10857.1/Absolute-Radio-80s-logo.jpg</image>
+	</Channel>
+	
+	<Channel>
+		<id>Absolute 90's</id>
+		<url>http://network.absoluteradio.co.uk/core/audio/mp3/live.pls?service=a9bb</url>
+		<image>http://www.absoluteradio.co.uk/images/pages/10857.1/Absolute-Radio-90s-logo.jpg</image>
+	</Channel>
+	
+	<Channel>
+		<id>Absolute 00's</id>
+		<url>http://network.absoluteradio.co.uk/core/audio/mp3/live.pls?service=a0bb</url>
+		<image>http://www.absoluteradio.co.uk/images/pages/10857.1/Absolute-Radio-00s-logo.jpg</image>
+	</Channel>	
+	
+	<Channel>
+		<id>Steve Penk Windup Show</id>
+		<url>http://yp.shoutcast.com/sbin/tunein-station.pls?id=723808</url>
+		<image>http://mm.gmstatic.net/26/438974.jpg</image>
+	</Channel>	
+	
+</ChannelList>
+

@@ -6,8 +6,9 @@
 	<property name="builddir" value="${basedir}/build" />
 	<property name="buildbeta" value="${builddir}/beta" />
 	<property name="buildbetamediaplayer" value="${buildbeta}/mediaplayer" />
-	<property name="beta_libs_raspihf" value="${buildbeta}/libs/rapsi/hard_float" />
+	<property name="beta_libs_raspihf" value="${buildbeta}/libs/raspi/hard_float" />
 	<property name="beta_libs_jar" value="${buildbeta}/libs/jar" />
+
 	<target name="create_run_jar">
 
 		<!--<jar destfile="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer.jar" update="false">-->
@@ -22,7 +23,7 @@
 		</jar>
 		<delete dir="${buildbetamediaplayer}/mediaplayer_lib" />
 		<mkdir dir="${buildbetamediaplayer}/mediaplayer_lib" />
-		<copy file="C:/temp/TOH/Java/libs/ohnet-Pete.jar" todir="${buildbetamediaplayer}/mediaplayer_lib" />
+		<copy file="${beta_libs_jar}/ohnet-Pete.jar" todir="${buildbetamediaplayer}/mediaplayer_lib" />
 		<copy file="C:/Keep/Repository/java/log4j/log4j/1.2.16/apache-log4j-1.2.16/log4j-1.2.16.jar" todir="${buildbetamediaplayer}/mediaplayer_lib" />
 		<copy file="C:/Keep/Repository/java/jspf/dist/jspf.core-1.0.2.jar" todir="${buildbetamediaplayer}/mediaplayer_lib" />
 		<!--
@@ -34,29 +35,42 @@
 		<copy file="C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\license.txt" todir="C:/Keep/Code/UPNP/mediaplayer/Beta" />
 	</target>
 	<target name="deployStudy">
-		<echo>Sending to Study</echo>
-		<scp remoteTodir="root:root@rpistudy.local:/home/pi/mediaplayer" trust="yes" sftp="true">
-			<fileset dir="${buildbeta}">
-				<include name="mediaplayer.jar" />
-			</fileset>
-		</scp>
+		<antcall target="CopyFilesToRaspi">
+			<param name="server_name" value="rpistudy.local" />
+		</antcall>
 	</target>
+
 	<target name="deployLounge">
-		<echo>Sending to Lounge</echo>
-		<scp remoteTodir="root:root@rpilounge.local:/home/pi/mediaplayer" trust="yes" sftp="true">
-			<fileset dir="${buildbeta}">
-				<include name="mediaplayer.jar" />
-			</fileset>
-		</scp>
+		<antcall target="CopyFilesToRaspi">
+			<param name="server_name" value="rpilounge.local" />
+		</antcall>
 	</target>
 	<target name="deployBedroom">
-		<echo>Sending to Bedroom</echo>
-		<scp remoteTodir="root:root@rpibedroom.local:/home/pi/mediaplayer" trust="yes" sftp="true">
-			<fileset dir="${buildbeta}">
+		<antcall target="CopyFilesToRaspi">
+			<param name="server_name" value="rpibedroom.local" />
+		</antcall>
+	</target>
+
+	<target name="CopyFilesToRaspi">
+		<echo>Sending to ${server_name}</echo>
+		<scp remoteTodir="root:root@${server_name}:/home/pi/mediaplayer" trust="yes" sftp="true">
+			<fileset dir="${buildbeta}/mediaplayer">
 				<include name="mediaplayer.jar" />
 			</fileset>
 		</scp>
+		<scp remoteTodir="root:root@${server_name}:/home/pi/mediaplayer/mediaplayer_lib" trust="yes" sftp="true">
+			<fileset dir="${beta_libs_jar}">
+				<include name="ohnet-Pete.jar" />
+			</fileset>
+		</scp>
+		<scp remoteTodir="root:root@${server_name}:/usr/local/lib" trust="yes" sftp="true">
+			<fileset dir="${buildbeta}/libs/raspi/hard_float">
+				<include name="*.so" />
+			</fileset>
+		</scp>
+		<sshexec host="${server_name}" username="root" password="root" command="sudo reboot" trust="true" />
 	</target>
+
 
 	<target name="getLibsHardFlost">
 		<echo>Get .so from rpistudy</echo>
@@ -70,10 +84,10 @@
 
 	<target name="All">
 		<antcall target="create_run_jar" />
-		<parallel>
-			<antcall target="deployStudy" />
-			<antcall target="deployLounge" />
-			<antcall target="deployBedroom" />
-		</parallel>
+
+		<antcall target="deployStudy" />
+		<antcall target="deployLounge" />
+		<antcall target="deployBedroom" />
+
 	</target>
 </project>

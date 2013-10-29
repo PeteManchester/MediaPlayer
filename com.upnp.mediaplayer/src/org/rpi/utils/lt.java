@@ -2,7 +2,6 @@ package org.rpi.utils;
 
 import org.apache.log4j.Logger;
 import org.openhome.net.device.IDvInvocation;
-import org.rpi.providers.PrvConnectionManager;
 
 public class lt {
 
