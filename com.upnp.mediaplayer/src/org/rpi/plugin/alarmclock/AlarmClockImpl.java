@@ -155,7 +155,7 @@ public class AlarmClockImpl implements AlarmClockInterface {
 		String[] splits = className.split("/");
 		String properName = splits[splits.length - 1];
 		log.debug("Find Class, ClassName: " + properName);
-		URL classUrl = new FilePath().getClass().getResource(className);
+		URL classUrl = new AlarmClockFilePath().getClass().getResource(className);
 		if (classUrl != null) {
 			String temp = classUrl.getFile();
 			log.debug("Find Class, ClassURL: " + temp);
