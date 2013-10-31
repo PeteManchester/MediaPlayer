@@ -1,5 +1,6 @@
 package org.openhome.net.device.tests;
 
+import java.io.File;
 import java.net.Inet4Address;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,16 @@ public class TestDvDevice implements ICpDeviceListListener
 	
 	public TestDvDevice()
 	{
-		System.loadLibrary("ohNet");
+		File f = null;
+		try
+		{
+		f = new File("C:\\Keep\\git\\repository\\MediaPlayer\\com.upnp.mediaplayer\\build\\beta\\libs\\win32\\ohNet.dll");
+		}
+		catch (Exception e)
+		{
+			
+		}
+		System.loadLibrary(f.getAbsolutePath());
 		System.out.println("TestDvDeviceJava - starting");
 		iDevice = new DeviceBasic();
 		iDeviceList = new ArrayList<CpDevice>();
