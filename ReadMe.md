@@ -13,4 +13,4 @@ PlugPlayer
 eLyric
 Lumin
 
-For installation instructions see the Wiki pages
+For installation instructions see the Wiki pages (https://github.com/PeteManchester/MediaPlayer/wiki)
