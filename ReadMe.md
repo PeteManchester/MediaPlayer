@@ -3,7 +3,7 @@ A java project that uses the OpenHome API (http://www.openhome.org/wiki/Oh:Overv
 Supports the following
 
 Media Servers:
-Assent UPNP
+Asset UPNP
 Minim Server
 
 Control Points:
