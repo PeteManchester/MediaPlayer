@@ -17,12 +17,13 @@ import org.rpi.utils.lt;
 public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Observer {
 
 	private Logger log = Logger.getLogger(PrvProduct.class);
-	private String  friendly_name = Config.friendly_name;
-	//private String iSourceXml = "<SourceList><Source><Name>Playlist</Name><Type>Playlist</Type><Visible>1</Visible></Source><Source><Name>Receiver</Name><Type>Receiver</Type><Visible>1</Visible></Source><Source><Name>Radio</Name><Type>Radio</Type><Visible>1</Visible></Source></SourceList>";
+	private String friendly_name = Config.friendly_name;
+	// private String iSourceXml =
+	// "<SourceList><Source><Name>Playlist</Name><Type>Playlist</Type><Visible>1</Visible></Source><Source><Name>Receiver</Name><Type>Receiver</Type><Visible>1</Visible></Source><Source><Name>Radio</Name><Type>Radio</Type><Visible>1</Visible></Source></SourceList>";
 	private String iSourceXml = "";
-	//private boolean standby = true;
+	// private boolean standby = true;
 	private String attributes = "Info Time Volume";
-	//private String attributes = "";
+	// private String attributes = "";
 	private String man_name = "Java Inc";
 	private String man_info = "Developed in Java using OpenHome and MPlayer";
 	private String man_url = "";
@@ -109,9 +110,13 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 
 	private void initSources() {
 		addSource(Config.friendly_name, "Radio", "Radio", true);
-		addSource(Config.friendly_name, "Playlist", "Playlist", true);		
-		addSource(Config.friendly_name, "Receiver", "Receiver", true);
-		addSource(Config.friendly_name,"UpnpAV","UpnpAv",false);
+		addSource(Config.friendly_name, "Playlist", "Playlist", true);
+		if (Config.enableReceiver) {
+			addSource(Config.friendly_name, "Receiver", "Receiver", true);
+		}
+		if (Config.enableAVTransport) {
+			addSource(Config.friendly_name, "UpnpAV", "UpnpAv", false);
+		}
 	}
 
 	private void addSource(String system_name, String type, String name, boolean visible) {
@@ -151,7 +156,6 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 		log.debug("SetStandby: " + paramBoolean + lt.getLogText(paramIDvInvocation));
 		PlayManager.getInstance().setStandby(paramBoolean);
 	}
-	
 
 	@Override
 	protected boolean standby(IDvInvocation paramIDvInvocation) {
@@ -162,7 +166,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 
 	@Override
 	protected String attributes(IDvInvocation paramIDvInvocation) {
-		log.debug("Attributes: " + attributes  +lt.getLogText(paramIDvInvocation));
+		log.debug("Attributes: " + attributes + lt.getLogText(paramIDvInvocation));
 		return attributes;
 	}
 
@@ -190,15 +194,11 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	@Override
 	protected Source source(IDvInvocation paramIDvInvocation, long iD) {
 		log.debug("Source: " + iD + lt.getLogText(paramIDvInvocation));
-		if(sources.size()>= iD )
-		{
-			try
-			{
-				Source s = sources.get((int)iD);
+		if (sources.size() >= iD) {
+			try {
+				Source s = sources.get((int) iD);
 				return s;
-			}
-			catch(Exception e)
-			{
+			} catch (Exception e) {
 				log.error("Error GetSource: " + e);
 			}
 		}
@@ -227,7 +227,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 
 	@Override
 	protected String sourceXml(IDvInvocation paramIDvInvocation) {
-		log.debug("SourceXML: " + iSourceXml  + lt.getLogText(paramIDvInvocation));
+		log.debug("SourceXML: " + iSourceXml + lt.getLogText(paramIDvInvocation));
 		return iSourceXml;
 	}
 
@@ -236,36 +236,32 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 		log.debug("SourceXmlChangeCount: " + iSourceXMLChangeCount + lt.getLogText(paramIDvInvocation));
 		return iSourceXMLChangeCount;
 	}
-	
+
 	@Override
 	protected void setSourceIndexByName(IDvInvocation paramIDvInvocation, String paramString) {
 		log.debug("SetSourceIndexByName: " + paramString + lt.getLogText(paramIDvInvocation));
 		setSourceByname(paramString);
 	}
-	
-	public void updateStandby(boolean standby)
-	{
+
+	public void updateStandby(boolean standby) {
 		propertiesLock();
 		setPropertyStandby(standby);
 		propertiesUnlock();
 	}
-	
+
 	/**
 	 * Attempt to try and set the PlayList as Default Source
+	 * 
 	 * @param paramLong
 	 */
-	public synchronized void setSourceId(long paramLong)
-	{
+	public synchronized void setSourceId(long paramLong) {
 		setPropertySourceIndex(paramLong);
 	}
-	
-	public synchronized void setSourceByname(String name)
-	{
+
+	public synchronized void setSourceByname(String name) {
 		long count = 0;
-		for(Source source: sources)
-		{
-			if(source.getName().equalsIgnoreCase(name))
-			{
+		for (Source source : sources) {
+			if (source.getName().equalsIgnoreCase(name)) {
 				setPropertySourceIndex(count);
 			}
 			count++;
@@ -274,14 +270,13 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 
 	@Override
 	public void update(Observable o, Object arg) {
-		EventBase e = (EventBase)arg;
-		switch(e.getType())
-		{
+		EventBase e = (EventBase) arg;
+		switch (e.getType()) {
 		case EVENTSTANDBYCHANGED:
-			EventStandbyChanged ev = (EventStandbyChanged)e;
+			EventStandbyChanged ev = (EventStandbyChanged) e;
 			updateStandby(ev.isStandby());
 			break;
 		}
-		
+
 	}
 }

@@ -26,6 +26,8 @@ public class Config {
 	public static int mpd_port = 6600;
 	public static String player = "mpd";
 	public static int mpd_preload_timer = 10;
+	public static boolean enableAVTransport =true;
+	public static boolean enableReceiver = true;
 	
 	private static Calendar cal = Calendar.getInstance();
 	
@@ -157,6 +159,19 @@ public class Config {
 			
 		}
 		return iDefault;
+	}
+	
+	public static boolean convertStringToBoolean(String s, boolean bDefault)
+	{
+		if(s==null || s.equalsIgnoreCase(""))
+			return bDefault;
+		if(s.equalsIgnoreCase("TRUE"))
+			return true;
+		if(s.equalsIgnoreCase("YES"))
+			return true;
+		if(s.equalsIgnoreCase("1"))
+			return true;
+		return false;
 	}
 	
 	public static void setStartTime()

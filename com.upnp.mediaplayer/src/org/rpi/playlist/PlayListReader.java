@@ -5,7 +5,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
+import org.rpi.playlist.CustomTrack;
 import org.apache.log4j.Logger;
 import org.rpi.providers.PrvPlayList;
 import org.w3c.dom.Document;

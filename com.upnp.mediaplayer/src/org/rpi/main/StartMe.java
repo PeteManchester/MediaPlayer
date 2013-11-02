@@ -1,29 +1,22 @@
 package org.rpi.main;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeSet;
-import net.xeoh.plugins.base.PluginManager;
-import net.xeoh.plugins.base.impl.PluginManagerFactory;
+
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 import org.apache.log4j.RollingFileAppender;
 import org.rpi.config.Config;
 import org.rpi.log.CustomPatternLayout;
-import org.rpi.log.CustomRollingFileAppender;
-import org.scratchpad.NativeLibraryLoader;
 
 public class StartMe {
 
@@ -171,6 +164,8 @@ public class StartMe {
 			Config.mpd_port = Config.converStringToInt(pr.getProperty("mpd.port"), 6600);
 			Config.mpd_preload_timer = Config.converStringToInt(pr.getProperty("mpd.preload.timer"), 10);
 			Config.player = pr.getProperty("player");
+			Config.enableAVTransport = Config.convertStringToBoolean(pr.getProperty("enableAVTransport"), true);
+			Config.enableReceiver = Config.convertStringToBoolean(pr.getProperty("enableReceiver"), true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

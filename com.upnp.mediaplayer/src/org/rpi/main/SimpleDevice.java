@@ -33,6 +33,7 @@ import org.openhome.net.device.IDvDeviceListener;
 import org.openhome.net.device.IResourceManager;
 import org.openhome.net.device.IResourceWriter;
 import org.rpi.config.Config;
+import org.rpi.main.OpenHomeLogger;
 import org.rpi.player.PlayManager;
 import org.rpi.providers.PrvAVTransport;
 import org.rpi.providers.PrvConnectionManager;
@@ -98,7 +99,8 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			log.debug("OS Name: " + os);
 			if (os.startsWith("WINDOWS")) {
 				log.debug("Windows OS");
-				//System.setProperty("java.library.path", path + "/mediaplayer_lib/ohNet/win32");
+				// System.setProperty("java.library.path", path +
+				// "/mediaplayer_lib/ohNet/win32");
 				addToLibPath(path + "/mediaplayer_lib/ohNet/win32");
 			} else if (os.startsWith("LINUX")) {
 				String arch = System.getProperty("os.arch").toUpperCase();
@@ -117,7 +119,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 							log.debug("Result of " + command + " : " + line);
 							if (line.toUpperCase().contains("ARMHF")) {
 								log.debug("HardFloat Raspi Set java.library.path to be: " + path);
-								
+
 								hard_float = true;
 								break;
 							} else if (line.toUpperCase().contains("ARMEL")) {
@@ -132,13 +134,14 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 						log.debug("Error Determining Raspi OS Type: ", e);
 					}
 					addLibraryPath(full_path);
-					//System.setProperty("java.library.path", full_path);
+					// System.setProperty("java.library.path", full_path);
 				}
-				
+
 			}
-			//Field fieldSysPath = ClassLoader.class.getDeclaredField("sys_paths");
-			//fieldSysPath.setAccessible(true);
-			//fieldSysPath.set(null, null);
+			// Field fieldSysPath =
+			// ClassLoader.class.getDeclaredField("sys_paths");
+			// fieldSysPath.setAccessible(true);
+			// fieldSysPath.set(null, null);
 		} catch (Exception e) {
 			log.error(e);
 		}
@@ -146,7 +149,8 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	}
 
 	/**
-	 * Not clever enough to work out how to override ClassLoader functionality, so using this nice trick instead..
+	 * Not clever enough to work out how to override ClassLoader functionality,
+	 * so using this nice trick instead..
 	 * 
 	 * @param path
 	 * @throws NoSuchFieldException
@@ -156,13 +160,16 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	 */
 	static void addToLibPath(String path) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		if (System.getProperty("java.library.path") != null) {
-			// If java.library.path is not empty, we will prepend our path Note that path.separator is ; on Windows and : on Unix-like, so we can't hard code it.
+			// If java.library.path is not empty, we will prepend our path Note
+			// that path.separator is ; on Windows and : on Unix-like, so we
+			// can't hard code it.
 			System.setProperty("java.library.path", path + System.getProperty("path.separator") + System.getProperty("java.library.path"));
 		} else {
 			System.setProperty("java.library.path", path);
 		}
 
-		// Important: java.library.path is cached We will be using reflection to clear the cache
+		// Important: java.library.path is cached We will be using reflection to
+		// clear the cache
 		Field fieldSysPath = ClassLoader.class.getDeclaredField("sys_paths");
 		fieldSysPath.setAccessible(true);
 		fieldSysPath.set(null, null);
@@ -308,9 +315,13 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		iInfo = new PrvInfo(iDevice);
 		iTime = new PrvTime(iDevice);
 		iRadio = new PrvRadio(iDevice);
-		iReceiver = new PrvReceiver(iDevice);
-		iAVTransport = new PrvAVTransport(iDevice);
-		iRenderingControl = new PrvRenderingControl(iDevice);
+		if (Config.enableReceiver) {
+			iReceiver = new PrvReceiver(iDevice);
+		}
+		if (Config.enableAVTransport) {
+			iAVTransport = new PrvAVTransport(iDevice);
+			iRenderingControl = new PrvRenderingControl(iDevice);
+		}
 
 		try {
 			ChannelReader cr = new ChannelReader();
