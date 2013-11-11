@@ -35,6 +35,7 @@ import org.openhome.net.device.IResourceWriter;
 import org.rpi.config.Config;
 import org.rpi.main.OpenHomeLogger;
 import org.rpi.player.PlayManager;
+import org.rpi.plugingateway.PluginGateWay;
 import org.rpi.providers.PrvAVTransport;
 import org.rpi.providers.PrvConnectionManager;
 import org.rpi.providers.PrvInfo;
@@ -59,8 +60,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	private PrvProduct iProduct = null;
 	private PrvInfo iInfo = null;
 	private PrvTime iTime = null;
-	private PrvRadio iRadio;
-	private PrvRadio iInput;
+	private PrvRadio iRadio =  null;
 	private PrvReceiver iReceiver = null;
 	private PrvAVTransport iAVTransport = null;
 	private PrvRenderingControl iRenderingControl = null;
@@ -69,6 +69,16 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 	private PluginManager pm = null;
 
+	/**
+	 * Not clever enough to work out how to override ClassLoader functionality,
+	 * so using this nice trick instead..
+	 * 
+	 * @param path
+	 * @throws NoSuchFieldException
+	 * @throws SecurityException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 */
 	public void addLibraryPath(String pathToAdd) throws Exception {
 		Field usrPathsField = ClassLoader.class.getDeclaredField("usr_paths");
 		usrPathsField.setAccessible(true);
@@ -101,7 +111,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 				log.debug("Windows OS");
 				// System.setProperty("java.library.path", path +
 				// "/mediaplayer_lib/ohNet/win32");
-				addToLibPath(path + "/mediaplayer_lib/ohNet/win32");
+				addLibraryPath(path + "/mediaplayer_lib/ohNet/win32");
 			} else if (os.startsWith("LINUX")) {
 				String arch = System.getProperty("os.arch").toUpperCase();
 				if (arch.startsWith("ARM")) {
@@ -148,33 +158,6 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 	}
 
-	/**
-	 * Not clever enough to work out how to override ClassLoader functionality,
-	 * so using this nice trick instead..
-	 * 
-	 * @param path
-	 * @throws NoSuchFieldException
-	 * @throws SecurityException
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
-	 */
-	static void addToLibPath(String path) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		if (System.getProperty("java.library.path") != null) {
-			// If java.library.path is not empty, we will prepend our path Note
-			// that path.separator is ; on Windows and : on Unix-like, so we
-			// can't hard code it.
-			System.setProperty("java.library.path", path + System.getProperty("path.separator") + System.getProperty("java.library.path"));
-		} else {
-			System.setProperty("java.library.path", path);
-		}
-
-		// Important: java.library.path is cached We will be using reflection to
-		// clear the cache
-		Field fieldSysPath = ClassLoader.class.getDeclaredField("sys_paths");
-		fieldSysPath.setAccessible(true);
-		fieldSysPath.set(null, null);
-	}
-
 	/***
 	 * Get the Path of this ClassFile Must be easier ways to do this!!!!
 	 * 
@@ -191,7 +174,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		String[] splits = className.split("/");
 		String properName = splits[splits.length - 1];
 		log.debug("Find Class, ClassName: " + properName);
-		URL classUrl = new MainFilePath().getClass().getResource(className);
+		URL classUrl = this.getClass().getResource(className);
 		if (classUrl != null) {
 			String temp = classUrl.getFile();
 			log.debug("Find Class, ClassURL: " + temp);
@@ -229,6 +212,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	 * Constructor for our Simple Device
 	 */
 	public SimpleDevice() {
+		PluginGateWay.getInstance().setSimpleDevice(this);
 		log.debug("Creating Simple Device version: " + Config.version);
 		// System.loadLibrary("ohNetJni");
 		SetJavaPath();
@@ -315,6 +299,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		iInfo = new PrvInfo(iDevice);
 		iTime = new PrvTime(iDevice);
 		iRadio = new PrvRadio(iDevice);
+		//iInput = new PrvRadio(iDevice);
 		if (Config.enableReceiver) {
 			iReceiver = new PrvReceiver(iDevice);
 		}
@@ -346,6 +331,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		for (File file : files) {
 			try {
 				if (file.getName().toUpperCase().endsWith(".JAR")) {
+					log.debug("Attempt to Load Plugin: " + file.getName());
 					pm.addPluginsFrom(file.toURI());
 				}
 			} catch (Exception e) {
@@ -365,6 +351,8 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		File directory = new File(directoryName);
 		List<File> resultList = new ArrayList<File>();
 		File[] fList = directory.listFiles();
+		if(fList==null)
+			return resultList;
 		resultList.addAll(Arrays.asList(fList));
 		for (File file : fList) {
 			if (file.isFile()) {
@@ -699,5 +687,14 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	@Override
 	public void message(String paramString) {
 		log.fatal("Fatal Error: " + paramString);
+	}
+	
+	/**
+	 * Get the Product Provider
+	 * @return
+	 */
+	public PrvProduct getProduct()
+	{
+		return iProduct;
 	}
 }

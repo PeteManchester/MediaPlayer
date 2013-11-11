@@ -14,13 +14,12 @@
 
 	<target name="create_run_jar">
 
-		<!--<jar destfile="C:/Keep/Code/UPNP/mediaplayer/Beta/mediaplayer.jar" update="false">-->
 		<jar destfile="${buildbetamediaplayer}/mediaplayer.jar" update="false">
 			<manifest>
 				<attribute name="Main-Class" value="org.rpi.main.StartMe" />
 				<attribute name="Class-Path" value=". mediaplayer_lib/ohnet-Pete.jar mediaplayer_lib/log4j-1.2.16.jar mediaplayer_lib/jspf.core-1.0.2.jar" />
 			</manifest>
-			<fileset dir="C:/Keep/git/repository/MediaPlayer/com.upnp.mediaplayer/bin">
+			<fileset dir="${basedir}/bin">
 				<exclude name="**/plugin/**" />
 			</fileset>
 		</jar>
@@ -32,7 +31,7 @@
 		<copy todir="${buildbetamediaplayer}/mediaplayer_lib/ohNet">
 			<fileset dir="${mediaplayer_lib}/ohNet"/>
 		</copy>
-		<copy file="C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\license.txt" todir="${buildbetamediaplayer}" />
+		<copy file="${basedir}\license.txt" todir="${buildbetamediaplayer}" />
 	</target>
 	
 	<target name="deployStudy">

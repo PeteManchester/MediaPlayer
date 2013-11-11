@@ -51,7 +51,14 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 			PlayManager.getInstance().observVolumeEvents(this);
 			PlayManager.getInstance().observTimeEvents(this);
 			PlayManager.getInstance().observeProductEvents(this);
+			try
+			{
 			initPi4J();
+			}
+			catch(Exception e)
+			{
+				log.error("Error Init Pi4J: " + e);
+			}
 			scroller = new LCDScroller();
 			if (lcdHandle != -1) {
 				scroller.setLCDHandle(lcdHandle);
@@ -129,7 +136,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 
 			log.info("Finished Configuring LCD");
 		} catch (Exception e) {
-			log.error("Error Initializing Pi4J" + e.getMessage());
+			log.error("Error Initializing Pi4J" + e.getMessage(),e);
 		}
 
 	}

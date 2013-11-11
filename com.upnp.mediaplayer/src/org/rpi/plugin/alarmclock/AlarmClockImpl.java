@@ -1,8 +1,12 @@
 package org.rpi.plugin.alarmclock;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
@@ -40,13 +44,13 @@ public class AlarmClockImpl implements AlarmClockInterface {
 	private Scheduler scheduler;
 
 	public AlarmClockImpl() {
-		
+		log.debug("Creating Alarm Clock Plugin");
+		SetJavaPath();
 		try {
 			LogManager.getLogger(Class.forName("org.quartz.core.QuartzSchedulerThread")).setLevel(Level.INFO);
 			LogManager.getLogger(Class.forName("org.quartz.utils.UpdateChecker")).setLevel(Level.ERROR);
 		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			log.error(e1);
 		}
 		log.debug("AlarmClock");
 		this.iPlayer = PlayManager.getInstance();
@@ -57,11 +61,11 @@ public class AlarmClockImpl implements AlarmClockInterface {
 			log.error("Error Starting Scheduler");
 		}
 		getConfig();
-		// intAlarmClock();
 	}
 
 	/***
 	 * User Quartz to set up a schedule
+	 * 
 	 * @param name
 	 * @param time
 	 * @param type
@@ -69,29 +73,23 @@ public class AlarmClockImpl implements AlarmClockInterface {
 	 * @param volume
 	 * @param shuffle
 	 */
-	private void createSchedule(String name, String time, String type,
-			String channel, String volume, String shuffle) {
+	private void createSchedule(String name, String time, String type, String channel, String volume, String shuffle) {
 		try {
 			TriggerKey tr_key = new TriggerKey(name, "radioPlugin");
-			JobDetail job = JobBuilder.newJob(AlarmClockJob.class)
-					.withIdentity(name, "group1").build();
+			JobDetail job = JobBuilder.newJob(AlarmClockJob.class).withIdentity(name, "group1").build();
 			Map dataMap = job.getJobDataMap();
 			dataMap.put("id", name);
 			dataMap.put("Volume", volume);
 			dataMap.put("Shuffle", shuffle);
 			dataMap.put("type", type);
 			dataMap.put("channel", channel);
-			Trigger trigger = TriggerBuilder.newTrigger().withIdentity(tr_key)
-					.withSchedule(CronScheduleBuilder.cronSchedule(time))
-					.forJob(job).build();
+			Trigger trigger = TriggerBuilder.newTrigger().withIdentity(tr_key).withSchedule(CronScheduleBuilder.cronSchedule(time)).forJob(job).build();
 			if (scheduler.checkExists(tr_key)) {
 				Date next_time = scheduler.rescheduleJob(tr_key, trigger);
-				log.info("Schedule has been changed, next execution time : "
-						+ next_time.toString() + " -- Job: " + name);
+				log.info("Schedule has been changed, next execution time : " + next_time.toString() + " -- Job: " + name);
 			} else {
 				Date next_time = scheduler.scheduleJob(job, trigger);
-				log.info("Job has been scheduled, next execution time : "
-						+ next_time.toString() + " -- Job: " + name);
+				log.info("Job has been scheduled, next execution time : " + next_time.toString() + " -- Job: " + name);
 			}
 		} catch (Exception e) {
 			log.error("Error Creating Job: ", e);
@@ -99,7 +97,8 @@ public class AlarmClockImpl implements AlarmClockInterface {
 	}
 
 	/***
-	 * So my AlarmClock.xml file is in a subdirectory of Plugins, we have to find it the read it and schedule the triggers..
+	 * So my AlarmClock.xml file is in a subdirectory of Plugins, we have to
+	 * find it the read it and schedule the triggers..
 	 */
 	private void getConfig() {
 		try {
@@ -107,8 +106,7 @@ public class AlarmClockImpl implements AlarmClockInterface {
 			log.debug("Find Class, ClassName: " + class_name);
 			String path = getFilePath(class_name);
 			log.debug("Getting AlarmClock.xml from Directory: " + path);
-			DocumentBuilderFactory factory = DocumentBuilderFactory
-					.newInstance();
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			Document doc = builder.parse(new File(path + "AlarmClock.xml"));
 			NodeList listOfChannels = doc.getElementsByTagName("Alarm");
@@ -140,8 +138,8 @@ public class AlarmClockImpl implements AlarmClockInterface {
 	}
 
 	/***
-	 * Get the Path of this ClassFile
-	 * Must be easier ways to do this!!!!
+	 * Get the Path of this ClassFile Must be easier ways to do this!!!!
+	 * 
 	 * @param className
 	 * @return
 	 */
@@ -155,7 +153,7 @@ public class AlarmClockImpl implements AlarmClockInterface {
 		String[] splits = className.split("/");
 		String properName = splits[splits.length - 1];
 		log.debug("Find Class, ClassName: " + properName);
-		URL classUrl = new AlarmClockFilePath().getClass().getResource(className);
+		URL classUrl = this.getClass().getResource(className);
 		if (classUrl != null) {
 			String temp = classUrl.getFile();
 			log.debug("Find Class, ClassURL: " + temp);
@@ -169,7 +167,7 @@ public class AlarmClockImpl implements AlarmClockInterface {
 				String jar_path = "";
 				for (String part : parts) {
 					if (!part.toUpperCase().endsWith(".JAR!")) {
-						jar_path +=  part + "/";
+						jar_path += part + "/";
 					} else {
 						log.debug("Find File: Returning JarPath: " + jar_path);
 						return jar_path;
@@ -178,16 +176,14 @@ public class AlarmClockImpl implements AlarmClockInterface {
 			} else {
 				log.debug("Find Class, This is NOT a Jar File: " + temp);
 				if (temp.endsWith(properName)) {
-					temp = temp.substring(0,
-							(temp.length() - properName.length()));
+					temp = temp.substring(0, (temp.length() - properName.length()));
 				}
 			}
 			log.debug("Find File: Returning FilePath: " + temp);
 			return temp;
 		} else {
 			log.debug("Find Class, URL Not Found");
-			return "\nClass '" + className + "' not found in \n'"
-					+ System.getProperty("java.class.path") + "'";
+			return "\nClass '" + className + "' not found in \n'" + System.getProperty("java.class.path") + "'";
 		}
 	}
 
@@ -218,21 +214,111 @@ public class AlarmClockImpl implements AlarmClockInterface {
 			pr.load(new FileInputStream("app.properties"));
 			return pr.getProperty("alarmtime");
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e);
 		}
 		return "";
 	}
-	
+
 	@Shutdown
-    public void bye() {
+	public void bye() {
 		log.debug("ShutDown Called");
-    }
+	}
 
 	class RemindTask extends TimerTask {
 		public void run() {
 			log.debug("Time For Next Track");
 			iPlayer.nextTrack();
 		}
+	}
+
+	/**
+	 * Not clever enough to work out how to override ClassLoader functionality,
+	 * so using this nice trick instead..
+	 * 
+	 * @param path
+	 * @throws NoSuchFieldException
+	 * @throws SecurityException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 */
+	public void addLibraryPath(String pathToAdd) throws Exception {
+		Field usrPathsField = ClassLoader.class.getDeclaredField("usr_paths");
+		usrPathsField.setAccessible(true);
+
+		String[] paths = (String[]) usrPathsField.get(null);
+
+		for (String path : paths)
+			if (path.equals(pathToAdd))
+				return;
+
+		String[] newPaths = Arrays.copyOf(paths, paths.length + 1);
+		newPaths[newPaths.length - 1] = pathToAdd;
+		usrPathsField.set(null, newPaths);
+	}
+
+	/**
+	 * Set the Path to the ohNetxx.so files
+	 */
+	private void SetJavaPath() {
+		try
+
+		{
+			// String class_name = this.getClass().getName();
+			String class_name = PlayManager.getInstance().getClass().getName();
+			log.debug("Find Class, ClassName: " + class_name);
+			String path = getFilePath(class_name);
+			log.debug("Path of this File is: " + path);
+			String os = System.getProperty("os.name").toUpperCase();
+			log.debug("OS Name: " + os);
+			if (os.startsWith("WINDOWS")) {
+				log.debug("Windows OS");
+				// System.setProperty("java.library.path", path +
+				// "/mediaplayer_lib/ohNet/win32");
+				addLibraryPath(path + "/mediaplayer_lib");
+			} else if (os.startsWith("LINUX")) {
+				String arch = System.getProperty("os.arch").toUpperCase();
+				if (arch.startsWith("ARM")) {
+					log.debug("Its a Raspi, check for HardFloat or SoftFloat");
+					// readelf -a /usr/bin/readelf | grep armhf
+					boolean hard_float = true;
+					String command = "dpkg -l | grep 'armhf\\|armel'";
+					String full_path = path + "/mediaplayer_lib";
+					try {
+						Process pa = Runtime.getRuntime().exec(command);
+						pa.waitFor();
+						BufferedReader reader = new BufferedReader(new InputStreamReader(pa.getInputStream()));
+						String line;
+						while ((line = reader.readLine()) != null) {
+							log.debug("Result of " + command + " : " + line);
+							if (line.toUpperCase().contains("ARMHF")) {
+								log.debug("HardFloat Raspi Set java.library.path to be: " + path);
+
+								hard_float = true;
+								break;
+							} else if (line.toUpperCase().contains("ARMEL")) {
+								full_path = path + "/mediaplayer_lib";
+								log.debug("SoftFloat Raspi Set java.library.path to be: " + path);
+								hard_float = false;
+								break;
+							}
+
+						}
+					} catch (Exception e) {
+						log.debug("Error Determining Raspi OS Type: ", e);
+					}
+					addLibraryPath(full_path);
+					// System.setProperty("java.library.path", full_path);
+				}
+
+			}
+			// Field fieldSysPath =
+			// ClassLoader.class.getDeclaredField("sys_paths");
+			// fieldSysPath.setAccessible(true);
+			// fieldSysPath.set(null, null);
+		} catch (Exception e) {
+			log.error(e);
+		}
+
 	}
 
 }

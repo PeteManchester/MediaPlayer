@@ -12,6 +12,7 @@ import org.rpi.config.Config;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventStandbyChanged;
+import org.rpi.plugingateway.PluginGateWay;
 import org.rpi.utils.lt;
 
 public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Observer {
@@ -119,8 +120,8 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 		}
 	}
 
-	private void addSource(String system_name, String type, String name, boolean visible) {
-		Source source = new Source(system_name, type, name, visible);
+	public void addSource(String system_name, String type, String name, boolean visible) {
+		Source source = new Source(system_name, name, type, visible);
 		sources.add(source);
 		iSourceXMLChangeCount++;
 		updateSourceXML();
@@ -215,7 +216,12 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	@Override
 	protected void setSourceIndex(IDvInvocation paramIDvInvocation, long paramLong) {
 		log.debug("SetSourceIndex: " + paramLong + lt.getLogText(paramIDvInvocation));
+		Source source = sources.get((int)paramLong);
+		String name = source.getName();
+		log.debug("Source Selected: " + name);
 		setPropertySourceIndex(paramLong);
+		PluginGateWay.getInstance().setSourceId(name);
+		
 	}
 
 	@Override
