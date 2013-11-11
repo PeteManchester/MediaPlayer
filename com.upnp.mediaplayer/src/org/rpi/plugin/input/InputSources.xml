@@ -16,7 +16,7 @@
 	</Source>
 
 		<Source>
-		<name>External</name>
+		<name>iPod</name>
 		<type>Custom</type>
 		<GPIO_PIN>3</GPIO_PIN>
 	</Source>
