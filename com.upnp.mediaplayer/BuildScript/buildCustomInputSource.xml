@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="build_plugin" name="Create Plugin com.upnp.mediaplayer" basedir="$basedir">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <property name="builddir" value="${basedir}/build" />
+	<property name="buildbeta" value="${builddir}/beta" />
+    
+    <target name="build_plugin">
+        <jar destfile="${basedir}/plugins/CustomInputSource/CustomInputSource.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="${basedir}/bin">
+                <include name = "/org/rpi/plugin/input/*" />
+            </fileset>
+             
+            <zipfileset excludes="META-INF/*.SF" src="C:/Keep/Repository/java/quartz/quartz/2.1.1/lib/slf4j-log4j12-1.6.1.jar"/>
+        </jar>
+        <copy file="${basedir}\src\org\rpi\plugin\input\InputSources.xml" todir="${basedir}/plugins/CustomInputSource"/>
+    </target>
+</project>

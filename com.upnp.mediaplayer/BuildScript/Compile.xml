@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="copy_to_bin" name="Copy Win32 Libs to bin directory" basedir="$basedir">
+	<property name="builddir" value="${basedir}/build" />
+	<property name="buildbeta" value="${builddir}/beta" />
+	<property name="buildbetamediaplayer" value="${buildbeta}/mediaplayer" />
+	<property name="beta_libs" value="${buildbeta}/libs/ohNet" />
+	<property name="beta_libs_raspihf" value="${beta_libs}/raspi/hard_float" />
+	<property name="beta_libs_raspisf" value="${beta_libs}/raspi/soft_float" />
+	<property name="beta_libs_jar" value="${buildbeta}/libs/jar" />
+	<property name="mediaplayer_lib" value="${buildbeta}/libs/" />
+
+	<target name="copy_to_bin">
+	    <copy todir="${basedir}/bin/mediaplayer_lib/ohNet/win32">
+		<fileset dir="${builddir}/Release/mediaplayer/mediaplayer_lib/ohNet/win32"/>
+		</copy>
+	</target>    
+    
+</project>

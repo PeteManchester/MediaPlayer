@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Sources>
+    <Default>
+        <GPIO_PIN>10</GPIO_PIN>
+    </Default>
+	<Source>
+		<name>Laptop</name>
+		<type>Custom</type>
+		<GPIO_PIN>1</GPIO_PIN>
+	</Source>
+
+		<Source>
+		<name>Home PC</name>
+		<type>Custom</type>
+		<GPIO_PIN>2</GPIO_PIN>
+	</Source>
+
+		<Source>
+		<name>iPod</name>
+		<type>Custom</type>
+		<GPIO_PIN>3</GPIO_PIN>
+	</Source>
+
+	<Source>
+		<name>DAB Radio</name>
+		<type>Custom</type>
+		<GPIO_PIN>4</GPIO_PIN>
+	</Source>
+</Sources>
