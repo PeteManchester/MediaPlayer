@@ -103,7 +103,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 		enableActionAttributes();
 		enableActionSourceXmlChangeCount();
 		PlayManager.getInstance().observeProductEvents(this);
-		initSources();
+		//initSources();
 		setPropertySourceIndex(0);
 	}
 
@@ -120,8 +120,8 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 		}
 	}
 
-	public void addSource(String system_name, String type, String name, boolean visible) {
-		Source source = new Source(system_name, name, type, visible);
+	public void addSource(String system_name, String name, String type, boolean visible) {
+		Source source = new Source(system_name, type, name, visible);
 		sources.add(source);
 		iSourceXMLChangeCount++;
 		updateSourceXML();

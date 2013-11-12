@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="build_plugin" name="Create Runnable Jar for Project com.upnp.mediaplayer" basedir="$basedir">
+<project default="build_plugin" name="Create AlarmClock Plugin" basedir="$basedir">
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
     <property name="builddir" value="${basedir}/build" />

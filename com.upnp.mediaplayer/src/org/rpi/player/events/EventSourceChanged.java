@@ -1,4 +1,9 @@
 package org.rpi.player.events;
+/**
+ * The Source has been Changed
+ * @author phoyle
+ *
+ */
 
 public class EventSourceChanged implements EventBase {
 

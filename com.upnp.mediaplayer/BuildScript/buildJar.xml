@@ -17,7 +17,7 @@
 		<jar destfile="${buildbetamediaplayer}/mediaplayer.jar" update="false">
 			<manifest>
 				<attribute name="Main-Class" value="org.rpi.main.StartMe" />
-				<attribute name="Class-Path" value=". mediaplayer_lib/ohnet-Pete.jar mediaplayer_lib/log4j-1.2.16.jar mediaplayer_lib/jspf.core-1.0.2.jar" />
+				<attribute name="Class-Path" value=". mediaplayer_lib/ohnet-Pete.jar mediaplayer_lib/log4j-1.2.16.jar mediaplayer_lib/jspf.core-1.0.2.jar mediaplayer_lib/pi4j-core.jar" />
 			</manifest>
 			<fileset dir="${basedir}/bin">
 				<exclude name="**/plugin/**" />
@@ -59,7 +59,7 @@
 
 	<target name="CopyFilesToRaspi">
 		<echo>Sending to ${server_name} </echo>
-		
+		<sshexec host="${server_name}" username="root" password="root" command="sudo service mediaplayer stop" trust="true" />
 		<echo>Sending to ${server_name} Copying mediaplayer.jar </echo>
 		<scp remoteTodir="root:root@${server_name}:/home/pi/mediaplayer" trust="yes" sftp="true">
 			<fileset dir="${buildbetamediaplayer}">
@@ -76,7 +76,7 @@
 		-->
 				
 		<echo>Sending to ${server_name} ReBooting</echo>
-		<sshexec host="${server_name}" username="root" password="root" command="sudo reboot" trust="true" />
+		<sshexec host="${server_name}" username="root" password="root" command="sudo service mediaplayer start" trust="true" />
 		
 	</target>
 

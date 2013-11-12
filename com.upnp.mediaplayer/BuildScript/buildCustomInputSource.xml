@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project default="build_plugin" name="Create Plugin com.upnp.mediaplayer" basedir="$basedir">
+<project default="build_plugin" name="Create Input Plugin " basedir="$basedir">
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
     <property name="builddir" value="${basedir}/build" />
@@ -12,10 +12,8 @@
             </manifest>
             <fileset dir="${basedir}/bin">
                 <include name = "/org/rpi/plugin/input/*" />
-            </fileset>
-             
-            <zipfileset excludes="META-INF/*.SF" src="C:/Keep/Repository/java/quartz/quartz/2.1.1/lib/slf4j-log4j12-1.6.1.jar"/>
+            </fileset>          
+            <zipfileset excludes="META-INF/*.SF" src="C:/Keep/Repository/java/pi4j/pi4j-1.0-SNAPSHOT/lib/pi4j-core.jar"/>
         </jar>
-        <copy file="${basedir}\src\org\rpi\plugin\input\InputSources.xml" todir="${basedir}/plugins/CustomInputSource"/>
     </target>
 </project>

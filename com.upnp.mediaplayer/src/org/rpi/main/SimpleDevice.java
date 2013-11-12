@@ -7,19 +7,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
-
-import net.xeoh.plugins.base.PluginManager;
-import net.xeoh.plugins.base.impl.PluginManagerFactory;
 
 import org.apache.log4j.Logger;
 import org.openhome.net.core.DebugLevel;
@@ -33,7 +28,7 @@ import org.openhome.net.device.IDvDeviceListener;
 import org.openhome.net.device.IResourceManager;
 import org.openhome.net.device.IResourceWriter;
 import org.rpi.config.Config;
-import org.rpi.main.OpenHomeLogger;
+import org.rpi.os.OSManager;
 import org.rpi.player.PlayManager;
 import org.rpi.plugingateway.PluginGateWay;
 import org.rpi.providers.PrvAVTransport;
@@ -47,6 +42,8 @@ import org.rpi.providers.PrvRenderingControl;
 import org.rpi.providers.PrvTime;
 import org.rpi.providers.PrvVolume;
 import org.rpi.radio.ChannelReader;
+import org.rpi.sources.Source;
+import org.rpi.sources.SourceReader;
 
 public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessageListener {
 
@@ -67,146 +64,8 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 	private PlayManager iPlayer = PlayManager.getInstance();
 
-	private PluginManager pm = null;
+	//private PluginManager pm = null;
 
-	/**
-	 * Not clever enough to work out how to override ClassLoader functionality,
-	 * so using this nice trick instead..
-	 * 
-	 * @param path
-	 * @throws NoSuchFieldException
-	 * @throws SecurityException
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
-	 */
-	public void addLibraryPath(String pathToAdd) throws Exception {
-		Field usrPathsField = ClassLoader.class.getDeclaredField("usr_paths");
-		usrPathsField.setAccessible(true);
-
-		String[] paths = (String[]) usrPathsField.get(null);
-
-		for (String path : paths)
-			if (path.equals(pathToAdd))
-				return;
-
-		String[] newPaths = Arrays.copyOf(paths, paths.length + 1);
-		newPaths[newPaths.length - 1] = pathToAdd;
-		usrPathsField.set(null, newPaths);
-	}
-
-	/**
-	 * Set the Path to the ohNetxx.so files
-	 */
-	private void SetJavaPath() {
-		try
-
-		{
-			String class_name = this.getClass().getName();
-			log.debug("Find Class, ClassName: " + class_name);
-			String path = getFilePath(class_name);
-			log.debug("Path of this File is: " + path);
-			String os = System.getProperty("os.name").toUpperCase();
-			log.debug("OS Name: " + os);
-			if (os.startsWith("WINDOWS")) {
-				log.debug("Windows OS");
-				// System.setProperty("java.library.path", path +
-				// "/mediaplayer_lib/ohNet/win32");
-				addLibraryPath(path + "/mediaplayer_lib/ohNet/win32");
-			} else if (os.startsWith("LINUX")) {
-				String arch = System.getProperty("os.arch").toUpperCase();
-				if (arch.startsWith("ARM")) {
-					log.debug("Its a Raspi, check for HardFloat or SoftFloat");
-					// readelf -a /usr/bin/readelf | grep armhf
-					boolean hard_float = true;
-					String command = "dpkg -l | grep 'armhf\\|armel'";
-					String full_path = path + "/mediaplayer_lib/ohNet/raspi/hard_float";
-					try {
-						Process pa = Runtime.getRuntime().exec(command);
-						pa.waitFor();
-						BufferedReader reader = new BufferedReader(new InputStreamReader(pa.getInputStream()));
-						String line;
-						while ((line = reader.readLine()) != null) {
-							log.debug("Result of " + command + " : " + line);
-							if (line.toUpperCase().contains("ARMHF")) {
-								log.debug("HardFloat Raspi Set java.library.path to be: " + path);
-
-								hard_float = true;
-								break;
-							} else if (line.toUpperCase().contains("ARMEL")) {
-								full_path = path + "/mediaplayer_lib/ohNet/raspi/soft_float";
-								log.debug("SoftFloat Raspi Set java.library.path to be: " + path);
-								hard_float = false;
-								break;
-							}
-
-						}
-					} catch (Exception e) {
-						log.debug("Error Determining Raspi OS Type: ", e);
-					}
-					addLibraryPath(full_path);
-					// System.setProperty("java.library.path", full_path);
-				}
-
-			}
-			// Field fieldSysPath =
-			// ClassLoader.class.getDeclaredField("sys_paths");
-			// fieldSysPath.setAccessible(true);
-			// fieldSysPath.set(null, null);
-		} catch (Exception e) {
-			log.error(e);
-		}
-
-	}
-
-	/***
-	 * Get the Path of this ClassFile Must be easier ways to do this!!!!
-	 * 
-	 * @param className
-	 * @return
-	 */
-	private String getFilePath(String className) {
-		if (!className.startsWith("/")) {
-			className = "/" + className;
-		}
-		className = className.replace('.', '/');
-		className = className + ".class";
-		log.debug("Find Class, Full ClassName: " + className);
-		String[] splits = className.split("/");
-		String properName = splits[splits.length - 1];
-		log.debug("Find Class, ClassName: " + properName);
-		URL classUrl = this.getClass().getResource(className);
-		if (classUrl != null) {
-			String temp = classUrl.getFile();
-			log.debug("Find Class, ClassURL: " + temp);
-			if (temp.startsWith("file:")) {
-				temp = temp.substring(5);
-			}
-
-			if (temp.toUpperCase().contains(".JAR!")) {
-				log.debug("Find Class, This is a JarFile: " + temp);
-				String[] parts = temp.split("/");
-				String jar_path = "";
-				for (String part : parts) {
-					if (!part.toUpperCase().endsWith(".JAR!")) {
-						jar_path += part + "/";
-					} else {
-						log.debug("Find File: Returning JarPath: " + jar_path);
-						return jar_path;
-					}
-				}
-			} else {
-				log.debug("Find Class, This is NOT a Jar File: " + temp);
-				if (temp.endsWith(className)) {
-					temp = temp.substring(0, (temp.length() - className.length()));
-				}
-			}
-			log.debug("Find File: Returning FilePath: " + temp);
-			return temp;
-		} else {
-			log.debug("Find Class, URL Not Found");
-			return "\nClass '" + className + "' not found in \n'" + System.getProperty("java.class.path") + "'";
-		}
-	}
 
 	/***
 	 * Constructor for our Simple Device
@@ -215,9 +74,8 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		PluginGateWay.getInstance().setSimpleDevice(this);
 		log.debug("Creating Simple Device version: " + Config.version);
 		// System.loadLibrary("ohNetJni");
-		SetJavaPath();
-		// System.load("C:\\Keep\\git\\repository\\MediaPlayer\\com.upnp.mediaplayer\\build\\beta\\libs\\win32\\ohNet.dll");
-		// System.load("C:\\Keep\\git\\repository\\MediaPlayer\\com.upnp.mediaplayer\\build\\beta\\libs\\win32\\ohNetJni.dll");
+		//Call the OSManager to set our path to the libohNet libraries
+		OSManager.getInstance();
 
 		InitParams initParams = new InitParams();
 		initParams.setLogOutput(new OpenHomeLogger());
@@ -314,54 +172,45 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		} catch (Exception e) {
 			log.error("Error Reading Radio Channels");
 		}
+		
+		try{
+			SourceReader sr = new SourceReader();
+			ConcurrentHashMap<String, Source> sources = sr.getSources();
+			if(sources.size()==0)
+			{
+				Source playlist = new Source("PlayList","Playlist","-99");
+				sources.put(playlist.getName(),playlist);
+				Source radio = new Source("Radio","Radio","-99");
+				sources.put(radio.getName(),radio);
+				if(Config.enableReceiver)
+				{
+					Source reciever = new Source("Receiver", "Receiver", "-99");
+					sources.put(reciever.getName(), reciever);
+				}
+			}
+			PluginGateWay.getInstance().setSources(sources);
+			for(String key : sources.keySet())
+			{
+				Source s = sources.get(key);
+				log.debug("Adding Source: " +s.toString());
+				iProduct.addSource(Config.friendly_name, s.getName(), s.getType(), true);
+			}
+			
+		}
+		catch(Exception e)
+		{
+			log.error("Error Reading Input Sources");
+		}
 
 		iDevice.setEnabled();
 		log.debug("Device Enabled UDN: " + iDevice.getUdn());
-		loadPlugins();
 		iProduct.setSourceByname("PlayList");
+		OSManager.getInstance().loadPlugins();
 	}
 
-	/***
-	 * Load the Plugins
-	 */
-	private void loadPlugins() {
-		log.info("Start of LoadPlugnis");
-		pm = PluginManagerFactory.createPluginManager();
-		List<File> files = listFiles("plugins");
-		for (File file : files) {
-			try {
-				if (file.getName().toUpperCase().endsWith(".JAR")) {
-					log.debug("Attempt to Load Plugin: " + file.getName());
-					pm.addPluginsFrom(file.toURI());
-				}
-			} catch (Exception e) {
-				log.error("Unable to load Plugins", e);
-			}
-		}
-		log.info("End of LoadPlugnis");
-	}
 
-	/***
-	 * List all the files in this directory and sub directories.
-	 * 
-	 * @param directoryName
-	 * @return
-	 */
-	public List<File> listFiles(String directoryName) {
-		File directory = new File(directoryName);
-		List<File> resultList = new ArrayList<File>();
-		File[] fList = directory.listFiles();
-		if(fList==null)
-			return resultList;
-		resultList.addAll(Arrays.asList(fList));
-		for (File file : fList) {
-			if (file.isFile()) {
-			} else if (file.isDirectory()) {
-				resultList.addAll(listFiles(file.getAbsolutePath()));
-			}
-		}
-		return resultList;
-	}
+
+
 
 	private int getDebugLevel(String sLevel) {
 
@@ -425,9 +274,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	public void dispose() {
 
 		try {
-			if (pm != null) {
-				pm.shutdown();
-			}
+			OSManager.getInstance().dispose();
 		} catch (Exception e) {
 
 		}

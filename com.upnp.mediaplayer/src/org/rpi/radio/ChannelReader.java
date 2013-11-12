@@ -50,9 +50,9 @@ public class ChannelReader {
 				Node channel = listOfChannels.item(s);
 				if (channel.getNodeType() == Node.ELEMENT_NODE) {
 					Element element = (Element) channel;
-					id = getElementTest(element, "id");
-					url = getElementTest(element, "url");
-					image = getElementTest(element, "image");
+					id = getElement(element, "id");
+					url = getElement(element, "url");
+					image = getElement(element, "image");
 				}
 
 				if (id != null && url != null) {
@@ -72,7 +72,7 @@ public class ChannelReader {
 	 * @param name
 	 * @return
 	 */
-	private String getElementTest(Element element, String name) {
+	private String getElement(Element element, String name) {
 		String res = "";
 		NodeList nid = element.getElementsByTagName(name);
 		if (nid != null) {

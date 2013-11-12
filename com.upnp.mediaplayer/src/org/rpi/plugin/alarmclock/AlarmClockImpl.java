@@ -45,7 +45,6 @@ public class AlarmClockImpl implements AlarmClockInterface {
 
 	public AlarmClockImpl() {
 		log.debug("Creating Alarm Clock Plugin");
-		SetJavaPath();
 		try {
 			LogManager.getLogger(Class.forName("org.quartz.core.QuartzSchedulerThread")).setLevel(Level.INFO);
 			LogManager.getLogger(Class.forName("org.quartz.utils.UpdateChecker")).setLevel(Level.ERROR);
@@ -231,94 +230,6 @@ public class AlarmClockImpl implements AlarmClockInterface {
 		}
 	}
 
-	/**
-	 * Not clever enough to work out how to override ClassLoader functionality,
-	 * so using this nice trick instead..
-	 * 
-	 * @param path
-	 * @throws NoSuchFieldException
-	 * @throws SecurityException
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
-	 */
-	public void addLibraryPath(String pathToAdd) throws Exception {
-		Field usrPathsField = ClassLoader.class.getDeclaredField("usr_paths");
-		usrPathsField.setAccessible(true);
 
-		String[] paths = (String[]) usrPathsField.get(null);
-
-		for (String path : paths)
-			if (path.equals(pathToAdd))
-				return;
-
-		String[] newPaths = Arrays.copyOf(paths, paths.length + 1);
-		newPaths[newPaths.length - 1] = pathToAdd;
-		usrPathsField.set(null, newPaths);
-	}
-
-	/**
-	 * Set the Path to the ohNetxx.so files
-	 */
-	private void SetJavaPath() {
-		try
-
-		{
-			// String class_name = this.getClass().getName();
-			String class_name = PlayManager.getInstance().getClass().getName();
-			log.debug("Find Class, ClassName: " + class_name);
-			String path = getFilePath(class_name);
-			log.debug("Path of this File is: " + path);
-			String os = System.getProperty("os.name").toUpperCase();
-			log.debug("OS Name: " + os);
-			if (os.startsWith("WINDOWS")) {
-				log.debug("Windows OS");
-				// System.setProperty("java.library.path", path +
-				// "/mediaplayer_lib/ohNet/win32");
-				addLibraryPath(path + "/mediaplayer_lib");
-			} else if (os.startsWith("LINUX")) {
-				String arch = System.getProperty("os.arch").toUpperCase();
-				if (arch.startsWith("ARM")) {
-					log.debug("Its a Raspi, check for HardFloat or SoftFloat");
-					// readelf -a /usr/bin/readelf | grep armhf
-					boolean hard_float = true;
-					String command = "dpkg -l | grep 'armhf\\|armel'";
-					String full_path = path + "/mediaplayer_lib";
-					try {
-						Process pa = Runtime.getRuntime().exec(command);
-						pa.waitFor();
-						BufferedReader reader = new BufferedReader(new InputStreamReader(pa.getInputStream()));
-						String line;
-						while ((line = reader.readLine()) != null) {
-							log.debug("Result of " + command + " : " + line);
-							if (line.toUpperCase().contains("ARMHF")) {
-								log.debug("HardFloat Raspi Set java.library.path to be: " + path);
-
-								hard_float = true;
-								break;
-							} else if (line.toUpperCase().contains("ARMEL")) {
-								full_path = path + "/mediaplayer_lib";
-								log.debug("SoftFloat Raspi Set java.library.path to be: " + path);
-								hard_float = false;
-								break;
-							}
-
-						}
-					} catch (Exception e) {
-						log.debug("Error Determining Raspi OS Type: ", e);
-					}
-					addLibraryPath(full_path);
-					// System.setProperty("java.library.path", full_path);
-				}
-
-			}
-			// Field fieldSysPath =
-			// ClassLoader.class.getDeclaredField("sys_paths");
-			// fieldSysPath.setAccessible(true);
-			// fieldSysPath.set(null, null);
-		} catch (Exception e) {
-			log.error(e);
-		}
-
-	}
 
 }

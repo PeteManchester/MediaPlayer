@@ -7,3 +7,6 @@ Added default path the mplayer on a raspi, so that mediaplayer should still work
 Added support for the MPD player, which can provide gapless playback
 Added a check for 'AUDIO/X-MPEGURL' for unknown url types
 Added config options enableAVTransport and enableReceiver to add support for more Control Points
+12 November 2013
+Added InputSources.xml for configuring sources, added to main code and there is a plugin for controlling GPIO pins.
+Now added pi4j to main app, but only initiated if running on a Raspi, needs to be in the mediaplayer_lib, this allows mutliple plugins to share the same GPIO object

@@ -7,6 +7,7 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.Shutdown;
 
 import org.apache.log4j.Logger;
+import org.rpi.os.OSManager;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventMuteChanged;
@@ -51,12 +52,9 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 			PlayManager.getInstance().observVolumeEvents(this);
 			PlayManager.getInstance().observTimeEvents(this);
 			PlayManager.getInstance().observeProductEvents(this);
-			try
-			{
-			initPi4J();
-			}
-			catch(Exception e)
-			{
+			try {
+				initPi4J();
+			} catch (Exception e) {
 				log.error("Error Init Pi4J: " + e);
 			}
 			scroller = new LCDScroller();
@@ -73,7 +71,10 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 	private void initPi4J() {
 		try {
 
-			gpio = GpioFactory.getInstance();
+			//gpio = GpioFactory.getInstance();
+			gpio = OSManager.getInstance().getGpio();
+			if(null == gpio)
+				throw new IllegalArgumentException("GPIO Not Initialized");
 			// myMuteLed = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_00, //
 			// PIN
 			// // NUMBER
@@ -136,7 +137,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 
 			log.info("Finished Configuring LCD");
 		} catch (Exception e) {
-			log.error("Error Initializing Pi4J" + e.getMessage(),e);
+			log.error("Error Initializing Pi4J" + e.getMessage(), e);
 		}
 
 	}
@@ -208,7 +209,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 		case EVENTTIMEUPDATED:
 			EventTimeUpdate etime = (EventTimeUpdate) e;
 			mTime = ConvertTime(etime.getTime());
-			//updateVolume();
+			// updateVolume();
 			break;
 
 		}
@@ -308,17 +309,17 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 		if (lcdHandle != -1) {
 			Lcd.lcdClear(lcdHandle);
 		}
-		gpio.shutdown();
+		//gpio.shutdown();
 	}
-	
-	private final String[] Q = new String[]{"", "Kb", "Mb", "Gb", "Tb", "Pb", "Eb"};
-	public String convertBytes(long bytes)
-	{
-	    for (int i = 6; i > 0; i--)
-	    {
-	        double step = Math.pow(1024, i);
-	        if (bytes > step) return String.format("%3.1f %s", bytes / step, Q[i]);
-	    }
-	    return Long.toString(bytes);
+
+	private final String[] Q = new String[] { "", "Kb", "Mb", "Gb", "Tb", "Pb", "Eb" };
+
+	public String convertBytes(long bytes) {
+		for (int i = 6; i > 0; i--) {
+			double step = Math.pow(1024, i);
+			if (bytes > step)
+				return String.format("%3.1f %s", bytes / step, Q[i]);
+		}
+		return Long.toString(bytes);
 	}
 }

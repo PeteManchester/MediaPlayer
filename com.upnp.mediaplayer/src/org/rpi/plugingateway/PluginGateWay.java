@@ -1,16 +1,29 @@
 package org.rpi.plugingateway;
 
+import java.io.File;
 import java.util.Observable;
+import java.util.concurrent.ConcurrentHashMap;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.apache.log4j.Logger;
 import org.rpi.config.Config;
 import org.rpi.main.SimpleDevice;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventSourceChanged;
 import org.rpi.player.events.EventVolumeChanged;
+import org.rpi.sources.Source;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class PluginGateWay extends Observable {
 
 	private static PluginGateWay instance = null;
+	private Logger log = Logger.getLogger(this.getClass());
+	private ConcurrentHashMap<String, Source> sources = new ConcurrentHashMap<String,Source>();
 
 	private SimpleDevice simpleDevice = null;
 
@@ -24,6 +37,8 @@ public class PluginGateWay extends Observable {
 	protected PluginGateWay() {
 
 	}
+	
+
 
 	public void setSimpleDevice(SimpleDevice simpleDevice) {
 		this.simpleDevice = simpleDevice;
@@ -37,7 +52,7 @@ public class PluginGateWay extends Observable {
 	 * @param visible
 	 */
 	public synchronized void AddSource(String type, String name, boolean visible) {
-		simpleDevice.getProduct().addSource(Config.friendly_name, type, name, true);
+		simpleDevice.getProduct().addSource(Config.friendly_name, name, type, true);
 	}
 
 	/**
@@ -54,6 +69,22 @@ public class PluginGateWay extends Observable {
 	private synchronized void fireEvent(EventBase ev) {
 		setChanged();
 		notifyObservers(ev);
+	}
+
+	/**
+	 * Get the Input Sources
+	 * @return
+	 */
+	public ConcurrentHashMap<String, Source> getSources() {
+		return sources;
+	}
+
+	/**
+	 * Set the Input Sources
+	 * @param sources
+	 */
+	public void setSources(ConcurrentHashMap<String, Source> sources) {
+		this.sources = sources;
 	}
 	
 	
