@@ -3,13 +3,15 @@
 	<Source>
 		<name>PlayList</name>
 		<type>Playlist</type>
-		<GPIO_PIN>1</GPIO_PIN>
+		<GPIO_PIN>9</GPIO_PIN>
 	</Source>
 	<Source>
 		<name>Radio</name>
 		<type>Radio</type>
-		<GPIO_PIN>1</GPIO_PIN>
+		<GPIO_PIN>9</GPIO_PIN>
 	</Source>
+
+
 	<Source>
 		<name>Laptop</name>
 		<type>Custom</type>
@@ -33,4 +35,5 @@
 		<type>Custom</type>
 		<GPIO_PIN>8</GPIO_PIN>
 	</Source>
+
 </Sources>

@@ -145,7 +145,7 @@ Files at the following locations are licensed under separate terms:
  
  #################################################################################################
   
-  log4J.jar is supplied by Apache with the following Licenses..
+  log4J.jar and pi4j-core.jar libraries are supplied by Apache with the following Licenses..
   
   
                                  Apache License

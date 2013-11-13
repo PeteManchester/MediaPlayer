@@ -197,6 +197,8 @@ public class OSManager {
 			log.info("Start of LoadPlugnis");
 			pm = PluginManagerFactory.createPluginManager();
 			List<File> files = listFiles("plugins");
+			if(files==null)
+				return;
 			for (File file : files) {
 				try {
 					if (file.getName().toUpperCase().endsWith(".JAR")) {
