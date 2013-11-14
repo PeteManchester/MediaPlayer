@@ -75,34 +75,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 			gpio = OSManager.getInstance().getGpio();
 			if(null == gpio)
 				throw new IllegalArgumentException("GPIO Not Initialized");
-			// myMuteLed = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_00, //
-			// PIN
-			// // NUMBER
-			// "MuteLED", // PIN FRIENDLY NAME (optional)
-			// PinState.LOW); // PIN STARTUP STATE (optional)
-			// myMuteLed.setShutdownOptions(true, PinState.LOW);
 
-			// provision gpio pin #02 as an input pin with its internal pull
-			// down resistor enabled
-			// myButton = gpio.provisionDigitalInputPin(RaspiPin.GPIO_02,
-			// PinPullResistance.PULL_DOWN);
-			//
-			// myButton.addListener(new GpioPinListenerDigital() {
-			// @Override
-			// public void
-			// handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent
-			// event) {
-			// log.debug(" --> GPIO PIN STATE CHANGE: " + event.getPin() + " = "
-			// + event.getState());
-			// if (event.getState() == PinState.HIGH) {
-			// PlayManager.getInstance().toggleMute();
-			// }
-			// }
-			//
-			// });
-
-			// initialize LCD
-			// initialize LCD
 			lcdHandle = Lcd.lcdInit(LCD_ROWS, // number of row supported by LCD
 					LCD_COLUMNS, // number of columns supported by LCD
 					LCD_BITS, // number of bits used to communicate to LCD
@@ -137,7 +110,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 
 			log.info("Finished Configuring LCD");
 		} catch (Exception e) {
-			log.error("Error Initializing Pi4J" + e.getMessage(), e);
+			log.error("Error Initializing Pi4J" + e.getMessage());
 		}
 
 	}
@@ -209,7 +182,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 		case EVENTTIMEUPDATED:
 			EventTimeUpdate etime = (EventTimeUpdate) e;
 			mTime = ConvertTime(etime.getTime());
-			// updateVolume();
+			updateVolume();
 			break;
 
 		}

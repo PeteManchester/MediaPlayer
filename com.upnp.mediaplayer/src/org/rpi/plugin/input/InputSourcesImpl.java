@@ -1,6 +1,5 @@
 package org.rpi.plugin.input;
 
-import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,15 +12,12 @@ import org.rpi.os.OSManager;
 import org.rpi.player.events.EventSourceChanged;
 import org.rpi.plugingateway.PluginGateWay;
 import org.rpi.sources.Source;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
-import com.pi4j.wiringpi.Lcd;
 
 @PluginImplementation
 public class InputSourcesImpl implements InputSourcesInterface, Observer {
@@ -41,7 +37,7 @@ public class InputSourcesImpl implements InputSourcesInterface, Observer {
 	}
 
 	private void createPins() {
-		if(gpio ==null)
+		if (gpio == null)
 			return;
 		log.debug("Creating Pins from Sources");
 		for (String key : sources.keySet()) {
@@ -61,20 +57,12 @@ public class InputSourcesImpl implements InputSourcesInterface, Observer {
 
 	private void initPi4J() {
 		try {
-			String pin = "6";
-			if (pin.equalsIgnoreCase("6")) {
-				Pin mPin = RaspiPin.GPIO_06;
-			}
-			try {
-				gpio = OSManager.getInstance().getGpio();
-				if (null == gpio)
-					throw new IllegalArgumentException("GPIO Not Initialized");
-			} catch (Exception e) {
-				log.error("Error Initialing pi4j", e);
-			}
+			gpio = OSManager.getInstance().getGpio();
+			if (null == gpio)
+				throw new IllegalArgumentException("GPIO Not Initialized");
 			log.info("Finished Configuring pi4j");
 		} catch (Exception e) {
-			log.error("Error Initializing Pi4J" + e.getMessage(), e);
+			log.error("Error Initializing Pi4J" + e.getMessage());
 		}
 	}
 

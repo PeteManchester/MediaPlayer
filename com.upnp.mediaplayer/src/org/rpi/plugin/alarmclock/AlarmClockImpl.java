@@ -1,12 +1,8 @@
 package org.rpi.plugin.alarmclock;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
@@ -29,6 +25,7 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
+import org.rpi.os.OSManager;
 import org.rpi.player.PlayManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -103,7 +100,7 @@ public class AlarmClockImpl implements AlarmClockInterface {
 		try {
 			String class_name = this.getClass().getName();
 			log.debug("Find Class, ClassName: " + class_name);
-			String path = getFilePath(class_name);
+			String path = OSManager.getInstance().getFilePath(this.getClass(),false);
 			log.debug("Getting AlarmClock.xml from Directory: " + path);
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
@@ -136,55 +133,6 @@ public class AlarmClockImpl implements AlarmClockInterface {
 		}
 	}
 
-	/***
-	 * Get the Path of this ClassFile Must be easier ways to do this!!!!
-	 * 
-	 * @param className
-	 * @return
-	 */
-	private String getFilePath(String className) {
-		if (!className.startsWith("/")) {
-			className = "/" + className;
-		}
-		className = className.replace('.', '/');
-		className = className + ".class";
-		log.debug("Find Class, Full ClassName: " + className);
-		String[] splits = className.split("/");
-		String properName = splits[splits.length - 1];
-		log.debug("Find Class, ClassName: " + properName);
-		URL classUrl = this.getClass().getResource(className);
-		if (classUrl != null) {
-			String temp = classUrl.getFile();
-			log.debug("Find Class, ClassURL: " + temp);
-			if (temp.startsWith("file:")) {
-				temp = temp.substring(5);
-			}
-
-			if (temp.toUpperCase().contains(".JAR!")) {
-				log.debug("Find Class, This is a JarFile: " + temp);
-				String[] parts = temp.split("/");
-				String jar_path = "";
-				for (String part : parts) {
-					if (!part.toUpperCase().endsWith(".JAR!")) {
-						jar_path += part + "/";
-					} else {
-						log.debug("Find File: Returning JarPath: " + jar_path);
-						return jar_path;
-					}
-				}
-			} else {
-				log.debug("Find Class, This is NOT a Jar File: " + temp);
-				if (temp.endsWith(properName)) {
-					temp = temp.substring(0, (temp.length() - properName.length()));
-				}
-			}
-			log.debug("Find File: Returning FilePath: " + temp);
-			return temp;
-		} else {
-			log.debug("Find Class, URL Not Found");
-			return "\nClass '" + className + "' not found in \n'" + System.getProperty("java.class.path") + "'";
-		}
-	}
 
 	/***
 	 * 
