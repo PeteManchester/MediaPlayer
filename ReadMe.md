@@ -3,23 +3,15 @@ A java project that uses the OpenHome API (http://www.openhome.org/wiki/Oh:Overv
 Supports the following
 
 Media Servers:
-
 Asset UPNP
-
 Minim Server
 
 Control Points:
-
 Kinsky
-
 Assent Control
-
 PlugPlayer
-
 eLyric
-
 Lumin
-
 BubbleDS
 
 
