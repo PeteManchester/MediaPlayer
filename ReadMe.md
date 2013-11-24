@@ -12,5 +12,6 @@ Assent Control
 PlugPlayer
 eLyric
 Lumin
+BubbleDS
 
 For installation instructions see the Wiki pages [Wiki Home](https://github.com/PeteManchester/MediaPlayer/wiki)
