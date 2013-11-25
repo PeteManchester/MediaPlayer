@@ -20,8 +20,6 @@ import org.rpi.player.observers.ObservableVolume;
 import org.rpi.playlist.CustomTrack;
 
 import com.pi4j.io.gpio.GpioController;
-import com.pi4j.io.gpio.GpioFactory;
-import com.pi4j.system.SystemInfo;
 import com.pi4j.wiringpi.Lcd;
 
 @PluginImplementation
@@ -61,7 +59,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 			if (lcdHandle != -1) {
 				scroller.setLCDHandle(lcdHandle);
 				scroller.start();
-				welcomeMessage();
+				//welcomeMessage();
 			}
 		} catch (Exception e) {
 			log.error("Error Init LCDDisplayImpl", e);
@@ -97,17 +95,8 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 			}
 
 			// clear LCD
-			LCDClear();
-
-			try {
-				// LCDWrite("Welcome Temp:" + SystemInfo.getCpuTemperature(),
-				// 0);
-				// LCDWrite("Memory:" + SystemInfo.getMemoryFree(), 1);
-
-			} catch (Exception e) {
-
-			}
-
+			//LCDClear();
+			scroller.setReset();
 			log.info("Finished Configuring LCD");
 		} catch (Exception e) {
 			log.error("Error Initializing Pi4J" + e.getMessage());
@@ -135,7 +124,6 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 		case EVENTUPDATETRACKMETATEXT:
 			EventUpdateTrackMetaText et = (EventUpdateTrackMetaText) e;
 			log.debug("Track Changed: " + et.getTitle() + " : " + et.getArtist());
-			// LCDWrite(et.getTitle(),1);
 			if (scroller != null) {
 				UpdateScroller(et.getTitle() + " - " + et.getArtist(), 0);
 			}
@@ -151,29 +139,18 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 				log.debug("MuteStateChanged: " + em.isMute());
 				isMute = em.isMute();
 			}
-
-			// if (myMuteLed != null) {
-			// if (em.isMute()) {
-			// myMuteLed.high();
-			// } else {
-			// myMuteLed.low();
-			// }
-			// } else {
-			// log.debug("LED WAS NULL");
-			// }
 			break;
 		case EVENTSTANDBYCHANGED:
 			EventStandbyChanged es = (EventStandbyChanged) e;
+//			LCDClear();
+//			UpdateScroller("", 0);
+//			UpdateScroller("", 1);
+			scroller.setReset();
 			if (es.isStandby()) {
-				LCDClear();
-				UpdateScroller("", 0);
-				UpdateScroller("", 1);
 				scroller.setStandBy(true);
 			} else {
 				scroller.setStandBy(false);
-				LCDClear();
 				try {
-					welcomeMessage();
 				} catch (Exception ex) {
 
 				}
@@ -218,11 +195,11 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 	/***
 	 * Clear the LCD
 	 */
-	private void LCDClear() {
-		if (lcdHandle != -1) {
-			Lcd.lcdClear(lcdHandle);
-		}
-	}
+//	private void LCDClear() {
+//		if (lcdHandle != -1) {
+//			Lcd.lcdClear(lcdHandle);
+//		}
+//	}
 
 	/***
 	 * Update the Volume
@@ -257,20 +234,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 		}
 	}
 
-	/***
-	 * Create the Welcome Message
-	 */
-	private void welcomeMessage() {
-		String sWelcome = "Welcome";
-		String sStatus = "";
-		try {
-			sStatus = "CPU Temp:" + SystemInfo.getCpuTemperature() + " Memory Free:" + convertBytes(SystemInfo.getMemoryFree()) + " Memory Used:" + convertBytes(SystemInfo.getMemoryUsed());
-		} catch (Exception e) {
-			log.error(e);
-		}
-		UpdateScroller(sWelcome, 0);
-		UpdateScroller(sStatus, 1);
-	}
+
 
 	@Shutdown
 	public void bye() {
@@ -282,17 +246,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 		if (lcdHandle != -1) {
 			Lcd.lcdClear(lcdHandle);
 		}
-		//gpio.shutdown();
 	}
 
-	private final String[] Q = new String[] { "", "Kb", "Mb", "Gb", "Tb", "Pb", "Eb" };
 
-	public String convertBytes(long bytes) {
-		for (int i = 6; i > 0; i--) {
-			double step = Math.pow(1024, i);
-			if (bytes > step)
-				return String.format("%3.1f %s", bytes / step, Q[i]);
-		}
-		return Long.toString(bytes);
-	}
 }

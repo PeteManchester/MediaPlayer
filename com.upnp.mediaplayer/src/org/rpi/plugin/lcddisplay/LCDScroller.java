@@ -16,7 +16,9 @@ public class LCDScroller extends Thread {
 	private int lcdHandle = -1;
 	public final static int LCD_COLUMNS = 20;
 	public final static int LCD_ROWS = 2;
-	private boolean bStandBy = false;
+	private boolean bStandBy = true;
+	private boolean bStartup = true;
+	private boolean bReset = true;
 
 	private List<LCDRow> rows = new ArrayList<LCDRow>();
 
@@ -31,8 +33,28 @@ public class LCDScroller extends Thread {
 	public void run() {
 		while (true) {
 			try {
+				if(isReset())
+				{
+					if (lcdHandle != -1) {
+						Lcd.lcdClear(lcdHandle);
+					}
+					setText("", 0);
+					setText("", 1);
+					bReset=false;
+				}
 				if (bStandBy) {
-					standbyMessage();
+					if(bStartup)
+					{
+						welcomeMessage();
+					}
+					else
+					{
+						standbyMessage();
+					}
+				}
+				else
+				{
+					bStartup = false;
 				}
 				for (int i = 0; i < LCD_ROWS; i++) {
 					LCDRow row = rows.get(i);
@@ -60,8 +82,35 @@ public class LCDScroller extends Thread {
 		} catch (Exception e) {
 			log.error("Error Getting CPU Temp",e);
 		} 
-		rows.get(1).setText(dateStr);
-		rows.get(0).setText(cpuTemp);
+		setText(cpuTemp,0);
+		setText(dateStr,1);
+	}
+	
+	/***
+	 * Create the Welcome Message
+	 */
+	private void welcomeMessage() {
+		//log.debug("Welcome Message");
+		String sWelcome = "Welcome";
+		String sStatus = "";
+		try {
+			sStatus = "CPU Temp:" + SystemInfo.getCpuTemperature() + " Memory Free:" + convertBytes(SystemInfo.getMemoryFree()) + " Memory Used:" + convertBytes(SystemInfo.getMemoryUsed());
+		} catch (Exception e) {
+			log.error(e);
+		}
+		setText(sWelcome,0);
+		setText(sStatus,1);
+	}
+	
+	private final String[] Q = new String[] { "", "Kb", "Mb", "Gb", "Tb", "Pb", "Eb" };
+
+	public String convertBytes(long bytes) {
+		for (int i = 6; i > 0; i--) {
+			double step = Math.pow(1024, i);
+			if (bytes > step)
+				return String.format("%3.1f %s", bytes / step, Q[i]);
+		}
+		return Long.toString(bytes);
 	}
 
 	/***
@@ -103,7 +152,7 @@ public class LCDScroller extends Thread {
 	 * @param text
 	 * @param row
 	 */
-	public void setText(String text, int row) {
+	public synchronized void setText(String text, int row) {
 
 		try {
 			rows.get(row).setText(text);
@@ -112,11 +161,22 @@ public class LCDScroller extends Thread {
 		}
 	}
 
-	public boolean isStandBy() {
+	public synchronized boolean isStandBy() {
 		return bStandBy;
 	}
 
-	public void setStandBy(boolean bStandBy) {
+	public synchronized void setStandBy(boolean bStandBy) {
 		this.bStandBy = bStandBy;
+	}
+
+	public synchronized boolean isReset() {
+		return bReset;
+	}
+
+	/***
+	 * Reset the LCD Display
+	 */
+	public synchronized void  setReset() {
+		this.bReset = true;
 	}
 }
