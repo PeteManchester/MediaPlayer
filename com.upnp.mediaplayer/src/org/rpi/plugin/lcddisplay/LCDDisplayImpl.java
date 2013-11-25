@@ -142,9 +142,6 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 			break;
 		case EVENTSTANDBYCHANGED:
 			EventStandbyChanged es = (EventStandbyChanged) e;
-//			LCDClear();
-//			UpdateScroller("", 0);
-//			UpdateScroller("", 1);
 			scroller.setReset();
 			if (es.isStandby()) {
 				scroller.setStandBy(true);
