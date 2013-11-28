@@ -264,7 +264,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-				log.debug("Inside Add Shutdown Hook");
+				log.debug("Shutdown Hook, Start of Shutdown");
 				dispose();
 			}
 		});
