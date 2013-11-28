@@ -10,3 +10,5 @@ Added config options enableAVTransport and enableReceiver to add support for mor
 12 November 2013
 Added InputSources.xml for configuring sources, added to main code and there is a plugin for controlling GPIO pins.
 Now added pi4j to main app, but only initiated if running on a Raspi, needs to be in the mediaplayer_lib, this allows mutliple plugins to share the same GPIO object
+28 November 2013
+Fixed issue with the Volume value when a USB DAC does not support hardware volume

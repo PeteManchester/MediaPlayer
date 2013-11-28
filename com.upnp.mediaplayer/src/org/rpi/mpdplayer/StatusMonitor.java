@@ -122,6 +122,8 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 				if (!current_volume.equalsIgnoreCase(volume)) {
 					EventVolumeChanged ev = new EventVolumeChanged();
 					long l = Long.valueOf(volume).longValue();
+					if(l < 0)
+						l=0;
 					ev.setVolume(l);
 					fireEvent(ev);
 					current_volume = volume;
