@@ -12,3 +12,4 @@ Added InputSources.xml for configuring sources, added to main code and there is 
 Now added pi4j to main app, but only initiated if running on a Raspi, needs to be in the mediaplayer_lib, this allows mutliple plugins to share the same GPIO object
 28 November 2013
 Fixed issue with the Volume value when a USB DAC does not support hardware volume
+Fixed issue when shutting down if Pi4J had not be initialized

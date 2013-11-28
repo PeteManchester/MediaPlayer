@@ -15,7 +15,6 @@ import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import org.apache.log4j.Logger;
 
 import com.pi4j.io.gpio.GpioController;
-import com.pi4j.io.gpio.GpioFactory;
 
 public class OSManager {
 
@@ -23,8 +22,8 @@ public class OSManager {
 	private boolean bRaspi = false;
 	private boolean bSoftFloat = false;
 	private PluginManager pm = null;
+	private boolean bUsedPi4J = false;
 	private static OSManager instance = null;
-	//private GpioController gpio = null;
 
 	public static OSManager getInstance() {
 		if (instance == null) {
@@ -35,24 +34,23 @@ public class OSManager {
 
 	protected OSManager() {
 		SetJavaPath();
-		if(isRaspi())
-		{
+		if (isRaspi()) {
 			log.debug("This is a Raspi so Attempt to initialize Pi4J");
-			//initPi4J();
+			// initPi4J();
 		}
 	}
-	
-//	private void initPi4J()
-//	{
-//		try
-//		{
-//		setGpio(GpioFactory.getInstance());
-//		}
-//		catch(Exception e)
-//		{
-//			log.error("Error Initializing Pi4J",e);
-//		}
-//	}
+
+	// private void initPi4J()
+	// {
+	// try
+	// {
+	// setGpio(GpioFactory.getInstance());
+	// }
+	// catch(Exception e)
+	// {
+	// log.error("Error Initializing Pi4J",e);
+	// }
+	// }
 
 	/**
 	 * Not clever enough to work out how to override ClassLoader functionality,
@@ -88,7 +86,7 @@ public class OSManager {
 		{
 			String class_name = this.getClass().getName();
 			log.debug("Find Class, ClassName: " + class_name);
-			String path = getFilePath(this.getClass(),true);
+			String path = getFilePath(this.getClass(), true);
 			log.debug("Path of this File is: " + path);
 			String os = System.getProperty("os.name").toUpperCase();
 			log.debug("OS Name: " + os);
@@ -145,7 +143,7 @@ public class OSManager {
 	 * @param className
 	 * @return
 	 */
-	public synchronized String getFilePath(Class mClass,boolean bUseFullNamePath) {
+	public synchronized String getFilePath(Class mClass, boolean bUseFullNamePath) {
 		String className = mClass.getName();
 		if (!className.startsWith("/")) {
 			className = "/" + className;
@@ -179,12 +177,9 @@ public class OSManager {
 			} else {
 				log.debug("Find Class, This is NOT a Jar File: " + temp);
 				if (temp.endsWith(className)) {
-					if(bUseFullNamePath)
-					{
+					if (bUseFullNamePath) {
 						temp = temp.substring(0, (temp.length() - className.length()));
-					}
-					else
-					{
+					} else {
 						temp = temp.substring(0, (temp.length() - properName.length()));
 					}
 				}
@@ -205,7 +200,7 @@ public class OSManager {
 			log.info("Start of LoadPlugnis");
 			pm = PluginManagerFactory.createPluginManager();
 			List<File> files = listFiles("plugins");
-			if(files==null)
+			if (files == null)
 				return;
 			for (File file : files) {
 				try {
@@ -247,6 +242,7 @@ public class OSManager {
 
 	/**
 	 * Is this a Raspberry Pi
+	 * 
 	 * @return
 	 */
 	public boolean isRaspi() {
@@ -259,6 +255,7 @@ public class OSManager {
 
 	/**
 	 * Is this a SoftFloat Raspberry Pi
+	 * 
 	 * @return
 	 */
 	public boolean isSoftFloat() {
@@ -278,27 +275,18 @@ public class OSManager {
 				pm.shutdown();
 			}
 		} catch (Exception e) {
-			log.error("Error closing PluginManager",e);
+			log.error("Error closing PluginManager", e);
 		}
-		try
-		{
-			Pi4JManager.getInstance().dispose();
-		}
-		catch(Exception e)
-		{
-			log.error("Error closing pi4j",e);
+		try {
+			if (bUsedPi4J)
+				Pi4JManager.getInstance().dispose();
+		} catch (Exception e) {
+			log.error("Error closing pi4j", e);
 		}
 	}
-	
-
 
 	public GpioController getGpio() {
-
+		bUsedPi4J = true;
 		return Pi4JManager.getInstance().getGpio();
 	}
-
-//	private void setGpio(GpioController gpio) {
-//		this.gpio = gpio;
-//	}
-
 }
