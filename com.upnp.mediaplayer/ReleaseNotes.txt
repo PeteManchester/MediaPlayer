@@ -15,3 +15,4 @@ Fixed issue with the Volume value when a USB DAC does not support hardware volum
 Fixed issue when shutting down if Pi4J had not be initialized
 2 December 2013
 Changed the way the volume is handled for USB DAC that does not support hardware volume control, now we keep the -1 value internally and return zero to the control point, but if the volume is less than zero we do not set the volue or mute
+Added logic to ignore a play request if it is recieved within 1 second after a seekid or seekindex request, some control points just send a seekId or seekIndex request to play a track, others send a seekId or seekIndex immediately followed by a Play request

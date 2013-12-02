@@ -503,7 +503,7 @@ public class PlayManager implements Observer {
 			setStatus("Playing");
 			setPaused(false);
 		} else {
-			if (!(status.equalsIgnoreCase("PLAYING") || status.equalsIgnoreCase("BUFFERING"))) {
+			//if (!(status.equalsIgnoreCase("PLAYING") || status.equalsIgnoreCase("BUFFERING"))) {
 				if(current_track ==null)
 				{
 					log.debug("CurrentTrack was NULL");
@@ -514,11 +514,11 @@ public class PlayManager implements Observer {
 				if (t != null) {
 					playThis(t);
 				}
-			}
-			else
-			{
-				log.warn("Track is Already Playing, do not Play");
-			}
+			//}
+			//else
+			//{
+			//	log.warn("Track is Already Playing, do not Play");
+			//}
 		}
 	}
 

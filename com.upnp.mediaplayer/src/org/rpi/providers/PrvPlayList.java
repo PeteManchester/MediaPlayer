@@ -9,6 +9,7 @@ import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgPlaylist1;
 import org.rpi.config.Config;
+import org.rpi.player.CommandTracker;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventPlayListPlayingTrackID;
@@ -25,6 +26,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 	private int next_id;
 	private PlayListWriter plw = null;
 	private int playlist_max = Config.playlist_max;
+	private CommandTracker tracker = new CommandTracker();
 
 	private CopyOnWriteArrayList<CustomTrack> tracks = new CopyOnWriteArrayList<CustomTrack>();
 
@@ -95,36 +97,40 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 
 	protected void play(IDvInvocation paramIDvInvocation) {
 		log.debug("Play" + lt.getLogText(paramIDvInvocation));
-		iPlayer.play();
+		if (tracker.setRequest("PLAY")) {
+			iPlayer.play();
+		}
 	};
 
 	protected void stop(IDvInvocation paramIDvInvocation) {
 		log.debug("Stop" + lt.getLogText(paramIDvInvocation));
 		iPlayer.stop();
 	};
-	
+
 	/***
 	 * Returns the track Id
+	 * 
 	 * @return
 	 */
 	public int getNext_id() {
 		next_id++;
-		log.debug("GetNextId: " + next_id );
+		log.debug("GetNextId: " + next_id);
 		return next_id;
 	}
-	
+
 	/***
-	 * If reading the playList from the xml file, make sure that the nextId is set to the max_id of the .xml entry..
+	 * If reading the playList from the xml file, make sure that the nextId is
+	 * set to the max_id of the .xml entry..
+	 * 
 	 * @param max_id
 	 */
 	public void setNextId(int max_id) {
 		next_id = max_id;
-		
+
 	}
 
 	protected long insert(IDvInvocation paramIDvInvocation, long aAfterId, String aUri, String aMetaData) {
-		if(tracks.size() >= playlist_max)
-		{
+		if (tracks.size() >= playlist_max) {
 			log.error("Maximum Size of PlayList Reached...");
 			return -1;
 		}
@@ -146,11 +152,10 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		} catch (Exception e) {
 			log.error("Error Adding Track: " + track.getId() + " After: " + aAfterId, e);
 		}
-		iPlayer.insertTrack(aAfterId, track );
+		iPlayer.insertTrack(aAfterId, track);
 		UpdateIdArray();
 		return id;
 	};
-	
 
 	protected void deleteAll(IDvInvocation paramIDvInvocation) {
 		log.debug("DeleteAll" + lt.getLogText(paramIDvInvocation));
@@ -219,18 +224,15 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 
 	protected Read read(IDvInvocation paramIDvInvocation, long paramLong) {
 		log.debug("Read Index: " + paramLong + lt.getLogText(paramIDvInvocation));
-		try
-		{
-		for (CustomTrack t : tracks) {
-			if (t.getId() == paramLong) {
-				DvProviderAvOpenhomeOrgPlaylist1.Read read = new Read(t.getUri(), t.getMetadata());
-				return read;
+		try {
+			for (CustomTrack t : tracks) {
+				if (t.getId() == paramLong) {
+					DvProviderAvOpenhomeOrgPlaylist1.Read read = new Read(t.getUri(), t.getMetadata());
+					return read;
+				}
 			}
-		}
-		}
-		catch(Exception e)
-		{
-			log.error("Error read Index: " + paramLong,e);
+		} catch (Exception e) {
+			log.error("Error read Index: " + paramLong, e);
 		}
 		DvProviderAvOpenhomeOrgPlaylist1.Read read = new Read("", "");
 		return read;
@@ -251,11 +253,13 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 
 	protected void seekId(IDvInvocation paramIDvInvocation, long id) {
 		log.debug("SeekId: " + id + lt.getLogText(paramIDvInvocation));
+		tracker.setRequest("SEEKID");
 		iPlayer.playTrackId(id);
 	};
 
 	protected void seekIndex(IDvInvocation paramIDvInvocation, long id) {
 		log.debug("SeekIndex: " + id + lt.getLogText(paramIDvInvocation));
+		tracker.setRequest("SEEKINDEX");
 		iPlayer.playIndex(id);
 	};
 
@@ -363,10 +367,10 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		return sb.toString();
 	}
 
-//	private boolean PauseTrack() {
-//		iPlayer.pause(true);
-//		return true;
-//	}
+	// private boolean PauseTrack() {
+	// iPlayer.pause(true);
+	// return true;
+	// }
 
 	private void playingTrack(int iD) {
 		setPropertyId(iD);
@@ -402,33 +406,31 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 	}
 
 	public void updateShuffle(boolean shuffle) {
-		setPropertyShuffle(shuffle);		
+		setPropertyShuffle(shuffle);
 	}
 
 	@Override
 	public void update(Observable o, Object arg) {
-		EventBase e = (EventBase)arg;
-		switch(e.getType())
-		{
-		
+		EventBase e = (EventBase) arg;
+		switch (e.getType()) {
+
 		case EVENTPLAYLISTSTATUSCHANGED:
-			EventPlayListStatusChanged ers = (EventPlayListStatusChanged)e;
+			EventPlayListStatusChanged ers = (EventPlayListStatusChanged) e;
 			setStatus(ers.getStatus());
 			break;
-		
+
 		case EVENTPLAYLISTPLAYINGTRACKID:
-			EventPlayListPlayingTrackID eri = (EventPlayListPlayingTrackID)e;
+			EventPlayListPlayingTrackID eri = (EventPlayListPlayingTrackID) e;
 			playingTrack(eri.getId());
 			break;
-		
+
 		case EVENTPLAYLISTUPDATESHUFFLE:
-			EventPlayListUpdateShuffle eps = (EventPlayListUpdateShuffle)e;
+			EventPlayListUpdateShuffle eps = (EventPlayListUpdateShuffle) e;
 			updateShuffle(eps.isShuffle());
 			break;
-			
-		}
-		
-	}
 
+		}
+
+	}
 
 }
