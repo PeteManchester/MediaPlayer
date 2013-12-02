@@ -36,7 +36,10 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 		enablePropertyFadeMax();
 
 		propertiesLock();
-		setPropertyVolume(iPlayer.getVolume());
+		long v = iPlayer.getVolume();
+		if(v<0)
+			v=0;
+		setPropertyVolume(v);
 		setPropertyMute(false);
 		setPropertyBalance(0);
 		setPropertyFade(0);
@@ -75,6 +78,8 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 	
 	private void updateVolume(long volume)
 	{
+		if(volume < 0)
+			volume = 0;
 		setPropertyVolume(volume);
 	}
 
@@ -92,7 +97,7 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 		//setPropertyVolume(volume);
 		//propertiesUnlock();
 		//iPlayer.setVolume(volume);
-		log.debug("VolumeInc: " + volume);
+		//log.debug("VolumeInc: " + volume);
 	}
 
 	protected void volumeDec(IDvInvocation paramIDvInvocation) {
@@ -102,7 +107,7 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 		//setPropertyVolume(volume);
 		//propertiesUnlock();
 		//iPlayer.setVolume(volume);
-		log.debug("VolumeDec: " + volume);
+		//log.debug("VolumeDec: " + volume);
 	}
 
 	protected void setMute(IDvInvocation paramIDvInvocation, boolean mute) {
@@ -121,6 +126,8 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 		log.debug("volume: "  +lt.getLogText(paramIDvInvocation));
 		long volume = iPlayer.getVolume();
 		log.debug("GetVolume: " + volume);
+		if(volume < 0)
+			volume = 0;
 		return volume;
 	}
 	

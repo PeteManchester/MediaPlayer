@@ -67,7 +67,10 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 
 	private void createEvent() {
 		getMuteAsString(PlayManager.getInstance().getMute());
-		volume = "" + PlayManager.getInstance().getVolume();
+		long v = PlayManager.getInstance().getVolume();
+		if(v < 0)
+			v = 0;
+		volume = "" + v;
 		StringBuilder sb = new StringBuilder();
 		sb.append("<Event xmlns=\"urn:schemas-upnp-org:metadata-1-0/RCS/\">");
 		sb.append("<InstanceID val=\"0\">");
@@ -305,6 +308,8 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 		log.debug("GetVolume: " + paramString + lt.getLogText(paramIDvInvocation));
 		try {
 			long v = PlayManager.getInstance().getVolume();
+			if(v<0)
+				v=0;
 			volume = "" + v;
 			log.debug("Returning Volume: " + v);
 			return v;

@@ -13,3 +13,5 @@ Now added pi4j to main app, but only initiated if running on a Raspi, needs to b
 28 November 2013
 Fixed issue with the Volume value when a USB DAC does not support hardware volume
 Fixed issue when shutting down if Pi4J had not be initialized
+2 December 2013
+Changed the way the volume is handled for USB DAC that does not support hardware volume control, now we keep the -1 value internally and return zero to the control point, but if the volume is less than zero we do not set the volue or mute

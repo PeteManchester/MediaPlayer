@@ -597,7 +597,13 @@ public class PlayManager implements Observer {
 	 */
 	public synchronized void setVolume(long volume) {
 		if (!bMute) {
+			if(this.volume <0 ||volume > 100)
+			{
+				log.debug("Volume is less than Zero, assume the DAC doesn't support Hardware Volume Control");
+				return;
+			}
 			this.volume = volume;
+			log.debug("Set Volume");
 			EventVolumeChanged ev = new EventVolumeChanged();
 			ev.setVolume(volume);
 			obsvVolume.notifyChange(ev);
@@ -616,6 +622,11 @@ public class PlayManager implements Observer {
 	 * @param mute
 	 */
 	public synchronized void setMute(boolean mute) {
+		if(volume< 0)
+		{
+			log.debug("Volume is less than Zero, assume the DAC doesn't support Hardware Volume Control");
+			return;
+		}
 		this.bMute = mute;
 		EventMuteChanged em = new EventMuteChanged();
 		em.setMute(mute);
@@ -815,9 +826,10 @@ public class PlayManager implements Observer {
 	 * @return
 	 */
 	public synchronized long incVolume() {
-		if (volume < 100) {
-			volume++;
-			setVolume(volume);
+		if (volume < 100 ) {
+			long v = volume;
+			v++;
+			setVolume(v);
 		}
 		return volume;
 	}
@@ -829,8 +841,9 @@ public class PlayManager implements Observer {
 	 */
 	public synchronized long decVolume() {
 		if (volume > 0) {
-			volume--;
-			setVolume(volume);
+			long v = volume;
+			v--;
+			setVolume(v);
 		}
 		return volume;
 	}
