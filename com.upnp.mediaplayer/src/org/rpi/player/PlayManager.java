@@ -145,6 +145,7 @@ public class PlayManager implements Observer {
 						if (i + offset >= 0) {
 							String track_id = getShuffledTracks().get(i + offset);
 							CustomTrack newTrack = getTrackFromId(Integer.parseInt(track_id));
+							log.debug("Returning Next Shuffled Track: " + newTrack.getUri());
 							return (newTrack);
 						}
 					} else {
@@ -185,6 +186,7 @@ public class PlayManager implements Observer {
 	private CustomTrack getTrack(int offset) {
 		if (current_track != null)
 			try {
+				log.debug("Getting Next Track, CurrentTrack is: " + current_track.getUri());
 				int i = 0;
 				for (CustomTrack t : getTracks()) {
 					if (current_track.getId() == t.getId()) {
@@ -195,6 +197,7 @@ public class PlayManager implements Observer {
 				if (getTracks().size() > i + offset) {
 					if (i + offset >= 0) {
 						CustomTrack newTrack = getTracks().get(i + offset);
+						log.debug("Returning Next Track: " + newTrack.getUri());
 						return (newTrack);
 					}
 				} else {
@@ -878,6 +881,7 @@ public class PlayManager implements Observer {
 			}
 			break;
 		case EVENTCURRENTTRACKFINISHING:
+			log.debug("Current Track is going to finish, get NextTrack and PreLoad");
 			CustomTrack t = getNextTrack(1);
 			if (t != null) {
 				mPlayer.preLoadTrack(t);

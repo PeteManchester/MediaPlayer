@@ -42,6 +42,7 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 
 	@Override
 	public void preLoadTrack(CustomTrack track) {
+		log.debug("PreLoad Next Track: " + track.getUri());
 		List<String> params = new ArrayList<String>();
 		String url = checkURL(track.getUri());
 		params.add(url);
