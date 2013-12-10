@@ -1,7 +1,13 @@
 package org.rpi.plugin.lcddisplay;
 
+import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
 
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.Shutdown;
@@ -18,6 +24,10 @@ import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.player.events.EventVolumeChanged;
 import org.rpi.player.observers.ObservableVolume;
 import org.rpi.playlist.CustomTrack;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.wiringpi.Lcd;
@@ -34,8 +44,8 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 	// private GpioPinDigitalInput myButton = null;
 	// private GpioPinDigitalOutput myMuteLed = null;
 
-	public final static int LCD_ROWS = 2;
-	public final static int LCD_COLUMNS = 20;
+	public  static int LCD_ROWS = 2;
+	public  static int LCD_COLUMNS = 20;
 	public final static int LCD_BITS = 4;
 	private int lcdHandle = -1;
 	private long mVolume = 100;
@@ -46,6 +56,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 	public LCDDisplayImpl() {
 		log.debug("Init LCDDisplayImpl");
 		try {
+			getConfig();
 			PlayManager.getInstance().observInfoEvents(this);
 			PlayManager.getInstance().observVolumeEvents(this);
 			PlayManager.getInstance().observTimeEvents(this);
@@ -55,11 +66,11 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 			} catch (Exception e) {
 				log.error("Error Init Pi4J: " + e);
 			}
-			scroller = new LCDScroller();
+			scroller = new LCDScroller(LCD_ROWS,LCD_COLUMNS);
 			if (lcdHandle != -1) {
 				scroller.setLCDHandle(lcdHandle);
 				scroller.start();
-				//welcomeMessage();
+				// welcomeMessage();
 			}
 		} catch (Exception e) {
 			log.error("Error Init LCDDisplayImpl", e);
@@ -69,9 +80,9 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 	private void initPi4J() {
 		try {
 
-			//gpio = GpioFactory.getInstance();
+			// gpio = GpioFactory.getInstance();
 			gpio = OSManager.getInstance().getGpio();
-			if(null == gpio)
+			if (null == gpio)
 				throw new IllegalArgumentException("GPIO Not Initialized");
 
 			lcdHandle = Lcd.lcdInit(LCD_ROWS, // number of row supported by LCD
@@ -95,7 +106,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 			}
 
 			// clear LCD
-			//LCDClear();
+			// LCDClear();
 			scroller.setReset();
 			log.info("Finished Configuring LCD");
 		} catch (Exception e) {
@@ -192,11 +203,11 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 	/***
 	 * Clear the LCD
 	 */
-//	private void LCDClear() {
-//		if (lcdHandle != -1) {
-//			Lcd.lcdClear(lcdHandle);
-//		}
-//	}
+	// private void LCDClear() {
+	// if (lcdHandle != -1) {
+	// Lcd.lcdClear(lcdHandle);
+	// }
+	// }
 
 	/***
 	 * Update the Volume
@@ -231,7 +242,66 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 		}
 	}
 
+	private void getConfig() {
+		try {
+			String class_name = this.getClass().getName();
+			log.debug("Find Class, ClassName: " + class_name);
+			String path = OSManager.getInstance().getFilePath(this.getClass(), false);
+			log.debug("Getting LCD.xml from Directory: " + path);
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document doc = builder.parse(new File(path + "LCD.xml"));
+			
+			try
+			{
+				String ex_columns = "/LCD/@columns";
+				XPath xPath = XPathFactory.newInstance().newXPath();
+				String sColumns = xPath.compile(ex_columns).evaluate(doc);
+				log.debug("Number of Columns: " + sColumns);
+				LCD_COLUMNS = Integer.parseInt(sColumns);
+			}
+			catch(Exception e)
+			{
+				log.debug("Error getting Number of Columns:",e);
+			}
+			NodeList listOfRows = doc.getElementsByTagName("lcdrow");
+			int i = 1;
+			log.debug("Number of Rows: " + listOfRows.getLength());
+			LCD_ROWS = listOfRows.getLength();
+			for (int s = 0; s < listOfRows.getLength(); s++) {
+				Node row = listOfRows.item(s);
+				if (row.getNodeType() == Node.ELEMENT_NODE) {
+					Element element = (Element) row;
+					String text = getElement(element, "text");
+					log.debug(text);
+				}
+			}
+			
+		} catch (Exception e) {
+			log.error("Error Getting LCD.xml", e);
+		}
+	}
 
+	/***
+	 * 
+	 * @param element
+	 * @param name
+	 * @return
+	 */
+	private String getElement(Element element, String name) {
+		String res = "";
+		NodeList nid = element.getElementsByTagName(name);
+		if (nid != null) {
+			Element fid = (Element) nid.item(0);
+			if (fid != null) {
+				res = fid.getTextContent();
+				// log.debug("ElementName: " + name + " Value: " + res);
+				return res;
+
+			}
+		}
+		return res;
+	}
 
 	@Shutdown
 	public void bye() {
@@ -244,6 +314,5 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 			Lcd.lcdClear(lcdHandle);
 		}
 	}
-
 
 }

@@ -14,15 +14,17 @@ public class LCDScroller extends Thread {
 
 	private static Logger log = Logger.getLogger(LCDScroller.class);
 	private int lcdHandle = -1;
-	public final static int LCD_COLUMNS = 20;
-	public final static int LCD_ROWS = 2;
+	private int LCD_COLUMNS = 20;
+	private int LCD_ROWS = 2;
 	private boolean bStandBy = true;
 	private boolean bStartup = true;
 	private boolean bReset = true;
 
 	private List<LCDRow> rows = new ArrayList<LCDRow>();
 
-	public LCDScroller() {
+	public LCDScroller(int lcd_rows, int lcd_columns) {
+		LCD_ROWS = lcd_rows;
+		LCD_COLUMNS = lcd_columns;
 		for (int i = 0; i < LCD_ROWS; i++) {
 			LCDRow row = new LCDRow();
 			row.setLCD_WIDTH(LCD_COLUMNS);
