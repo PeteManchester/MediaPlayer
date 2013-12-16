@@ -1,6 +1,7 @@
 package org.rpi.plugin.lcddisplay;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -44,8 +45,9 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 	// private GpioPinDigitalInput myButton = null;
 	// private GpioPinDigitalOutput myMuteLed = null;
 
-	public  static int LCD_ROWS = 2;
-	public  static int LCD_COLUMNS = 20;
+	public   int LCD_ROWS = 2;
+	public  ArrayList<String> row_definition = new ArrayList<String>();
+	public   int LCD_COLUMNS = 20;
 	public final static int LCD_BITS = 4;
 	private int lcdHandle = -1;
 	private long mVolume = 100;
@@ -66,7 +68,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 			} catch (Exception e) {
 				log.error("Error Init Pi4J: " + e);
 			}
-			scroller = new LCDScroller(LCD_ROWS,LCD_COLUMNS);
+			scroller = new LCDScroller(LCD_ROWS,LCD_COLUMNS,row_definition);
 			if (lcdHandle != -1) {
 				scroller.setLCDHandle(lcdHandle);
 				scroller.start();
@@ -126,7 +128,11 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 			if (track != null) {
 				String s = track.getFullDetails();
 				log.debug("TrackChanged: " + s);
-				UpdateScroller(s, 0);
+				//UpdateScroller(s, 0);
+				scroller.updateValues("[FULL_DETAILS]", s);
+				scroller.updateValues("[ARTIST]", track.getArtist());
+				scroller.updateValues("[TITLE]", track.getTitle());
+				scroller.updateValues("[ALBUM]", track.getAlbum());
 			} else {
 				log.debug("Track was NULL");
 			}
@@ -136,19 +142,30 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 			EventUpdateTrackMetaText et = (EventUpdateTrackMetaText) e;
 			log.debug("Track Changed: " + et.getTitle() + " : " + et.getArtist());
 			if (scroller != null) {
-				UpdateScroller(et.getTitle() + " - " + et.getArtist(), 0);
+				//UpdateScroller(et.getTitle() + " - " + et.getArtist(), 0);
+				scroller.updateValues("[TITLE]", et.getTitle());
+				scroller.updateValues("[ARTIST]", et.getArtist());
 			}
 			break;
 		case EVENTVOLUMECHNANGED:
 			EventVolumeChanged ev = (EventVolumeChanged) e;
 			mVolume = ev.getVolume();
-			updateVolume();
+			//updateVolume();
+			scroller.updateValues("[VOLUME]", ""+mVolume);
 			break;
 		case EVENTMUTECHANGED:
 			if (o instanceof ObservableVolume) {
 				EventMuteChanged em = (EventMuteChanged) e;
 				log.debug("MuteStateChanged: " + em.isMute());
 				isMute = em.isMute();
+				if(em.isMute())
+				{
+					scroller.updateValues("[VOLUME]", "Mute");
+				}
+				else
+				{
+					scroller.updateValues("[VOLUME]", ""+mVolume);
+				}
 			}
 			break;
 		case EVENTSTANDBYCHANGED:
@@ -167,7 +184,8 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 		case EVENTTIMEUPDATED:
 			EventTimeUpdate etime = (EventTimeUpdate) e;
 			mTime = ConvertTime(etime.getTime());
-			updateVolume();
+			//updateVolume();
+			scroller.updateValues("[TIME]", mTime);
 			break;
 
 		}
@@ -212,19 +230,20 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 	/***
 	 * Update the Volume
 	 */
-	private void updateVolume() {
-		StringBuilder sb = new StringBuilder();
-		if (isMute) {
-			sb.append("Mute");
-			sb.append(" ");
-		} else {
-			sb.append("Vol:" + mVolume);
-			sb.append(" ");
-		}
-		sb.append("Time:" + mTime);
-		// String text = "Vol:" + mVolume + " Time:" + mTime;
-		UpdateScroller(sb.toString(), 1);
-	}
+//	private void updateVolume() {
+//		StringBuilder sb = new StringBuilder();
+//		if (isMute) {
+//			sb.append("Mute");
+//			sb.append(" ");
+//		} else {
+//			sb.append("Vol:" + mVolume);
+//			sb.append(" ");
+//		}
+//		sb.append("Time:" + mTime);
+//		// String text = "Vol:" + mVolume + " Time:" + mTime;
+//		//UpdateScroller(sb.toString(), 1);
+//		scroller.updateValues("[TIME]",sb.toString());
+//	}
 
 	/***
 	 * Update the Scroller Row Text
@@ -232,15 +251,15 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 	 * @param text
 	 * @param row
 	 */
-	private void UpdateScroller(String text, int row) {
-		try {
-			if (scroller != null) {
-				scroller.setText(text, row);
-			}
-		} catch (Exception e) {
-			log.error("Error UpdateScroller: ", e);
-		}
-	}
+//	private void UpdateScroller(String text, int row) {
+//		try {
+//			if (scroller != null) {
+//				scroller.setText(text, row);
+//			}
+//		} catch (Exception e) {
+//			log.error("Error UpdateScroller: ", e);
+//		}
+//	}
 
 	private void getConfig() {
 		try {
@@ -274,6 +293,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 					Element element = (Element) row;
 					String text = getElement(element, "text");
 					log.debug(text);
+					row_definition.add(text);
 				}
 			}
 			
@@ -311,6 +331,11 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 		}
 
 		if (lcdHandle != -1) {
+			int i = 0;
+			for(int iRow = 0;iRow<=LCD_ROWS;iRow++)
+			{
+				Lcd.lcdPuts(i, "");
+			}
 			Lcd.lcdClear(lcdHandle);
 		}
 	}

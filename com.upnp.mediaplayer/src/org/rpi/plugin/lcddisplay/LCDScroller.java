@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
@@ -19,10 +20,17 @@ public class LCDScroller extends Thread {
 	private boolean bStandBy = true;
 	private boolean bStartup = true;
 	private boolean bReset = true;
-
+	private ConcurrentHashMap<String, String> values = new ConcurrentHashMap<String, String>();
+	private ArrayList<String> row_definition = new ArrayList<String>();
 	private List<LCDRow> rows = new ArrayList<LCDRow>();
 
-	public LCDScroller(int lcd_rows, int lcd_columns) {
+	/**
+	 * 
+	 * @param lcd_rows
+	 * @param lcd_columns
+	 * @param row_definition
+	 */
+	public LCDScroller(int lcd_rows, int lcd_columns, ArrayList<String> row_definition) {
 		LCD_ROWS = lcd_rows;
 		LCD_COLUMNS = lcd_columns;
 		for (int i = 0; i < LCD_ROWS; i++) {
@@ -30,32 +38,42 @@ public class LCDScroller extends Thread {
 			row.setLCD_WIDTH(LCD_COLUMNS);
 			rows.add(row);
 		}
+		this.row_definition = row_definition;
+		init();
+	}
+	
+	/**
+	 * Initialize the values..
+	 */
+	private void init()
+	{
+		updateValues("[VOLUME]","100");
+		updateValues("[TIME]","0:00");
+		updateValues("[FULL_DETAILS]","");
+		updateValues("[ALBUM]","");
+		updateValues("[ARTIST]","");	
+		updateValues("[TRACK]","");
+		updateValues("[TITLE]","");
 	}
 
 	public void run() {
 		while (true) {
 			try {
-				if(isReset())
-				{
+				if (isReset()) {
 					if (lcdHandle != -1) {
 						Lcd.lcdClear(lcdHandle);
 					}
 					setText("", 0);
 					setText("", 1);
-					bReset=false;
+					bReset = false;
 				}
 				if (bStandBy) {
-					if(bStartup)
-					{
+					if (bStartup) {
 						welcomeMessage();
-					}
-					else
-					{
+					} else {
 						standbyMessage();
 					}
-				}
-				else
-				{
+				} else {
 					bStartup = false;
 				}
 				for (int i = 0; i < LCD_ROWS; i++) {
@@ -82,17 +100,17 @@ public class LCDScroller extends Thread {
 		try {
 			cpuTemp = "CPU Temp:" + SystemInfo.getCpuTemperature() + "C";
 		} catch (Exception e) {
-			log.error("Error Getting CPU Temp",e);
-		} 
-		setText(cpuTemp,0);
-		setText(dateStr,1);
+			log.error("Error Getting CPU Temp", e);
+		}
+		setText(cpuTemp, 0);
+		setText(dateStr, 1);
 	}
-	
+
 	/***
 	 * Create the Welcome Message
 	 */
 	private void welcomeMessage() {
-		//log.debug("Welcome Message");
+		// log.debug("Welcome Message");
 		String sWelcome = "Welcome";
 		String sStatus = "";
 		try {
@@ -100,10 +118,10 @@ public class LCDScroller extends Thread {
 		} catch (Exception e) {
 			log.error(e);
 		}
-		setText(sWelcome,0);
-		setText(sStatus,1);
+		setText(sWelcome, 0);
+		setText(sStatus, 1);
 	}
-	
+
 	private final String[] Q = new String[] { "", "Kb", "Mb", "Gb", "Tb", "Pb", "Eb" };
 
 	public String convertBytes(long bytes) {
@@ -178,7 +196,39 @@ public class LCDScroller extends Thread {
 	/***
 	 * Reset the LCD Display
 	 */
-	public synchronized void  setReset() {
+	public synchronized void setReset() {
 		this.bReset = true;
+	}
+
+	/**
+	 * Update the Values
+	 * 
+	 * @param name
+	 * @param value
+	 */
+	public synchronized void updateValues(String name, String value) {
+		if (values.containsKey(name)) {
+			values.remove(name);
+		}
+		values.put(name, value);
+		updateRows();
+	}
+
+	/**
+	 * 
+	 */
+	private void updateRows() {
+		int i = 0;
+		for (String def : row_definition) {
+
+			for(String key : values.keySet())
+			{
+				//log.debug("Key:  " + key + " : " + values.get(key));
+			   def = def.replace(key, values.get(key));
+			}
+			log.debug("Row: " + i + " Text: " + def);
+			rows.get(i).setText(def);
+			i++;
+		}
 	}
 }
