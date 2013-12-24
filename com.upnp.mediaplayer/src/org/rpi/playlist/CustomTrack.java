@@ -36,7 +36,9 @@ public class CustomTrack {
 	private String album = "";
 	private String artist = "";
 	private String performer = "";
+	private StringBuffer composer = new StringBuffer();
 	private String full_text = "";
+	private String date = "";
 
 	public CustomTrack(String uri, String metadata, int id) {
 		// long startTime = System.nanoTime();
@@ -146,6 +148,7 @@ public class CustomTrack {
 					if (role.getTextContent().equalsIgnoreCase("Performer")) {
 						// remove =false;
 					}
+
 				}
 
 				else if (n.getNodeName() == "upnp:class") {
@@ -322,13 +325,40 @@ public class CustomTrack {
 						if (role_type.equalsIgnoreCase("Performer")) {
 							setPerformer(n.getTextContent());
 						}
+						if(role_type.equalsIgnoreCase("Composer"))
+						{
+							setComposer(n.getTextContent());
+						}
 					}
+				} else if (n.getNodeName() == "dc:date")
+				{
+					setDate(n.getTextContent());
 				}
 			}
 
 		} catch (Exception e) {
 			log.error("Error GetTrackDetails", e);
 		}
+	}
+
+	private void setDate(String date) {
+		this.date = date;	
+	}
+	
+	public String getDate()
+	{
+		return date;
+	}
+
+	private void setComposer(String composer) {
+		this.composer.append(composer);	
+		this.composer.append(",");
+	}
+	
+	public String getComposer(){
+		if(composer.length()>0)
+			composer.deleteCharAt(composer.length()-1);
+		return composer.toString();
 	}
 
 	public void setMetaText(String metatext) {

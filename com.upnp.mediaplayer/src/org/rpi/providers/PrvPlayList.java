@@ -154,6 +154,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		}
 		iPlayer.insertTrack(aAfterId, track);
 		UpdateIdArray();
+		log.debug("Insert Track Return: " + id);
 		return id;
 	};
 
@@ -338,6 +339,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 				// }
 
 			}
+			log.debug("UpdateIdArray: " + sb.toString() );
 			setPropertyIdArray(bytes);
 			if (bUpdateFile) {
 				plw.trigger(tracks);
@@ -395,7 +397,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 			sb.append(t.getFullString());
 		}
 		sb.append("</TrackList>");
-		log.debug("ReadList Contains : " + i);
+		log.debug("ReadList Contains : " + i + "  " + sb.toString());
 		return sb.toString();
 	}
 

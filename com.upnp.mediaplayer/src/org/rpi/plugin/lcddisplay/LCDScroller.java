@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
+import org.rpi.os.OSManager;
 
 import com.pi4j.system.SystemInfo;
 import com.pi4j.wiringpi.Lcd;
@@ -41,19 +42,20 @@ public class LCDScroller extends Thread {
 		this.row_definition = row_definition;
 		init();
 	}
-	
+
 	/**
 	 * Initialize the values..
 	 */
-	private void init()
-	{
-		updateValues("[VOLUME]","100");
-		updateValues("[TIME]","0:00");
-		updateValues("[FULL_DETAILS]","");
-		updateValues("[ALBUM]","");
-		updateValues("[ARTIST]","");	
-		updateValues("[TRACK]","");
-		updateValues("[TITLE]","");
+	private void init() {
+		updateValues("[VOLUME]", "100");
+		updateValues("[TIME]", "0:00");
+		updateValues("[FULL_DETAILS]", "");
+		updateValues("[ALBUM]", "");
+		updateValues("[ARTIST]", "");
+		updateValues("[TRACK]", "");
+		updateValues("[TITLE]", "");
+		updateValues("[COMPOSER]","");
+		updateValues("[DATE]","");
 	}
 
 	public void run() {
@@ -221,14 +223,26 @@ public class LCDScroller extends Thread {
 		int i = 0;
 		for (String def : row_definition) {
 
-			for(String key : values.keySet())
-			{
-				//log.debug("Key:  " + key + " : " + values.get(key));
-			   def = def.replace(key, values.get(key));
+			for (String key : values.keySet()) {
+				// log.debug("Key:  " + key + " : " + values.get(key));
+				def = def.replace(key, values.get(key));
 			}
-			log.debug("Row: " + i + " Text: " + def);
+
+			if (OSManager.getInstance().isRaspi()) {
+				if (def.contains("[SYS")) {
+					try {
+						if (def.contains("[SYS_MEMORY_USED]")) {
+							def = def.replace("[SYS_MEMORY_USED]", convertBytes(SystemInfo.getMemoryUsed()));
+						}
+					} catch (Exception e) {
+						log.error("Error gettting SystimInfo:", e);
+					}
+				}
+			}
+			// log.debug("Row: " + i + " Text: " + def);
 			rows.get(i).setText(def);
 			i++;
 		}
+
 	}
 }

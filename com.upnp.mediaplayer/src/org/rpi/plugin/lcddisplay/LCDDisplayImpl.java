@@ -69,6 +69,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 				log.error("Error Init Pi4J: " + e);
 			}
 			scroller = new LCDScroller(LCD_ROWS,LCD_COLUMNS,row_definition);
+			scroller.setStandBy(PlayManager.getInstance().isStandby());
 			if (lcdHandle != -1) {
 				scroller.setLCDHandle(lcdHandle);
 				scroller.start();
@@ -133,6 +134,8 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 				scroller.updateValues("[ARTIST]", track.getArtist());
 				scroller.updateValues("[TITLE]", track.getTitle());
 				scroller.updateValues("[ALBUM]", track.getAlbum());
+				scroller.updateValues("[COMPOSER]", track.getComposer());
+				scroller.updateValues("[DATE]", track.getDate());
 			} else {
 				log.debug("Track was NULL");
 			}
