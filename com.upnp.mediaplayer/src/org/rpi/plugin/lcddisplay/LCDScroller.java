@@ -22,7 +22,7 @@ public class LCDScroller extends Thread {
 	private boolean bStartup = true;
 	private boolean bReset = true;
 	private ConcurrentHashMap<String, String> values = new ConcurrentHashMap<String, String>();
-	private ArrayList<String> row_definition = new ArrayList<String>();
+	private ArrayList<RowDefinition> row_definition = new ArrayList<RowDefinition>();
 	private List<LCDRow> rows = new ArrayList<LCDRow>();
 
 	/**
@@ -31,7 +31,7 @@ public class LCDScroller extends Thread {
 	 * @param lcd_columns
 	 * @param row_definition
 	 */
-	public LCDScroller(int lcd_rows, int lcd_columns, ArrayList<String> row_definition) {
+	public LCDScroller(int lcd_rows, int lcd_columns, ArrayList<RowDefinition> row_definition) {
 		LCD_ROWS = lcd_rows;
 		LCD_COLUMNS = lcd_columns;
 		for (int i = 0; i < LCD_ROWS; i++) {
@@ -47,6 +47,7 @@ public class LCDScroller extends Thread {
 	 * Initialize the values..
 	 */
 	private void init() {
+		log.debug("Initialize Values");
 		updateValues("[VOLUME]", "100");
 		updateValues("[TIME]", "0:00");
 		updateValues("[FULL_DETAILS]", "");
@@ -54,8 +55,8 @@ public class LCDScroller extends Thread {
 		updateValues("[ARTIST]", "");
 		updateValues("[TRACK]", "");
 		updateValues("[TITLE]", "");
-		updateValues("[COMPOSER]","");
-		updateValues("[DATE]","");
+		updateValues("[COMPOSER]", "");
+		updateValues("[DATE]", "");
 	}
 
 	public void run() {
@@ -221,18 +222,37 @@ public class LCDScroller extends Thread {
 	 */
 	private void updateRows() {
 		int i = 0;
-		for (String def : row_definition) {
-
-			for (String key : values.keySet()) {
+		for (RowDefinition def : row_definition) {
+			String text = def.getText();
+			//log.debug("Got Row Definition: " + def.getText());
+			for (String rd : def.getKeys()) {
+				//log.debug("Getting Value for: " + rd);
+				String value = "";
+				//log.debug(values);
+				if (values.containsKey(rd)) {
+					//log.debug("Setting Value to Be");
+					value = values.get(rd);
+				}
+				if (def.isFormat()) {
+					try {
+						log.debug("Tring to Parse: " + value);
+						Date date = new SimpleDateFormat("yyyy-MM-dd").parse(value);
+						value = new SimpleDateFormat(def.getFormat()).format(date);
+						//log.debug(value);
+						//log.debug(text);
+					} catch (Exception e) {
+						log.error(e);
+					}
+				}
 				// log.debug("Key:  " + key + " : " + values.get(key));
-				def = def.replace(key, values.get(key));
+				text = text.replace(rd, value);
 			}
 
 			if (OSManager.getInstance().isRaspi()) {
-				if (def.contains("[SYS")) {
+				for (String rd : def.getSystemKeys()) {
 					try {
-						if (def.contains("[SYS_MEMORY_USED]")) {
-							def = def.replace("[SYS_MEMORY_USED]", convertBytes(SystemInfo.getMemoryUsed()));
+						if (rd.contains("[SYS_MEMORY_USED]")) {
+							text = text.replace("[SYS_MEMORY_USED]", convertBytes(SystemInfo.getMemoryUsed()));
 						}
 					} catch (Exception e) {
 						log.error("Error gettting SystimInfo:", e);
@@ -240,7 +260,7 @@ public class LCDScroller extends Thread {
 				}
 			}
 			// log.debug("Row: " + i + " Text: " + def);
-			rows.get(i).setText(def);
+			rows.get(i).setText(text);
 			i++;
 		}
 

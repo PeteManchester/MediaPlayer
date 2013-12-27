@@ -46,7 +46,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 	// private GpioPinDigitalOutput myMuteLed = null;
 
 	public   int LCD_ROWS = 2;
-	public  ArrayList<String> row_definition = new ArrayList<String>();
+	public  ArrayList<RowDefinition> row_definition = new ArrayList<RowDefinition>();
 	public   int LCD_COLUMNS = 20;
 	public final static int LCD_BITS = 4;
 	private int lcdHandle = -1;
@@ -296,7 +296,9 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 					Element element = (Element) row;
 					String text = getElement(element, "text");
 					log.debug(text);
-					row_definition.add(text);
+					RowDefinition rd = new RowDefinition();
+					rd.setText(text);
+					row_definition.add(rd);
 				}
 			}
 			
