@@ -135,6 +135,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 				scroller.updateValues("[TITLE]", track.getTitle());
 				scroller.updateValues("[ALBUM]", track.getAlbum());
 				scroller.updateValues("[COMPOSER]", track.getComposer());
+				scroller.updateValues("[CONDUCTOR]", track.getConductor());
 				scroller.updateValues("[DATE]", track.getDate());
 			} else {
 				log.debug("Track was NULL");

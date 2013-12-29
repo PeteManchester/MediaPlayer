@@ -56,6 +56,7 @@ public class LCDScroller extends Thread {
 		updateValues("[TRACK]", "");
 		updateValues("[TITLE]", "");
 		updateValues("[COMPOSER]", "");
+		updateValues("[CONDUCTOR]", "");
 		updateValues("[DATE]", "");
 	}
 
@@ -225,41 +226,41 @@ public class LCDScroller extends Thread {
 		for (RowDefinition def : row_definition) {
 			String text = def.getText();
 			//log.debug("Got Row Definition: " + def.getText());
-			for (String rd : def.getKeys()) {
+			for (KeyDefinition rd : def.getKeys()) {
 				//log.debug("Getting Value for: " + rd);
 				String value = "";
 				//log.debug(values);
-				if (values.containsKey(rd)) {
+				if (values.containsKey(rd.getKey())) {
 					//log.debug("Setting Value to Be");
-					value = values.get(rd);
+					value = values.get(rd.getKey());
 				}
-				if (def.isFormat()) {
+				if (rd.isFormatted()) {
 					try {
 						log.debug("Tring to Parse: " + value);
 						Date date = new SimpleDateFormat("yyyy-MM-dd").parse(value);
-						value = new SimpleDateFormat(def.getFormat()).format(date);
+						value = new SimpleDateFormat(rd.getFormat()).format(date);
 						//log.debug(value);
 						//log.debug(text);
 					} catch (Exception e) {
-						log.error(e);
+						//log.error(e);
 					}
 				}
 				// log.debug("Key:  " + key + " : " + values.get(key));
-				text = text.replace(rd, value);
+				text = text.replace(rd.getName(), value);
 			}
 
 			if (OSManager.getInstance().isRaspi()) {
-				for (String rd : def.getSystemKeys()) {
+				for (KeyDefinition rd : def.getSystemKeys()) {
 					try {
-						if (rd.contains("[SYS_MEMORY_USED]")) {
-							text = text.replace("[SYS_MEMORY_USED]", convertBytes(SystemInfo.getMemoryUsed()));
+						if (rd.getKey().contains("[SYS_MEMORY_USED]")) {
+							text = text.replace(rd.getName(), convertBytes(SystemInfo.getMemoryUsed()));
 						}
 					} catch (Exception e) {
 						log.error("Error gettting SystimInfo:", e);
 					}
 				}
 			}
-			// log.debug("Row: " + i + " Text: " + def);
+			 log.debug("Row: " + i + " Text: " + text);
 			rows.get(i).setText(text);
 			i++;
 		}

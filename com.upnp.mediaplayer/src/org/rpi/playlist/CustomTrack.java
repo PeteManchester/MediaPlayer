@@ -34,9 +34,10 @@ public class CustomTrack {
 	private String metaEnd = "</Metadata>";
 	private String title = "";
 	private String album = "";
-	private String artist = "";
-	private String performer = "";
+	private StringBuffer artist = new StringBuffer();
+	private StringBuffer performer = new StringBuffer();
 	private StringBuffer composer = new StringBuffer();
+	private StringBuffer conductor = new StringBuffer();
 	private String full_text = "";
 	private String date = "";
 
@@ -329,6 +330,10 @@ public class CustomTrack {
 						{
 							setComposer(n.getTextContent());
 						}
+						if(role_type.equalsIgnoreCase("Conductor"))
+						{
+							setConductor(n.getTextContent());
+						}
 					}
 				} else if (n.getNodeName() == "dc:date")
 				{
@@ -356,9 +361,10 @@ public class CustomTrack {
 	}
 	
 	public String getComposer(){
-		if(composer.length()>0)
-			composer.deleteCharAt(composer.length()-1);
-		return composer.toString();
+		String text = composer.toString();
+		if(text.endsWith(","))
+			text = text.substring(0,text.length()-1);
+		return text;
 	}
 
 	public void setMetaText(String metatext) {
@@ -396,19 +402,39 @@ public class CustomTrack {
 	}
 
 	public String getArtist() {
-		return artist;
+		String text = artist.toString();
+		if(text.endsWith(","))
+			text = text.substring(0,text.length()-1);
+		return text;
 	}
 
 	public void setArtist(String artist) {
-		this.artist = artist.trim();
+		this.artist.append(artist.trim());
+		this.artist.append(",");
 	}
 
 	public String getPerformer() {
-		return performer;
+		String text = performer.toString();
+		if(text.endsWith(","))
+			text = text.substring(0,text.length()-1);
+		return text;
 	}
 
 	public void setPerformer(String performer) {
-		this.performer = performer.trim();
+		this.performer.append(performer.trim());
+		this.performer.append(",");
+	}
+	
+	public String getConductor() {
+		String text = conductor.toString();
+		if(text.endsWith(","))
+			text = text.substring(0,text.length()-1);
+		return text;
+	}
+
+	private void setConductor(String conductor) {
+		this.conductor.append(conductor);
+		this.conductor.append(",");
 	}
 
 	private void setFullDetails() {

@@ -1,51 +1,50 @@
 <DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/">
-	<item id="d73509-co43590" parentID="co43590" restricted="0">
-		<dc:title xmlns:dc="http://purl.org/dc/elements/1.1/"> 4. Isolation</dc:title>
-		<dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Joy Division</dc:creator>
-		<dc:date xmlns:dc="http://purl.org/dc/elements/1.1/">1998-01-01</dc:date>
+	<item id="d89001-co46354" parentID="co46354" restricted="0">
+		<dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">Spring, RV 269: I. Allegro</dc:title>
+		<dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Nigel Kennedy</dc:creator>
+		<dc:date xmlns:dc="http://purl.org/dc/elements/1.1/">1989-01-01</dc:date>
 		<upnp:artist role="AlbumArtist"
-			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Joy Division</upnp:artist>
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Nigel Kennedy</upnp:artist>
 		<upnp:artist role="Composer"
-			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Ian Curtis</upnp:artist>
-		<upnp:artist role="Composer"
-			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Peter Hook</upnp:artist>
-		<upnp:artist role="Composer"
-			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Stephen Morris</upnp:artist>
-		<upnp:artist role="Composer"
-			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Bernard Sumner</upnp:artist>
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Antonio Vivaldi</upnp:artist>
+		<upnp:artist role="Conductor"
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Nigel Kennedy</upnp:artist>
 		<upnp:artist role="Performer"
-			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Joy Division</upnp:artist>
-		<upnp:album xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Heart and Soul</upnp:album>
-		<upnp:genre xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Pop/Rock</upnp:genre>
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Nigel Kennedy</upnp:artist>
+		<upnp:artist role="Performer"
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">English Chamber Orchestra</upnp:artist>
+		<upnp:album xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Vivaldi: The Four Seasons
+		</upnp:album>
+		<upnp:genre xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">Concerto</upnp:genre>
 		<upnp:albumArtURI dlna:profileID="JPEG_TN"
-			xmlns:dlna="urn:schemas-dlna-org:metadata-1-0/" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">http://192.168.1.205:26125/aa/157341/656268630/cover.jpg?size=0
+			xmlns:dlna="urn:schemas-dlna-org:metadata-1-0/" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">http://192.168.1.205:26125/aa/10722/591806555/cover.jpg?size=0
 		</upnp:albumArtURI>
-		<upnp:originalTrackNumber xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">18
+		<upnp:originalTrackNumber xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">1
 		</upnp:originalTrackNumber>
-		<upnp:originalDiscNumber xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">4
+		<upnp:originalDiscNumber xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">1
 		</upnp:originalDiscNumber>
-		<upnp:originalDiscCount xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">4
+		<upnp:originalDiscCount xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">1
 		</upnp:originalDiscCount>
-		<res duration="0:03:14.000" size="22368395" bitrate="176400"
+		<res duration="0:03:05.000" size="17107812" bitrate="176400"
 			bitsPerSample="16" sampleFrequency="44100" nrAudioChannels="2"
-			protocolInfo="http-get:*:audio/mp4:DLNA.ORG_PN=AAC_ISO;DLNA.ORG_OP=01">http://192.168.1.205:26125/content/c2/b16/f44100/d73509-co43590.m4a
+			protocolInfo="http-get:*:audio/x-flac:DLNA.ORG_PN=;DLNA.ORG_OP=01">http://192.168.1.205:26125/content/c2/b16/f44100/d89001-co46354.flac
 		</res>
-		<res duration="0:03:14.000" size="34303844" bitrate="176400"
+		<res duration="0:03:05.000" size="32756288" bitrate="176400"
 			bitsPerSample="16" sampleFrequency="44100" nrAudioChannels="2"
-			protocolInfo="http-get:*:audio/wav:DLNA.ORG_PN=WAV;DLNA.ORG_OP=01">http://192.168.1.205:26125/content/c2/b16/f44100/d73509-co43590.forced.wav
+			protocolInfo="http-get:*:audio/wav:DLNA.ORG_PN=WAV;DLNA.ORG_OP=01">http://192.168.1.205:26125/content/c2/b16/f44100/d89001-co46354.forced.wav
 		</res>
-		<res duration="0:03:14.000" size="34303800" bitrate="176400"
+		<res duration="0:03:05.000" size="32756244" bitrate="176400"
 			bitsPerSample="16" sampleFrequency="44100" nrAudioChannels="2"
-			protocolInfo="http-get:*:audio/L16:DLNA.ORG_PN=LPCM;DLNA.ORG_OP=01;DLNA.ORG_CI=1">http://192.168.1.205:26125/content/c2/b16/f44100/d73509-co43590.forced.l16
+			protocolInfo="http-get:*:audio/L16:DLNA.ORG_PN=LPCM;DLNA.ORG_OP=01;DLNA.ORG_CI=1">http://192.168.1.205:26125/content/c2/b16/f44100/d89001-co46354.forced.l16
 		</res>
-		<res duration="0:03:14.000" size="22368395" bitrate="176400"
+		<res duration="0:03:05.000" size="17107812" bitrate="176400"
 			bitsPerSample="16" sampleFrequency="44100" nrAudioChannels="2"
-			protocolInfo="http-get:*:audio/mp4:DLNA.ORG_PN=AAC_ISO;DLNA.ORG_OP=01">http://192.168.1.205:26125/content/c2/b16/f44100/d73509-co43590.m4a
+			protocolInfo="http-get:*:audio/x-flac:DLNA.ORG_PN=;DLNA.ORG_OP=01">http://192.168.1.205:26125/content/c2/b16/f44100/d89001-co46354.flac
 		</res>
 		<upnp:class xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">object.item.audioItem.musicTrack
 		</upnp:class>
 	</item>
 </DIDL-Lite>
-Adapter: 192.168.1.72 uriPrefix:
-http://192.168.1.72:52821/device-Default-D067E5492684-MediaRenderer/Upnp/resource/
+Adapter: 192.168.1.73 uriPrefix:
+http://192.168.1.73:52821/device-Default-D067E5492684-MediaRenderer/Upnp/resource/
 Version:1 

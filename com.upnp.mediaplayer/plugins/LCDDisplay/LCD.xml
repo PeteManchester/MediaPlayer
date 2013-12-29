@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LCD columns="20">
-    <lcdrow><text> Artist:[ARTIST] Album:[ALBUM] Title:[TITLE] Composer:[COMPOSER] [DATE(yyyy)]</text></lcdrow>
+    <lcdrow><text> Artist:[ARTIST] Album:[ALBUM] Title:[TITLE] Composer:[COMPOSER] Conductor:[CONDUCTOR] [DATE{yyyy}]</text></lcdrow>
     <lcdrow><text>Vol:[VOLUME]  Time:[TIME]</text></lcdrow>
 </LCD>
