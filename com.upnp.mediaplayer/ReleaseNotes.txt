@@ -18,3 +18,5 @@ Changed the way the volume is handled for USB DAC that does not support hardware
 Added logic to ignore a play request if it is recieved within 1 second after a seekid or seekindex request, some control points just send a seekId or seekIndex request to play a track, others send a seekId or seekIndex immediately followed by a Play request
 24 December 2013
 Fixed but with LCDDisplay, I now set the standby status when creating the scroller
+30 December 2013
+Fixed PlayList bug with BubbleUPnP, now on ReadList we only return the tracks requested by the CP, instead of all tracks.

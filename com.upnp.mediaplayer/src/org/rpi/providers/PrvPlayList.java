@@ -1,7 +1,14 @@
 package org.rpi.providers;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.log4j.Logger;
@@ -239,11 +246,10 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		return read;
 	};
 
-	protected String readList(IDvInvocation paramIDvInvocation, String paramString) {
+	protected String readList(IDvInvocation paramIDvInvocation, String ids) {
 
-		log.debug("ReadList" + lt.getLogText(paramIDvInvocation));
-
-		return getList();
+		log.debug("ReadList: " + ids + lt.getLogText(paramIDvInvocation));
+		return getList(ids);
 	};
 
 	protected boolean repeat(IDvInvocation paramIDvInvocation) {
@@ -339,7 +345,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 				// }
 
 			}
-			log.debug("UpdateIdArray: " + sb.toString() );
+			//log.debug("UpdateIdArray: " + sb.toString());
 			setPropertyIdArray(bytes);
 			if (bUpdateFile) {
 				plw.trigger(tracks);
@@ -388,13 +394,20 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		setPropertyTransportState(status);
 	}
 
-	private String getList() {
+	private String getList(String ids) {
 		int i = 0;
+		HashMap<String, String> trackIds = new HashMap<String,String>();
+		for(String key:ids.split(" "))
+		{
+			trackIds.put(key, key);
+		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("<TrackList>");
 		for (CustomTrack t : tracks) {
-			i++;
-			sb.append(t.getFullString());
+			if (trackIds.containsKey("" + t.getId())) {
+				i++;
+				sb.append(t.getFullString());
+			}
 		}
 		sb.append("</TrackList>");
 		log.debug("ReadList Contains : " + i + "  " + sb.toString());

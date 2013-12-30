@@ -67,15 +67,17 @@ public class LCDScroller extends Thread {
 					if (lcdHandle != -1) {
 						Lcd.lcdClear(lcdHandle);
 					}
-					setText("", 0);
-					setText("", 1);
+					for(int i=0;i<LCD_ROWS;i++)
+					{
+						setText("", i);
+					}
 					bReset = false;
 				}
 				if (bStandBy) {
 					if (bStartup) {
-						welcomeMessage();
+						//welcomeMessage();
 					} else {
-						standbyMessage();
+						//standbyMessage();
 					}
 				} else {
 					bStartup = false;
@@ -236,7 +238,7 @@ public class LCDScroller extends Thread {
 				}
 				if (rd.isFormatted()) {
 					try {
-						log.debug("Tring to Parse: " + value);
+						//log.debug("Trying to Parse: " + value);
 						Date date = new SimpleDateFormat("yyyy-MM-dd").parse(value);
 						value = new SimpleDateFormat(rd.getFormat()).format(date);
 						//log.debug(value);
@@ -260,7 +262,7 @@ public class LCDScroller extends Thread {
 					}
 				}
 			}
-			 log.debug("Row: " + i + " Text: " + text);
+			 //log.debug("Row: " + i + " Text: " + text);
 			rows.get(i).setText(text);
 			i++;
 		}

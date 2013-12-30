@@ -70,6 +70,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 			}
 			scroller = new LCDScroller(LCD_ROWS,LCD_COLUMNS,row_definition);
 			scroller.setStandBy(PlayManager.getInstance().isStandby());
+			scroller.setReset();
 			if (lcdHandle != -1) {
 				scroller.setLCDHandle(lcdHandle);
 				scroller.start();
@@ -110,10 +111,9 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 
 			// clear LCD
 			// LCDClear();
-			scroller.setReset();
 			log.info("Finished Configuring LCD");
 		} catch (Exception e) {
-			log.error("Error Initializing Pi4J" + e.getMessage());
+			log.error("Error Initializing Pi4J" + e);
 		}
 
 	}
