@@ -32,13 +32,28 @@ public class InputSourcesImpl implements InputSourcesInterface, Observer {
 		// getSources();
 		initPi4J();
 		sources = PluginGateWay.getInstance().getSources();
+		default_pin = PluginGateWay.getInstance().getDefaultSourcePin();
 		createPins();
+		String name = PluginGateWay.getInstance().getSourceName();
+		updateSource(name);
 		PluginGateWay.getInstance().addObserver(this);
 	}
 
 	private void createPins() {
 		if (gpio == null)
 			return;
+		if(!default_pin.equalsIgnoreCase(""))
+		{
+			log.debug("Creating Default_Pin: " + default_pin);
+			Pin pin_number = createPin(default_pin);
+			if (pin_number != null) {
+				GpioPinDigitalOutput pin = gpio.provisionDigitalOutputPin(pin_number, // PIN
+						// NUMBER
+						"default_pin", // PIN FRIENDLY NAME (optional)
+						PinState.LOW); // PIN STARTUP STATE (optional)
+				pins.put(default_pin, pin);
+			}
+		}
 		log.debug("Creating Pins from Sources");
 		for (String key : sources.keySet()) {
 			Source s = sources.get(key);
@@ -72,26 +87,43 @@ public class InputSourcesImpl implements InputSourcesInterface, Observer {
 			EventSourceChanged es = (EventSourceChanged) event;
 			String name = es.getName();
 			log.debug("Source Changed: " + name);
-			if (sources.containsKey(name)) {
-				try {
-					log.debug("Changed Source ClearPins");
-					clearLEDS();
-					Source source = sources.get(name);
-					log.debug("Source PIN: " + source.getGPIO_PIN());
-					if (pins.containsKey(source.getGPIO_PIN())) {
-						log.debug("Changed Source Take Pin: " + source.getGPIO_PIN() + " High");
-						GpioPinDigitalOutput pin = pins.get(source.getGPIO_PIN());
-						pin.high();
-					}
-
-				} catch (Exception e) {
-					log.error("Error Setting Pins: " + e);
-				}
-			} else {
-				log.debug("Not A CustomSource Change Input to PIN: " + default_pin);
-			}
+			updateSource(name);
 		}
 
+	}
+	
+	private void updateSource(String name)
+	{
+		if (gpio == null)
+			return;
+		if (sources.containsKey(name)) {
+			try {
+				log.debug("Changed Source ClearPins");
+				clearLEDS();
+				Source source = sources.get(name);
+				log.debug("Source PIN: " + source.getGPIO_PIN());
+				if (pins.containsKey(source.getGPIO_PIN())) {
+					log.debug("Changed Source Take Pin: " + source.getGPIO_PIN() + " High");
+					GpioPinDigitalOutput pin = pins.get(source.getGPIO_PIN());
+					pin.high();
+				}
+
+			} catch (Exception e) {
+				log.error("Error Setting Pins: " + e);
+			}
+		} else {
+			log.debug("Not A CustomSource Change Input to PIN: " + default_pin);
+			try
+			{
+			clearLEDS();
+			GpioPinDigitalOutput pin = pins.get(default_pin);
+			pin.high();		
+			}
+			catch(Exception e )
+			{
+				log.error("Error Making Default Pin High",e);
+			}
+		}
 	}
 
 	/**
@@ -153,6 +185,14 @@ public class InputSourcesImpl implements InputSourcesInterface, Observer {
 	}
 
 	private void clearLEDS() {
+		if (gpio == null)
+			return;
+		//if(!default_pin.equalsIgnoreCase(""))
+		//{
+		//	log.debug("Make Default Pin: " + default_pin + " Low");
+		//	GpioPinDigitalOutput pin = pins.get(key);
+		//	pin.low();
+		//}
 		for (String key : pins.keySet()) {
 			log.debug("Make Pin: " + key + " Low");
 			GpioPinDigitalOutput pin = pins.get(key);

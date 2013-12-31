@@ -6,6 +6,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
@@ -18,6 +20,7 @@ public class SourceReader {
 
 	private Logger log = Logger.getLogger(this.getClass());
 	private ConcurrentHashMap<String, Source> sources = new ConcurrentHashMap<String, Source>();
+	private String default_pin = "";
 
 	public SourceReader() {
 		readSources();
@@ -36,6 +39,9 @@ public class SourceReader {
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			Document doc = builder.parse(new File("InputSources.xml"));
 			NodeList listOfChannels = doc.getElementsByTagName("Source");
+			String ex_columns = "/Sources/@default_pin";
+			XPath xPath = XPathFactory.newInstance().newXPath();
+			setDefaultPin(xPath.compile(ex_columns).evaluate(doc));
 			int i = 1;
 			for (int s = 0; s < listOfChannels.getLength(); s++) {
 				boolean addToSource = true;
@@ -108,6 +114,14 @@ public class SourceReader {
 
 	private void setSources(ConcurrentHashMap<String, Source> sources) {
 		this.sources = sources;
+	}
+
+	public String getDefaultPin() {
+		return default_pin;
+	}
+
+	private void setDefaultPin(String default_pin) {
+		this.default_pin = default_pin;
 	}
 
 }

@@ -24,8 +24,10 @@ public class PluginGateWay extends Observable {
 	private static PluginGateWay instance = null;
 	private Logger log = Logger.getLogger(this.getClass());
 	private ConcurrentHashMap<String, Source> sources = new ConcurrentHashMap<String,Source>();
+	private String source_name = "";
 
 	private SimpleDevice simpleDevice = null;
+	private String default_pin = "";
 
 	public static PluginGateWay getInstance() {
 		if (instance == null) {
@@ -61,6 +63,7 @@ public class PluginGateWay extends Observable {
 	 * @param name
 	 */
 	public synchronized void setSourceId(String name) {
+		setSourceName(name);
 		EventSourceChanged ev = new EventSourceChanged();
 		ev.setName(name);
 		fireEvent(ev);
@@ -86,8 +89,22 @@ public class PluginGateWay extends Observable {
 	public void setSources(ConcurrentHashMap<String, Source> sources) {
 		this.sources = sources;
 	}
-	
-	
+
+	public String getSourceName() {
+		return source_name;
+	}
+
+	private void setSourceName(String source_name) {
+		this.source_name = source_name;
+	}
+
+	public void setDefaultSourcePin(String default_pin) {
+		this.default_pin = default_pin;
+	}
+
+	public String getDefaultSourcePin() {
+		return default_pin;
+	}
 }
 
 

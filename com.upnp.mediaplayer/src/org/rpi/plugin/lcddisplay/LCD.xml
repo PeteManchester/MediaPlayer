@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LCD columns="20">
+ 
     <lcdrow><text> Artist:[ARTIST] Album:[ALBUM] Title:[TITLE] Composer:[COMPOSER] Conductor:[CONDUCTOR] Year:[DATE{yyyy}]</text></lcdrow>
     <lcdrow><text>Vol:[VOLUME]  Time:[TIME]</text></lcdrow>
+    <lcdrow><text>Line 3</text></lcdrow>
+    <lcdrow><text>Line 1</text></lcdrow>
+    <lcdstandby><text>[SYS_DATE{yyyy.MM.dd  hh:mm:ss}]</text></lcdstandby>
+    <lcdstandby><text>[SYS_MEMORY_USED] [SYS_CPU_TEMP]C [SYS_BOARD_TYPE]</text></lcdstandby>
 </LCD>

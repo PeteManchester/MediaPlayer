@@ -24,6 +24,7 @@ public class LCDScroller extends Thread {
 	private ConcurrentHashMap<String, String> values = new ConcurrentHashMap<String, String>();
 	private ArrayList<RowDefinition> row_definition = new ArrayList<RowDefinition>();
 	private List<LCDRow> rows = new ArrayList<LCDRow>();
+	private ArrayList<RowDefinition> standby_definition = new ArrayList<RowDefinition>();
 
 	/**
 	 * 
@@ -31,7 +32,7 @@ public class LCDScroller extends Thread {
 	 * @param lcd_columns
 	 * @param row_definition
 	 */
-	public LCDScroller(int lcd_rows, int lcd_columns, ArrayList<RowDefinition> row_definition) {
+	public LCDScroller(int lcd_rows, int lcd_columns, ArrayList<RowDefinition> row_definition, ArrayList<RowDefinition> standby_definition) {
 		LCD_ROWS = lcd_rows;
 		LCD_COLUMNS = lcd_columns;
 		for (int i = 0; i < LCD_ROWS; i++) {
@@ -40,6 +41,7 @@ public class LCDScroller extends Thread {
 			rows.add(row);
 		}
 		this.row_definition = row_definition;
+		this.standby_definition  = standby_definition;
 		init();
 	}
 
@@ -79,6 +81,8 @@ public class LCDScroller extends Thread {
 					} else {
 						//standbyMessage();
 					}
+					log.debug("In Standby");
+					updateRows();
 				} else {
 					bStartup = false;
 				}
@@ -193,6 +197,7 @@ public class LCDScroller extends Thread {
 
 	public synchronized void setStandBy(boolean bStandBy) {
 		this.bStandBy = bStandBy;
+		updateRows();
 	}
 
 	public synchronized boolean isReset() {
@@ -225,7 +230,16 @@ public class LCDScroller extends Thread {
 	 */
 	private void updateRows() {
 		int i = 0;
-		for (RowDefinition def : row_definition) {
+		ArrayList<RowDefinition> list = new ArrayList<RowDefinition>();
+		if(bStandBy)
+		{
+			list = standby_definition;
+		}
+		else
+		{
+			list = row_definition;
+		}
+		for (RowDefinition def : list) {
 			String text = def.getText();
 			//log.debug("Got Row Definition: " + def.getText());
 			for (KeyDefinition rd : def.getKeys()) {
@@ -253,9 +267,33 @@ public class LCDScroller extends Thread {
 
 			if (OSManager.getInstance().isRaspi()) {
 				for (KeyDefinition rd : def.getSystemKeys()) {
+					String key = rd.getKey();
 					try {
-						if (rd.getKey().contains("[SYS_MEMORY_USED]")) {
+						if (key.contains("[SYS_MEMORY_USED]")) {
 							text = text.replace(rd.getName(), convertBytes(SystemInfo.getMemoryUsed()));
+						}
+						else if(key.contains("[SYS_CPU_TEMP")){
+							text = text.replace(rd.getName(), ""+SystemInfo.getCpuTemperature());
+						}
+						else if(key.contains("[SYS_MEMORY_FREE]"))
+						{
+							text = text.replace(rd.getName(), convertBytes(SystemInfo.getMemoryFree()));
+						}
+						else if(key.contains("[SYS_DATE]"))
+						{
+							try
+							{
+							Date date = new Date();
+							text = text.replace(rd.getName(),new SimpleDateFormat(rd.getFormat()).format(date));
+							}
+							catch(Exception e)
+							{
+								
+							}
+						}
+						else if(key.contains("[SYS_BOARD_TYPE]"))
+						{
+							text = text.replace(rd.getName(),SystemInfo.getBoardType().name());
 						}
 					} catch (Exception e) {
 						log.error("Error gettting SystimInfo:", e);

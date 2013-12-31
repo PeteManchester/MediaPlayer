@@ -189,6 +189,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 				}
 			}
 			PluginGateWay.getInstance().setSources(sources);
+			PluginGateWay.getInstance().setDefaultSourcePin(sr.getDefaultPin());
 			for(String key : sources.keySet())
 			{
 				Source s = sources.get(key);
