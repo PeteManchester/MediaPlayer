@@ -8,3 +8,14 @@
 		</upnp:albumArtURI>
 	</item>
 </DIDL-Lite>
+
+<DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/">
+	<item id="radio1">
+		<dc:title xmlns:dc="http://purl.org/dc/elements/1.1/">BBC Radio 1</dc:title>
+		<upnp:class xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">object.item.audioItem</upnp:class>
+		<res bitrate="16000" nrAudioChannels="2" protocolInfo="http-get:*:audio/x-ms-wma:*">http://www.bbc.co.uk/radio/listen/live/r1.asx
+		</res>
+		<upnp:albumArtURI xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/">http://bbc.co.uk/iplayer/img/radio/bbc_radio_one.gif
+		</upnp:albumArtURI>
+	</item>
+</DIDL-Lite>

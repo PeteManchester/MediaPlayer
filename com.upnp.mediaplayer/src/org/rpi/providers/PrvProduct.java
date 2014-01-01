@@ -105,6 +105,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 		PlayManager.getInstance().observeProductEvents(this);
 		//initSources();
 		setPropertySourceIndex(0);
+
 	}
 
 	private CopyOnWriteArrayList<Source> sources = new CopyOnWriteArrayList<Source>();
@@ -156,6 +157,10 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	protected void setStandby(IDvInvocation paramIDvInvocation, boolean paramBoolean) {
 		log.debug("SetStandby: " + paramBoolean + lt.getLogText(paramIDvInvocation));
 		PlayManager.getInstance().setStandby(paramBoolean);
+		if(paramBoolean==false)
+		{
+			updateCurrentSource();
+		}
 	}
 
 	@Override
@@ -284,5 +289,24 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 			break;
 		}
 
+	}
+
+	/**
+	 * Test to see of the initial Source can be obtained.
+	 */
+	public void updateCurrentSource() {
+		try
+		{
+			long source_index = getPropertySourceIndex();
+			Source source = sources.get((int)source_index);
+			String name = source.getName();
+			log.debug("Source Selected: " + name);
+			PluginGateWay.getInstance().setSourceId(name);
+		}
+		catch(Exception e)
+		{
+			log.error(e);
+		}
+		
 	}
 }

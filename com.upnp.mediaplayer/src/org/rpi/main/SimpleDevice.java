@@ -196,6 +196,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 				log.debug("Adding Source: " +s.toString());
 				iProduct.addSource(Config.friendly_name, s.getName(), s.getType(), true);
 			}
+			iProduct.updateCurrentSource();
 			
 		}
 		catch(Exception e)

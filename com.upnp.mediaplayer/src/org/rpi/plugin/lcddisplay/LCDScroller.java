@@ -81,7 +81,7 @@ public class LCDScroller extends Thread {
 					} else {
 						//standbyMessage();
 					}
-					log.debug("In Standby");
+					//log.debug("In Standby");
 					updateRows();
 				} else {
 					bStartup = false;
