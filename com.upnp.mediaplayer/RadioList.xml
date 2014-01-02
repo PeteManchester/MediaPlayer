@@ -214,5 +214,19 @@
 		<image>http://mm.gmstatic.net/26/438974.jpg</image>
 	</Channel>	
 	
+	<Channel>
+		<id>Radio NZ Concert</id>
+		<url>http://www.radionz.co.nz/audio/live/concert.asx</url>
+		<image>http://www.radionz.co.nz/</image>
+	</Channel>
+	
+	<Channel>
+		<id>Radio NZ Concert MMSH</id>
+		<url>mmsh://streaming.radionz.co.nz/concert-mbr?MSWWExt=.asf</url>
+		<image>http://www.radionz.co.nz/</image>
+	</Channel>
+	
+	
+	
 </ChannelList>
 

@@ -63,6 +63,7 @@ public class OSManager {
 	 * @throws IllegalAccessException
 	 */
 	public void addLibraryPath(String pathToAdd) throws Exception {
+		log.debug("Adding Path: " + pathToAdd);
 		Field usrPathsField = ClassLoader.class.getDeclaredField("usr_paths");
 		usrPathsField.setAccessible(true);
 
@@ -129,6 +130,24 @@ public class OSManager {
 						log.debug("Error Determining Raspi OS Type: ", e);
 					}
 					addLibraryPath(full_path);
+				}else if(arch.startsWith("I386"))
+				{
+					String version = System.getProperty("os.version");
+					log.debug("OS is Linux, and arch is i386. Version is: " + version);
+					if(version.toUpperCase().startsWith("3."))
+					{
+						String full_path = path + "/mediaplayer_lib/ohNet/ubuntu/12_04_32bit";
+						addLibraryPath(full_path);
+					}
+				}else if(arch.startsWith("AMD64"))
+				{
+					String version = System.getProperty("os.version");
+					log.debug("OS is Linux, and arch is AMD64. Version is: " + version);
+					if(version.toUpperCase().startsWith("3."))
+					{
+						String full_path = path + "/mediaplayer_lib/ohNet/ubuntu/12_04_64bit";
+						addLibraryPath(full_path);
+					}
 				}
 			}
 		} catch (Exception e) {

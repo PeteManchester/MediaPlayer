@@ -112,6 +112,8 @@ export JAVA_HOME="/usr/lib/jvm/java-7-openjdk-armel" -SOFT FLOAT
 export JAVA_HOME="/usr/lib/jvm/java-7-openjdk-armhf" -HARD FLOAT
 
 export JAVA_HOME="/usr/lib/jvm/jdk-7-oracle-armhf" -HARD FLOAT included Java
+
+Ubuntu export JAVA_HOME="/usr/lib/jvm/java-7-oracle"
 Edit Makefile 
 from libjvm_dir ?= $(JAVA_HOME)/jre/lib/i386/server
 to   libjvm_dir ?= $(JAVA_HOME)/jre/lib/arm/server
@@ -211,6 +213,22 @@ audio_output {
 
 
 speaker-test -c2 -D hw:0,0
+
+UBUNTU 	
+
+sudo passwd root
+
+sudo apt-get install openssh-server
+
+Install Java
+sudo add-apt-repository ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get install oracle-java7-installer
+
+Ubuntu 32bit export JAVA_HOME="/usr/lib/jvm/java-7-oracle"
+Ubuntu 64bit export JAVA_HOME="/usr/lib/jvm/java-7-oracle"
+
+Edit makefile libjvm_dir ?= $(JAVA_HOME)/jre/lib/amd64/server
 
 
 
