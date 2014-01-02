@@ -88,14 +88,13 @@ public class OSManager {
 			String class_name = this.getClass().getName();
 			log.debug("Find Class, ClassName: " + class_name);
 			String path = getFilePath(this.getClass(), true);
+			String full_path = path + "/mediaplayer_lib/ohNet/default";
 			log.debug("Path of this File is: " + path);
 			String os = System.getProperty("os.name").toUpperCase();
 			log.debug("OS Name: " + os);
 			if (os.startsWith("WINDOWS")) {
 				log.debug("Windows OS");
-				// System.setProperty("java.library.path", path +
-				// "/mediaplayer_lib/ohNet/win32");
-				addLibraryPath(path + "/mediaplayer_lib/ohNet/win32");
+				full_path = path + "/mediaplayer_lib/ohNet/win32";
 			} else if (os.startsWith("LINUX")) {
 				String arch = System.getProperty("os.arch").toUpperCase();
 				if (arch.startsWith("ARM")) {
@@ -104,7 +103,7 @@ public class OSManager {
 					// readelf -a /usr/bin/readelf | grep armhf
 					boolean hard_float = true;
 					String command = "dpkg -l | grep 'armhf\\|armel'";
-					String full_path = path + "/mediaplayer_lib/ohNet/raspi/hard_float";
+					full_path = path + "/mediaplayer_lib/ohNet/raspi/hard_float";
 					try {
 						Process pa = Runtime.getRuntime().exec(command);
 						pa.waitFor();
@@ -129,27 +128,25 @@ public class OSManager {
 					} catch (Exception e) {
 						log.debug("Error Determining Raspi OS Type: ", e);
 					}
-					addLibraryPath(full_path);
 				}else if(arch.startsWith("I386"))
 				{
 					String version = System.getProperty("os.version");
-					log.debug("OS is Linux, and arch is i386. Version is: " + version);
+					log.debug("OS is Linux, and arch is  " + arch + ". Version is: " + version);
 					if(version.toUpperCase().startsWith("3."))
 					{
-						String full_path = path + "/mediaplayer_lib/ohNet/ubuntu/12_04_32bit";
-						addLibraryPath(full_path);
+						full_path = path + "/mediaplayer_lib/ohNet/ubuntu/12_04_32bit";
 					}
 				}else if(arch.startsWith("AMD64"))
 				{
 					String version = System.getProperty("os.version");
-					log.debug("OS is Linux, and arch is AMD64. Version is: " + version);
+					log.debug("OS is Linux, and arch is " + arch + ". Version is: " + version);
 					if(version.toUpperCase().startsWith("3."))
 					{
-						String full_path = path + "/mediaplayer_lib/ohNet/ubuntu/12_04_64bit";
-						addLibraryPath(full_path);
+						full_path = path + "/mediaplayer_lib/ohNet/ubuntu/12_04_64bit";
 					}
 				}
 			}
+			addLibraryPath(full_path);
 		} catch (Exception e) {
 			log.error(e);
 		}
