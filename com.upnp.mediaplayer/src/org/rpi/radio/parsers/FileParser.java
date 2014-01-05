@@ -107,6 +107,13 @@ public class FileParser {
 					{
 						return urls.get(0);
 					}
+					log.debug("ContentType was VIDEO/X-MS-ASF but could not parse .asx file, attempt to parse as .PLS File ");
+					PLSParser pls = new PLSParser();
+					urls = pls.getStreamingUrl(url);
+					if((urls.size()>0))
+					{
+						return urls.get(0);
+					}
 				}
 				else if(content_type != null && content_type.contains("AUDIO/MPEG"))
 				{

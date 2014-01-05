@@ -54,7 +54,7 @@ public class ASXParser {
 		} catch (IOException e) {
 			log.error(e);
 		}
-		murls.add(conn.getURL().toString());
+		//murls.add(conn.getURL().toString());
 		return murls;
 	}
 

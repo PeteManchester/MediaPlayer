@@ -21,6 +21,7 @@
 		<id>Absolute DAB</id>
 		<url>http://mp3-ar-128.timlradio.co.uk</url>
 		<image>http://onegoldensquare.com/images/uploads/2010/10/Absolute-radio-logo3.jpg</image>
+ 		<icy_reverse>true</icy_reverse>
 	</Channel>
 
 	<Channel>
@@ -216,7 +217,7 @@
 	
 	<Channel>
 		<id>Radio NZ Concert</id>
-		<url>http://www.radionz.co.nz/audio/live/concert.asx</url>
+		<url>http://streaming.radionz.co.nz/concert-mbr</url>
 		<image>http://www.radionz.co.nz/</image>
 	</Channel>
 	

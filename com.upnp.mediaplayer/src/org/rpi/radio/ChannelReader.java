@@ -46,6 +46,8 @@ public class ChannelReader {
 				String id = null;
 				String url = null;
 				String image = "";
+				String s_icy_reverse ="";
+				boolean icy_reverse = false;
 
 				Node channel = listOfChannels.item(s);
 				if (channel.getNodeType() == Node.ELEMENT_NODE) {
@@ -53,10 +55,16 @@ public class ChannelReader {
 					id = getElement(element, "id");
 					url = getElement(element, "url");
 					image = getElement(element, "image");
+					s_icy_reverse = getElement(element,"icy_reverse");
+					if(s_icy_reverse.equalsIgnoreCase("TRUE"))
+					{
+						icy_reverse = true;
+					}
+
 				}
 
 				if (id != null && url != null) {
-					addChannel(id, url, image, i);
+					addChannel(id, url, image, i,icy_reverse);
 					i++;
 				}
 			}
@@ -94,9 +102,10 @@ public class ChannelReader {
 	 * @param image
 	 * @param id
 	 */
-	private void addChannel(String name, String url, String image, int id) {
+	private void addChannel(String name, String url, String image, int id,boolean icy_reverse) {
 		String m = createMetaData(name, url, image);
 		CustomChannel channel = new CustomChannel(url, m, id,name);
+		channel.setICYReverse(icy_reverse);
 		channels.add(channel);
 		log.debug("Added Channel: " + channel.getUri() + " " + channel.getFullDetails());
 	}

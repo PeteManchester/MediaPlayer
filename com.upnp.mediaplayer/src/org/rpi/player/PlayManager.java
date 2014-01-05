@@ -930,7 +930,14 @@ public class PlayManager implements Observer {
 				EventUpdateTrackMetaText etm = (EventUpdateTrackMetaText) e;
 				if (current_track != null) {
 					if (current_track instanceof CustomChannel) {
-						String metatext = current_track.updateTrack(etm.getArtist(), etm.getTitle());
+						if(current_track.isICYReverse())
+						{
+							String title = etm.getArtist();
+							String artist = etm.getTitle();
+							etm.setTitle(title);
+							etm.setArtist(artist);
+						}
+						String metatext = current_track.updateTrack(etm.getTitle(), etm.getArtist());
 						etm.setMetaText(metatext);
 						obsvInfo.notifyChange(etm);
 					}

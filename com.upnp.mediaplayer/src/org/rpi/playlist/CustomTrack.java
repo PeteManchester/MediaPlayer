@@ -40,6 +40,7 @@ public class CustomTrack {
 	private StringBuffer conductor = new StringBuffer();
 	private String full_text = "";
 	private String date = "";
+	private boolean icy_reverse = false;
 
 	public CustomTrack(String uri, String metadata, int id) {
 		// long startTime = System.nanoTime();
@@ -183,11 +184,6 @@ public class CustomTrack {
 		try {
 			String full_title = title + " - " + artist;
 			full_title = tidyUpString(full_title);
-			// DocumentBuilderFactory factory =
-			// DocumentBuilderFactory.newInstance();
-			// DocumentBuilder builder = factory.newDocumentBuilder();
-			// InputSource insrc = new InputSource(new StringReader(Metadata));
-			// Document doc = builder.parse(insrc);
 			Document doc = getDocument();
 			Node node = doc.getFirstChild();
 			Node item = node.getFirstChild();
@@ -459,6 +455,14 @@ public class CustomTrack {
 
 	public String getFullDetails() {
 		return full_details;
+	}
+
+	public boolean isICYReverse() {
+		return icy_reverse;
+	}
+
+	public void setICYReverse(boolean icy_reverse) {
+		this.icy_reverse = icy_reverse;
 	}
 
 	// public void updateTitle(String title) {
