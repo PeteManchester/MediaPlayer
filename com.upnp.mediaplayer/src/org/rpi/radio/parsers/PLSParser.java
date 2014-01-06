@@ -64,7 +64,18 @@ public class PLSParser {
 		}
 		String trimmed = line.trim();
 		if (trimmed.indexOf("http") >= 0) {
-			return trimmed.substring(trimmed.indexOf("http"));
+			String res = trimmed.substring(trimmed.indexOf("http"));
+			if(res.toUpperCase().endsWith("MSWMEXT=.ASF"))
+			{
+				log.debug("URL ends with MSWExt=.asf " + res);
+				if(res.toUpperCase().startsWith("HTTP://"))
+				{
+					log.debug("URL ends with MSWExt=.asf " + res + " and starts wtih 'http://' " + res);
+					res = "mmsh://" +  res.substring(7);
+					log.debug("URL 'http://' with 'mmsh://' " + res);
+				}
+			}
+			return res;
 		}
 		return "";
 	}

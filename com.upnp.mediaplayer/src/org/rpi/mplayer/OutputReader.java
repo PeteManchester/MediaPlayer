@@ -123,10 +123,10 @@ public class OutputReader extends Thread {
 					if (splits.length > 1) {
 						String[] fulls = splits[0].split("-");
 						if (fulls.length >1) {
-							String title = fulls[0].trim();
-							String artist = fulls[1].trim();
-							if (artist.endsWith("'")) {
-								artist = artist.substring(0, artist.length() - 1);
+							String title = fulls[1].trim();
+							String artist = fulls[0].trim();
+							if (title.endsWith("'")) {
+								title = title.substring(0, title.length() - 1);
 							}
 							//log.debug("ICY IFNO Artist is: " + artist + " Title is: " + title);
 							mPlayer.updateInfo(artist, title);

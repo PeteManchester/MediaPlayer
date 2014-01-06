@@ -3,6 +3,7 @@
 		<id>Revolution 96.2</id>
 		<url>http://cast.secureradiocast.co.uk:8004/;stream.mp3</url>
 		<image>http://www.mediauk.com/logos/100/226.png</image>
+		<icy_reverse>true</icy_reverse>
 	</Channel>
 	
 	<Channel>
@@ -21,7 +22,6 @@
 		<id>Absolute DAB</id>
 		<url>http://mp3-ar-128.timlradio.co.uk</url>
 		<image>http://onegoldensquare.com/images/uploads/2010/10/Absolute-radio-logo3.jpg</image>
- 		<icy_reverse>true</icy_reverse>
 	</Channel>
 
 	<Channel>

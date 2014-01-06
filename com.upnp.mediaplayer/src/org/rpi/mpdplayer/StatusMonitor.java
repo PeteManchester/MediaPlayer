@@ -134,10 +134,10 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 					try {
 						String fulls[] = full_title.split("-");
 						if (fulls.length > 1) {
-							title = fulls[0].trim();
-							artist = fulls[1].trim();
-							if (artist.endsWith("'")) {
-								artist = artist.substring(0, artist.length() - 1);
+							title = fulls[1].trim();
+							artist = fulls[0].trim();
+							if (title.endsWith("'")) {
+								title = title.substring(0, title.length() - 1);
 							}
 						}
 					} catch (Exception e) {
