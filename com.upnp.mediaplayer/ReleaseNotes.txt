@@ -21,4 +21,4 @@ Fixed but with LCDDisplay, I now set the standby status when creating the scroll
 30 December 2013
 Fixed PlayList bug with BubbleUPnP, now on ReadList we only return the tracks requested by the CP, instead of all tracks.
 5 January 2013
-Added 'icy_reverse' attribute to RadioList.xml, allows ICY title and artist to be reversed
+Added 'icy_reverse' attribute to RadioList.xml, allows ICY title and artist to be reversed.
