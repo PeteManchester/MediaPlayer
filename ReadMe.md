@@ -12,7 +12,7 @@ Control Points:
  * PlugPlayer  
  * eLyric  
  * Lumin  
- * BubbleUPnP    
+ * BubbleUPnP/BubbleDS      
 
 
 For installation instructions see the Wiki pages [Wiki Home](https://github.com/PeteManchester/MediaPlayer/wiki)
