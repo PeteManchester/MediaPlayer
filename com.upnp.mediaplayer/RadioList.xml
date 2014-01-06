@@ -227,6 +227,12 @@
 		<image>http://www.radionz.co.nz/</image>
 	</Channel>
 	
+		<Channel>
+		<id>Radio DEEWA</id>
+		<url>http://www.voanews.com/wm/live/radiodeewa.asx</url>
+		<image></image>
+	</Channel>
+	
 	
 	
 </ChannelList>

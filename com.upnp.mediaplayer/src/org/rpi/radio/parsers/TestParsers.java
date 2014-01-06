@@ -24,7 +24,8 @@ public class TestParsers {
 		//asx.getStreamingUrl("http://gmgmp3.shoutcast.streamuk.com:10022/listen.pls");
 		//asx.getStreamingUrl("http://media.on.net/radio/137.m3u");
 		//asx.getURL("http://streamb.wgbh.org:8004/");
-		asx.getURL("http://streaming.radionz.co.nz/concert-mbr");
+		//asx.getURL("http://streaming.radionz.co.nz/concert-mbr");
+		asx.getURL("http://www.voanews.com/wm/live/radiodeewa.asx");
 		
 	}
 

@@ -63,8 +63,9 @@ public class ASXParser {
 			return null;
 		}
 		String trimmed = line.trim();
-		if (trimmed.startsWith("<ref href=\"")) {
-			trimmed = trimmed.replace("<ref href=\"", "");
+		if (trimmed.toLowerCase().startsWith("<ref href=\"")) {
+			trimmed = trimmed.substring(11);
+			//trimmed = trimmed.replace("<ref href=\"", "");
 			trimmed = trimmed.replace("/>", "").trim();
 			if (trimmed.endsWith("\"")) {
 				trimmed = trimmed.replace("\"", "");
