@@ -1,3 +1,5 @@
 bin/
-src/org/sratchpad/
-
+sratchpad/
+*.class
+.idea/
+*.iml
