@@ -47,8 +47,12 @@
     </target>
 
 <!-- compile -->
-    <target name="compile">
-        <javac srcdir="src" classpathref="classpath"/>
+    <target name="prepare">
+        <mkdir dir="${basedir}/build/classes"/>
+    </target>
+
+    <target name="compile" depends="prepare">
+        <javac srcdir="src" classpathref="classpath" destdir="${basedir}/build/classes"/>
     </target>
 
 </project>
