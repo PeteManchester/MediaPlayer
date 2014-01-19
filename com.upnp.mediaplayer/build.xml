@@ -31,23 +31,6 @@
         </fileset>
     </path>
 
-<!-- statically linked libs (ohnet mainly) -->
-    <property name="buildbeta" value="${builddir}/beta" />
-
-    <property name="beta_libs" value="${buildbeta}/libs/ohNet" />
-
-    <property name="beta_libs_raspi" value="${beta_libs}/raspi"/>
-    <property name="beta_libs_raspihf" value="${beta_libs_raspi}/hard_float" />
-    <property name="beta_libs_raspisf" value="${beta_libs_raspi}/soft_float" />
-
-    <property name="beta_libs_ubuntu" value="${beta_libs}/ubuntu"/>
-    <property name="beta_libs_ubuntu32" value="${beta_libs_ubuntu}/12_04_32bit"/>
-    <property name="beta_libs_ubuntu64" value="${beta_libs_ubuntu}/12_04_64bit"/>
-
-    <property name="beta_libs_windoze" value="${beta_libs}/win32"/>
-
-    <property name="beta_libs_jar" value="${buildbeta}/libs/jar" />
-
 <!-- jar dependencies -->
     <property name="buildbetamediaplayer" value="${buildbeta}/mediaplayer" />
 
