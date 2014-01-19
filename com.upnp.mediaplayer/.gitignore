@@ -1,5 +1,5 @@
 bin/
 sratchpad/
-*.class
+build/classes
 .idea/
 *.iml

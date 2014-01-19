@@ -7,14 +7,28 @@
 <!-- lib dir -->
     <property name="lib_dir" value="${basedir}/lib"/>
 
-    <path id="classpath">
+    <path id="classpath_core">
         <fileset dir="${lib_dir}/core">
             <include name="**/*.jar"/>
         </fileset>
+    </path>
+
+    <path id="classpath_plugins">
         <fileset dir="${lib_dir}/plugins">
             <include name="**/*.jar"/>
         </fileset>
+    </path>
 
+    <path id="classpath">
+        <path refid="classpath_core"/>
+        <path refid="classpath_plugins"/>
+    </path>
+
+    <path id="native_libs">
+        <fileset dir="${lib_dir}/native">
+            <include name="**/*.so"/>
+            <include name="**/*.dll"/>
+        </fileset>
     </path>
 
 <!-- statically linked libs (ohnet mainly) -->
@@ -47,12 +61,72 @@
     </target>
 
 <!-- compile -->
+    <property name="target_dir" value="${basedir}/build"/>
+    <property name="classes_dir" value="${target_dir}/classes"/>
+
+    <property name="release_dir" value="${target_dir}/release"/>
+
+    <property name="release_lib_dir_name" value="mediaplayer_lib"/>
+    <property name="release_lib_dir" value="${release_dir}/${release_lib_dir_name}"/>
+    <property name="release_native_lib_dir" value="${release_lib_dir}/ohNet"/>
+
+    <path id="runtime_classpath">
+        <fileset dir="${release_lib_dir}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="clean">
+        <delete dir="${classes_dir}"/>
+        <delete dir="${release_dir}"/>
+    </target>
+
     <target name="prepare">
-        <mkdir dir="${basedir}/build/classes"/>
+        <mkdir dir="${classes_dir}"/>
+        <mkdir dir="${release_dir}"/>
+        <mkdir dir="${release_lib_dir}"/>
+        <mkdir dir="${release_native_lib_dir}"/>
     </target>
 
     <target name="compile" depends="prepare">
-        <javac srcdir="src" classpathref="classpath" destdir="${basedir}/build/classes"/>
+        <javac srcdir="src" classpathref="classpath" destdir="${classes_dir}"/>
     </target>
 
+    <target name="build_jar" depends="clean, compile">
+        <copy todir="${release_lib_dir}">
+            <path refid="classpath_core"/>
+        </copy>
+
+        <!-- construct classpath for Manifest -->
+        <manifestclasspath property="manifest_cp" jarfile="${release_dir}/mediaplayer.jar">
+            <classpath refid="runtime_classpath" />
+        </manifestclasspath>
+
+        <!-- package the whole application (without plugins) into its own jar file -->
+        <jar destfile="${release_dir}/mediaplayer.jar" update="false">
+            <manifest>
+                <attribute name="Main-Class" value="org.rpi.main.StartMe" />
+                <attribute name="Class-Path" value="${manifest_cp}" />
+            </manifest>
+            <fileset dir="${classes_dir}">
+                <exclude name="**/plugin/**" />
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="build_app" depends="build_jar">
+        <!-- copy needed native libs to release -->
+        <copy todir="${release_native_lib_dir}">
+            <path refid="native_libs"/>
+        </copy>
+
+        <!-- copy additional files to application -->
+        <copy file="${basedir}/license.txt" todir="${release_dir}" />
+
+        <copy todir="${release_dir}">
+            <fileset dir="${lib_dir}/application"/>
+        </copy>
+
+
+    </target>
 </project>
