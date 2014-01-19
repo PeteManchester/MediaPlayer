@@ -134,7 +134,7 @@ public class OSManager {
 					log.debug("OS is Linux, and arch is  " + arch + ". Version is: " + version);
 					if(version.toUpperCase().startsWith("3."))
 					{
-						full_path = path + "/mediaplayer_lib/ohNet/ubuntu/12_04_32bit";
+						full_path = path + "/mediaplayer_lib/ohNet/linux/x86";
 					}
 				}else if(arch.startsWith("AMD64"))
 				{
@@ -142,7 +142,7 @@ public class OSManager {
 					log.debug("OS is Linux, and arch is " + arch + ". Version is: " + version);
 					if(version.toUpperCase().startsWith("3."))
 					{
-						full_path = path + "/mediaplayer_lib/ohNet/ubuntu/12_04_64bit";
+						full_path = path + "/mediaplayer_lib/ohNet/linux/amd64";
 					}
 				}
 			}
