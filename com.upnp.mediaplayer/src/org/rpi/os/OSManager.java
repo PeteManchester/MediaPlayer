@@ -25,6 +25,8 @@ public class OSManager {
 	private boolean bUsedPi4J = false;
 	private static OSManager instance = null;
 
+    private static final String OHNET_LIB_DIR = "/mediaplayer_lib/ohNet";
+
 	public static OSManager getInstance() {
 		if (instance == null) {
 			instance = new OSManager();
@@ -33,7 +35,7 @@ public class OSManager {
 	}
 
 	protected OSManager() {
-		SetJavaPath();
+		setJavaPath();
 		if (isRaspi()) {
 			log.debug("This is a Raspi so Attempt to initialize Pi4J");
 			// initPi4J();
@@ -56,7 +58,7 @@ public class OSManager {
 	 * Not clever enough to work out how to override ClassLoader functionality,
 	 * so using this nice trick instead..
 	 * 
-	 * @param path
+	 * @param pathToAdd
 	 * @throws NoSuchFieldException
 	 * @throws SecurityException
 	 * @throws IllegalArgumentException
@@ -81,71 +83,88 @@ public class OSManager {
 	/**
 	 * Set the Path to the ohNetxx.so files
 	 */
-	private void SetJavaPath() {
-		try
-
-		{
+	private void setJavaPath() {
+		try	{
 			String class_name = this.getClass().getName();
 			log.debug("Find Class, ClassName: " + class_name);
 			String path = getFilePath(this.getClass(), true);
-			String full_path = path + "/mediaplayer_lib/ohNet/default";
+			String full_path = path + OHNET_LIB_DIR + "/default";
 			log.debug("Path of this File is: " + path);
 			String os = System.getProperty("os.name").toUpperCase();
 			log.debug("OS Name: " + os);
 			if (os.startsWith("WINDOWS")) {
 				log.debug("Windows OS");
-				full_path = path + "/mediaplayer_lib/ohNet/win32";
-			} else if (os.startsWith("LINUX")) {
+				String osPathName = "windows";
+                String osArch = System.getProperty("os.arch");
+
+                String architecture = "x86";
+                if (osArch.endsWith("64")) {
+                    architecture = "x64";
+                }
+
+                full_path = path + OHNET_LIB_DIR + "/" + osPathName + "/" + architecture;
+			}
+            else if (os.startsWith("LINUX")) {
+                String osPathName = "linux";
+
 				String arch = System.getProperty("os.arch").toUpperCase();
 				if (arch.startsWith("ARM")) {
-					log.debug("Its a Raspi, check for HardFloat or SoftFloat");
-					setRaspi(true);
-					// readelf -a /usr/bin/readelf | grep armhf
-					boolean hard_float = true;
-					String command = "dpkg -l | grep 'armhf\\|armel'";
-					full_path = path + "/mediaplayer_lib/ohNet/raspi/hard_float";
-					try {
-						Process pa = Runtime.getRuntime().exec(command);
-						pa.waitFor();
-						BufferedReader reader = new BufferedReader(new InputStreamReader(pa.getInputStream()));
-						String line;
-						while ((line = reader.readLine()) != null) {
-							log.debug("Result of " + command + " : " + line);
-							if (line.toUpperCase().contains("ARMHF")) {
-								log.debug("HardFloat Raspi Set java.library.path to be: " + path);
+                    String osArch = "arm";
 
-								hard_float = true;
-								break;
-							} else if (line.toUpperCase().contains("ARMEL")) {
-								full_path = path + "/mediaplayer_lib/ohNet/raspi/soft_float";
-								log.debug("SoftFloat Raspi Set java.library.path to be: " + path);
-								hard_float = false;
-								setSoftFloat(true);
-								break;
-							}
+					log.debug("Its an ARM device, now check, which revision");
+                    String elfCommand = "readelf -A " + System.getProperty("java.home") + "/lib/arm/libjava.so";
+                    try {
+                        Process pa = Runtime.getRuntime().exec(elfCommand);
+                        pa.waitFor();
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(pa.getInputStream()));
+                        String line;
+                        String armVersion = "";
+                        Boolean isHardFloat = Boolean.FALSE;
+                        while ((line = reader.readLine()) != null) {
+                            log.debug("Result of " + elfCommand + " : " + line);
+                            if (line.startsWith("Tag_CPU_arch: ")) {
+                                armVersion = line.substring(line.indexOf(" "));
+                            }
+                            else if (line.startsWith("Tag_ABI_VFP_args:")) {
+                                isHardFloat = Boolean.TRUE;
+                            }
+                        }
 
-						}
-					} catch (Exception e) {
-						log.debug("Error Determining Raspi OS Type: ", e);
-					}
-				}else if(arch.startsWith("I386"))
-				{
+                        if (armVersion.equals("v5")) {
+                            osArch = osArch + "v5sf";
+                        }
+                        else if (armVersion.equals("v6")) {
+                            // we believe that a v6 arm is always a raspi (could be a pogoplug...)
+                            setRaspi(true);
+                            if (isHardFloat) {
+                                osArch = osArch + "v6hf";
+                            }
+                            else {
+                                osArch = osArch + "v6sf";
+                            }
+                        }
+                        else {
+                            osArch = osArch + "v7";
+                        }
+
+                    }
+                    catch (Exception e) {
+                            log.debug("Error Determining Raspi OS Type: ", e);
+                    }
+				}
+                else if(arch.startsWith("I386")) {
 					String version = System.getProperty("os.version");
 					log.debug("OS is Linux, and arch is  " + arch + ". Version is: " + version);
-					if(version.toUpperCase().startsWith("3."))
-					{
-						full_path = path + "/mediaplayer_lib/ohNet/ubuntu/12_04_32bit";
-					}
-				}else if(arch.startsWith("AMD64"))
-				{
+    				full_path = path + OHNET_LIB_DIR + "/" + osPathName + "/x86";
+				}
+                else if(arch.startsWith("AMD64")) {
 					String version = System.getProperty("os.version");
 					log.debug("OS is Linux, and arch is " + arch + ". Version is: " + version);
-					if(version.toUpperCase().startsWith("3."))
-					{
-						full_path = path + "/mediaplayer_lib/ohNet/ubuntu/12_04_64bit";
-					}
+					full_path = path + OHNET_LIB_DIR + "/" + osPathName + "/amd64";
 				}
 			}
+
+            log.debug("using full_path " + full_path);
 			addLibraryPath(full_path);
 		} catch (Exception e) {
 			log.error(e);
@@ -156,7 +175,8 @@ public class OSManager {
 	/***
 	 * Get the Path of this ClassFile Must be easier ways to do this!!!!
 	 * 
-	 * @param className
+	 * @param mClass
+     * @param bUseFullNamePath
 	 * @return
 	 */
 	public synchronized String getFilePath(Class mClass, boolean bUseFullNamePath) {
