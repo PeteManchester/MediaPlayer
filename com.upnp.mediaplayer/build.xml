@@ -42,6 +42,8 @@
     <property name="release_lib_dir" value="${release_dir}/${release_lib_dir_name}"/>
     <property name="release_native_lib_dir" value="${release_lib_dir}/ohNet"/>
 
+    <property name="download_dir" value="${basedir}/download"/>
+
     <path id="runtime_classpath">
         <fileset dir="${release_lib_dir}">
             <include name="**/*.jar"/>
@@ -99,5 +101,11 @@
         </copy>
 
         <zip destfile="${target_dir}/mediaplayer.zip" basedir="${release_root_dir}"/>
+    </target>
+
+    <target name="publish_zip" depends="build_app">
+        <delete dir="${download_dir}"/>
+        <mkdir dir="${download_dir}"/>
+        <copy file="${target_dir}/mediaplayer.zip" todir="${download_dir}"/>
     </target>
 </project>
