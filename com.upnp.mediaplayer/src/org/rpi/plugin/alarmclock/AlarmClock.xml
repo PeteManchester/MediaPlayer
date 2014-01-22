@@ -8,6 +8,14 @@
 		<type>Radio</type>
 		<channel>Absolute DAB</channel>
 	</Alarm>
+	
+	<Alarm>
+		<name>Pop Quiz</name>
+		<time>00 25 10 ? * 2-6</time>
+		<volume>100</volume>
+		<type>Radio</type>
+		<channel>BBC Radio 2</channel>
+	</Alarm>
 
 	<Alarm>
 		<name>News Beat</name>
