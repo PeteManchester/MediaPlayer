@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="compile" name="MediaPlayer">
+<project default="publish_zip" name="MediaPlayer">
 
 <!-- target dir -->
     <property name="builddir" value="${basedir}/build" />
@@ -52,23 +52,23 @@
         </fileset>
     </path>
 
-    <target name="clean">
+    <target name="clean" description="cleans up target directory">
         <delete dir="${target_dir}"/>
     </target>
 
-    <target name="prepare">
+    <target name="prepare" description="creates needed directories for the build process">
         <mkdir dir="${classes_dir}"/>
         <mkdir dir="${release_dir}"/>
         <mkdir dir="${release_lib_dir}"/>
         <mkdir dir="${release_native_lib_dir}"/>
     </target>
 
-    <target name="compile" depends="prepare">
+    <target name="compile" depends="prepare" description="compiles all sources using the correct classpath">
         <javac srcdir="src" classpathref="classpath" destdir="${classes_dir}" debug="on"/>
         <!-- exclude name="**/org/scratchpad/*.java" /-->
     </target>
 
-    <target name="build_jar" depends="clean, compile">
+    <target name="build_jar" depends="clean, compile" description="builds a jar file (mediaplayer.jar)">
         <copy todir="${release_lib_dir}">
             <path refid="classpath_core"/>
         </copy>
@@ -90,7 +90,7 @@
         </jar>
     </target>
 
-    <target name="build_app" depends="build_jar">
+    <target name="build_app" depends="build_jar" description="assembles the application in the release directory">
         <!-- copy needed native libs to release -->
         <copy todir="${release_native_lib_dir}">
             <path refid="native_libs"/>
@@ -106,15 +106,23 @@
         <zip destfile="${target_dir}/mediaplayer.zip" basedir="${release_root_dir}"/>
     </target>
 
-    <target name="publish_zip" depends="build_app">
+    <target name="publish_zip" depends="build_app" description="copy the zip of build_app and put it into the download beta directory">
         <delete dir="${beta_download_dir}"/>
         <mkdir dir="${beta_download_dir}"/>
         <copy file="${target_dir}/mediaplayer.zip" todir="${beta_download_dir}"/>
     </target>
 
-    <target name="publish_zip_release" depends="build_app">
+    <target name="publish_zip_release" depends="build_app" description="copy the zip of build_app and put it into the download release directory">
         <delete dir="${release_download_dir}"/>
         <mkdir dir="${release_download_dir}"/>
         <copy file="${target_dir}/mediaplayer.zip" todir="${release_download_dir}"/>
+    </target>
+
+    <target name="run" depends="build_app" description="runs the app from the current directory">
+        <java jar="${release_dir}/mediaplayer.jar" fork="true"/>
+    </target>
+
+    <target name="run_debug" depends="build_app" description="runs the app from the current directory in debug mode">
+        <java jar="${release_dir}/mediaplayer.jar" fork="true"/>
     </target>
 </project>

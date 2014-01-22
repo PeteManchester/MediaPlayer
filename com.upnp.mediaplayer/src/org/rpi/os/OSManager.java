@@ -163,59 +163,15 @@ public class OSManager {
 	}
 
 	/***
-	 * Get the Path of this ClassFile Must be easier ways to do this!!!!
+	 * Get the Path of this ClassFile and/or the path of the current JAR, which should be basically the same! No?
 	 * 
-	 * @param mClass
-	 * @param bUseFullNamePath
 	 * @return
 	 */
 	public synchronized String getFilePath(Class mClass, boolean bUseFullNamePath) {
-		String className = mClass.getName();
-		if (!className.startsWith("/")) {
-			className = "/" + className;
-		}
-		className = className.replace('.', '/');
-		className = className + ".class";
-		log.debug("Find Class, Full ClassName: " + className);
-		String[] splits = className.split("/");
-		String properName = splits[splits.length - 1];
-		log.debug("Find Class, Proper ClassName: " + properName);
-		URL classUrl = mClass.getResource(className);
-		if (classUrl != null) {
-			String temp = classUrl.getFile();
-			log.debug("Find Class, ClassURL: " + temp);
-			if (temp.startsWith("file:")) {
-				temp = temp.substring(5);
-			}
+        String path = mClass.getProtectionDomain().getCodeSource().getLocation().getPath();
+        String retValue = path.substring(0, path.lastIndexOf("/"));
 
-			if (temp.toUpperCase().contains(".JAR!")) {
-				log.debug("Find Class, This is a JarFile: " + temp);
-				String[] parts = temp.split("/");
-				String jar_path = "";
-				for (String part : parts) {
-					if (!part.toUpperCase().endsWith(".JAR!")) {
-						jar_path += part + "/";
-					} else {
-						log.debug("Find File: Returning JarPath: " + jar_path);
-						return jar_path;
-					}
-				}
-			} else {
-				log.debug("Find Class, This is NOT a Jar File: " + temp);
-				if (temp.endsWith(className)) {
-					if (bUseFullNamePath) {
-						temp = temp.substring(0, (temp.length() - className.length()));
-					} else {
-						temp = temp.substring(0, (temp.length() - properName.length()));
-					}
-				}
-			}
-			log.debug("Find File: Returning FilePath: " + temp);
-			return temp;
-		} else {
-			log.debug("Find Class, URL Not Found");
-			return "\nClass '" + className + "' not found in \n'" + System.getProperty("java.class.path") + "'";
-		}
+        return retValue;
 	}
 
 	/***
@@ -223,7 +179,7 @@ public class OSManager {
 	 */
 	public void loadPlugins() {
 		try {
-			log.info("Start of LoadPlugnis");
+			log.info("Start of LoadPlugins");
 			pm = PluginManagerFactory.createPluginManager();
 			List<File> files = listFiles("plugins");
 			if (files == null)
@@ -285,7 +241,7 @@ public class OSManager {
 	 * @return
 	 */
 	public boolean isSoftFloat() {
-		return !isHardFloatAbi();
+		return !isHardFloat();
 	}
 
 	/**
