@@ -43,6 +43,8 @@
     <property name="release_native_lib_dir" value="${release_lib_dir}/ohNet"/>
 
     <property name="download_dir" value="${basedir}/download"/>
+    <property name="beta_download_dir" value="${download_dir}/beta"/>
+    <property name="release_download_dir" value="${download_dir}/release"/>
 
     <path id="runtime_classpath">
         <fileset dir="${release_lib_dir}">
@@ -104,8 +106,14 @@
     </target>
 
     <target name="publish_zip" depends="build_app">
-        <delete dir="${download_dir}"/>
-        <mkdir dir="${download_dir}"/>
-        <copy file="${target_dir}/mediaplayer.zip" todir="${download_dir}"/>
+        <delete dir="${beta_download_dir}"/>
+        <mkdir dir="${beta_download_dir}"/>
+        <copy file="${target_dir}/mediaplayer.zip" todir="${beta_download_dir}"/>
+    </target>
+
+    <target name="publish_zip_release" depends="build_app">
+        <delete dir="${release_download_dir}"/>
+        <mkdir dir="${release_download_dir}"/>
+        <copy file="${target_dir}/mediaplayer.zip" todir="${release_download_dir}"/>
     </target>
 </project>
