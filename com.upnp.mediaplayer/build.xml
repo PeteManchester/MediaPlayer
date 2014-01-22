@@ -123,6 +123,11 @@
     </target>
 
     <target name="run_debug" depends="build_app" description="runs the app from the current directory in debug mode">
-        <java jar="${release_dir}/mediaplayer.jar" fork="true"/>
+        <java jar="${release_dir}/mediaplayer.jar" fork="true">
+            <jvmarg value="-Xnoagent"/>
+            <jvmarg value="-Djava.compiler=NONE"/>
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"/>
+        </java>
     </target>
 </project>
