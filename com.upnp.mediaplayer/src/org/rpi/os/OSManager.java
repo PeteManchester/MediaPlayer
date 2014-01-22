@@ -23,7 +23,7 @@ import com.pi4j.io.gpio.GpioController;
 
 public class OSManager {
 
-	private Logger log = Logger.getLogger(this.getClass());
+	private static Logger log = Logger.getLogger(OSManager.class);
 	private boolean bRaspi = false;
 	private boolean bSoftFloat = false;
 	private PluginManager pm = null;
@@ -119,7 +119,10 @@ public class OSManager {
 					try {
                         String armVersion = getReadElfTag("Tag_CPU_arch");
 
-						if (armVersion.equals("v5")) {
+						if (armVersion == null) {
+                            log.error("Cannot determine ARM version...");
+                            osArch = "UNKNOWN";
+                        } else if (armVersion.equals("v5")) {
 							osArch = osArch + "v5sf";
 						} else if (armVersion.equals("v6")) {
 							// we believe that a v6 arm is always a raspi (could
@@ -134,11 +137,13 @@ public class OSManager {
 						} else if (armVersion.equals("v7")) {
 							osArch = osArch + "v7";
 						} else {
-                            log.error("Unknown ARCH version...");
+                            log.error("Unknown ARM version...(" + armVersion + ")");
                             osArch = "UNKNOWN";
                         }
 
-    					full_path = path + OHNET_LIB_DIR + "/" + osPathName + "/" + osArch;
+                        if (!osArch.equals("UNKNOWN"))  {
+                            full_path = path + OHNET_LIB_DIR + "/" + osPathName + "/" + osArch;
+                        }
 					} catch (Exception e) {
 						log.debug("Error Determining ARM OS Type: ", e);
 					}
@@ -348,8 +353,13 @@ public class OSManager {
                 }
             }
         }
-        catch (IOException ioe) { ioe.printStackTrace(); }
-        catch (InterruptedException ie) { ie.printStackTrace(); }
+        catch (IOException ioe) {
+            log.error("IOException during readelf operation", ioe);
+        }
+        catch (InterruptedException ie) {
+            log.error("InterruptedEx during readelf operation", ie);
+
+        }
         return tagValue;
     }
 

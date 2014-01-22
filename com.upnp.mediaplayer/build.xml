@@ -110,12 +110,14 @@
         <delete dir="${beta_download_dir}"/>
         <mkdir dir="${beta_download_dir}"/>
         <copy file="${target_dir}/mediaplayer.zip" todir="${beta_download_dir}"/>
+        <copy file="${release_dir}/mediaplayer.jar" todir="${beta_download_dir}"/>
     </target>
 
     <target name="publish_zip_release" depends="build_app" description="copy the zip of build_app and put it into the download release directory">
         <delete dir="${release_download_dir}"/>
         <mkdir dir="${release_download_dir}"/>
         <copy file="${target_dir}/mediaplayer.zip" todir="${release_download_dir}"/>
+        <copy file="${release_dir}/mediaplayer.jar" todir="${release_download_dir}"/>
     </target>
 
     <target name="run" depends="build_app" description="runs the app from the current directory">
