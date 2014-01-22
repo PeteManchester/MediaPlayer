@@ -116,25 +116,8 @@ public class OSManager {
 					String osArch = "arm";
 
 					log.debug("Its an ARM device, now check, which revision");
-					String elfCommand = "readelf -A " + System.getProperty("java.home") + "/lib/arm/libjava.so";
 					try {
-						Process pa = Runtime.getRuntime().exec(elfCommand);
-						pa.waitFor();
-						BufferedReader reader = new BufferedReader(new InputStreamReader(pa.getInputStream()));
-						String line;
-						String armVersion = "";
-						Boolean isHardFloat = Boolean.FALSE;
-						while ((line = reader.readLine()) != null) {
-							line = line.trim();
-							log.debug("Result of " + elfCommand + " : " + line);
-							if (line.startsWith("Tag_CPU_arch:")) {
-								armVersion = line.substring(line.indexOf(" ")).trim();
-								log.debug("ARMVersion:'" + armVersion + "'");
-							} else if (line.startsWith("Tag_ABI_VFP_args:")) {
-								log.debug("ARM is HardFloat");
-								isHardFloat = Boolean.TRUE;
-							}
-						}
+                        String armVersion = getReadElfTag("Tag_CPU_arch");
 
 						if (armVersion.equals("v5")) {
 							osArch = osArch + "v5sf";
@@ -143,20 +126,19 @@ public class OSManager {
 							// be a pogoplug...)
 							log.debug("We think this is a Raspi");
 							setRaspi(true);
-							if (isHardFloat) {
+							if (isHardFloat()) {
 								osArch = osArch + "v6hf";
 							} else {
 								osArch = osArch + "v6sf";
 							}
-						} else {
+						} else if (armVersion.equals("v7")) {
 							osArch = osArch + "v7";
-						}
-						if (!osArch.equalsIgnoreCase("arm")) {
-							full_path = path + OHNET_LIB_DIR + "/" + osPathName + "/" + osArch;
 						} else {
-							log.debug("Unable to determine ARM OS Type: " + armVersion);
-						}
+                            log.error("Unknown ARCH version...");
+                            osArch = "UNKNOWN";
+                        }
 
+    					full_path = path + OHNET_LIB_DIR + "/" + osPathName + "/" + osArch;
 					} catch (Exception e) {
 						log.debug("Error Determining ARM OS Type: ", e);
 					}
@@ -173,6 +155,7 @@ public class OSManager {
 
 			log.debug("using full_path " + full_path);
 			addLibraryPath(full_path);
+
 		} catch (Exception e) {
 			log.error(e);
 		}
@@ -338,7 +321,7 @@ public class OSManager {
      * https://github.com/sgothel/gluegen/blob/master/LICENSE.txt
      *
      */
-    public static boolean isHardFloatAbi() {
+    public static boolean isHardFloat() {
 
         return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
             private final String[] gnueabihf = new String[]{"gnueabihf", "armhf"};
