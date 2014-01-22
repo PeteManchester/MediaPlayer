@@ -197,6 +197,7 @@ sudo cp /etc/mpd.conf /etc/mpd.confORIGINAL
 Get bitrate and depth of current track
 cat /proc/asound/card0/pcm0p/sub0/hw_params
 
+
 List devices aplay -l
 
 /etc/mpd.conf
@@ -229,6 +230,18 @@ Ubuntu 32bit export JAVA_HOME="/usr/lib/jvm/java-7-oracle"
 Ubuntu 64bit export JAVA_HOME="/usr/lib/jvm/java-7-oracle"
 
 Edit makefile libjvm_dir ?= $(JAVA_HOME)/jre/lib/amd64/server
+
+
+ARCH Linux
+
+http://www.solid-run.com/mw/index.php?title=MPD_on_ArchLinux
+
+hostnamectl set-hostname myhostname
+
+wifi-menu -o
+systemctl enable netctl-auto@wlan0.service
+
+pacman -S libcups
 
 
 

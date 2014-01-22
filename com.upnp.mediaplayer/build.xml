@@ -62,7 +62,8 @@
     </target>
 
     <target name="compile" depends="prepare">
-        <javac srcdir="src" classpathref="classpath" destdir="${classes_dir}"/>
+        <javac srcdir="src" classpathref="classpath" destdir="${classes_dir}" debug="on"/>
+        <!-- exclude name="**/org/scratchpad/*.java" /-->
     </target>
 
     <target name="build_jar" depends="clean, compile">

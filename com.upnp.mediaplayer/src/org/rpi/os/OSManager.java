@@ -121,11 +121,14 @@ public class OSManager {
                         String armVersion = "";
                         Boolean isHardFloat = Boolean.FALSE;
                         while ((line = reader.readLine()) != null) {
+                        	line = line.trim();
                             log.debug("Result of " + elfCommand + " : " + line);
-                            if (line.startsWith("Tag_CPU_arch: ")) {
-                                armVersion = line.substring(line.indexOf(" "));
+                            if (line.startsWith("Tag_CPU_arch:")) {
+                                armVersion = line.substring(line.indexOf(" ")).trim();
+                                log.debug("ARMVersion:'" + armVersion+"'");
                             }
                             else if (line.startsWith("Tag_ABI_VFP_args:")) {
+                            	log.debug("ARM is HardFloat");
                                 isHardFloat = Boolean.TRUE;
                             }
                         }
@@ -135,6 +138,7 @@ public class OSManager {
                         }
                         else if (armVersion.equals("v6")) {
                             // we believe that a v6 arm is always a raspi (could be a pogoplug...)
+                        	log.debug("We think this is a Raspi");
                             setRaspi(true);
                             if (isHardFloat) {
                                 osArch = osArch + "v6hf";
@@ -146,6 +150,7 @@ public class OSManager {
                         else {
                             osArch = osArch + "v7";
                         }
+                        full_path = path + OHNET_LIB_DIR + "/" + osPathName + "/" + osArch;
 
                     }
                     catch (Exception e) {

@@ -35,7 +35,7 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 	public MPDPlayer() {
 		tcp = new TCPConnector(this);
 		tcp.addObserver(this);
-		List<String> param = new ArrayList<>();
+		List<String> param = new ArrayList<String>();
 		param.add("1");
 		tcp.sendCommand(tcp.createCommand("consume", param));
 	}
@@ -92,7 +92,7 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 
 	@Override
 	public void pause(boolean bPause) {
-		List<String> params = new ArrayList<>();
+		List<String> params = new ArrayList<String>();
 		if (bPause) {
 			params.add("1");
 		} else {
@@ -149,7 +149,7 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 
 	@Override
 	public void seekAbsolute(long seconds) {
-		List<String> params = new ArrayList<>();
+		List<String> params = new ArrayList<String>();
 		params.add("0");
 		params.add("" + seconds);
 		tcp.sendCommand(tcp.createCommand("seek", params));
