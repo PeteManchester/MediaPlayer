@@ -1,1 +1,9 @@
 .idea/
+com.upnp.mediaplayer/src/org/scratchpad
+com.upnp.mediaplayer/src/org/scratchpad/ClassPathHack.java
+com.upnp.mediaplayer/src/org/scratchpad/ClasspathHacker.java
+com.upnp.mediaplayer/src/org/scratchpad/JarClassLoader.java
+com.upnp.mediaplayer/src/org/scratchpad/ResourceList.java
+com.upnp.mediaplayer/src/org/scratchpad/StartJarClassLoader.java
+com.upnp.mediaplayer/src/org/scratchpad/AVTransportEvent.xml
+com.upnp.mediaplayer/src/org/scratchpad/MyXML.xml

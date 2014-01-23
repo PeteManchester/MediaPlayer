@@ -14,7 +14,7 @@ import org.rpi.player.events.EventTimeUpdate;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackInfo;
 import org.rpi.playlist.CustomTrack;
-import org.rpi.utils.lt;
+import org.rpi.utils.Utils;
 
 public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Observer {
 
@@ -139,14 +139,14 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 
 	@Override
 	protected String getCurrentTransportActions(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("Transport Actions" + lt.getLogText(paramIDvInvocation));
+		log.debug("Transport Actions" + Utils.getLogText(paramIDvInvocation));
 		return "Play,Pause,Stop,Seek,Next,Previous";
 		// return "";
 	}
 
 	@Override
 	protected GetDeviceCapabilities getDeviceCapabilities(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("GetDevice Capabilities" + lt.getLogText(paramIDvInvocation));
+		log.debug("GetDevice Capabilities" + Utils.getLogText(paramIDvInvocation));
 		String cap = "vendor-defined ,NOT_IMPLEMENTED,NONE,NETWORK,MICRO-MV,HDD,LD,DAT,DVD-AUDIO,DVD-RAM,DVD-RW,DVD+RW,DVD-R,DVD-VIDEO,DVD-ROM,MD-PICTURE,MD-AUDIO,SACD,VIDEO-CD,CD-RW,CD-R,CD-DA,CD-ROM,HI8,VIDEO8,VHSC,D-VHS,S-VHS,W-VHS,VHS,MINI-DV,DV,UNKNOWN";
 		String rec = " vendor-defined ,NOT_IMPLEMENTED,2:HIGH,1:MEDIUM,0:BASIC,2:SP,1:LP,0:EP";
 		// GetDeviceCapabilities dev = new
@@ -159,7 +159,7 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 
 	@Override
 	protected GetMediaInfo getMediaInfo(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("GetMediaInfo" + lt.getLogText(paramIDvInvocation));
+		log.debug("GetMediaInfo" + Utils.getLogText(paramIDvInvocation));
 		// createEvent();
 		GetMediaInfo info = new GetMediaInfo(0, track_duration, track_uri, track_metadata, "", "", "UNKNOWN", "UNKNOWN", "UNKNOWN");
 		// GetMediaInfo info = new GetMediaInfo(0, "00:00:00", "", "", "", "",
@@ -169,7 +169,7 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 
 	@Override
 	protected GetPositionInfo getPositionInfo(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("Get Position Info" + lt.getLogText(paramIDvInvocation));
+		log.debug("Get Position Info" + Utils.getLogText(paramIDvInvocation));
 		GetPositionInfo info = new GetPositionInfo(0, track_duration, track_metadata, track_uri, track_time, "00:00:00", 2147483647, 2147483647);
 		// GetPositionInfo info = new GetPositionInfo(1, "00:00:00", "", "",
 		// "00:00:00", "NOT_IMPLEMENTED", 2147483647, 2147483647);
@@ -178,7 +178,7 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 
 	@Override
 	protected GetTransportInfo getTransportInfo(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("GetTransport Info" + lt.getLogText(paramIDvInvocation));
+		log.debug("GetTransport Info" + Utils.getLogText(paramIDvInvocation));
 		// createEvent();
 		GetTransportInfo info = new GetTransportInfo(mStatus.toUpperCase(), "OK", "1");
 		return info;
@@ -186,26 +186,26 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 
 	@Override
 	protected GetTransportSettings getTransportSettings(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("GetTransportSettings" + lt.getLogText(paramIDvInvocation));
+		log.debug("GetTransportSettings" + Utils.getLogText(paramIDvInvocation));
 		GetTransportSettings settings = new GetTransportSettings("NORMAL", "0:BASIC");
 		return settings;
 	}
 
 	@Override
 	protected void next(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("Next: " + paramLong + lt.getLogText(paramIDvInvocation));
+		log.debug("Next: " + paramLong + Utils.getLogText(paramIDvInvocation));
 		PlayManager.getInstance().nextTrack();
 	}
 
 	@Override
 	protected void pause(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("Pause" + paramLong + lt.getLogText(paramIDvInvocation));
+		log.debug("Pause" + paramLong + Utils.getLogText(paramIDvInvocation));
 		PlayManager.getInstance().pause();
 	}
 
 	@Override
 	protected void play(IDvInvocation paramIDvInvocation, long paramLong, String paramString) {
-		log.debug("Play: " + paramString + lt.getLogText(paramIDvInvocation));
+		log.debug("Play: " + paramString + Utils.getLogText(paramIDvInvocation));
 		if (!track_uri.equalsIgnoreCase("")) {
 			if (mStatus.equalsIgnoreCase("PAUSED_PLAYBACK")) {
 				PlayManager.getInstance().play();
@@ -223,7 +223,7 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 
 	@Override
 	protected void previous(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("Previous: " + paramLong + lt.getLogText(paramIDvInvocation));
+		log.debug("Previous: " + paramLong + Utils.getLogText(paramIDvInvocation));
 		PlayManager.getInstance().previousTrack();
 	}
 
@@ -234,7 +234,7 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 
 	@Override
 	protected void seek(IDvInvocation paramIDvInvocation, long paramLong, String paramString1, String paramString2) {
-		log.debug("Seek: " + paramString2 + lt.getLogText(paramIDvInvocation));
+		log.debug("Seek: " + paramString2 + Utils.getLogText(paramIDvInvocation));
 		PlayManager.getInstance().seekAbsolute(getSeconds(paramString2));
 	}
 
@@ -255,29 +255,29 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 
 	@Override
 	protected void setAVTransportURI(IDvInvocation paramIDvInvocation, long paramLong, String url, String meta_data) {
-		log.debug("SetAVTransport: " + paramLong + " URL: " + url + " MetaData: " + meta_data + lt.getLogText(paramIDvInvocation));
+		log.debug("SetAVTransport: " + paramLong + " URL: " + url + " MetaData: " + meta_data + Utils.getLogText(paramIDvInvocation));
 		track_uri = url;
 		track_metadata = meta_data;
 	}
 
 	@Override
 	protected void setNextAVTransportURI(IDvInvocation paramIDvInvocation, long paramLong, String paramString1, String paramString2) {
-		log.debug("SetNexAVTransport: " + paramLong + " " + paramString1 + " " + paramString2 + lt.getLogText(paramIDvInvocation));
+		log.debug("SetNexAVTransport: " + paramLong + " " + paramString1 + " " + paramString2 + Utils.getLogText(paramIDvInvocation));
 	}
 
 	@Override
 	protected void setPlayMode(IDvInvocation paramIDvInvocation, long paramLong, String paramString) {
-		log.debug("SetPlayMode: " + paramLong + " " + paramString + lt.getLogText(paramIDvInvocation));
+		log.debug("SetPlayMode: " + paramLong + " " + paramString + Utils.getLogText(paramIDvInvocation));
 	}
 
 	@Override
 	protected void setRecordQualityMode(IDvInvocation paramIDvInvocation, long paramLong, String paramString) {
-		log.debug("SetRecordQuality: " + paramLong + " " + paramString + lt.getLogText(paramIDvInvocation));
+		log.debug("SetRecordQuality: " + paramLong + " " + paramString + Utils.getLogText(paramIDvInvocation));
 	}
 
 	@Override
 	protected void stop(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("Stop: " + paramLong + lt.getLogText(paramIDvInvocation));
+		log.debug("Stop: " + paramLong + Utils.getLogText(paramIDvInvocation));
 		PlayManager.getInstance().stop();
 	}
 

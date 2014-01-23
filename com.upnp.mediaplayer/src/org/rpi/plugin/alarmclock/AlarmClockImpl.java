@@ -2,7 +2,6 @@ package org.rpi.plugin.alarmclock;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.net.URL;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;

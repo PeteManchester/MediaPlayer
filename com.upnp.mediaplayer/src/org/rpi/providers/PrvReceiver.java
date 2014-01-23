@@ -6,7 +6,7 @@ import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgReceiver1;
 import org.rpi.config.Config;
 import org.rpi.playlist.CustomTrack;
-import org.rpi.utils.lt;
+import org.rpi.utils.Utils;
 
 public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 {
 
@@ -40,13 +40,13 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 {
 	
 	@Override
 	protected String protocolInfo(IDvInvocation paramIDvInvocation) {
-		log.debug("getProtocolInfo" + lt.getLogText(paramIDvInvocation));
+		log.debug("getProtocolInfo" + Utils.getLogText(paramIDvInvocation));
 		return getPropertyProtocolInfo();
 	}
 	
 	@Override
 	protected Sender sender(IDvInvocation paramIDvInvocation) {
-		log.debug("Sender" + lt.getLogText(paramIDvInvocation));
+		log.debug("Sender" + Utils.getLogText(paramIDvInvocation));
 		Sender sender = new Sender("", "");
 		// TODO Auto-generated method stub
 		return sender;
@@ -54,7 +54,7 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 {
 	
 	@Override
 	protected void play(IDvInvocation paramIDvInvocation) {
-		log.debug("Play" + lt.getLogText(paramIDvInvocation));
+		log.debug("Play" + Utils.getLogText(paramIDvInvocation));
 		bPlay = true;
 		// TODO Auto-generated method stub
 		//super.play(arg0);
@@ -64,7 +64,7 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 {
 	
 	@Override
 	protected void setSender(IDvInvocation paramIDvInvocation, String uri, String metadata) {
-		log.debug("SetSender, URL: " + uri + " MetaData: " + metadata + lt.getLogText(paramIDvInvocation));
+		log.debug("SetSender, URL: " + uri + " MetaData: " + metadata + Utils.getLogText(paramIDvInvocation));
 		propertiesLock();
 		setPropertyUri(uri);
 		propertiesUnlock();
@@ -78,14 +78,14 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 {
 	
 	@Override
 	protected void stop(IDvInvocation paramIDvInvocation) {
-		log.debug("Stop" + lt.getLogText(paramIDvInvocation));
+		log.debug("Stop" + Utils.getLogText(paramIDvInvocation));
 		// TODO Auto-generated method stub
 		//super.stop(arg0);
 	}
 	
 	@Override
 	protected String transportState(IDvInvocation paramIDvInvocation) {
-		log.debug("Transport State" + lt.getLogText(paramIDvInvocation));
+		log.debug("Transport State" + Utils.getLogText(paramIDvInvocation));
 		return getPropertyTransportState();
 	}
 

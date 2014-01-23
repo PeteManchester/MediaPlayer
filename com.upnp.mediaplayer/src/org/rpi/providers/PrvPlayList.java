@@ -19,7 +19,7 @@ import org.rpi.player.events.EventPlayListUpdateShuffle;
 import org.rpi.playlist.CustomTrack;
 import org.rpi.playlist.PlayListReader;
 import org.rpi.playlist.PlayListWriter;
-import org.rpi.utils.lt;
+import org.rpi.utils.Utils;
 
 public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Observer {
 
@@ -92,19 +92,19 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 	}
 
 	protected void pause(IDvInvocation paramIDvInvocation) {
-		log.debug("Pause" + lt.getLogText(paramIDvInvocation));
+		log.debug("Pause" + Utils.getLogText(paramIDvInvocation));
 		iPlayer.pause(true);
 	};
 
 	protected void play(IDvInvocation paramIDvInvocation) {
-		log.debug("Play" + lt.getLogText(paramIDvInvocation));
+		log.debug("Play" + Utils.getLogText(paramIDvInvocation));
 		if (tracker.setRequest("PLAY")) {
 			iPlayer.play();
 		}
 	};
 
 	protected void stop(IDvInvocation paramIDvInvocation) {
-		log.debug("Stop" + lt.getLogText(paramIDvInvocation));
+		log.debug("Stop" + Utils.getLogText(paramIDvInvocation));
 		iPlayer.stop();
 	};
 
@@ -135,7 +135,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 			log.error("Maximum Size of PlayList Reached...");
 			return -1;
 		}
-		log.debug("Insert After: " + aAfterId + " URI: " + aUri + " MetaDate: \r\n" + aMetaData + lt.getLogText(paramIDvInvocation));
+		log.debug("Insert After: " + aAfterId + " URI: " + aUri + " MetaDate: \r\n" + aMetaData + Utils.getLogText(paramIDvInvocation));
 		int id = getNext_id();
 		CustomTrack track = new CustomTrack(aUri, aMetaData, id);
 		int iCount = 0;
@@ -160,14 +160,14 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 	};
 
 	protected void deleteAll(IDvInvocation paramIDvInvocation) {
-		log.debug("DeleteAll" + lt.getLogText(paramIDvInvocation));
+		log.debug("DeleteAll" + Utils.getLogText(paramIDvInvocation));
 		tracks.clear();
 		UpdateIdArray();
 		iPlayer.deleteAllTracks();
 	};
 
 	protected void deleteId(IDvInvocation paramIDvInvocation, long iD) {
-		log.debug("DeleteId: " + iD + lt.getLogText(paramIDvInvocation));
+		log.debug("DeleteId: " + iD + Utils.getLogText(paramIDvInvocation));
 		int iCount = 0;
 		boolean found = false;
 		for (CustomTrack t : tracks) {
@@ -190,42 +190,42 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 	};
 
 	protected long id(IDvInvocation paramIDvInvocation) {
-		log.debug("GetId" + lt.getLogText(paramIDvInvocation));
+		log.debug("GetId" + Utils.getLogText(paramIDvInvocation));
 		long id = getPropertyId();
 		return id;
 	};
 
 	protected String protocolInfo(IDvInvocation paramIDvInvocation) {
 		String protocolInfo = getPropertyProtocolInfo();
-		log.debug("GetProtocolInfo: \r\n" + protocolInfo + lt.getLogText(paramIDvInvocation));
+		log.debug("GetProtocolInfo: \r\n" + protocolInfo + Utils.getLogText(paramIDvInvocation));
 		return protocolInfo;
 	};
 
 	protected IdArray idArray(IDvInvocation paramIDvInvocation) {
-		log.debug("GetIdArray" + lt.getLogText(paramIDvInvocation));
+		log.debug("GetIdArray" + Utils.getLogText(paramIDvInvocation));
 		byte[] array = getPropertyIdArray();
 		DvProviderAvOpenhomeOrgPlaylist1.IdArray idArray = new IdArray(0, array);
 		return idArray;
 	};
 
 	protected boolean idArrayChanged(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("GetIdArrayChanged" + lt.getLogText(paramIDvInvocation));
+		log.debug("GetIdArrayChanged" + Utils.getLogText(paramIDvInvocation));
 		boolean changed = false;
 		return changed;
 	};
 
 	protected void next(IDvInvocation paramIDvInvocation) {
-		log.debug("Next" + lt.getLogText(paramIDvInvocation));
+		log.debug("Next" + Utils.getLogText(paramIDvInvocation));
 		iPlayer.nextTrack();
 	};
 
 	protected void previous(IDvInvocation paramIDvInvocation) {
-		log.debug("Previous" + lt.getLogText(paramIDvInvocation));
+		log.debug("Previous" + Utils.getLogText(paramIDvInvocation));
 		iPlayer.previousTrack();
 	};
 
 	protected Read read(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("Read Index: " + paramLong + lt.getLogText(paramIDvInvocation));
+		log.debug("Read Index: " + paramLong + Utils.getLogText(paramIDvInvocation));
 		try {
 			for (CustomTrack t : tracks) {
 				if (t.getId() == paramLong) {
@@ -242,64 +242,64 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 
 	protected String readList(IDvInvocation paramIDvInvocation, String ids) {
 
-		log.debug("ReadList: " + ids + lt.getLogText(paramIDvInvocation));
+		log.debug("ReadList: " + ids + Utils.getLogText(paramIDvInvocation));
 		return getList(ids);
 	};
 
 	protected boolean repeat(IDvInvocation paramIDvInvocation) {
 		boolean repeat = getPropertyRepeat();
-		log.debug("Repeat: " + repeat + lt.getLogText(paramIDvInvocation));
+		log.debug("Repeat: " + repeat + Utils.getLogText(paramIDvInvocation));
 		return repeat;
 	};
 
 	protected void seekId(IDvInvocation paramIDvInvocation, long id) {
-		log.debug("SeekId: " + id + lt.getLogText(paramIDvInvocation));
+		log.debug("SeekId: " + id + Utils.getLogText(paramIDvInvocation));
 		tracker.setRequest("SEEKID");
 		iPlayer.playTrackId(id);
 	};
 
 	protected void seekIndex(IDvInvocation paramIDvInvocation, long id) {
-		log.debug("SeekIndex: " + id + lt.getLogText(paramIDvInvocation));
+		log.debug("SeekIndex: " + id + Utils.getLogText(paramIDvInvocation));
 		tracker.setRequest("SEEKINDEX");
 		iPlayer.playIndex(id);
 	};
 
 	protected void seekSecondAbsolute(IDvInvocation paramIDvInvocation, long seconds) {
-		log.debug("SeekSecondAbsolute: " + seconds + lt.getLogText(paramIDvInvocation));
+		log.debug("SeekSecondAbsolute: " + seconds + Utils.getLogText(paramIDvInvocation));
 		iPlayer.seekAbsolute(seconds);
 	};
 
 	protected void seekSecondRelative(IDvInvocation paramIDvInvocation, int paramInt) {
-		log.debug("SeekSecondRelative: " + paramInt + lt.getLogText(paramIDvInvocation));
+		log.debug("SeekSecondRelative: " + paramInt + Utils.getLogText(paramIDvInvocation));
 	};
 
 	protected void setRepeat(IDvInvocation paramIDvInvocation, boolean repeat) {
-		log.debug("SetRepeat: " + repeat + lt.getLogText(paramIDvInvocation));
+		log.debug("SetRepeat: " + repeat + Utils.getLogText(paramIDvInvocation));
 		setPropertyRepeat(repeat);
 		iPlayer.setRepeatPlayList(repeat);
 	};
 
 	protected void setShuffle(IDvInvocation paramIDvInvocation, boolean paramBoolean) {
-		log.debug("SetShuffle: " + paramBoolean + lt.getLogText(paramIDvInvocation));
+		log.debug("SetShuffle: " + paramBoolean + Utils.getLogText(paramIDvInvocation));
 		setPropertyShuffle(paramBoolean);
 		iPlayer.setShuffle(paramBoolean);
 	};
 
 	protected boolean shuffle(IDvInvocation paramIDvInvocation) {
 		boolean shuffle = getPropertyShuffle();
-		log.debug("GetShuffle: " + shuffle + lt.getLogText(paramIDvInvocation));
+		log.debug("GetShuffle: " + shuffle + Utils.getLogText(paramIDvInvocation));
 		return shuffle;
 	};
 
 	protected long tracksMax(IDvInvocation paramIDvInvocation) {
 		long tracksMax = getPropertyTracksMax();
-		log.debug("GetTracksMax: " + tracksMax + lt.getLogText(paramIDvInvocation));
+		log.debug("GetTracksMax: " + tracksMax + Utils.getLogText(paramIDvInvocation));
 		return tracksMax;
 	};
 
 	protected String transportState(IDvInvocation paramIDvInvocation) {
 		String state = getPropertyTransportState();
-		log.debug("TransportState: " + state + lt.getLogText(paramIDvInvocation));
+		log.debug("TransportState: " + state + Utils.getLogText(paramIDvInvocation));
 		return state;
 	};
 

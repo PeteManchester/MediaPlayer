@@ -12,7 +12,7 @@ import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventMuteChanged;
 import org.rpi.player.events.EventVolumeChanged;
-import org.rpi.utils.lt;
+import org.rpi.utils.Utils;
 
 public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 implements Observer {
 
@@ -98,157 +98,157 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 
 	// #####################################################################################################################
 	protected String listPresets(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("listPresets: " + paramLong + lt.getLogText(paramIDvInvocation));
+		log.debug("listPresets: " + paramLong + Utils.getLogText(paramIDvInvocation));
 		return "FactoryDefaults,InstallationDefaults";
 	}
 
 	@Override
 	protected void selectPreset(IDvInvocation paramIDvInvocation, long paramLong, String paramString) {
-		log.debug("SelectPreset: " + paramString + lt.getLogText(paramIDvInvocation));
+		log.debug("SelectPreset: " + paramString + Utils.getLogText(paramIDvInvocation));
 	}
 
 	@Override
 	protected long getBrightness(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("getBrightness: " + paramLong + lt.getLogText(paramIDvInvocation));
+		log.debug("getBrightness: " + paramLong + Utils.getLogText(paramIDvInvocation));
 		return 0;
 	}
 
 	@Override
 	protected void setBrightness(IDvInvocation paramIDvInvocation, long paramLong1, long paramLong2) {
 		checkValue(paramLong2);
-		log.debug("setBrightness: " + paramLong2 + lt.getLogText(paramIDvInvocation));
+		log.debug("setBrightness: " + paramLong2 + Utils.getLogText(paramIDvInvocation));
 	}
 
 	@Override
 	protected long getContrast(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("getContrast: " + paramLong + lt.getLogText(paramIDvInvocation));
+		log.debug("getContrast: " + paramLong + Utils.getLogText(paramIDvInvocation));
 		return 0;
 	}
 
 	@Override
 	protected void setContrast(IDvInvocation paramIDvInvocation, long paramLong1, long paramLong2) {
 		checkValue(paramLong2);
-		log.debug("setContrast: " + paramLong2 + lt.getLogText(paramIDvInvocation));
+		log.debug("setContrast: " + paramLong2 + Utils.getLogText(paramIDvInvocation));
 	}
 
 	@Override
 	protected long getSharpness(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("getSharpness: " + paramLong + lt.getLogText(paramIDvInvocation));
+		log.debug("getSharpness: " + paramLong + Utils.getLogText(paramIDvInvocation));
 		return 0;
 	}
 
 	@Override
 	protected void setSharpness(IDvInvocation paramIDvInvocation, long paramLong1, long paramLong2) {
 		checkValue(paramLong2);
-		log.debug("setSharpness: " + paramLong2 + lt.getLogText(paramIDvInvocation));
+		log.debug("setSharpness: " + paramLong2 + Utils.getLogText(paramIDvInvocation));
 	}
 
 	@Override
 	protected long getRedVideoGain(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("getRedVideoGain: " + paramLong + lt.getLogText(paramIDvInvocation));
+		log.debug("getRedVideoGain: " + paramLong + Utils.getLogText(paramIDvInvocation));
 		return 0;
 	}
 
 	@Override
 	protected void setRedVideoGain(IDvInvocation paramIDvInvocation, long paramLong1, long paramLong2) {
 		checkValue(paramLong2);
-		log.debug("setRedVideoGain: " + paramLong2 + lt.getLogText(paramIDvInvocation));
+		log.debug("setRedVideoGain: " + paramLong2 + Utils.getLogText(paramIDvInvocation));
 	}
 
 	@Override
 	protected long getGreenVideoGain(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("getGreenVideoGain: " + paramLong + lt.getLogText(paramIDvInvocation));
+		log.debug("getGreenVideoGain: " + paramLong + Utils.getLogText(paramIDvInvocation));
 		return 0;
 	}
 
 	@Override
 	protected void setGreenVideoGain(IDvInvocation paramIDvInvocation, long paramLong1, long paramLong2) {
 		checkValue(paramLong2);
-		log.debug("setGreenVideoGain: " + paramLong2 + lt.getLogText(paramIDvInvocation));
+		log.debug("setGreenVideoGain: " + paramLong2 + Utils.getLogText(paramIDvInvocation));
 	}
 
 	@Override
 	protected long getBlueVideoGain(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("getBlueVideoGain: " + paramLong + lt.getLogText(paramIDvInvocation));
+		log.debug("getBlueVideoGain: " + paramLong + Utils.getLogText(paramIDvInvocation));
 		return 0;
 	}
 
 	@Override
 	protected void setBlueVideoGain(IDvInvocation paramIDvInvocation, long paramLong1, long paramLong2) {
 		checkValue(paramLong2);
-		log.debug("setBlueVideoGain: " + paramLong2 + lt.getLogText(paramIDvInvocation));
+		log.debug("setBlueVideoGain: " + paramLong2 + Utils.getLogText(paramIDvInvocation));
 	}
 
 	@Override
 	protected long getRedVideoBlackLevel(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("getRedVideoBlackLevel: " + paramLong + lt.getLogText(paramIDvInvocation));
+		log.debug("getRedVideoBlackLevel: " + paramLong + Utils.getLogText(paramIDvInvocation));
 		return 0;
 	}
 
 	@Override
 	protected void setRedVideoBlackLevel(IDvInvocation paramIDvInvocation, long paramLong1, long paramLong2) {
 		checkValue(paramLong2);
-		log.debug("setRedVideoBlackLevel: " + paramLong2 + lt.getLogText(paramIDvInvocation));
+		log.debug("setRedVideoBlackLevel: " + paramLong2 + Utils.getLogText(paramIDvInvocation));
 	}
 
 	@Override
 	protected long getGreenVideoBlackLevel(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("getGreenVideoBlackLevel: " + paramLong + lt.getLogText(paramIDvInvocation));
+		log.debug("getGreenVideoBlackLevel: " + paramLong + Utils.getLogText(paramIDvInvocation));
 		return 0;
 	}
 
 	@Override
 	protected void setGreenVideoBlackLevel(IDvInvocation paramIDvInvocation, long paramLong1, long paramLong2) {
 		checkValue(paramLong2);
-		log.debug("setGreenVideoBlackLevel: " + paramLong2 + lt.getLogText(paramIDvInvocation));
+		log.debug("setGreenVideoBlackLevel: " + paramLong2 + Utils.getLogText(paramIDvInvocation));
 	}
 
 	@Override
 	protected long getBlueVideoBlackLevel(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("getBlueVideoBlackLevel: " + paramLong + lt.getLogText(paramIDvInvocation));
+		log.debug("getBlueVideoBlackLevel: " + paramLong + Utils.getLogText(paramIDvInvocation));
 		return 0;
 	}
 
 	@Override
 	protected void setBlueVideoBlackLevel(IDvInvocation paramIDvInvocation, long paramLong1, long paramLong2) {
 		checkValue(paramLong2);
-		log.debug("setBlueVideoBlackLevel: " + paramLong2 + lt.getLogText(paramIDvInvocation));
+		log.debug("setBlueVideoBlackLevel: " + paramLong2 + Utils.getLogText(paramIDvInvocation));
 	}
 
 	@Override
 	protected long getColorTemperature(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("getColorTemperature: " + paramLong + lt.getLogText(paramIDvInvocation));
+		log.debug("getColorTemperature: " + paramLong + Utils.getLogText(paramIDvInvocation));
 		return 0;
 	}
 
 	@Override
 	protected void setColorTemperature(IDvInvocation paramIDvInvocation, long paramLong1, long paramLong2) {
 		checkValue(paramLong2);
-		log.debug("setColorTemperature: " + paramLong2 + lt.getLogText(paramIDvInvocation));
+		log.debug("setColorTemperature: " + paramLong2 + Utils.getLogText(paramIDvInvocation));
 	}
 
 	@Override
 	protected int getHorizontalKeystone(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("getHorizontalKeystone: " + paramLong + lt.getLogText(paramIDvInvocation));
+		log.debug("getHorizontalKeystone: " + paramLong + Utils.getLogText(paramIDvInvocation));
 		return 0;
 	}
 
 	@Override
 	protected void setHorizontalKeystone(IDvInvocation paramIDvInvocation, long paramLong, int paramInt) {
 		checkValue(paramInt);
-		log.debug("setHorizontalKeystone: " + paramInt + lt.getLogText(paramIDvInvocation));
+		log.debug("setHorizontalKeystone: " + paramInt + Utils.getLogText(paramIDvInvocation));
 	}
 
 	@Override
 	protected int getVerticalKeystone(IDvInvocation paramIDvInvocation, long paramLong) {
-		log.debug("getVerticalKeystone: " + paramLong + lt.getLogText(paramIDvInvocation));
+		log.debug("getVerticalKeystone: " + paramLong + Utils.getLogText(paramIDvInvocation));
 		return 0;
 	}
 
 	@Override
 	protected void setVerticalKeystone(IDvInvocation paramIDvInvocation, long paramLong, int paramInt) {
 		checkValue(paramInt);
-		log.debug("setVerticalKeystone: " + paramInt + lt.getLogText(paramIDvInvocation));
+		log.debug("setVerticalKeystone: " + paramInt + Utils.getLogText(paramIDvInvocation));
 	}
 
 	// protected boolean getMute(IDvInvocation paramIDvInvocation, long
@@ -273,39 +273,39 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 
 	@Override
 	protected int getVolumeDB(IDvInvocation paramIDvInvocation, long paramLong, String paramString) {
-		log.debug("getVolumeDB" + lt.getLogText(paramIDvInvocation));
+		log.debug("getVolumeDB" + Utils.getLogText(paramIDvInvocation));
 		return 0;
 	}
 
 	@Override
 	protected void setVolumeDB(IDvInvocation paramIDvInvocation, long paramLong, String paramString, int paramInt) {
 		checkValue(paramInt);
-		log.debug("setVolumeDB: " + paramInt + lt.getLogText(paramIDvInvocation));
+		log.debug("setVolumeDB: " + paramInt + Utils.getLogText(paramIDvInvocation));
 	}
 
 	@Override
 	protected GetVolumeDBRange getVolumeDBRange(IDvInvocation paramIDvInvocation, long paramLong, String paramString) {
-		log.debug("getVolumeDBRange" + lt.getLogText(paramIDvInvocation));
+		log.debug("getVolumeDBRange" + Utils.getLogText(paramIDvInvocation));
 		GetVolumeDBRange dbr = new GetVolumeDBRange(0, 0);
 		return dbr;
 	}
 
 	@Override
 	protected boolean getLoudness(IDvInvocation paramIDvInvocation, long paramLong, String paramString) {
-		log.debug("getLoudness" + lt.getLogText(paramIDvInvocation));
+		log.debug("getLoudness" + Utils.getLogText(paramIDvInvocation));
 		return false;
 	}
 
 	@Override
 	protected void setLoudness(IDvInvocation paramIDvInvocation, long paramLong, String paramString, boolean paramBoolean) {
-		log.debug("setLoudness: " + paramBoolean + lt.getLogText(paramIDvInvocation));
+		log.debug("setLoudness: " + paramBoolean + Utils.getLogText(paramIDvInvocation));
 	}
 
 	// #####################################################################################################################
 
 	@Override
 	public long getVolume(IDvInvocation paramIDvInvocation, long paramLong, String paramString) {
-		log.debug("GetVolume: " + paramString + lt.getLogText(paramIDvInvocation));
+		log.debug("GetVolume: " + paramString + Utils.getLogText(paramIDvInvocation));
 		try {
 			long v = PlayManager.getInstance().getVolume();
 			if(v<0)
@@ -322,7 +322,7 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 	@Override
 	protected void setVolume(IDvInvocation paramIDvInvocation, long paramLong1, String mixer, long volume) {
 		checkValue(volume);
-		log.debug("setVolume" + lt.getLogText(paramIDvInvocation));
+		log.debug("setVolume" + Utils.getLogText(paramIDvInvocation));
 		PlayManager.getInstance().setVolume(volume);
 
 	}
@@ -330,13 +330,13 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 
 	@Override
 	public boolean getMute(IDvInvocation paramIDvInvocation, long paramLong, String paramString) {
-		log.debug("getMute" + lt.getLogText(paramIDvInvocation));
+		log.debug("getMute" + Utils.getLogText(paramIDvInvocation));
 		return PlayManager.getInstance().getMute();
 	}
 
 	@Override
 	public void setMute(IDvInvocation paramIDvInvocation, long paramLong, String paramString, boolean bMute) {
-		log.debug("setVolume" + lt.getLogText(paramIDvInvocation));
+		log.debug("setVolume" + Utils.getLogText(paramIDvInvocation));
 		PlayManager.getInstance().setMute(bMute);
 	}
 

@@ -1,9 +1,6 @@
 package org.rpi.os;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.security.AccessController;
@@ -11,21 +8,16 @@ import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import com.pi4j.util.ExecUtil;
-import com.pi4j.util.StringUtil;
-import net.xeoh.plugins.base.PluginManager;
-import net.xeoh.plugins.base.impl.PluginManagerFactory;
-
 import org.apache.log4j.Logger;
-
+import org.rpi.utils.Utils;
 import com.pi4j.io.gpio.GpioController;
+import net.xeoh.plugins.base.impl.PluginManagerFactory;
+import net.xeoh.plugins.base.PluginManager;
 
 public class OSManager {
 
 	private static Logger log = Logger.getLogger(OSManager.class);
 	private boolean bRaspi = false;
-	private boolean bSoftFloat = false;
 	private PluginManager pm = null;
 	private boolean bUsedPi4J = false;
 	private static OSManager instance = null;
@@ -40,6 +32,7 @@ public class OSManager {
 	}
 
 	protected OSManager() {
+		log.debug("Initializing OSManager");
 		setJavaPath();
 		if (isRaspi()) {
 			log.debug("This is a Raspi so Attempt to initialize Pi4J");
@@ -169,14 +162,66 @@ public class OSManager {
 
 	/***
 	 * Get the Path of this ClassFile and/or the path of the current JAR, which should be basically the same! No?
-	 * 
+	 * Returned to the old method because the new method did not work when a plugin requested the path.
+	 * Getting LCD.xml from Directory: /C:/Keep/git/repository/MediaPlayer/com.upnp.mediaplayer/bin
+	 * Instead of
+	 * /C:/Keep/git/repository/MediaPlayer/com.upnp.mediaplayer/bin/org/rpi/plugin/lcddisplay/
 	 * @return
 	 */
+//	public synchronized String getFilePath(Class mClass, boolean bUseFullNamePath) {
+//        String path = mClass.getProtectionDomain().getCodeSource().getLocation().getPath();
+//        String retValue = path.substring(0, path.lastIndexOf("/"));
+//        log.debug("Returning Path of Class: " + mClass.getName() + " " + retValue);
+//        return retValue;
+//	}
+	
 	public synchronized String getFilePath(Class mClass, boolean bUseFullNamePath) {
-        String path = mClass.getProtectionDomain().getCodeSource().getLocation().getPath();
-        String retValue = path.substring(0, path.lastIndexOf("/"));
+		String className = mClass.getName();
+		if (!className.startsWith("/")) {
+			className = "/" + className;
+		}
+		className = className.replace('.', '/');
+		className = className + ".class";
+		log.debug("Find Class, Full ClassName: " + className);
+		String[] splits = className.split("/");
+		String properName = splits[splits.length - 1];
+		log.debug("Find Class, Proper ClassName: " + properName);
+		URL classUrl = mClass.getResource(className);
+		if (classUrl != null) {
+			String temp = classUrl.getFile();
+			log.debug("Find Class, ClassURL: " + temp);
+			if (temp.startsWith("file:")) {
+				temp = temp.substring(5);
+			}
 
-        return retValue;
+			if (temp.toUpperCase().contains(".JAR!")) {
+				log.debug("Find Class, This is a JarFile: " + temp);
+				String[] parts = temp.split("/");
+				String jar_path = "";
+				for (String part : parts) {
+					if (!part.toUpperCase().endsWith(".JAR!")) {
+						jar_path += part + "/";
+					} else {
+						log.debug("Find File: Returning JarPath: " + jar_path);
+						return jar_path;
+					}
+				}
+			} else {
+				log.debug("Find Class, This is NOT a Jar File: " + temp);
+				if (temp.endsWith(className)) {
+					if (bUseFullNamePath) {
+						temp = temp.substring(0, (temp.length() - className.length()));
+					} else {
+						temp = temp.substring(0, (temp.length() - properName.length()));
+					}
+				}
+			}
+			log.debug("Find File: Returning FilePath: " + temp);
+			return temp;
+		} else {
+			log.debug("Find Class, URL Not Found");
+			return "\nClass '" + className + "' not found in \n'" + System.getProperty("java.class.path") + "'";
+		}
 	}
 
 	/***
@@ -282,23 +327,28 @@ public class OSManager {
      * https://github.com/sgothel/gluegen/blob/master/LICENSE.txt
      *
      */
-    public static boolean isHardFloat() {
+    public  boolean isHardFloat() {
 
         return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
-            private final String[] gnueabihf = new String[]{"gnueabihf", "armhf"};
-
-            public Boolean run() {
-                if (StringUtil.contains(System.getProperty("sun.boot.library.path"), gnueabihf) ||
-                        StringUtil.contains(System.getProperty("java.library.path"), gnueabihf) ||
-                        StringUtil.contains(System.getProperty("java.home"), gnueabihf) ||
-                        getBashVersionInfo().contains("gnueabihf") ||
-                        hasReadElfTag("Tag_ABI_HardFP_use")) {
-                    return true; //
-                }
-                return false;
-            }
-        });
+            ArrayList<String> gnueabihf = new ArrayList<String>();
+           public Boolean run() {
+           	gnueabihf.add("gnueabihf");
+           	gnueabihf.add("armhf");
+               if (Utils.containsString(System.getProperty("sun.boot.library.path"), gnueabihf) ||
+               		Utils.containsString(System.getProperty("java.library.path"), gnueabihf) ||
+               		Utils.containsString(System.getProperty("java.home"), gnueabihf) ||
+                       getBashVersionInfo().contains("gnueabihf") ||
+                       hasReadElfTag("Tag_ABI_HardFP_use")) {
+            	   log.debug("This is a HardFloat");
+                   return true; //
+               }
+               log.debug("This is a HardFloat");
+               return false;
+           }
+       });
     }
+    
+
 
     /*
      * taken from https://github.com/Pi4J/pi4j/blob/master/pi4j-core/src/main/java/com/pi4j/system/SystemInfo.java
@@ -309,7 +359,7 @@ public class OSManager {
     private static String getBashVersionInfo() {
         String versionInfo = "";
         try {
-            String result[] = ExecUtil.execute("bash --version");
+            String result[] = Utils.execute("bash --version");
             for(String line : result) {
                 if(!line.isEmpty()) {
                     versionInfo = line; // return only first output line of version info
@@ -317,8 +367,12 @@ public class OSManager {
                 }
             }
         }
-        catch (IOException ioe) { ioe.printStackTrace(); }
-        catch (InterruptedException ie) { ie.printStackTrace(); }
+        catch(Exception e)
+        {
+        	log.error("Error Executing bash --version", e);
+        }
+        //catch (IOException ioe) { ioe.printStackTrace(); }
+        //catch (InterruptedException ie) { ie.printStackTrace(); }
         return versionInfo;
     }
 
@@ -340,7 +394,7 @@ public class OSManager {
     private static String getReadElfTag(String tag) {
         String tagValue = null;
         try {
-            String result[] = ExecUtil.execute("/usr/bin/readelf -A /proc/self/exe");
+            String result[] = Utils.execute("/usr/bin/readelf -A /proc/self/exe");
             if(result != null){
                 for(String line : result) {
                     line = line.trim();
@@ -353,13 +407,17 @@ public class OSManager {
                 }
             }
         }
-        catch (IOException ioe) {
-            log.error("IOException during readelf operation", ioe);
+        catch(Exception e)
+        {
+        	log.error("IOException during readelf operation", e);
         }
-        catch (InterruptedException ie) {
-            log.error("InterruptedEx during readelf operation", ie);
+        //catch (IOException ioe) {
+        //    log.error("IOException during readelf operation", ioe);
+        //}
+        //catch (InterruptedException ie) {
+        //    log.error("InterruptedEx during readelf operation", ie);
 
-        }
+        //}
         return tagValue;
     }
 

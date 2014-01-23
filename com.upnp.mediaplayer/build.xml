@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="publish_zip" name="MediaPlayer">
+<project default="publish_zip_beta" name="MediaPlayer">
 
 <!-- target dir -->
     <property name="builddir" value="${basedir}/build" />
@@ -35,7 +35,7 @@
     <property name="target_dir" value="${basedir}/build"/>
     <property name="classes_dir" value="${target_dir}/classes"/>
 
-    <property name="release_root_dir" value="${target_dir}/release"/>
+    <property name="release_root_dir" value="${target_dir}/beta"/>
     <property name="release_dir" value="${release_root_dir}/mediaplayer"/>
 
     <property name="release_lib_dir_name" value="mediaplayer_lib"/>
@@ -106,7 +106,7 @@
         <zip destfile="${target_dir}/mediaplayer.zip" basedir="${release_root_dir}"/>
     </target>
 
-    <target name="publish_zip" depends="build_app" description="copy the zip of build_app and put it into the download beta directory">
+    <target name="publish_zip_beta" depends="build_app" description="copy the zip of build_app and put it into the download beta directory">
         <delete dir="${beta_download_dir}"/>
         <mkdir dir="${beta_download_dir}"/>
         <copy file="${target_dir}/mediaplayer.zip" todir="${beta_download_dir}"/>

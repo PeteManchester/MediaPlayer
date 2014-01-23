@@ -5,7 +5,7 @@ import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderUpnpOrgConnectionManager1;
 import org.rpi.config.Config;
-import org.rpi.utils.lt;
+import org.rpi.utils.Utils;
 
 public class PrvConnectionManager extends DvProviderUpnpOrgConnectionManager1 {
 
@@ -50,20 +50,20 @@ public class PrvConnectionManager extends DvProviderUpnpOrgConnectionManager1 {
 		// if (res) {
 		// log.warn("#################### This happened");
 		// }
-		log.debug("PrepareForConnection: ProtocolInfo: " + sinkProtocolInfo + " PeerConnectionManager: " + peerConnectionManager + " RemoteConnId: " + remoteConnId + lt.getLogText(paramIDvInvocation));
+		log.debug("PrepareForConnection: ProtocolInfo: " + sinkProtocolInfo + " PeerConnectionManager: " + peerConnectionManager + " RemoteConnId: " + remoteConnId + Utils.getLogText(paramIDvInvocation));
 		PrepareForConnection prep = new PrepareForConnection(0, 0, 0);
 		return prep;
 	}
 
 	@Override
 	protected void connectionComplete(IDvInvocation paramIDvInvocation, int paramInt) {
-		log.debug("connectionComplete: " + paramInt + lt.getLogText(paramIDvInvocation));
+		log.debug("connectionComplete: " + paramInt + Utils.getLogText(paramIDvInvocation));
 		setPropertyCurrentConnectionIDs("");
 	}
 
 	@Override
 	protected DvProviderUpnpOrgConnectionManager1.GetProtocolInfo getProtocolInfo(IDvInvocation paramIDvInvocation) {
-		log.debug("GetProtocolInfo: " + lt.getLogText(paramIDvInvocation));
+		log.debug("GetProtocolInfo: " + Utils.getLogText(paramIDvInvocation));
 
 		log.debug("GetProtolInfo Source=" + sourceProtocolInfo + " Sink=" + sinkProtocolInfo);
 		return new DvProviderUpnpOrgConnectionManager1.GetProtocolInfo(getPropertySourceProtocolInfo(), getPropertySinkProtocolInfo());
@@ -71,14 +71,14 @@ public class PrvConnectionManager extends DvProviderUpnpOrgConnectionManager1 {
 
 	@Override
 	protected String getCurrentConnectionIDs(IDvInvocation paramIDvInvocation) {
-		log.debug("getCurrentConnectionIDs " + lt.getLogText(paramIDvInvocation));
+		log.debug("getCurrentConnectionIDs " + Utils.getLogText(paramIDvInvocation));
 		log.debug("ConnectionManager getCurrentConnectionIDs ConnectionIDs=" + getPropertyCurrentConnectionIDs());
 		return getPropertyCurrentConnectionIDs();
 	}
 
 	@Override
 	protected DvProviderUpnpOrgConnectionManager1.GetCurrentConnectionInfo getCurrentConnectionInfo(IDvInvocation paramIDvInvocation, int paramInt) {
-		log.debug("GetCurrentConnectionInfo: " + paramInt + lt.getLogText(paramIDvInvocation));
+		log.debug("GetCurrentConnectionInfo: " + paramInt + Utils.getLogText(paramIDvInvocation));
 		// int iRcsID = 0;
 		// int iAVTransportID = 0;
 		setPropertyCurrentConnectionIDs("" + paramInt);
