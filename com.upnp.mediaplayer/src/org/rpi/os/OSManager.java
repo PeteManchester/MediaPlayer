@@ -2,13 +2,18 @@ package org.rpi.os;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.pi4j.util.ExecUtil;
+import com.pi4j.util.StringUtil;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
 
@@ -18,7 +23,7 @@ import com.pi4j.io.gpio.GpioController;
 
 public class OSManager {
 
-	private Logger log = Logger.getLogger(this.getClass());
+	private static Logger log = Logger.getLogger(OSManager.class);
 	private boolean bRaspi = false;
 	private boolean bSoftFloat = false;
 	private PluginManager pm = null;
@@ -111,47 +116,34 @@ public class OSManager {
 					String osArch = "arm";
 
 					log.debug("Its an ARM device, now check, which revision");
-					String elfCommand = "readelf -A " + System.getProperty("java.home") + "/lib/arm/libjava.so";
 					try {
-						Process pa = Runtime.getRuntime().exec(elfCommand);
-						pa.waitFor();
-						BufferedReader reader = new BufferedReader(new InputStreamReader(pa.getInputStream()));
-						String line;
-						String armVersion = "";
-						Boolean isHardFloat = Boolean.FALSE;
-						while ((line = reader.readLine()) != null) {
-							line = line.trim();
-							log.debug("Result of " + elfCommand + " : " + line);
-							if (line.startsWith("Tag_CPU_arch:")) {
-								armVersion = line.substring(line.indexOf(" ")).trim();
-								log.debug("ARMVersion:'" + armVersion + "'");
-							} else if (line.startsWith("Tag_ABI_VFP_args:")) {
-								log.debug("ARM is HardFloat");
-								isHardFloat = Boolean.TRUE;
-							}
-						}
+                        String armVersion = getReadElfTag("Tag_CPU_arch");
 
-						if (armVersion.equals("v5")) {
+						if (armVersion == null) {
+                            log.error("Cannot determine ARM version...");
+                            osArch = "UNKNOWN";
+                        } else if (armVersion.equals("v5")) {
 							osArch = osArch + "v5sf";
 						} else if (armVersion.equals("v6")) {
 							// we believe that a v6 arm is always a raspi (could
 							// be a pogoplug...)
 							log.debug("We think this is a Raspi");
 							setRaspi(true);
-							if (isHardFloat) {
+							if (isHardFloat()) {
 								osArch = osArch + "v6hf";
 							} else {
 								osArch = osArch + "v6sf";
 							}
-						} else {
+						} else if (armVersion.equals("v7")) {
 							osArch = osArch + "v7";
-						}
-						if (!osArch.equalsIgnoreCase("arm")) {
-							full_path = path + OHNET_LIB_DIR + "/" + osPathName + "/" + osArch;
 						} else {
-							log.debug("Unable to determine ARM OS Type: " + armVersion);
-						}
+                            log.error("Unknown ARM version...(" + armVersion + ")");
+                            osArch = "UNKNOWN";
+                        }
 
+                        if (!osArch.equals("UNKNOWN"))  {
+                            full_path = path + OHNET_LIB_DIR + "/" + osPathName + "/" + osArch;
+                        }
 					} catch (Exception e) {
 						log.debug("Error Determining ARM OS Type: ", e);
 					}
@@ -168,6 +160,7 @@ public class OSManager {
 
 			log.debug("using full_path " + full_path);
 			addLibraryPath(full_path);
+
 		} catch (Exception e) {
 			log.error(e);
 		}
@@ -175,59 +168,15 @@ public class OSManager {
 	}
 
 	/***
-	 * Get the Path of this ClassFile Must be easier ways to do this!!!!
+	 * Get the Path of this ClassFile and/or the path of the current JAR, which should be basically the same! No?
 	 * 
-	 * @param mClass
-	 * @param bUseFullNamePath
 	 * @return
 	 */
 	public synchronized String getFilePath(Class mClass, boolean bUseFullNamePath) {
-		String className = mClass.getName();
-		if (!className.startsWith("/")) {
-			className = "/" + className;
-		}
-		className = className.replace('.', '/');
-		className = className + ".class";
-		log.debug("Find Class, Full ClassName: " + className);
-		String[] splits = className.split("/");
-		String properName = splits[splits.length - 1];
-		log.debug("Find Class, Proper ClassName: " + properName);
-		URL classUrl = mClass.getResource(className);
-		if (classUrl != null) {
-			String temp = classUrl.getFile();
-			log.debug("Find Class, ClassURL: " + temp);
-			if (temp.startsWith("file:")) {
-				temp = temp.substring(5);
-			}
+        String path = mClass.getProtectionDomain().getCodeSource().getLocation().getPath();
+        String retValue = path.substring(0, path.lastIndexOf("/"));
 
-			if (temp.toUpperCase().contains(".JAR!")) {
-				log.debug("Find Class, This is a JarFile: " + temp);
-				String[] parts = temp.split("/");
-				String jar_path = "";
-				for (String part : parts) {
-					if (!part.toUpperCase().endsWith(".JAR!")) {
-						jar_path += part + "/";
-					} else {
-						log.debug("Find File: Returning JarPath: " + jar_path);
-						return jar_path;
-					}
-				}
-			} else {
-				log.debug("Find Class, This is NOT a Jar File: " + temp);
-				if (temp.endsWith(className)) {
-					if (bUseFullNamePath) {
-						temp = temp.substring(0, (temp.length() - className.length()));
-					} else {
-						temp = temp.substring(0, (temp.length() - properName.length()));
-					}
-				}
-			}
-			log.debug("Find File: Returning FilePath: " + temp);
-			return temp;
-		} else {
-			log.debug("Find Class, URL Not Found");
-			return "\nClass '" + className + "' not found in \n'" + System.getProperty("java.class.path") + "'";
-		}
+        return retValue;
 	}
 
 	/***
@@ -235,7 +184,7 @@ public class OSManager {
 	 */
 	public void loadPlugins() {
 		try {
-			log.info("Start of LoadPlugnis");
+			log.info("Start of LoadPlugins");
 			pm = PluginManagerFactory.createPluginManager();
 			List<File> files = listFiles("plugins");
 			if (files == null)
@@ -291,17 +240,13 @@ public class OSManager {
 		this.bRaspi = bRaspi;
 	}
 
-	/**
+    /**
 	 * Is this a SoftFloat Raspberry Pi
 	 * 
 	 * @return
 	 */
 	public boolean isSoftFloat() {
-		return bSoftFloat;
-	}
-
-	private void setSoftFloat(boolean bSoftFloat) {
-		this.bSoftFloat = bSoftFloat;
+		return !isHardFloat();
 	}
 
 	/**
@@ -327,4 +272,96 @@ public class OSManager {
 		bUsedPi4J = true;
 		return Pi4JManager.getInstance().getGpio();
 	}
+
+// the following is taken fully from pi4j (https://github.com/Pi4J/pi4j/blob/master/pi4j-core/src/main/java/com/pi4j/system/SystemInfo.java)
+// we should get rid of this dependency, but right now it does work nicely
+
+    /*
+     * this method was partially derived from :: (project) jogamp / (developer) sgothel
+     * https://github.com/sgothel/gluegen/blob/master/src/java/jogamp/common/os/PlatformPropsImpl.java#L160
+     * https://github.com/sgothel/gluegen/blob/master/LICENSE.txt
+     *
+     */
+    public static boolean isHardFloat() {
+
+        return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+            private final String[] gnueabihf = new String[]{"gnueabihf", "armhf"};
+
+            public Boolean run() {
+                if (StringUtil.contains(System.getProperty("sun.boot.library.path"), gnueabihf) ||
+                        StringUtil.contains(System.getProperty("java.library.path"), gnueabihf) ||
+                        StringUtil.contains(System.getProperty("java.home"), gnueabihf) ||
+                        getBashVersionInfo().contains("gnueabihf") ||
+                        hasReadElfTag("Tag_ABI_HardFP_use")) {
+                    return true; //
+                }
+                return false;
+            }
+        });
+    }
+
+    /*
+     * taken from https://github.com/Pi4J/pi4j/blob/master/pi4j-core/src/main/java/com/pi4j/system/SystemInfo.java
+     *
+     * this method will to obtain the version info string from the 'bash' program
+     * (this method is used to help determine the HARD-FLOAT / SOFT-FLOAT ABI of the system)
+     */
+    private static String getBashVersionInfo() {
+        String versionInfo = "";
+        try {
+            String result[] = ExecUtil.execute("bash --version");
+            for(String line : result) {
+                if(!line.isEmpty()) {
+                    versionInfo = line; // return only first output line of version info
+                    break;
+                }
+            }
+        }
+        catch (IOException ioe) { ioe.printStackTrace(); }
+        catch (InterruptedException ie) { ie.printStackTrace(); }
+        return versionInfo;
+    }
+
+    /*
+     * this method will determine if a specified tag exists from the elf info in the '/proc/self/exe' program
+     * (this method is used to help determine the HARD-FLOAT / SOFT-FLOAT ABI of the system)
+     */
+    private static boolean hasReadElfTag(String tag) {
+        String tagValue = getReadElfTag(tag);
+        if(tagValue != null && !tagValue.isEmpty())
+            return true;
+        return false;
+    }
+
+    /*
+     * this method will obtain a specified tag value from the elf info in the '/proc/self/exe' program
+     * (this method is used to help determine the HARD-FLOAT / SOFT-FLOAT ABI of the system)
+     */
+    private static String getReadElfTag(String tag) {
+        String tagValue = null;
+        try {
+            String result[] = ExecUtil.execute("/usr/bin/readelf -A /proc/self/exe");
+            if(result != null){
+                for(String line : result) {
+                    line = line.trim();
+                    if (line.startsWith(tag) && line.contains(":")) {
+                        String lineParts[] = line.split(":", 2);
+                        if(lineParts.length > 1)
+                            tagValue = lineParts[1].trim();
+                        break;
+                    }
+                }
+            }
+        }
+        catch (IOException ioe) {
+            log.error("IOException during readelf operation", ioe);
+        }
+        catch (InterruptedException ie) {
+            log.error("InterruptedEx during readelf operation", ie);
+
+        }
+        return tagValue;
+    }
+
+
 }
