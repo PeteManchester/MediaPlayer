@@ -22,3 +22,5 @@ Fixed but with LCDDisplay, I now set the standby status when creating the scroll
 Fixed PlayList bug with BubbleUPnP, now on ReadList we only return the tracks requested by the CP, instead of all tracks.
 5 January 2013
 Added 'icy_reverse' attribute to RadioList.xml, allows ICY title and artist to be reversed.
+23 January OSManager changes, we now require readelf to be intalled on Linux OS, if this is not installed on ArchLinux install 'binutils'
+24 January Added the images directory back into the .jar file

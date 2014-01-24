@@ -65,6 +65,9 @@
 
     <target name="compile" depends="prepare" description="compiles all sources using the correct classpath">
         <javac srcdir="src" classpathref="classpath" destdir="${classes_dir}" debug="on"/>
+        <copy todir="${release_lib_dir}">
+            <path refid="classpath_core"/>
+        </copy>
         <!-- exclude name="**/org/scratchpad/*.java" /-->
     </target>
 
@@ -72,6 +75,12 @@
         <copy todir="${release_lib_dir}">
             <path refid="classpath_core"/>
         </copy>
+        
+        <copy todir="${classes_dir}/org/rpi/image">
+			<fileset dir="${basedir}/src/org/rpi/image"/>
+		</copy>
+        
+        
 
         <!-- construct classpath for Manifest -->
         <manifestclasspath property="manifest_cp" jarfile="${release_dir}/mediaplayer.jar">

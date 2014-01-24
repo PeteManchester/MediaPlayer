@@ -4,7 +4,7 @@
 	<!--ANT 1.7 is required    
 	                                -->
 	<property name="builddir" value="${basedir}/build" />
-	<property name="buildbeta" value="${builddir}/release" />
+	<property name="buildbeta" value="${builddir}/beta" />
 	<property name="buildbetamediaplayer" value="${buildbeta}/mediaplayer" />
 	<property name="beta_libs" value="${buildbeta}/libs/ohNet" />
 	<property name="beta_libs_raspihf" value="${beta_libs}/raspi/hard_float" />

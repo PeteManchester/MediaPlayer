@@ -194,6 +194,8 @@ http://pi-fidelity.blogspot.co.uk/
 sudo apt-get install mpd
 sudo cp /etc/mpd.conf /etc/mpd.confORIGINAL
 
+http://himagine.s20.xrea.com/audio/raspberrypi_mpd.html
+
 Get bitrate and depth of current track
 cat /proc/asound/card0/pcm0p/sub0/hw_params
 
