@@ -238,7 +238,7 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 			}
 			fireEvent(es);
 			break;
-		case EVENTVOLUMECHNANGED:
+		case EVENTVOLUMECHANGED:
 			if (!bMute) {
 				// If we are not on Mute forward the change of volume
 				fireEvent(e);

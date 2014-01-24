@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Mappings>
+    <Mapping>
+        <Event>VolumeInc</Event>
+        <Command>irsend SEND_ONCE yamaha KEY_VOLUME_INC</Command>
+        <!-- Command>notepad.exe UP</Command-->
+    </Mapping>
+    
+        <Mapping>
+        <Event>VolumeDec</Event>
+        <Command>irsend SEND_ONCE yamaha KEY_VOLUME_DEC</Command>
+        <!-- Command>notepad.exe DOWN</Command-->
+    </Mapping>
+    
+</Mappings>

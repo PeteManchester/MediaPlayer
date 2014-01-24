@@ -1,23 +1,13 @@
 package org.rpi.plugingateway;
 
-import java.io.File;
 import java.util.Observable;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
 import org.rpi.main.SimpleDevice;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventSourceChanged;
-import org.rpi.player.events.EventVolumeChanged;
 import org.rpi.sources.Source;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 public class PluginGateWay extends Observable {
 

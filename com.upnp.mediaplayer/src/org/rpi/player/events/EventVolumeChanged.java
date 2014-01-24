@@ -9,7 +9,7 @@ public class EventVolumeChanged implements EventBase {
 	
 	public EnumPlayerEvents getType()
 	{
-		return EnumPlayerEvents.EVENTVOLUMECHNANGED;
+		return EnumPlayerEvents.EVENTVOLUMECHANGED;
 	}
 	
 	public long getVolume() {

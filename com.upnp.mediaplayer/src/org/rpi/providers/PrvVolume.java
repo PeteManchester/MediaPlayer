@@ -142,7 +142,7 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 		EventBase e = (EventBase) obj;
 		switch(e.getType())
 		{
-		case EVENTVOLUMECHNANGED:
+		case EVENTVOLUMECHANGED:
 			EventVolumeChanged ev = (EventVolumeChanged)e;
 			updateVolume(ev.getVolume());
 			break;

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="build_plugin" name="Create LIRC Plugin" basedir="$basedir">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <property name="builddir" value="${basedir}/build" />
+	<property name="buildbeta" value="${builddir}/beta" />
+    
+    <target name="build_plugin">
+        <jar destfile="${basedir}/plugins/LIRC/LIRCIntegration.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="${basedir}/bin">
+                <include name = "/org/rpi/plugin/lirc/*" />
+            </fileset>
+            
+        </jar>
+        <copy file="${basedir}\src\org\rpi\plugin\lirc\LIRCConfig.xml" todir="${basedir}/plugins/LIRC"/>
+    </target>
+</project>

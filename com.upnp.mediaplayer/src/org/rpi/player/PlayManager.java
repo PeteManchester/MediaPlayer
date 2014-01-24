@@ -19,6 +19,8 @@ import org.rpi.player.events.EventPlayListUpdateShuffle;
 import org.rpi.player.events.EventRadioPlayName;
 import org.rpi.player.events.EventRadioPlayingTrackID;
 import org.rpi.player.events.EventRadioStatusChanged;
+import org.rpi.player.events.EventRequestVolumeDec;
+import org.rpi.player.events.EventRequestVolumeInc;
 import org.rpi.player.events.EventStandbyChanged;
 import org.rpi.player.events.EventStatusChanged;
 import org.rpi.player.events.EventTimeUpdate;
@@ -829,6 +831,8 @@ public class PlayManager implements Observer {
 	 * @return
 	 */
 	public synchronized long incVolume() {
+		EventRequestVolumeInc ev = new EventRequestVolumeInc();
+		obsvVolume.notifyChange(ev);
 		if (volume < 100 ) {
 			long v = volume;
 			v++;
@@ -843,6 +847,8 @@ public class PlayManager implements Observer {
 	 * @return
 	 */
 	public synchronized long decVolume() {
+		EventRequestVolumeDec ev = new EventRequestVolumeDec();
+		obsvVolume.notifyChange(ev);
 		if (volume > 0) {
 			long v = volume;
 			v--;
@@ -957,7 +963,7 @@ public class PlayManager implements Observer {
 			EventTrackChanged etc = (EventTrackChanged) e;
 			current_track = etc.getTrack();
 			break;
-		case EVENTVOLUMECHNANGED:
+		case EVENTVOLUMECHANGED:
 			try {
 				EventVolumeChanged ev = (EventVolumeChanged) e;
 				volume = ev.getVolume();

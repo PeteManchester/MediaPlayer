@@ -369,7 +369,7 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 	public void update(Observable arg0, Object obj) {
 		EventBase e = (EventBase) obj;
 		switch (e.getType()) {
-		case EVENTVOLUMECHNANGED:
+		case EVENTVOLUMECHANGED:
 			EventVolumeChanged ev = (EventVolumeChanged) e;
 			String mVolume = "" + ev.getVolume();
 			if (!mVolume.equalsIgnoreCase(volume)) {

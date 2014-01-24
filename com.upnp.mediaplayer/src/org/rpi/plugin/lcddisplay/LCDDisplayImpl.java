@@ -153,7 +153,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 				scroller.updateValues("[ARTIST]", et.getArtist());
 			}
 			break;
-		case EVENTVOLUMECHNANGED:
+		case EVENTVOLUMECHANGED:
 			EventVolumeChanged ev = (EventVolumeChanged) e;
 			mVolume = ev.getVolume();
 			// updateVolume();
