@@ -151,7 +151,7 @@ public class OSManager {
 				}
 			}
 
-			log.debug("using full_path " + full_path);
+			log.warn("Using full_path " + full_path);
 			addLibraryPath(full_path);
 
 		} catch (Exception e) {
