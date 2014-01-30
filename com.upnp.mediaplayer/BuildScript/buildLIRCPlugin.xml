@@ -12,6 +12,7 @@
             </manifest>
             <fileset dir="${basedir}/bin">
                 <include name = "/org/rpi/plugin/lirc/*" />
+                <exclude name = "/org/rpi/plugin/lirc/*.xml"/>
             </fileset>
             
         </jar>

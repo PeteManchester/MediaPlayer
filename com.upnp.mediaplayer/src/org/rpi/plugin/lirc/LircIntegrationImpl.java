@@ -25,19 +25,25 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 @PluginImplementation
-public class LircIntegrationImpl implements InputSourcesInterface, Observer {
+public class LircIntegrationImpl implements LircIntegrationInterface, Observer {
 
 	Logger log = Logger.getLogger(LircIntegrationImpl.class);
 	ConcurrentHashMap<String, LIRCCommand> commands = new ConcurrentHashMap<String, LIRCCommand>();
 	LIRCWorkQueue wq = null;
 
 	public LircIntegrationImpl() {
-		wq = new LIRCWorkQueue();
-		wq.start();
+		log.debug("Starting LircIntegrationImpl");
+		try {
+			wq = new LIRCWorkQueue();
+			wq.start();
+		} catch (Exception e) {
+			log.error("Error: Starting WorkQueue");
+		}
 		getConfig();
-		//Register for Volume Events
+
+		// Register for Volume Events
 		PlayManager.getInstance().observVolumeEvents(this);
-		//Register for Source Events
+		// Register for Source Events
 		PluginGateWay.getInstance().addObserver(this);
 	}
 
@@ -49,27 +55,22 @@ public class LircIntegrationImpl implements InputSourcesInterface, Observer {
 		} else if (event instanceof EventRequestVolumeInc) {
 			LIRCCommand command = commands.get("VolumeInc");
 			wq.put(command.getCommand());
-		}
-		else if (event instanceof EventSourceChanged) {
+		} else if (event instanceof EventSourceChanged) {
 			EventSourceChanged es = (EventSourceChanged) event;
 			String name = es.getName();
 			log.debug("Source Changed: " + name);
-			LIRCCommand command = commands.get("SourceChanged@"+name);
-			if(command !=null)
-			{
+			LIRCCommand command = commands.get("SourceChanged@" + name);
+			if (command != null) {
 				wq.put(command.getCommand());
-			}
-			else
-			{
+			} else {
 				log.debug("Could Not Find Command for SourceChanged@" + name);
-			}		
+			}
 		}
 	}
 
-
-
 	/***
-	 *Read the Config file and get the mappings between the Events and commands.
+	 * Read the Config file and get the mappings between the Events and
+	 * commands.
 	 */
 	private void getConfig() {
 		try {
@@ -93,9 +94,9 @@ public class LircIntegrationImpl implements InputSourcesInterface, Observer {
 					command = getElementTest(element, "Command");
 					name = getElementTest(element, "Name");
 					String key = event;
-					if(name !=null && !name.equalsIgnoreCase(""))
+					if (name != null && !name.equalsIgnoreCase(""))
 						key += "@" + name;
-					addToCommands(key, command,name);
+					addToCommands(key, command, name);
 				}
 			}
 		} catch (Exception e) {
@@ -103,9 +104,9 @@ public class LircIntegrationImpl implements InputSourcesInterface, Observer {
 		}
 	}
 
-	private void addToCommands(String event, String command,String name) {
+	private void addToCommands(String event, String command, String name) {
 		if (!commands.containsKey(event)) {
-			LIRCCommand cmd = new LIRCCommand(command,name);
+			LIRCCommand cmd = new LIRCCommand(command, name);
 			commands.put(event, cmd);
 		}
 	}
@@ -134,8 +135,7 @@ public class LircIntegrationImpl implements InputSourcesInterface, Observer {
 	@Shutdown
 	public void bye() {
 		log.debug("ShutDown Called");
-		if(wq!=null)
-		{ 
+		if (wq != null) {
 			wq.clear();
 			wq = null;
 		}

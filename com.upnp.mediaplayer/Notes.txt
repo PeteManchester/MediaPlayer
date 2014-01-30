@@ -251,6 +251,17 @@ pacman -S wirless_tools
 
 Update pacman -Syu
 
+LIRC
+
+sudo /etc/init.d/lirc start
+sudo /etc/init.d/lirc stop
+
+irsend L
+
+irsend LIST TEAC_H300 ""
+irsend SEND_ONCE TEAC_H300 KEY_VOLUMEUP
+irsend SEND_ONCE TEAC_H300 KEY_VOLUMEDOWN
+
 
 
 

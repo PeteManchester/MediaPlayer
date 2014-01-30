@@ -237,7 +237,7 @@ public class OSManager {
 			for (File file : files) {
 				try {
 					if (file.getName().toUpperCase().endsWith(".JAR")) {
-						log.debug("Attempt to Load Plugin: " + file.getName());
+						log.debug("Attempt to Load Plugin: " + file.getName() + " " + file.toURI());
 						pm.addPluginsFrom(file.toURI());
 					}
 				} catch (Exception e) {
