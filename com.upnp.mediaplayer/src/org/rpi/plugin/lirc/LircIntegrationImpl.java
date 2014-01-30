@@ -1,8 +1,6 @@
 package org.rpi.plugin.lirc;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,7 +16,9 @@ import org.rpi.os.OSManager;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventRequestVolumeDec;
 import org.rpi.player.events.EventRequestVolumeInc;
+import org.rpi.player.events.EventSourceChanged;
 import org.rpi.plugin.input.InputSourcesInterface;
+import org.rpi.plugingateway.PluginGateWay;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -28,46 +28,45 @@ import org.w3c.dom.NodeList;
 public class LircIntegrationImpl implements InputSourcesInterface, Observer {
 
 	Logger log = Logger.getLogger(LircIntegrationImpl.class);
-	ConcurrentHashMap<String, String> commands = new ConcurrentHashMap<String, String>();
+	ConcurrentHashMap<String, LIRCCommand> commands = new ConcurrentHashMap<String, LIRCCommand>();
+	LIRCWorkQueue wq = null;
 
 	public LircIntegrationImpl() {
+		wq = new LIRCWorkQueue();
+		wq.start();
 		getConfig();
+		//Register for Volume Events
 		PlayManager.getInstance().observVolumeEvents(this);
+		//Register for Source Events
+		PluginGateWay.getInstance().addObserver(this);
 	}
 
 	@Override
 	public void update(Observable o, Object event) {
 		if (event instanceof EventRequestVolumeDec) {
-			String command = commands.get("VolumeDec");
-			processEvent(command);
+			LIRCCommand command = commands.get("VolumeDec");
+			wq.put(command.getCommand());
 		} else if (event instanceof EventRequestVolumeInc) {
-			String command = commands.get("VolumeInc");
-			processEvent(command);
+			LIRCCommand command = commands.get("VolumeInc");
+			wq.put(command.getCommand());
+		}
+		else if (event instanceof EventSourceChanged) {
+			EventSourceChanged es = (EventSourceChanged) event;
+			String name = es.getName();
+			log.debug("Source Changed: " + name);
+			LIRCCommand command = commands.get("SourceChanged@"+name);
+			if(command !=null)
+			{
+				wq.put(command.getCommand());
+			}
+			else
+			{
+				log.debug("Could Not Find Command for SourceChanged@" + name);
+			}		
 		}
 	}
 
-	private void processEvent(String command) {
-		if(command ==null)
-			return;
-		log.debug("Sending Command: " + command);
-		try
-		{
-		Process pa = Runtime.getRuntime().exec(command);
-		pa.waitFor();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(pa.getInputStream()));
-		String line;
-		while ((line = reader.readLine()) != null) {
-			line = line.trim();
-			log.debug("Result of " + command + " : " + line);
-		}
-		reader.close();
-		pa.getInputStream().close();
-		}
-		catch(Exception e)
-		{
-			log.error("Error Sending Command: " + command , e);
-		}
-	}
+
 
 	/***
 	 *Read the Config file and get the mappings between the Events and commands.
@@ -86,13 +85,17 @@ public class LircIntegrationImpl implements InputSourcesInterface, Observer {
 			for (int s = 0; s < mappings.getLength(); s++) {
 				String event = null;
 				String command = null;
-
+				String name = null;
 				Node mapping = mappings.item(s);
 				if (mapping.getNodeType() == Node.ELEMENT_NODE) {
 					Element element = (Element) mapping;
 					event = getElementTest(element, "Event");
 					command = getElementTest(element, "Command");
-					addToCommands(event, command);
+					name = getElementTest(element, "Name");
+					String key = event;
+					if(name !=null && !name.equalsIgnoreCase(""))
+						key += "@" + name;
+					addToCommands(key, command,name);
 				}
 			}
 		} catch (Exception e) {
@@ -100,9 +103,10 @@ public class LircIntegrationImpl implements InputSourcesInterface, Observer {
 		}
 	}
 
-	private void addToCommands(String event, String command) {
+	private void addToCommands(String event, String command,String name) {
 		if (!commands.containsKey(event)) {
-			commands.put(event, command);
+			LIRCCommand cmd = new LIRCCommand(command,name);
+			commands.put(event, cmd);
 		}
 	}
 
@@ -130,6 +134,11 @@ public class LircIntegrationImpl implements InputSourcesInterface, Observer {
 	@Shutdown
 	public void bye() {
 		log.debug("ShutDown Called");
+		if(wq!=null)
+		{ 
+			wq.clear();
+			wq = null;
+		}
 	}
 
 }

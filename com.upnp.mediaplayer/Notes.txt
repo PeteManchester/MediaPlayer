@@ -243,8 +243,13 @@ hostnamectl set-hostname myhostname
 wifi-menu -o
 systemctl enable netctl-auto@wlan0.service
 
-pacman -S libcups
+pacman -S libcups for url parsing to work
+pacman -S binutils for readelf
+To enable iwconfig wlan0 power off to work install wireless_tools
+pacman -S wirless_tools
 
+
+Update pacman -Syu
 
 
 

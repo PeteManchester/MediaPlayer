@@ -1,15 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Mappings>
-    <Mapping>
-        <Event>VolumeInc</Event>
-        <Command>irsend SEND_ONCE yamaha KEY_VOLUME_INC</Command>
-        <!-- Command>notepad.exe UP</Command-->
-    </Mapping>
-    
-        <Mapping>
-        <Event>VolumeDec</Event>
-        <Command>irsend SEND_ONCE yamaha KEY_VOLUME_DEC</Command>
-        <!-- Command>notepad.exe DOWN</Command-->
-    </Mapping>
-    
+	<Mapping>
+		<Event>VolumeInc</Event>
+		<Command>irsend SEND_ONCE teac300 KEY_VOLUME_INC</Command>
+		<!-- Command>notepad.exe UP</Command -->
+	</Mapping>
+
+	<Mapping>
+		<Event>VolumeDec</Event>
+		<Command>irsend SEND_ONCE teac300 KEY_VOLUME_DEC</Command>
+		<!-- Command>notepad.exe DOWN</Command -->
+	</Mapping>
+
+	<Mapping>
+		<Event>SourceChanged</Event>
+		<Name>DAB Radio</Name>
+		<Command>irsend SEND_ONCE teac300 SOURCE_CHANGED_DAB</Command>
+	</Mapping>
+
+	<Mapping>
+		<Event>SourceChanged</Event>
+		<Name>Home PC</Name>
+		<Command>irsend SEND_ONCE teac300 SOURCE_CHANGED_HOME_PC</Command>
+	</Mapping>
+
+	<Mapping>
+		<Event>SourceChanged</Event>
+		<Name>iPod</Name>
+		<Command>irsend SEND_ONCE teac300 SOURCE_CHANGED_IPOD</Command>
+	</Mapping>
+
+	<Mapping>
+		<Event>SourceChanged</Event>
+		<Name>Laptop</Name>
+		<Command>irsend SEND_ONCE teac300 SOURCE_CHANGED_LAPTOP</Command>
+	</Mapping>
+
+	<Mapping>
+		<Event>SourceChanged</Event>
+		<Name>PlayList</Name>
+		<Command>irsend SEND_ONCE teac300 SOURCE_CHANGED_RASPI</Command>
+	</Mapping>
+	
+		<Mapping>
+		<Event>SourceChanged</Event>
+		<Name>Radio</Name>
+		<Command>irsend SEND_ONCE teac300 SOURCE_CHANGED_RASPI</Command>
+	</Mapping>
+
 </Mappings>
