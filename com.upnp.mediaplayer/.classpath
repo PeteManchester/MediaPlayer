@@ -7,5 +7,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Quartz"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/pi4j"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ohNet"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ApacheTika"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

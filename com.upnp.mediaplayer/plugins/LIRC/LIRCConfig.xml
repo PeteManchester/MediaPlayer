@@ -21,7 +21,7 @@
 	<Mapping>
 		<Event>SourceChanged</Event>
 		<Name>Home PC</Name>
-		<Command>irsend SEND_ONCE TEAC_H300 KEY_KP2</Command>
+		<Command>irsend SEND_ONCE TEAC_H300 KEY_KP1</Command>
 	</Mapping>
 
 	<Mapping>
@@ -39,13 +39,13 @@
 	<Mapping>
 		<Event>SourceChanged</Event>
 		<Name>PlayList</Name>
-		<Command>irsend SEND_ONCE TEAC_H300 KEY_KP5</Command>
+		<Command>irsend SEND_ONCE TEAC_H300 KEY_KP3</Command>
 	</Mapping>
 	
 		<Mapping>
 		<Event>SourceChanged</Event>
 		<Name>Radio</Name>
-		<Command>irsend SEND_ONCE TEAC_H300 KEY_KP5</Command>
+		<Command>irsend SEND_ONCE TEAC_H300 KEY_KP3</Command>
 	</Mapping>
 
 </Mappings>
