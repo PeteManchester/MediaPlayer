@@ -86,6 +86,12 @@ public class OSManager {
 			String class_name = this.getClass().getName();
 			log.debug("Find Class, ClassName: " + class_name);
 			String path = getFilePath(this.getClass(), true);
+			path = path + "/";
+			if(path.endsWith("/"))
+			{
+				path = path.substring(0, (path.length()-1));
+				log.debug("Updated Path to be: " + path);
+			}
 			String full_path = path + OHNET_LIB_DIR + "/default";
 			log.debug("Path of this File is: " + path);
 			String os = System.getProperty("os.name").toUpperCase();
