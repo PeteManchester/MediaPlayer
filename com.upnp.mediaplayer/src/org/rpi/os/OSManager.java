@@ -89,8 +89,12 @@ public class OSManager {
 			path = path + "/";
 			if(path.endsWith("/"))
 			{
-				path = path.substring(0, (path.length()-1));
-				log.debug("Updated Path to be: " + path);
+				path = path.substring(0, (path.length()-2));
+				log.debug("Path ended with '/'. Updated Path to be: " + path);
+			}
+			else
+			{
+				log.debug("Path did not end with '/': " + path);
 			}
 			String full_path = path + OHNET_LIB_DIR + "/default";
 			log.debug("Path of this File is: " + path);
