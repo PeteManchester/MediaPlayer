@@ -14,10 +14,9 @@ import net.xeoh.plugins.base.annotations.events.Shutdown;
 import org.apache.log4j.Logger;
 import org.rpi.os.OSManager;
 import org.rpi.player.PlayManager;
-import org.rpi.player.events.EventRequestVolumeDec;
-import org.rpi.player.events.EventRequestVolumeInc;
+import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventSourceChanged;
-import org.rpi.plugin.input.InputSourcesInterface;
+import org.rpi.player.events.EventStandbyChanged;
 import org.rpi.plugingateway.PluginGateWay;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -43,29 +42,52 @@ public class LircIntegrationImpl implements LircIntegrationInterface, Observer {
 
 		// Register for Volume Events
 		PlayManager.getInstance().observVolumeEvents(this);
+		PlayManager.getInstance().observeProductEvents(this);
 		// Register for Source Events
 		PluginGateWay.getInstance().addObserver(this);
 	}
 
 	@Override
 	public void update(Observable o, Object event) {
-		if (event instanceof EventRequestVolumeDec) {
-			LIRCCommand command = commands.get("VolumeDec");
+		LIRCCommand command = null;
+		EventBase base = (EventBase) event;
+		switch (base.getType()) {
+		case EVENTREQUESTVOLUMEINC:
+			command = commands.get("VolumeInc");
 			wq.put(command.getCommand());
-		} else if (event instanceof EventRequestVolumeInc) {
-			LIRCCommand command = commands.get("VolumeInc");
+			break;
+		case EVENTREQUESTVOLUMEDEC:
+			command = commands.get("VolumeDec");
 			wq.put(command.getCommand());
-		} else if (event instanceof EventSourceChanged) {
+			break;
+		case EVENTSOURCECHANGED:
 			EventSourceChanged es = (EventSourceChanged) event;
 			String name = es.getName();
 			log.debug("Source Changed: " + name);
-			LIRCCommand command = commands.get("SourceChanged@" + name);
+			 command =  commands.get("SourceChanged@" + name);
 			if (command != null) {
 				wq.put(command.getCommand());
 			} else {
 				log.debug("Could Not Find Command for SourceChanged@" + name);
 			}
-		}
+			break;
+		case EVENTSTANDBYCHANGED:
+			EventStandbyChanged esb = (EventStandbyChanged) event;
+			if(esb !=null)
+			{
+				if(esb.isStandby())
+				{
+					command = commands.get("StandbyChanged@true");
+				}
+				else
+				{
+					command = commands.get("StandbyChanged@false");
+				}
+				if (command != null) 
+					wq.put(command.getCommand());
+			}
+			break;
+		}		
 	}
 
 	/***
@@ -124,9 +146,7 @@ public class LircIntegrationImpl implements LircIntegrationInterface, Observer {
 			Element fid = (Element) nid.item(0);
 			if (fid != null) {
 				res = fid.getTextContent();
-				// log.debug("ElementName: " + name + " Value: " + res);
 				return res;
-
 			}
 		}
 		return res;

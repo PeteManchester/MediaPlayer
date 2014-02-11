@@ -42,10 +42,22 @@
 		<Command>irsend SEND_ONCE TEAC_H300 KEY_KP3</Command>
 	</Mapping>
 	
-		<Mapping>
+	<Mapping>
 		<Event>SourceChanged</Event>
 		<Name>Radio</Name>
 		<Command>irsend SEND_ONCE TEAC_H300 KEY_KP3</Command>
+	</Mapping>
+	
+	<Mapping>
+		<Event>StandbyChanged</Event>
+		<Name>true</Name>
+		<Command>irsend SEND_ONCE TEAC_H300 KEY_POWER2</Command>
+	</Mapping>
+	
+	<Mapping>
+		<Event>StandbyChanged</Event>
+		<Name>false</Name>
+		<Command>irsend SEND_ONCE TEAC_H300 KEY_POWER</Command>
 	</Mapping>
 
 </Mappings>
