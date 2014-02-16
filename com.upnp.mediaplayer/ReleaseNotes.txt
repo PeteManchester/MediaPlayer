@@ -24,3 +24,4 @@ Fixed PlayList bug with BubbleUPnP, now on ReadList we only return the tracks re
 Added 'icy_reverse' attribute to RadioList.xml, allows ICY title and artist to be reversed.
 23 January OSManager changes, we now require readelf to be intalled on Linux OS, if this is not installed on ArchLinux install 'binutils'
 24 January Added the images directory back into the .jar file
+16 Feb - Added TripleMs LastFM Scrobbler, with added blacklist to hide your guilty secrets..
