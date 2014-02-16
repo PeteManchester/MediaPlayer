@@ -16,3 +16,11 @@ Control Points:
 
 
 For installation instructions see the Wiki pages [Wiki Home](https://github.com/PeteManchester/MediaPlayer/wiki)
+
+Contributers
+
+| Name        | Contribution           |
+| ------------- |:-------------:| 
+| Pete Hoyle      | Original Source Code | 
+| Ian Grant      | Service Scripts      | 
+| Markus M May      | OSManager, LastFM Plugin      | 
