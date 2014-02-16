@@ -301,7 +301,7 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
 	}
 
 	// Simple attempt to encode the password...
-	public static String encrypt(String key, String value) {
+	private  String encrypt(String key, String value) {
 		try {
 			byte[] raw = key.getBytes(Charset.forName("UTF-8"));
 			SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
@@ -310,12 +310,12 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
 			byte[] encrypted = cipher.doFinal(value.getBytes());
 			return Base64.encode(encrypted);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			log.error("Error encrypt: " ,ex);
 		}
 		return null;
 	}
 
-	public static String decrypt(String key, String encrypted) {
+	private  String decrypt(String key, String encrypted) {
 		try {
 			SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes(), "AES");
 			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
@@ -324,7 +324,7 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
 
 			return new String(original);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			log.error("Error decrypt: " ,ex);
 		}
 		return null;
 	}
