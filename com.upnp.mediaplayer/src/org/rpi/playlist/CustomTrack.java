@@ -330,7 +330,11 @@ public class CustomTrack {
 						{
 							setConductor(n.getTextContent());
 						}
-					}
+						
+					}else
+						{
+							setArtist(n.getTextContent());
+						}
 				} else if (n.getNodeName() == "dc:date")
 				{
 					setDate(n.getTextContent());
