@@ -75,6 +75,9 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
 
 	private static Session session =null;
 
+	/**
+	 * 
+	 */
 	public LastFmPluginImpl() {
 		log.info("Init LastFmPluginImpl");
 		getConfig();
@@ -92,7 +95,7 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
 			EventTrackChanged etc = (EventTrackChanged) e;
 			CustomTrack track = etc.getTrack();
 			if (track != null) {
-				scrobble(track.getTitle(), track.getArtist(), track.getAlbum());
+				scrobble(track.getTitle(), track.getPerformer(), track.getAlbum());
 			} else {
 				log.debug("Track was NULL");
 			}
@@ -107,10 +110,21 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
 		}
 	}
 
+	/**
+	 * 
+	 * @param title
+	 * @param artist
+	 */
 	private void scrobble(String title, String artist) {
 		scrobble(title, artist, "");
 	}
 
+	/**
+	 * 
+	 * @param title
+	 * @param artist
+	 * @param album
+	 */
 	private void scrobble(String title, String artist, String album) {
 		if(session ==null)
 			return;
@@ -128,7 +142,7 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
 			}
 		}
 
-		log.debug("TrackChanged: " + title + " : " + artist);
+		log.debug("TrackChanged: " + title + " : " + artist + " Album: " + album);
 		int now = (int) (System.currentTimeMillis() / 1000);
 		ScrobbleData data = new ScrobbleData();
 		data.setTimestamp(now);
@@ -138,10 +152,15 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
 			data.setAlbum(album);
 		}
 		ScrobbleResult sres = Track.scrobble(data, session);
-		if (!sres.isSuccessful())
+		if (!sres.isSuccessful()|| sres.isIgnored())
+		{
 			log.debug(sres.toString());
+		}
 	}
 
+	/**
+	 * 
+	 */
 	private void init() {
 		try {
 			log.debug("INIT");
@@ -165,6 +184,9 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
 		log.debug("End of INIT");
 	}
 
+	/**
+	 * 
+	 */
 	private void getConfig() {
 		try {
 			String class_name = this.getClass().getName();
@@ -231,6 +253,12 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
 		}
 	}
 
+	/**
+	 * 
+	 * @param doc
+	 * @param path
+	 * @param def
+	 */
 	public void updateMyXML(Document doc, String path, String def) {
 		String p[] = path.split("/");
 		// search nodes or create them if they do not exist
@@ -268,6 +296,12 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
 		return false;
 	}
 
+	/**
+	 * 
+	 * @param title
+	 * @param artist
+	 * @return
+	 */
 	private boolean changedTrack(String title, String artist) {
 		if (this.title.equalsIgnoreCase(title) && this.artist.equalsIgnoreCase(artist)) {
 			log.debug("Track didn't Change: " + title + " : " + artist);

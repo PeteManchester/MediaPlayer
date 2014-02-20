@@ -38,6 +38,7 @@ public class CustomTrack {
 	private StringBuffer performer = new StringBuffer();
 	private StringBuffer composer = new StringBuffer();
 	private StringBuffer conductor = new StringBuffer();
+	private String disc_number = "";
 	private String full_text = "";
 	private String date = "";
 	private boolean icy_reverse = false;
@@ -338,6 +339,9 @@ public class CustomTrack {
 				} else if (n.getNodeName() == "dc:date")
 				{
 					setDate(n.getTextContent());
+				}else if (n.getNodeName() =="upnp:originalDiscNumber")
+				{
+					disc_number = n.getTextContent();
 				}
 			}
 
@@ -386,7 +390,22 @@ public class CustomTrack {
 	}
 
 	public String getTitle() {
-		return title;
+		String mTitle = title.trim();
+		if(disc_number!=null)
+		{
+			if(!disc_number.equalsIgnoreCase(""))
+			{
+				if(mTitle.startsWith(disc_number))
+				{
+					mTitle = mTitle.substring(disc_number.length());
+					if(mTitle.trim().startsWith("."))
+					{
+						mTitle = mTitle.substring(1);
+					}
+				}
+			}
+		}
+		return mTitle.trim();
 	}
 
 	public void setTitle(String title) {
@@ -415,6 +434,10 @@ public class CustomTrack {
 
 	public String getPerformer() {
 		String text = performer.toString();
+		if(text.equalsIgnoreCase(""))
+		{
+			text = artist.toString();
+		}
 		if(text.endsWith(","))
 			text = text.substring(0,text.length()-1);
 		return text;
