@@ -6,12 +6,15 @@ import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgReceiver1;
 import org.rpi.config.Config;
 import org.rpi.playlist.CustomTrack;
+import org.rpi.songcast.OHZManager;
 import org.rpi.utils.Utils;
 
 public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 {
 
 	private Logger log = Logger.getLogger(PrvReceiver.class);
 	private boolean bPlay = false;
+	private CustomTrack track = null;
+	private OHZManager manager = null;
 
 
 
@@ -69,10 +72,22 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 {
 		setPropertyUri(uri);
 		propertiesUnlock();
 		setPropertyMetadata(metadata);
+		
 		if(bPlay = true)
 		{
 			CustomTrack t = new CustomTrack(uri, metadata, 1);
-			//TODO sort out how to play SongCast channel
+			track = t;
+			if(manager!=null)
+			{
+				manager.stop();
+				manager = null;
+			}
+			int lastSlash = uri.lastIndexOf("/");
+			String songcast_url = uri.substring(0, lastSlash);
+			String zoneID = uri.substring(lastSlash+1);
+			log.debug("SongCast URL: " + songcast_url + " ZoneID: " + zoneID );
+			manager = new OHZManager(songcast_url, zoneID);
+			manager.start();
 		}
 	}
 	

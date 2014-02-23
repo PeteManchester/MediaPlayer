@@ -35,5 +35,11 @@
 		<type>Custom</type>
 		<GPIO_PIN>8</GPIO_PIN>
 	</Source>
+	
+	<Source>
+	    <name>SongCast</name>
+	    <type>Receiver</type>
+	    <GPIO_PIN>9</GPIO_PIN>
+	</Source>
 
 </Sources>
