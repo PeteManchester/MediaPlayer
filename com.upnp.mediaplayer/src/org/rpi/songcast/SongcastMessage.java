@@ -45,7 +45,7 @@ public class SongcastMessage {
 		return data;
 	}
 
-	public static String stringToHex(String string) {
+	public String stringToHex(String string) {
 		StringBuilder buf = new StringBuilder(200);
 		for (char ch : string.toCharArray()) {
 			//if (buf.length() > 0)
@@ -53,6 +53,42 @@ public class SongcastMessage {
 			buf.append(String.format("%02x", (int) ch));
 		}
 		return buf.toString();
+	}
+	
+	/*
+	 * 
+	 * Get a portion of the bytes in the array.
+	 */
+	public byte[] getBytes(int start, int end)
+	{
+		int size = (end - start) + 1;
+		int count = 0;
+		byte[] res = new byte[size];
+		for(int i = start;i<=end;i++)
+		{
+			res[count] = data[i];
+			count++;
+		}
+		return res;
+	}
+	
+	public int byteArrayToInt(byte[] b) 
+	{
+	    int value = 0;
+	    for (int i = 0; i < 4; i++) {
+	        int shift = (4 - 1 - i) * 8;
+	        value += (b[i] & 0x000000FF) << shift;
+	    }
+	    return value;
+	}
+	
+	public String byteArrayToString(byte[] bytes)
+	{
+		StringBuilder sb = new StringBuilder();
+		for (byte b : bytes) {
+			sb.append(String.format("%02X ", b));
+		}
+		return sb.toString();
 	}
 
 }

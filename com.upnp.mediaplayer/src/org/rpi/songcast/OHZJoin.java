@@ -2,6 +2,14 @@ package org.rpi.songcast;
 
 import org.apache.log4j.Logger;
 
+//Offset    Bytes                   Desc
+//0         4                       "Ohz "
+//4         1                       OhzHeader Major Version 1
+//5         1                       Msg Type (0 = Query, 1 = Uri)
+//6         2                       Total Bytes (Absolutely all bytes in the entire frame)
+//8         4                       Length of Zone n
+//12        n                       Zone
+
 public class OHZJoin extends SongcastMessage {
 	
 	private Logger log = Logger.getLogger(this.getClass());
@@ -19,7 +27,6 @@ public class OHZJoin extends SongcastMessage {
 		length = length/2;
 		lengthPacket = DecToHex(length, 4);
 		String sZL= DecToHex(zl/2, 8);
-		//byte[] queryZone = hexStringToByteArray("6f687a200100"+ "0024" + "00000010" + "adb3ff3c41b7ebd669a49e35d54222ae");
 		data = hexStringToByteArray(header+ lengthPacket +  sZL + zoneHex);
 	}
 	

@@ -14,9 +14,12 @@ public class OHZManager {
 
 	private String zoneID = "";
 	
-	private Thread receiver =null;
+	private Thread tReceiver =null;
 	
-	private Thread sender = null;
+	private Thread tSender = null;
+	
+	private UDPReceiver udpReceiver = null;
+	private UPDSender udpSender = null;
 
 	public OHZManager(String uri, String zoneID) {
 		try {
@@ -35,24 +38,35 @@ public class OHZManager {
 
 	public void start() {
 		// start new thread to receive multicasts
-
-		receiver = new Thread(new UDPReceiver(mcastPort, mcastAddr, zoneID), "McastReceiver");;
+		udpReceiver = new UDPReceiver(mcastPort, mcastAddr, zoneID);
+		tReceiver = new Thread(udpReceiver, "McastReceiver");
 		//new Thread(new UDPReceiver(mcastPort, mcastAddr, zoneID), "McastReceiver").start();
-		receiver.start();
+
+		tReceiver.start();
+		
+		while(!udpReceiver.isConnected())
+		{
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+			}
+		}
 
 		// start new thread to send multicasts
-		UPDSender mSender = new UPDSender(mcastPort, mcastAddr, zoneID);
-		sender = new Thread(mSender, "McastRepeater");
-		sender.start();
+		udpSender = new UPDSender(mcastPort, mcastAddr, zoneID);
+		tSender = new Thread(udpSender, "McastRepeater");
+		tSender.start();
 		OHZJoin join = new OHZJoin(zoneID);
-		mSender.put(join.data);
+		udpSender.put(join.data);
 	}
 	
 	
 	public void stop()
 	{
-		receiver = null;
-		sender = null;
+		udpSender.disconnect();
+		udpReceiver.disconnect();
+		tReceiver = null;
+		tSender = null;
 	}
 
 }
