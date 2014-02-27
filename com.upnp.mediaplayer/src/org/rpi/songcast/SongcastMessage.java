@@ -79,11 +79,53 @@ public class SongcastMessage extends Observable {
 		return res;
 	}
 	
+	public byte[] shortToByteArray(short data) {
+        return new byte[]{(byte) (data & 0xff), (byte) ((data >>> 8) & 0xff)};
+    }
+	
+//	public int byteArrayShortToInt(byte[] b) 
+//	{
+//				
+//	    int value = 0;
+//	    for (int i = 0; i < 2; i++) {
+//	        int shift = (2 - 1 - i) * 8;
+//	        value += (b[i] & 0x000000FF) << shift;
+//	    }
+//	    return value;
+//	}
+	
+	
 	public int byteArrayToInt(byte[] b) 
 	{
+		return byteArrayToInt(b,4);
+	}
+	
+	public int byteArrayToInt(byte[] b,int size) 
+	{
+//		if(b.length<4)
+//		{
+//			byte[] temp = new byte[4];
+//			int size = b.length ;
+//			int iCount = 4-size;
+//			int iArray = 0;
+//			for(int add = iCount;add < 4;add++)
+//			{
+//				if(iCount>add)
+//				{
+//				temp[add] = 0x00;
+//				}
+//				else
+//				{
+//					temp[add ] = b[ iArray];
+//					iArray++;
+//				}
+//			}
+//			b = temp;
+//		}
+		
 	    int value = 0;
-	    for (int i = 0; i < 4; i++) {
-	        int shift = (4 - 1 - i) * 8;
+	    for (int i = 0; i < size; i++) {
+	        int shift = (size - 1 - i) * 8;
 	        value += (b[i] & 0x000000FF) << shift;
 	    }
 	    return value;
