@@ -5,11 +5,9 @@ import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.log4j.Logger;
-import org.rpi.songcast.events.EventOHZIURI;
-import org.rpi.songcast.events.EventSongCastBase;
 
-public class OHZManager implements Observer {
-
+public class OHMManager implements Observer {
+	
 	private Logger log = Logger.getLogger(this.getClass());
 
 	private int mcastPort = 51970;
@@ -25,9 +23,8 @@ public class OHZManager implements Observer {
 	private UDPReceiver udpReceiver = null;
 	private UPDSender udpSender = null;
 	private String nic = "";
-	private OHZJoin join = null;
 
-	public OHZManager(String uri, String zoneID,String nic) {
+	public OHMManager(String uri, String zoneID,String nic) {
 		try {
 			this.nic = nic;
 			int lastColon = uri.lastIndexOf(":");
@@ -46,9 +43,9 @@ public class OHZManager implements Observer {
 	public void start() {
 		// start new thread to receive multicasts
 		udpReceiver = new UDPReceiver(mcastPort, mcastAddr, zoneID,nic);
-		tReceiver = new Thread(udpReceiver, "McastReceiver");
+		tReceiver = new Thread(udpReceiver, "OHMMcastReceiver");
 		//new Thread(new UDPReceiver(mcastPort, mcastAddr, zoneID), "McastReceiver").start();
-		udpReceiver.addObserver(this);
+
 		tReceiver.start();
 		
 		while(!udpReceiver.isConnected())
@@ -61,9 +58,11 @@ public class OHZManager implements Observer {
 
 		// start new thread to send multicasts
 		udpSender = new UPDSender(mcastPort, mcastAddr, zoneID,nic);
-		tSender = new Thread(udpSender, "McastRepeater");
+		tSender = new Thread(udpSender, "OHMMcastRepeater");
 		tSender.start();
-		join = new OHZJoin(zoneID);
+		//OHZJoin join = new OHZJoin(zoneID);
+		OHMJoin join = new OHMJoin(zoneID);
+		join.addObserver(this);
 		udpSender.put(join.data);
 	}
 	
@@ -77,22 +76,8 @@ public class OHZManager implements Observer {
 	}
 
 	@Override
-	public void update(Observable arg0, Object ev) {
-		EventSongCastBase e = (EventSongCastBase) ev;
-		switch(e.getType())
-		{
-		case EVENT_OHZ_URI:
-			EventOHZIURI ohz = (EventOHZIURI)e;
-			connectToOHM(ohz.getUri(), ohz.getZone());
-			break;
-		}
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
 		
 	}
-	
-	public void connectToOHM(String uri, String zone)
-	{
-		OHMManager ohm = new OHMManager(uri, zone, nic);
-		ohm.start();
-	}
-
 }

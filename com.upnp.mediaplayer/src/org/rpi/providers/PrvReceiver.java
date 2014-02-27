@@ -59,8 +59,6 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 {
 	protected void play(IDvInvocation paramIDvInvocation) {
 		log.debug("Play" + Utils.getLogText(paramIDvInvocation));
 		bPlay = true;
-		// TODO Auto-generated method stub
-		//super.play(arg0);
 		//Play seems to come before setSender so set a boolean flag that we want to play and then when we 
 		//get the setSender event start playing??
 	}
@@ -86,7 +84,8 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 {
 			String songcast_url = uri.substring(0, lastSlash);
 			String zoneID = uri.substring(lastSlash+1);
 			log.debug("SongCast URL: " + songcast_url + " ZoneID: " + zoneID );
-			manager = new OHZManager(songcast_url, zoneID);
+			//TODO add config for NIC..
+			manager = new OHZManager(songcast_url, zoneID,"eth8");
 			manager.start();
 		}
 	}
@@ -94,8 +93,6 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 {
 	@Override
 	protected void stop(IDvInvocation paramIDvInvocation) {
 		log.debug("Stop" + Utils.getLogText(paramIDvInvocation));
-		// TODO Auto-generated method stub
-		//super.stop(arg0);
 	}
 	
 	@Override

@@ -21,11 +21,12 @@ class UPDSender implements Runnable {
 
 	private int mcastPort = 0;
 	private InetAddress mcastAddr = null;
-	// private InetAddress localHost = null;
 	private String zoneID = "";
 	private Vector mWorkQueue = new Vector();
+	private String nic = "";
 
-	UPDSender(int port, InetAddress addr, String zoneID) {
+	UPDSender(int port, InetAddress addr, String zoneID,String nic) {
+		this.nic = nic;
 		mcastPort = port;
 		mcastAddr = addr;
 		this.zoneID = zoneID;
@@ -33,25 +34,15 @@ class UPDSender implements Runnable {
 		try {
 			mSocket = new MulticastSocket(port);
 			mSocket.setReuseAddress(true);
-			InetAddress inet = InetAddress.getByName("192.168.1.72");
-			NetworkInterface netIf = NetworkInterface.getByInetAddress(inet);
+			//InetAddress inet = InetAddress.getByName("192.168.1.72");
+			NetworkInterface netIf = NetworkInterface.getByName(nic);
 			mSocket.setNetworkInterface(netIf);
 			mSocket.setSoTimeout(5000);
 			NetworkInterface ifs = mSocket.getNetworkInterface();
 			log.debug("Receiver NetworkInterface: " + ifs.getDisplayName());
-			//dgramSocket.setReuseAddress(true);
-			//InetSocketAddress bindAddress =  new InetSocketAddress("192.168.1.72",port);
-			//dgramSocket.bind(bindAddress);
 		} catch (IOException ioe) {
 			log.error("problems creating the datagram socket.", ioe);
 		}
-		// try {
-		// //TODO Set own IPAddress
-		// localHost = InetAddress.getByName("192.168.1.72");
-		//
-		// } catch (UnknownHostException uhe) {
-		// log.error("Problems identifying local host",uhe);
-		// }
 	}
 
 	public synchronized boolean isEmpty() {

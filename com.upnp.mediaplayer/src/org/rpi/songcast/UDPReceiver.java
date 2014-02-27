@@ -3,15 +3,16 @@ package org.rpi.songcast;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
-import java.util.Enumeration;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.apache.log4j.Logger;
+import org.rpi.songcast.events.EventSongCastBase;
 
-class UDPReceiver implements Runnable {
+class UDPReceiver extends Observable implements Runnable, Observer  {
 
 	private Logger log = Logger.getLogger(this.getClass());
 
@@ -28,36 +29,28 @@ class UDPReceiver implements Runnable {
 	private MulticastSocket mSocket = null;
 	
 	private boolean bRunning = true;
+	private String nic = "";
 
-	public UDPReceiver(int port, InetAddress addr, String zoneID) {
-
+	/*
+	 * 
+	 */
+	public UDPReceiver(int port, InetAddress addr, String zoneID,String nic) {
+		this.nic = nic;
 		mcastPort = port;
-
 		mcastAddr = addr;
 		this.zoneID = zoneID;
-
-		try {
-			// TODO set own IP Address
-			localHost = InetAddress.getByName("192.168.1.72");
-
-		} catch (UnknownHostException uhe) {
-
-			log.error("Problems identifying local host", uhe);
-
-		}
-
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Runnable#run()
+	 */
 	public void run() {
-
-		
-
 		try {
 			log.debug("Setting up multicast receiver");
 			//We need to ensure that the Receiver is bound to the correct Network address..
 			mSocket = new MulticastSocket(mcastPort);
-			InetAddress inet = InetAddress.getByName("192.168.1.72");
-			NetworkInterface netIf = NetworkInterface.getByInetAddress(inet);
+			NetworkInterface netIf = NetworkInterface.getByName(nic);
 			mSocket.setNetworkInterface(netIf);
 			mSocket.setReuseAddress(true);
 			NetworkInterface ifs = mSocket.getNetworkInterface();
@@ -70,32 +63,17 @@ class UDPReceiver implements Runnable {
 		}
 
 		DatagramPacket packet;
-		log.debug("Multicast receiver set up ");
+		log.debug("UDPReciever receiver set up ");
 		while (bRunning) {
 			try {
-				byte[] buf = new byte[1000];
+				byte[] buf = new byte[1024];
 				packet = new DatagramPacket(buf, buf.length);
-				log.debug("McastReceiver: waiting for packet");
 				mSocket.receive(packet);
-				log.debug("Received Packet: " + packet.getAddress().getHostAddress());
 				byte[] data = packet.getData();
-				StringBuilder sb = new StringBuilder();
-				for (byte b : data) {
-					sb.append(String.format("%02X ", b));
-				}
-				log.debug("Received: " + sb.toString());
-				String text = new String(data, "UTF-8");
-				log.debug("Received: " + text);
 				OHMessage mess = new OHMessage();
+				mess.addObserver(this);
 				mess.data = data;
 				mess.checkMessageType();
-				// ignore packets from myself, print the rest
-				log.debug("Address: " + packet.getAddress().getHostAddress());
-				if (!(packet.getAddress().equals(localHost))) {
-					log.debug("Recevied from: " + packet.getAddress());
-				} else {
-					log.debug("That was a Localhost:");
-				}
 			} catch (Exception e) {
 				log.error("Trouble reading multicast message", e);
 			}
@@ -103,14 +81,23 @@ class UDPReceiver implements Runnable {
 
 	}
 
+	/*
+	 * 
+	 */
 	public boolean isConnected() {
 		return bConnected;
 	}
 
+	/*
+	 * 
+	 */
 	private void setConnected(boolean bConnected) {
 		this.bConnected = bConnected;
 	}
 	
+	/*
+	 * 
+	 */
 	public void disconnect()
 	{
 		bRunning = false;
@@ -130,6 +117,25 @@ class UDPReceiver implements Runnable {
 				log.error("Error Close");
 			}
 		}
+	}
+
+	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
+	 */
+	public void update(Observable paramObservable, Object ev) {
+		EventSongCastBase e = (EventSongCastBase)ev;
+		fireEvent(e);
+	}
+	
+	/**
+	 * Fire the Events
+	 * @param ev
+	 */
+	public void fireEvent(EventSongCastBase ev) {
+		setChanged();
+		notifyObservers(ev);
 	}
 
 }

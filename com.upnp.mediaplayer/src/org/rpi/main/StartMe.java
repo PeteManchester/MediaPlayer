@@ -48,6 +48,7 @@ public class StartMe {
 				NetworkInterface n = (NetworkInterface) e.nextElement();
 				Enumeration ee = n.getInetAddresses();
 				log.info("Network Interface Name: " + n.getDisplayName());
+				log.info("NIC Name: " + n.getName());
 				while (ee.hasMoreElements()) {
 					InetAddress i = (InetAddress) ee.nextElement();
 					log.info("IPAddress for Network Interface: " + n.getDisplayName() + " : " + i.getHostAddress());

@@ -1,8 +1,15 @@
 package org.rpi.songcast;
 
-public class SongcastMessage {
+import java.io.UnsupportedEncodingException;
+import java.util.Observable;
+
+import org.rpi.player.events.EventBase;
+import org.rpi.songcast.events.EventSongCastBase;
+
+public class SongcastMessage extends Observable {
 
 	public byte[] data = null;
+	
 
 	public String convertHexToString(String hex) {
 
@@ -82,7 +89,7 @@ public class SongcastMessage {
 	    return value;
 	}
 	
-	public String byteArrayToString(byte[] bytes)
+	public String byteToHexString(byte[] bytes)
 	{
 		StringBuilder sb = new StringBuilder();
 		for (byte b : bytes) {
@@ -90,5 +97,21 @@ public class SongcastMessage {
 		}
 		return sb.toString();
 	}
+	
+	public String byteToString(byte[] bytes)
+	{
+		String s = "";
+		try {
+			s=  new String(bytes, "UTF-8");
+		} catch (UnsupportedEncodingException e1) {
 
+		}
+		return s;
+	}
+	
+	public void fireEvent(EventSongCastBase ev) {
+		setChanged();
+		notifyObservers(ev);
+	}
+	
 }
