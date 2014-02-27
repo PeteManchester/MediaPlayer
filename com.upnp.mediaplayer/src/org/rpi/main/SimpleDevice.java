@@ -87,56 +87,13 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 		lib = Library.create(initParams);
 		lib.setDebugLevel(getDebugLevel(Config.debug));
-		StringBuffer sb = new StringBuffer();
 
 		DeviceStack ds = lib.startDv();
 		String friendly_name = Config.friendly_name.replace(":", " ");
 		String iDeviceName = "device-" + friendly_name + "-" + GetHostName() + "-MediaRenderer";
 		iDevice = new DvDeviceFactory(ds).createDeviceStandard(iDeviceName, this);
 		log.debug("Created StandardDevice: " + iDevice.getUdn());
-		sb.append("<icon>");
-		sb.append("<minetype>image/png</minetype>");
-		sb.append("<width>240</width>");
-		sb.append("<height>240</height>");
-		sb.append("<depth>24</depth>");
-		sb.append("<url>/" + iDeviceName + "/Upnp/resource/org/rpi/image/mediaplayer240.png</url>");
-		sb.append("</icon>");
-		sb.append("<icon>");
-		sb.append("<minetype>image/jpeg</minetype>");
-		sb.append("<width>240</width>");
-		sb.append("<height>240</height>");
-		sb.append("<depth>24</depth>");
-		sb.append("<url>/" + iDeviceName + "/Upnp/resource/org/rpi/image/mediaplayer240.jpg</url>");
-		sb.append("</icon>");
-		sb.append("<icon>");
-		sb.append("<minetype>image/png</minetype>");
-		sb.append("<width>120</width>");
-		sb.append("<height>120</height>");
-		sb.append("<depth>24</depth>");
-		sb.append("<url>/" + iDeviceName + "/Upnp/resource/org/rpi/image/mediaplayer120.png</url>");
-		sb.append("</icon>");
-		sb.append("<icon>");
-		sb.append("<minetype>image/jpeg</minetype>");
-		sb.append("<width>120</width>");
-		sb.append("<height>120</height>");
-		sb.append("<depth>24</depth>");
-		sb.append("<url>/" + iDeviceName + "/Upnp/resource/org/rpi/image/mediaplayer120.jpg</url>");
-		sb.append("</icon>");
-		sb.append("<icon>");
-		sb.append("<minetype>image/png</minetype>");
-		sb.append("<width>50</width>");
-		sb.append("<height>50</height>");
-		sb.append("<depth>24</depth>");
-		sb.append("<url>/" + iDeviceName + "/Upnp/resource/org/rpi/image/mediaplayer50.png</url>");
-		sb.append("</icon>");
-		sb.append("<icon>");
-		sb.append("<minetype>image/jpeg</minetype>");
-		sb.append("<width>50</width>");
-		sb.append("<height>50</height>");
-		sb.append("<depth>24</depth>");
-		sb.append("<url>/" + iDeviceName + "/Upnp/resource/org/rpi/image/mediaplayer50.jpg</url>");
-		sb.append("</icon>");
-		iDevice.setAttribute("Upnp.IconList", sb.toString());
+		iDevice.setAttribute("Upnp.IconList", this.constructIconList(iDeviceName));
 
 		// iDevice.setAttribute("Upnp.Domain", "openhome-org");
 		iDevice.setAttribute("Upnp.Domain", "schemas-upnp-org");
@@ -210,8 +167,45 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		OSManager.getInstance().loadPlugins();
 	}
 
+    protected SimpleDevice(boolean test) {
+        // this constructor is just for test purposes...
+        // do not remove it
+    }
 
+    protected String constructIconList(String deviceName) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(this.constructIconEntry(deviceName, "image/png", ".png", "240"));
+        sb.append(this.constructIconEntry(deviceName, "image/jpeg", ".jpg", "240"));
+        sb.append(this.constructIconEntry(deviceName, "image/png", ".png", "120"));
+        sb.append(this.constructIconEntry(deviceName, "image/jpeg", ".jpg", "120"));
+        sb.append(this.constructIconEntry(deviceName, "image/png", ".png", "50"));
+        sb.append(this.constructIconEntry(deviceName, "image/jpeg", ".jpg", "50"));
 
+        return sb.toString();
+    }
+
+    protected String constructIconEntry(String deviceName, String mimeType, String fileSuffix, String size) {
+        StringBuffer sb = new StringBuffer();
+
+        sb.append("<icon>");
+        sb.append("<mimetype>");
+        sb.append(mimeType);
+        sb.append("</mimetype>");
+        sb.append("<width>");
+        sb.append(size);
+        sb.append("</width>");
+        sb.append("<height>");
+        sb.append(size);
+        sb.append("</height>");
+        sb.append("<depth>24</depth>");
+        sb.append("<url>/" + deviceName + "/Upnp/resource/org/rpi/image/mediaplayer");
+        sb.append(size);
+        sb.append(fileSuffix);
+        sb.append("</url>");
+        sb.append("</icon>");
+
+        return sb.toString();
+    }
 
 
 	private int getDebugLevel(String sLevel) {
