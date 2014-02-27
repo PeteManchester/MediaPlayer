@@ -44,6 +44,7 @@ import org.rpi.providers.PrvVolume;
 import org.rpi.radio.ChannelReader;
 import org.rpi.sources.Source;
 import org.rpi.sources.SourceReader;
+import org.rpi.utils.NetworkUtils;
 
 public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessageListener {
 
@@ -90,7 +91,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 		DeviceStack ds = lib.startDv();
 		String friendly_name = Config.friendly_name.replace(":", " ");
-		String iDeviceName = "device-" + friendly_name + "-" + GetHostName() + "-MediaRenderer";
+		String iDeviceName = "device-" + friendly_name + "-" + NetworkUtils.getHostName() + "-MediaRenderer";
 		iDevice = new DvDeviceFactory(ds).createDeviceStandard(iDeviceName, this);
 		log.debug("Created StandardDevice: " + iDevice.getUdn());
 		iDevice.setAttribute("Upnp.IconList", this.constructIconList(iDeviceName));
@@ -450,71 +451,6 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			// do stuff with exception
 			iox.printStackTrace();
 		}
-	}
-
-	/***
-	 * Get the MAC Address..
-	 * 
-	 * @return
-	 */
-	private String getMacAddress() {
-		String mac = "";
-		String command = "/sbin/ifconfig";
-
-		String sOsName = System.getProperty("os.name");
-		if (sOsName.startsWith("Windows")) {
-			command = "ipconfig /all";
-		} else {
-
-			if ((sOsName.startsWith("Linux")) || (sOsName.startsWith("Mac")) || (sOsName.startsWith("HP-UX"))) {
-				command = "/sbin/ifconfig";
-			} else {
-				log.info("The current operating system '" + sOsName + "' is not supported.");
-			}
-		}
-
-		Pattern p = Pattern.compile("([a-fA-F0-9]{1,2}(-|:)){5}[a-fA-F0-9]{1,2}");
-		try {
-			Process pa = Runtime.getRuntime().exec(command);
-			pa.waitFor();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(pa.getInputStream()));
-
-			String line;
-			Matcher m;
-			while ((line = reader.readLine()) != null) {
-				log.debug(line);
-				m = p.matcher(line);
-
-				if (!m.find())
-					continue;
-				line = m.group();
-				mac = line.replace(":", "");
-				mac = mac.replace("-", "");
-				break;
-
-			}
-			// System.out.println(line);
-		} catch (Exception e) {
-			log.debug("Error MAC Address: ", e);
-		}
-		return mac;
-	}
-
-	/***
-	 * Get the HostName, if any problem attempt to get the MAC Address
-	 * 
-	 * @return
-	 */
-	private String GetHostName() {
-		try {
-			InetAddress iAddress = InetAddress.getLocalHost();
-			String hostName = iAddress.getHostName();
-			// String canonicalHostName = iAddress.getCanonicalHostName();
-			return hostName;
-		} catch (Exception e) {
-			log.error("Error Getting HostName: ", e);
-		}
-		return getMacAddress();
 	}
 
 	public PrvVolume getCustomVolume() {
