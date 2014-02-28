@@ -987,7 +987,7 @@ public class PlayManager implements Observer {
 	 * 
 	 * @param o
 	 */
-	public synchronized void observTimeEvents(Observer o) {
+	public synchronized void observeTimeEvents(Observer o) {
 		obsvTime.addObserver(o);
 	}
 
@@ -996,7 +996,7 @@ public class PlayManager implements Observer {
 	 * 
 	 * @param o
 	 */
-	public synchronized void observInfoEvents(Observer o) {
+	public synchronized void observeInfoEvents(Observer o) {
 		obsvInfo.addObserver(o);
 	}
 
@@ -1005,7 +1005,7 @@ public class PlayManager implements Observer {
 	 * 
 	 * @param o
 	 */
-	public synchronized void observVolumeEvents(Observer o) {
+	public synchronized void observeVolumeEvents(Observer o) {
 		obsvVolume.addObserver(o);
 	}
 
@@ -1014,7 +1014,7 @@ public class PlayManager implements Observer {
 	 * 
 	 * @param o
 	 */
-	public synchronized void observPlayListEvents(Observer o) {
+	public synchronized void observePlayListEvents(Observer o) {
 		obsvPlayList.addObserver(o);
 	}
 
@@ -1032,11 +1032,11 @@ public class PlayManager implements Observer {
 	 * 
 	 * @param o
 	 */
-	public synchronized void observRadioEvents(Observer o) {
+	public synchronized void observeRadioEvents(Observer o) {
 		obsvRadio.addObserver(o);
 	}
 	
-	public void observAVEvnts(Observer o) {
+	public void observeAVEvents(Observer o) {
 		obsvAVTransport.addObserver(o);
 		
 	}

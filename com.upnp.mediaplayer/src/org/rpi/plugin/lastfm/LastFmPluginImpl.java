@@ -84,7 +84,7 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
         log.info("Init LastFmPluginImpl");
         getConfig();
         init();
-        PlayManager.getInstance().observInfoEvents(this);
+        PlayManager.getInstance().observeInfoEvents(this);
         PlayManager.getInstance().observeProductEvents(this);
         log.info("Finished LastFmPluginImpl");
     }

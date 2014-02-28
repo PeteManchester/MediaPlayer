@@ -50,10 +50,10 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 
 		// enableActionSetRecordQualityMode();
 		enableActionStop();
-		PlayManager.getInstance().observInfoEvents(this);
-		PlayManager.getInstance().observTimeEvents(this);
-		PlayManager.getInstance().observPlayListEvents(this);
-		PlayManager.getInstance().observAVEvnts(this);
+		PlayManager.getInstance().observeInfoEvents(this);
+		PlayManager.getInstance().observeTimeEvents(this);
+		PlayManager.getInstance().observePlayListEvents(this);
+		PlayManager.getInstance().observeAVEvents(this);
 
 	}
 

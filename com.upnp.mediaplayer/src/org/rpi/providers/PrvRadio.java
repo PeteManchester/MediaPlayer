@@ -67,7 +67,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 		enableActionSetId();
 		enableActionStop();
 		enableActionTransportState();
-		PlayManager.getInstance().observRadioEvents(this);
+		PlayManager.getInstance().observeRadioEvents(this);
 	}
 
 	/***

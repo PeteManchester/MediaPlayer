@@ -29,7 +29,7 @@ public class PrvTime extends DvProviderAvOpenhomeOrgTime1 implements Observer, I
 		setPropertySeconds(0);
 
 		enableActionTime();
-		PlayManager.getInstance().observTimeEvents(this);
+		PlayManager.getInstance().observeTimeEvents(this);
 
 	}
 

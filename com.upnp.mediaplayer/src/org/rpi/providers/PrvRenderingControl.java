@@ -61,7 +61,7 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 		enableActionGetVolumeDBRange();
 		enableActionListPresets();
 		enableActionSelectPreset();
-		PlayManager.getInstance().observVolumeEvents(this);
+		PlayManager.getInstance().observeVolumeEvents(this);
 
 	}
 

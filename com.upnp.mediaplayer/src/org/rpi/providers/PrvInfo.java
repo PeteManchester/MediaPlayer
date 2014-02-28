@@ -56,7 +56,7 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer, I
 		enableActionTrack();
 		enableActionDetails();
 		enableActionMetatext();
-		PlayManager.getInstance().observInfoEvents(this);
+		PlayManager.getInstance().observeInfoEvents(this);
 	}
 
 	/***

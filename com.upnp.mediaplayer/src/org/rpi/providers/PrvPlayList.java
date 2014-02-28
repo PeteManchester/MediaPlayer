@@ -80,7 +80,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		enableActionIdArray();
 		enableActionIdArrayChanged();
 		enableActionProtocolInfo();
-		PlayManager.getInstance().observPlayListEvents(this);
+		PlayManager.getInstance().observePlayListEvents(this);
 		loadPlayList();
 	}
 

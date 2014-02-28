@@ -60,7 +60,7 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 		enableActionSetMute();
 		enableActionMute();
 		enableActionVolumeLimit();
-		PlayManager.getInstance().observVolumeEvents(this);
+		PlayManager.getInstance().observeVolumeEvents(this);
 	}
 	
 	@Override

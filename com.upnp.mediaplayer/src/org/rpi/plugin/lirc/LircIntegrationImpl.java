@@ -42,7 +42,7 @@ public class LircIntegrationImpl implements LircIntegrationInterface, Observer {
 		getConfig();
 
 		// Register for Volume Events
-		PlayManager.getInstance().observVolumeEvents(this);
+		PlayManager.getInstance().observeVolumeEvents(this);
 		PlayManager.getInstance().observeProductEvents(this);
 		// Register for Source Events
 		PluginGateWay.getInstance().addObserver(this);
