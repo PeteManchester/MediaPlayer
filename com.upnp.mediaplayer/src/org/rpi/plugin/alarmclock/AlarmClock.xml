@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Alarms>
 	<Alarm>
+	    <status>On</status>
 		<name>Absolute</name>
 		<time>00 30 07 ? * 2-6</time>
 		<volume>80</volume>
@@ -10,6 +11,7 @@
 	</Alarm>
 	
 	<Alarm>
+	    <status>Off</status>
 		<name>Pop Quiz</name>
 		<time>00 25 10 ? * 2-6</time>
 		<volume>100</volume>

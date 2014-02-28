@@ -99,7 +99,7 @@ public class AlarmClockImpl implements AlarmClockInterface {
 		try {
 			String class_name = this.getClass().getName();
 			log.debug("Find Class, ClassName: " + class_name);
-			String path = OSManager.getInstance().getFilePath(this.getClass(),false);
+			String path = OSManager.getInstance().getFilePath(this.getClass(), false);
 			log.debug("Getting AlarmClock.xml from Directory: " + path);
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
@@ -107,6 +107,7 @@ public class AlarmClockImpl implements AlarmClockInterface {
 			NodeList listOfChannels = doc.getElementsByTagName("Alarm");
 			int i = 1;
 			for (int s = 0; s < listOfChannels.getLength(); s++) {
+				boolean status = true;
 				String name = null;
 				String time = null;
 				String type = null;
@@ -118,20 +119,24 @@ public class AlarmClockImpl implements AlarmClockInterface {
 				if (alarm.getNodeType() == Node.ELEMENT_NODE) {
 					Element element = (Element) alarm;
 					name = getElementTest(element, "name");
+					String mStatus = getElementTest(element, "status");
+					if (mStatus.equalsIgnoreCase("OFF")) {
+						status = false;
+					}
 					time = getElementTest(element, "time");
 					type = getElementTest(element, "type");
 					volume = getElementTest(element, "volume");
 					shuffle = getElementTest(element, "shuffle");
 					channel = getElementTest(element, "channel");
 				}
-
-				createSchedule(name, time, type, channel, volume, shuffle);
+				if (status) {
+					createSchedule(name, time, type, channel, volume, shuffle);
+				}
 			}
 		} catch (Exception e) {
 			log.error("Error Reading AlarmClock.xml");
 		}
 	}
-
 
 	/***
 	 * 
@@ -176,7 +181,5 @@ public class AlarmClockImpl implements AlarmClockInterface {
 			iPlayer.nextTrack();
 		}
 	}
-
-
 
 }
