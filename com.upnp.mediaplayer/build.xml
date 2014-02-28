@@ -19,6 +19,12 @@
         </fileset>
     </path>
 
+    <path id="classpath_tests">
+        <fileset dir="${lib_dir}/tests">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
     <path id="classpath">
         <path refid="classpath_core"/>
         <path refid="classpath_plugins"/>
@@ -34,6 +40,7 @@
 <!-- compile -->
     <property name="target_dir" value="${basedir}/build"/>
     <property name="classes_dir" value="${target_dir}/classes"/>
+    <property name="test_classes_dir" value="${target_dir}/test-classes"/>
 
     <property name="release_root_dir" value="${target_dir}/beta"/>
     <property name="release_dir" value="${release_root_dir}/mediaplayer"/>
@@ -52,23 +59,56 @@
         </fileset>
     </path>
 
+    <path id="test_classpath">
+        <path refid="classpath_core"/>
+        <path refid="classpath_plugins"/>
+        <path refid="classpath_tests"/>
+        <pathelement location="${classes_dir}"/>
+    </path>
+
     <target name="clean" description="cleans up target directory">
         <delete dir="${target_dir}"/>
     </target>
 
-    <target name="prepare" description="creates needed directories for the build process">
+    <target name="init" description="creates needed directories for the build process">
         <mkdir dir="${classes_dir}"/>
         <mkdir dir="${release_dir}"/>
         <mkdir dir="${release_lib_dir}"/>
         <mkdir dir="${release_native_lib_dir}"/>
+        <mkdir dir="${test_classes_dir}"/>
     </target>
 
-    <target name="compile" depends="prepare" description="compiles all sources using the correct classpath">
+    <target name="compile" depends="init" description="compiles all sources using the correct classpath">
         <javac srcdir="src" classpathref="classpath" destdir="${classes_dir}" debug="on"/>
         <copy todir="${release_lib_dir}">
             <path refid="classpath_core"/>
         </copy>
         <!-- exclude name="**/org/scratchpad/*.java" /-->
+    </target>
+
+    <target name="tests_compile" depends="compile" description="compiles all test sources using the correct classpath">
+        <pathconvert property="classpathProp" refid="test_classpath"/>
+
+        <echo>Classpath is ${classpathProp}</echo>
+
+        <javac srcdir="tests" classpathref="test_classpath" destdir="${test_classes_dir}" debug="on"/>
+    </target>
+
+    <target name="tests" depends="tests_compile" description="runs all testcases">
+        <junit haltonfailure="true">
+            <classpath>
+                <path refid="test_classpath"/>
+                <pathelement location="${test_classes_dir}"/>
+            </classpath>
+
+            <formatter type="plain" usefile="false"/>
+
+            <batchtest fork="yes">
+                <fileset dir="tests">
+                    <include name="**/*Test*.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
     </target>
 
     <target name="build_jar" depends="clean, compile" description="builds a jar file (mediaplayer.jar)">
@@ -80,8 +120,6 @@
 			<fileset dir="${basedir}/src/org/rpi/image"/>
 		</copy>
         
-        
-
         <!-- construct classpath for Manifest -->
         <manifestclasspath property="manifest_cp" jarfile="${release_dir}/mediaplayer.jar">
             <classpath refid="runtime_classpath" />

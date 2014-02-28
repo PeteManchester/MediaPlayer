@@ -83,53 +83,10 @@ public class Config {
 	{
 		return getLogLevel(logconsole);
 	}
-	
-	private static Level getLogLevel(String s)
-	{
-		if(s==null)
-			return Level.DEBUG;
-		
-		if(s.equalsIgnoreCase("DEBUG"))
-		{
-			return Level.DEBUG;
-		}
-		
-		else if (s.equalsIgnoreCase("ALL"))
-		{
-			return Level.ALL;
-		}
-		else if (s.equalsIgnoreCase("ERROR"))
-		{
-			return Level.ERROR;
-		}
-		
-		else if (s.equalsIgnoreCase("FATAL"))
-		{
-			return Level.FATAL;
-		}
-		
-		else if (s.equalsIgnoreCase("INFO"))
-		{
-			return Level.INFO;
-		}
-		
-		else if (s.equalsIgnoreCase("OFF"))
-		{
-			return Level.OFF;
-		}
-		
-		else if (s.equalsIgnoreCase("TRACE"))
-		{
-			return Level.TRACE;
-		}
-		
-		else if (s.equalsIgnoreCase("WARN"))
-		{
-			return Level.WARN;
-		}
-		return Level.DEBUG;
-	}
 
+    protected static Level getLogLevel(String s) {
+        return Level.toLevel(s, Level.DEBUG);
+    }
 
 	public static void setSaveLocalPlayList(String property) {
 		if(property.equalsIgnoreCase("TRUE"))

@@ -44,6 +44,7 @@ import org.rpi.providers.PrvVolume;
 import org.rpi.radio.ChannelReader;
 import org.rpi.sources.Source;
 import org.rpi.sources.SourceReader;
+import org.rpi.utils.NetworkUtils;
 
 public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessageListener {
 
@@ -87,56 +88,13 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 		lib = Library.create(initParams);
 		lib.setDebugLevel(getDebugLevel(Config.debug));
-		StringBuffer sb = new StringBuffer();
 
 		DeviceStack ds = lib.startDv();
 		String friendly_name = Config.friendly_name.replace(":", " ");
-		String iDeviceName = "device-" + friendly_name + "-" + GetHostName() + "-MediaRenderer";
+		String iDeviceName = "device-" + friendly_name + "-" + NetworkUtils.getHostName() + "-MediaRenderer";
 		iDevice = new DvDeviceFactory(ds).createDeviceStandard(iDeviceName, this);
 		log.debug("Created StandardDevice: " + iDevice.getUdn());
-		sb.append("<icon>");
-		sb.append("<minetype>image/png</minetype>");
-		sb.append("<width>240</width>");
-		sb.append("<height>240</height>");
-		sb.append("<depth>24</depth>");
-		sb.append("<url>/" + iDeviceName + "/Upnp/resource/org/rpi/image/mediaplayer240.png</url>");
-		sb.append("</icon>");
-		sb.append("<icon>");
-		sb.append("<minetype>image/jpeg</minetype>");
-		sb.append("<width>240</width>");
-		sb.append("<height>240</height>");
-		sb.append("<depth>24</depth>");
-		sb.append("<url>/" + iDeviceName + "/Upnp/resource/org/rpi/image/mediaplayer240.jpg</url>");
-		sb.append("</icon>");
-		sb.append("<icon>");
-		sb.append("<minetype>image/png</minetype>");
-		sb.append("<width>120</width>");
-		sb.append("<height>120</height>");
-		sb.append("<depth>24</depth>");
-		sb.append("<url>/" + iDeviceName + "/Upnp/resource/org/rpi/image/mediaplayer120.png</url>");
-		sb.append("</icon>");
-		sb.append("<icon>");
-		sb.append("<minetype>image/jpeg</minetype>");
-		sb.append("<width>120</width>");
-		sb.append("<height>120</height>");
-		sb.append("<depth>24</depth>");
-		sb.append("<url>/" + iDeviceName + "/Upnp/resource/org/rpi/image/mediaplayer120.jpg</url>");
-		sb.append("</icon>");
-		sb.append("<icon>");
-		sb.append("<minetype>image/png</minetype>");
-		sb.append("<width>50</width>");
-		sb.append("<height>50</height>");
-		sb.append("<depth>24</depth>");
-		sb.append("<url>/" + iDeviceName + "/Upnp/resource/org/rpi/image/mediaplayer50.png</url>");
-		sb.append("</icon>");
-		sb.append("<icon>");
-		sb.append("<minetype>image/jpeg</minetype>");
-		sb.append("<width>50</width>");
-		sb.append("<height>50</height>");
-		sb.append("<depth>24</depth>");
-		sb.append("<url>/" + iDeviceName + "/Upnp/resource/org/rpi/image/mediaplayer50.jpg</url>");
-		sb.append("</icon>");
-		iDevice.setAttribute("Upnp.IconList", sb.toString());
+		iDevice.setAttribute("Upnp.IconList", this.constructIconList(iDeviceName));
 
 		// iDevice.setAttribute("Upnp.Domain", "openhome-org");
 		iDevice.setAttribute("Upnp.Domain", "schemas-upnp-org");
@@ -210,8 +168,45 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		OSManager.getInstance().loadPlugins();
 	}
 
+    protected SimpleDevice(boolean test) {
+        // this constructor is just for test purposes...
+        // do not remove it
+    }
 
+    protected String constructIconList(String deviceName) {
+        StringBuffer sb = new StringBuffer();
+        sb.append(this.constructIconEntry(deviceName, "image/png", ".png", "240"));
+        sb.append(this.constructIconEntry(deviceName, "image/jpeg", ".jpg", "240"));
+        sb.append(this.constructIconEntry(deviceName, "image/png", ".png", "120"));
+        sb.append(this.constructIconEntry(deviceName, "image/jpeg", ".jpg", "120"));
+        sb.append(this.constructIconEntry(deviceName, "image/png", ".png", "50"));
+        sb.append(this.constructIconEntry(deviceName, "image/jpeg", ".jpg", "50"));
 
+        return sb.toString();
+    }
+
+    protected String constructIconEntry(String deviceName, String mimeType, String fileSuffix, String size) {
+        StringBuffer sb = new StringBuffer();
+
+        sb.append("<icon>");
+        sb.append("<mimetype>");
+        sb.append(mimeType);
+        sb.append("</mimetype>");
+        sb.append("<width>");
+        sb.append(size);
+        sb.append("</width>");
+        sb.append("<height>");
+        sb.append(size);
+        sb.append("</height>");
+        sb.append("<depth>24</depth>");
+        sb.append("<url>/" + deviceName + "/Upnp/resource/org/rpi/image/mediaplayer");
+        sb.append(size);
+        sb.append(fileSuffix);
+        sb.append("</url>");
+        sb.append("</icon>");
+
+        return sb.toString();
+    }
 
 
 	private int getDebugLevel(String sLevel) {
@@ -456,71 +451,6 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			// do stuff with exception
 			iox.printStackTrace();
 		}
-	}
-
-	/***
-	 * Get the MAC Address..
-	 * 
-	 * @return
-	 */
-	private String getMacAddress() {
-		String mac = "";
-		String command = "/sbin/ifconfig";
-
-		String sOsName = System.getProperty("os.name");
-		if (sOsName.startsWith("Windows")) {
-			command = "ipconfig /all";
-		} else {
-
-			if ((sOsName.startsWith("Linux")) || (sOsName.startsWith("Mac")) || (sOsName.startsWith("HP-UX"))) {
-				command = "/sbin/ifconfig";
-			} else {
-				log.info("The current operating system '" + sOsName + "' is not supported.");
-			}
-		}
-
-		Pattern p = Pattern.compile("([a-fA-F0-9]{1,2}(-|:)){5}[a-fA-F0-9]{1,2}");
-		try {
-			Process pa = Runtime.getRuntime().exec(command);
-			pa.waitFor();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(pa.getInputStream()));
-
-			String line;
-			Matcher m;
-			while ((line = reader.readLine()) != null) {
-				log.debug(line);
-				m = p.matcher(line);
-
-				if (!m.find())
-					continue;
-				line = m.group();
-				mac = line.replace(":", "");
-				mac = mac.replace("-", "");
-				break;
-
-			}
-			// System.out.println(line);
-		} catch (Exception e) {
-			log.debug("Error MAC Address: ", e);
-		}
-		return mac;
-	}
-
-	/***
-	 * Get the HostName, if any problem attempt to get the MAC Address
-	 * 
-	 * @return
-	 */
-	private String GetHostName() {
-		try {
-			InetAddress iAddress = InetAddress.getLocalHost();
-			String hostName = iAddress.getHostName();
-			// String canonicalHostName = iAddress.getCanonicalHostName();
-			return hostName;
-		} catch (Exception e) {
-			log.error("Error Getting HostName: ", e);
-		}
-		return getMacAddress();
 	}
 
 	public PrvVolume getCustomVolume() {

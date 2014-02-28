@@ -29,7 +29,7 @@ public class PlayListWriter extends Thread {
 		sb.append("<TrackList>");
 		for (CustomTrack t : tracks) {
 			i++;
-			sb.append(t.getFullString());
+			sb.append(t.getFullText());
 		}
 		sb.append("</TrackList>");
 		log.debug("PlayList Contains : " + i);

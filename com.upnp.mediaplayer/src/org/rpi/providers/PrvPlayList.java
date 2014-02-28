@@ -400,7 +400,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		for (CustomTrack t : tracks) {
 			if (trackIds.containsKey("" + t.getId())) {
 				i++;
-				sb.append(t.getFullString());
+				sb.append(t.getFullText());
 			}
 		}
 		sb.append("</TrackList>");
