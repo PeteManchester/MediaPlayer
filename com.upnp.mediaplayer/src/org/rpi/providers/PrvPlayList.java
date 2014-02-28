@@ -1,10 +1,5 @@
 package org.rpi.providers;
 
-import java.util.HashMap;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
@@ -21,7 +16,12 @@ import org.rpi.playlist.PlayListReader;
 import org.rpi.playlist.PlayListWriter;
 import org.rpi.utils.Utils;
 
-public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Observer {
+import java.util.HashMap;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Observer, IDisposableDevice {
 
 	private Logger log = Logger.getLogger(PrvPlayList.class);
 	private int next_id;
@@ -441,5 +441,10 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		}
 
 	}
+
+    @Override
+    public String getName() {
+        return "PlayList";
+    }
 
 }

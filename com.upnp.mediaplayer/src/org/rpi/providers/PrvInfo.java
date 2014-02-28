@@ -1,8 +1,5 @@
 package org.rpi.providers;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
@@ -16,7 +13,10 @@ import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.playlist.CustomTrack;
 import org.rpi.utils.Utils;
 
-public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer {
+import java.util.Observable;
+import java.util.Observer;
+
+public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer, IDisposableDevice {
 
 	private Logger log = Logger.getLogger(PrvInfo.class);
 	
@@ -196,4 +196,8 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer {
 		
 	}
 
+    @Override
+    public String getName() {
+        return "Info";
+    }
 }

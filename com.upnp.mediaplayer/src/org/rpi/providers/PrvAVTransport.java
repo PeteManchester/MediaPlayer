@@ -1,22 +1,18 @@
 package org.rpi.providers;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderUpnpOrgAVTransport1;
 import org.rpi.player.PlayManager;
-import org.rpi.player.events.EventBase;
-import org.rpi.player.events.EventStatusChanged;
-import org.rpi.player.events.EventTimeUpdate;
-import org.rpi.player.events.EventTrackChanged;
-import org.rpi.player.events.EventUpdateTrackInfo;
+import org.rpi.player.events.*;
 import org.rpi.playlist.CustomTrack;
 import org.rpi.utils.Utils;
 
-public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Observer {
+import java.util.Observable;
+import java.util.Observer;
+
+public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Observer, IDisposableDevice {
 
 	private Logger log = Logger.getLogger(PrvAVTransport.class);
 	private String track_uri = "";
@@ -430,5 +426,10 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 		}
 		return sb.toString();
 	}
+
+    @Override
+    public String getName() {
+        return "AVTransport";
+    }
 
 }

@@ -1,10 +1,5 @@
 package org.rpi.providers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-
 import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
@@ -18,7 +13,12 @@ import org.rpi.player.events.EventRadioStatusChanged;
 import org.rpi.radio.CustomChannel;
 import org.rpi.utils.Utils;
 
-public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
+public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer, IDisposableDevice {
 
 	private Logger log = Logger.getLogger(PrvRadio.class);
 
@@ -128,7 +128,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer 
 	};
 
 	protected String protocolInfo(IDvInvocation paramIDvInvocation) {
-		log.debug("protocolInfo"  +Utils.getLogText(paramIDvInvocation));
+		log.debug("protocolInfo"  + Utils.getLogText(paramIDvInvocation));
 		return Config.getProtocolInfo();
 	};
 
@@ -142,7 +142,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer 
 
 	@Override
 	protected void setChannel(IDvInvocation paramIDvInvocation, String uri, String metadata) {
-		log.debug("SetChannel"  +Utils.getLogText(paramIDvInvocation));
+		log.debug("SetChannel"  + Utils.getLogText(paramIDvInvocation));
 		CustomChannel channel = new CustomChannel(uri, metadata, 2,"");
 		channels.add(channel);
 		UpdateIdArray();
@@ -167,7 +167,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer 
 
 	@Override
 	protected String read(IDvInvocation paramIDvInvocation, long id) {
-		log.debug("Read: " + id  +Utils.getLogText(paramIDvInvocation));
+		log.debug("Read: " + id  + Utils.getLogText(paramIDvInvocation));
 		CustomChannel c = channels.get((int) id);
 		return c.getMetadata();
 	}
@@ -320,6 +320,10 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer 
 		}
 	}
 
+    @Override
+    public String getName() {
+        return "Radio";
+    }
 
 
 }

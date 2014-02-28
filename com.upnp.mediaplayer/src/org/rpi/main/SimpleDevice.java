@@ -1,50 +1,27 @@
 package org.rpi.main;
 
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.URL;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.imageio.ImageIO;
-
 import org.apache.log4j.Logger;
-import org.openhome.net.core.DebugLevel;
-import org.openhome.net.core.DeviceStack;
-import org.openhome.net.core.IMessageListener;
-import org.openhome.net.core.InitParams;
-import org.openhome.net.core.Library;
-import org.openhome.net.device.DvDevice;
-import org.openhome.net.device.DvDeviceFactory;
-import org.openhome.net.device.IDvDeviceListener;
-import org.openhome.net.device.IResourceManager;
-import org.openhome.net.device.IResourceWriter;
+import org.openhome.net.core.*;
+import org.openhome.net.device.*;
 import org.rpi.config.Config;
 import org.rpi.os.OSManager;
 import org.rpi.player.PlayManager;
 import org.rpi.plugingateway.PluginGateWay;
-import org.rpi.providers.PrvAVTransport;
-import org.rpi.providers.PrvConnectionManager;
-import org.rpi.providers.PrvInfo;
-import org.rpi.providers.PrvPlayList;
-import org.rpi.providers.PrvProduct;
-import org.rpi.providers.PrvRadio;
-import org.rpi.providers.PrvReceiver;
-import org.rpi.providers.PrvRenderingControl;
-import org.rpi.providers.PrvTime;
-import org.rpi.providers.PrvVolume;
+import org.rpi.providers.*;
 import org.rpi.radio.ChannelReader;
 import org.rpi.sources.Source;
 import org.rpi.sources.SourceReader;
 import org.rpi.utils.NetworkUtils;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessageListener {
 
@@ -297,110 +274,16 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			}
 		}
 
-		if (iConnectionManager != null) {
-			log.info("Destroying ConnectionManager");
-			try {
-				iConnectionManager.dispose();
-				log.info("Destroyed ConnectionManager");
-			} catch (Exception e) {
-				log.error("Error Destroying ConnectionManager", e);
-			}
-		}
-
-		if (iPlayList != null) {
-			log.info("Destroying PlayList");
-			try {
-				iPlayList.dispose();
-				log.info("Destroyed PlayList");
-			} catch (Exception e) {
-				log.error("Error Destroying PlayList", e);
-			}
-		}
-
-		if (iVolume != null) {
-			log.info("Destroying Volume");
-			try {
-				iVolume.dispose();
-				log.info("Destroyed Volume");
-			} catch (Exception e) {
-				log.error("Error Destroying Volume", e);
-			}
-		}
-
-		if (iProduct != null) {
-			log.info("Destroying Product");
-			try {
-				iProduct.dispose();
-				log.info("Destroyed Product");
-			} catch (Exception e) {
-				log.error("Error Destroying Product", e);
-			}
-		}
-
-		if (iInfo != null) {
-			log.info("Destroying Info");
-			try {
-				iInfo.dispose();
-				log.info("Destroyed Info");
-			} catch (Exception e) {
-				log.error("Error Destroying Info", e);
-			}
-		}
-
-		if (iTime != null) {
-			log.info("Destroying Time");
-			try {
-				iTime.dispose();
-				log.info("Destroyed Time");
-			} catch (Exception e) {
-				log.error("Error Destroying Time", e);
-			}
-
-		}
-
-		if (iRadio != null) {
-			log.info("Destroying Radio");
-			try {
-				iRadio.dispose();
-				log.info("Destroyed Radio");
-			} catch (Exception e) {
-				log.error("Error Destroying Radio", e);
-			}
-
-		}
-
-		if (iReceiver != null) {
-			log.info("Destroying Receiver");
-			try {
-				iReceiver.dispose();
-				log.info("Destroyed Receiver");
-			} catch (Exception e) {
-				log.error("Error Destroying Receiver", e);
-			}
-
-		}
-
-		if (iAVTransport != null) {
-			log.info("Destroying AVTransport");
-			try {
-				iAVTransport.dispose();
-				log.info("Destroyed AVTransport");
-			} catch (Exception e) {
-				log.error("Error Destroying AVTransport", e);
-			}
-
-		}
-
-		if (iRenderingControl != null) {
-			log.info("Destroying RenderingControl");
-			try {
-				iRenderingControl.dispose();
-				log.info("Destroyed RenderingControl");
-			} catch (Exception e) {
-				log.error("Error Destroying RenderingControl", e);
-			}
-
-		}
+        this.disposeDevice(iConnectionManager);
+        this.disposeDevice(iPlayList);
+        this.disposeDevice(iVolume);
+        this.disposeDevice(iProduct);
+        this.disposeDevice(iInfo);
+        this.disposeDevice(iTime);
+        this.disposeDevice(iRadio);
+        this.disposeDevice(iReceiver);
+        this.disposeDevice(iAVTransport);
+        this.disposeDevice(iRenderingControl);
 
 		if (lib != null) {
 			try {
@@ -413,6 +296,21 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		}
 
 	}
+
+    private void disposeDevice(IDisposableDevice device) {
+        if (device != null) {
+            String name = device.getName();
+            log.info("Dispose " + name);
+
+            try {
+                device.dispose();
+                log.info("Disposed " + name);
+            } catch (Exception e) {
+                log.error("Error Disposing " + name, e);
+            }
+
+        }
+    }
 
 	@Override
 	public void writeResource(String resource_name, int arg1, List<String> arg2, IResourceWriter writer) {
