@@ -13,7 +13,7 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
-class UPDSender implements Runnable {
+class UDPSender implements Runnable {
 
 	private Logger log = Logger.getLogger(this.getClass());
 	private boolean run = true;
@@ -25,7 +25,7 @@ class UPDSender implements Runnable {
 	private Vector mWorkQueue = new Vector();
 	private String nic = "";
 
-	UPDSender(int port, InetAddress addr, String zoneID,String nic) {
+	UDPSender(int port, InetAddress addr, String zoneID, String nic) {
 		this.nic = nic;
 		mcastPort = port;
 		mcastAddr = addr;
