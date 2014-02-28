@@ -36,6 +36,7 @@ import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.playlist.CustomTrack;
+import org.rpi.utils.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -204,22 +205,22 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
 				Node config = listOfConfig.item(s);
 				if (config.getNodeType() == Node.ELEMENT_NODE) {
 					Element element = (Element) config;
-					lastfm_username = getElementTest(element, "UserName", "");
+					lastfm_username = XMLUtils.getElementTest(element, "UserName");
 					String password = "";
-					password = getElementTest(element, "Password", "");
+					password = XMLUtils.getElementTest(element, "Password");
 					if (!password.equalsIgnoreCase("")) {
 						encrypted_password = encrypt(key, password);
 						lastfm_password = password;
 					} else {
-						String enc_password = getElementTest(element, "Password_ENC", "");
+						String enc_password = XMLUtils.getElementTest(element, "Password_ENC");
 						if (!enc_password.equalsIgnoreCase("")) {
 							lastfm_password = decrypt(key, enc_password);
 						}
 					}
-					String proxymode = getElementTest(element, "ProxyType", "DIRECT");
+					String proxymode = XMLUtils.getElementTest(element, "ProxyType", "DIRECT");
 					lastfm_proxymode = Proxy.Type.valueOf(proxymode);
-					lastfm_proxy_ip = getElementTest(element, "Proxy_IP", "");
-					String proxy_port = getElementTest(element, "Proxy_Port", "-1");
+					lastfm_proxy_ip = XMLUtils.getElementTest(element, "Proxy_IP");
+					String proxy_port = XMLUtils.getElementTest(element, "Proxy_Port", "-1");
 					lastfm_proxy_port = Integer.parseInt(proxy_port);
 				}
 			}
@@ -229,8 +230,8 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
 				Node bl = listOfBlackList.item(s);
 				if (bl.getNodeType() == Node.ELEMENT_NODE) {
 					Element element = (Element) bl;
-					String artist = getElementTest(element, "artist", "");
-					String title = getElementTest(element, "title", "");
+					String artist = XMLUtils.getElementTest(element, "artist", "");
+					String title = XMLUtils.getElementTest(element, "title", "");
 					BlackList bli = new BlackList();
 					bli.setArtist(artist);
 					bli.setTitle(title);
@@ -311,27 +312,6 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
 		this.title = title;
 		this.artist = artist;
 		return true;
-	}
-
-	/***
-	 * 
-	 * @param element
-	 * @param name
-	 * @return
-	 */
-	private String getElementTest(Element element, String name, String default_value) {
-		String res = default_value;
-		NodeList nid = element.getElementsByTagName(name);
-		if (nid != null) {
-			Element fid = (Element) nid.item(0);
-			if (fid != null) {
-				res = fid.getTextContent();
-				if (res.equalsIgnoreCase(""))
-					res = default_value;
-				return res;
-			}
-		}
-		return res;
 	}
 
 	// Simple attempt to encode the password...

@@ -8,6 +8,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.rpi.playlist.CustomTrack;
 import org.apache.log4j.Logger;
 import org.rpi.providers.PrvPlayList;
+import org.rpi.utils.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -38,14 +39,14 @@ public class PlayListReader {
 			for (int s = 0; s < listOfChannels.getLength(); s++) {
 				Node channel = listOfChannels.item(s);
 				Element element = (Element) channel;
-				String id = getElementTest(element, "Id");
+				String id = XMLUtils.getElementTest(element, "Id");
 				int iId = Integer.parseInt(id);
 				if(iId > max_id)
 				{
 					max_id = iId;
 				}
-				String url = getElementTest(element, "Uri");
-				String metadata = getElementTest(element, "Metadata");
+				String url = XMLUtils.getElementTest(element, "Uri");
+				String metadata = XMLUtils.getElementTest(element, "Metadata");
 				CustomTrack t = new CustomTrack(url, metadata, Integer.parseInt(id));
 				tracks.add(t);
 				log.debug("Adding Track Id: " + id + " URL: " + url +  " " + t.getFullDetails());
@@ -60,27 +61,6 @@ public class PlayListReader {
 			log.error("Error: Reading XML", e);
 		}
 		return "";
-	}
-
-	/***
-	 * 
-	 * @param element
-	 * @param name
-	 * @return
-	 */
-	private String getElementTest(Element element, String name) {
-		String res = "";
-		NodeList nid = element.getElementsByTagName(name);
-		if (nid != null) {
-			Element fid = (Element) nid.item(0);
-			if (fid != null) {
-				res = fid.getTextContent();
-				// log.debug("ElementName: " + name + " Value: " + res);
-				return res;
-
-			}
-		}
-		return res;
 	}
 
 }
