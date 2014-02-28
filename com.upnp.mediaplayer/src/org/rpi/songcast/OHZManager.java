@@ -27,7 +27,7 @@ public class OHZManager implements Observer {
 	private String nic = "";
 	private OHZJoin join = null;
 
-	public OHZManager(String uri, String zoneID,String nic) {
+	public OHZManager(String uri, String zoneID, String nic) {
 		try {
 			this.nic = nic;
 			int lastColon = uri.lastIndexOf(":");
