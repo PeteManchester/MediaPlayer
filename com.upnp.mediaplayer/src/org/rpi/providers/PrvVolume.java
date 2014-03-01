@@ -1,8 +1,5 @@
 package org.rpi.providers;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
@@ -13,7 +10,10 @@ import org.rpi.player.events.EventMuteChanged;
 import org.rpi.player.events.EventVolumeChanged;
 import org.rpi.utils.Utils;
 
-public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observer {
+import java.util.Observable;
+import java.util.Observer;
+
+public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observer, IDisposableDevice {
 
 	private Logger log = Logger.getLogger(PrvVolume.class);
 
@@ -60,7 +60,7 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 		enableActionSetMute();
 		enableActionMute();
 		enableActionVolumeLimit();
-		PlayManager.getInstance().observVolumeEvents(this);
+		PlayManager.getInstance().observeVolumeEvents(this);
 	}
 	
 	@Override
@@ -85,13 +85,13 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 
 	protected void setVolume(IDvInvocation paramIDvInvocation, long volume) {
 
-		log.debug("setVolume: " + volume +Utils.getLogText(paramIDvInvocation));
+		log.debug("setVolume: " + volume + Utils.getLogText(paramIDvInvocation));
 		iPlayer.setVolume(volume);
 
 	}
 
 	protected void volumeInc(IDvInvocation paramIDvInvocation) {
-		log.debug("volumeInc: "  +Utils.getLogText(paramIDvInvocation));
+		log.debug("volumeInc: "  + Utils.getLogText(paramIDvInvocation));
 		long volume = iPlayer.incVolume();
 		//propertiesLock();
 		//setPropertyVolume(volume);
@@ -101,7 +101,7 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 	}
 
 	protected void volumeDec(IDvInvocation paramIDvInvocation) {
-		log.debug("volumeDec: "  +Utils.getLogText(paramIDvInvocation));
+		log.debug("volumeDec: "  + Utils.getLogText(paramIDvInvocation));
 		long volume = iPlayer.decVolume();
 		//propertiesLock();
 		//setPropertyVolume(volume);
@@ -111,7 +111,7 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 	}
 
 	protected void setMute(IDvInvocation paramIDvInvocation, boolean mute) {
-		log.debug("vsetMute: "  + mute  +Utils.getLogText(paramIDvInvocation));
+		log.debug("vsetMute: "  + mute  + Utils.getLogText(paramIDvInvocation));
 		iPlayer.setMute(mute);
 	}
 	
@@ -123,7 +123,7 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 	}
 
 	protected long volume(IDvInvocation paramIDvInvocation) {
-		log.debug("volume: "  +Utils.getLogText(paramIDvInvocation));
+		log.debug("volume: "  + Utils.getLogText(paramIDvInvocation));
 		long volume = iPlayer.getVolume();
 		log.debug("GetVolume: " + volume);
 		if(volume < 0)
@@ -133,7 +133,7 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 	
 	@Override
 	protected long volumeLimit(IDvInvocation paramIDvInvocation) {
-		log.debug("volumeLimit: "  +Utils.getLogText(paramIDvInvocation));
+		log.debug("volumeLimit: "  + Utils.getLogText(paramIDvInvocation));
 		return 100;
 	}
 
@@ -152,4 +152,9 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
 			break;
 		}
 	}
+
+    @Override
+    public String getName() {
+        return "Volume";
+    }
 }

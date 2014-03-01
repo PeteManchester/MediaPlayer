@@ -60,9 +60,9 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 		log.debug("Init LCDDisplayImpl");
 		try {
 			getConfig();
-			PlayManager.getInstance().observInfoEvents(this);
-			PlayManager.getInstance().observVolumeEvents(this);
-			PlayManager.getInstance().observTimeEvents(this);
+			PlayManager.getInstance().observeInfoEvents(this);
+			PlayManager.getInstance().observeVolumeEvents(this);
+			PlayManager.getInstance().observeTimeEvents(this);
 			PlayManager.getInstance().observeProductEvents(this);
 			try {
 				initPi4J();

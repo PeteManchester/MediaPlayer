@@ -26,6 +26,7 @@ import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
 import org.rpi.os.OSManager;
 import org.rpi.player.PlayManager;
+import org.rpi.utils.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -118,16 +119,16 @@ public class AlarmClockImpl implements AlarmClockInterface {
 				Node alarm = listOfChannels.item(s);
 				if (alarm.getNodeType() == Node.ELEMENT_NODE) {
 					Element element = (Element) alarm;
-					name = getElementTest(element, "name");
-					String mStatus = getElementTest(element, "status");
+					name = XMLUtils.getElementTest(element, "name");
+					String mStatus = XMLUtils.getElementTest(element, "status");
 					if (mStatus.equalsIgnoreCase("OFF")) {
 						status = false;
 					}
-					time = getElementTest(element, "time");
-					type = getElementTest(element, "type");
-					volume = getElementTest(element, "volume");
-					shuffle = getElementTest(element, "shuffle");
-					channel = getElementTest(element, "channel");
+					time = XMLUtils.getElementTest(element, "time");
+					type = XMLUtils.getElementTest(element, "type");
+					volume = XMLUtils.getElementTest(element, "volume");
+					shuffle = XMLUtils.getElementTest(element, "shuffle");
+					channel = XMLUtils.getElementTest(element, "channel");
 				}
 				if (status) {
 					createSchedule(name, time, type, channel, volume, shuffle);
@@ -136,27 +137,6 @@ public class AlarmClockImpl implements AlarmClockInterface {
 		} catch (Exception e) {
 			log.error("Error Reading AlarmClock.xml");
 		}
-	}
-
-	/***
-	 * 
-	 * @param element
-	 * @param name
-	 * @return
-	 */
-	private String getElementTest(Element element, String name) {
-		String res = "";
-		NodeList nid = element.getElementsByTagName(name);
-		if (nid != null) {
-			Element fid = (Element) nid.item(0);
-			if (fid != null) {
-				res = fid.getTextContent();
-				// log.debug("ElementName: " + name + " Value: " + res);
-				return res;
-
-			}
-		}
-		return res;
 	}
 
 	private String getAlarmTime() {

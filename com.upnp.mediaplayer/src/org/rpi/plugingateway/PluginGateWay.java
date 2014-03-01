@@ -43,7 +43,7 @@ public class PluginGateWay extends Observable {
 	 * @param type
 	 * @param visible
 	 */
-	public synchronized void AddSource(String type, String name, boolean visible) {
+	public synchronized void addSource(String type, String name, boolean visible) {
 		simpleDevice.getProduct().addSource(Config.friendly_name, name, type, true);
 	}
 

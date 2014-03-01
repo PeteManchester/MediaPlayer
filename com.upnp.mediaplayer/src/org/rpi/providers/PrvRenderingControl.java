@@ -1,8 +1,5 @@
 package org.rpi.providers;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import org.apache.log4j.Logger;
 import org.openhome.net.device.ActionError;
 import org.openhome.net.device.DvDevice;
@@ -14,7 +11,10 @@ import org.rpi.player.events.EventMuteChanged;
 import org.rpi.player.events.EventVolumeChanged;
 import org.rpi.utils.Utils;
 
-public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 implements Observer {
+import java.util.Observable;
+import java.util.Observer;
+
+public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 implements Observer, IDisposableDevice {
 
 	private Logger log = Logger.getLogger(PrvRenderingControl.class);
 	private String isMute = "0";
@@ -61,7 +61,7 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 		enableActionGetVolumeDBRange();
 		enableActionListPresets();
 		enableActionSelectPreset();
-		PlayManager.getInstance().observVolumeEvents(this);
+		PlayManager.getInstance().observeVolumeEvents(this);
 
 	}
 
@@ -410,7 +410,12 @@ public class PrvRenderingControl extends DvProviderUpnpOrgRenderingControl1 impl
 	}
 	private void checkValue(long value) {
 		if (value < 0 || value > 100)
-			throw new ActionError("Specified Value: " + value + " Must be &lt;= 100");		
+			throw new ActionError("Specified Value: " + value + " Must be &lt;= 100");
 	}
+
+    @Override
+    public String getName() {
+        return "RenderingControl";
+    }
 
 }
