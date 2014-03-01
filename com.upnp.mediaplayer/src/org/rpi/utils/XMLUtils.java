@@ -18,7 +18,7 @@ public class XMLUtils {
      * @param name
      * @return
      */
-    public static String getElementTest(Element element, String name) {
+    public static String getStringFromElement(Element element, String name) {
         String res = "";
         NodeList nid = element.getElementsByTagName(name);
         if (nid != null) {
@@ -43,8 +43,8 @@ public class XMLUtils {
      * @param defaultValue
      * @return
      */
-    public static String getElementTest(Element element, String name, String defaultValue) {
-        String res = XMLUtils.getElementTest(element, name);
+    public static String getStringFromElement(Element element, String name, String defaultValue) {
+        String res = XMLUtils.getStringFromElement(element, name);
         if (Utils.isEmpty(res)) res = defaultValue;
         return res;
     }

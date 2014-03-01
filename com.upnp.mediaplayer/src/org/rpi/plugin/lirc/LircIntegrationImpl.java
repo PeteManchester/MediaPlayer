@@ -113,9 +113,9 @@ public class LircIntegrationImpl implements LircIntegrationInterface, Observer {
 				Node mapping = mappings.item(s);
 				if (mapping.getNodeType() == Node.ELEMENT_NODE) {
 					Element element = (Element) mapping;
-					event = XMLUtils.getElementTest(element, "Event");
-					command = XMLUtils.getElementTest(element, "Command");
-					name = XMLUtils.getElementTest(element, "Name");
+					event = XMLUtils.getStringFromElement(element, "Event");
+					command = XMLUtils.getStringFromElement(element, "Command");
+					name = XMLUtils.getStringFromElement(element, "Name");
 					String key = event;
 					if (name != null && !name.equalsIgnoreCase(""))
 						key += "@" + name;

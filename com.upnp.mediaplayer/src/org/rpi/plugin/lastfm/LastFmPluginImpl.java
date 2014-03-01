@@ -227,22 +227,22 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
                 Node config = listOfConfig.item(s);
                 if (config.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) config;
-                    lastfm_username = XMLUtils.getElementTest(element, "UserName");
+                    lastfm_username = XMLUtils.getStringFromElement(element, "UserName");
                     String password = "";
-                    password = XMLUtils.getElementTest(element, "Password");
+                    password = XMLUtils.getStringFromElement(element, "Password");
                     if (!password.equalsIgnoreCase("")) {
                         encrypted_password = encrypt(key, password);
                         lastfm_password = password;
                     } else {
-                        String enc_password = XMLUtils.getElementTest(element, "Password_ENC");
+                        String enc_password = XMLUtils.getStringFromElement(element, "Password_ENC");
                         if (!enc_password.equalsIgnoreCase("")) {
                             lastfm_password = decrypt(key, enc_password);
                         }
                     }
-                    String proxymode = XMLUtils.getElementTest(element, "ProxyType", "DIRECT");
+                    String proxymode = XMLUtils.getStringFromElement(element, "ProxyType", "DIRECT");
                     lastfm_proxymode = Proxy.Type.valueOf(proxymode);
-                    lastfm_proxy_ip = XMLUtils.getElementTest(element, "Proxy_IP");
-                    String proxy_port = XMLUtils.getElementTest(element, "Proxy_Port", "-1");
+                    lastfm_proxy_ip = XMLUtils.getStringFromElement(element, "Proxy_IP");
+                    String proxy_port = XMLUtils.getStringFromElement(element, "Proxy_Port", "-1");
                     lastfm_proxy_port = Integer.parseInt(proxy_port);
                 }
             }
@@ -252,8 +252,8 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
                 Node bl = listOfBlackList.item(s);
                 if (bl.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) bl;
-                    String artist = XMLUtils.getElementTest(element, "artist", "");
-                    String title = XMLUtils.getElementTest(element, "title", "");
+                    String artist = XMLUtils.getStringFromElement(element, "artist", "");
+                    String title = XMLUtils.getStringFromElement(element, "title", "");
                     BlackList bli = new BlackList();
                     bli.setArtist(artist);
                     bli.setTitle(title);

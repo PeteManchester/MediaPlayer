@@ -119,16 +119,16 @@ public class AlarmClockImpl implements AlarmClockInterface {
 				Node alarm = listOfChannels.item(s);
 				if (alarm.getNodeType() == Node.ELEMENT_NODE) {
 					Element element = (Element) alarm;
-					name = XMLUtils.getElementTest(element, "name");
-					String mStatus = XMLUtils.getElementTest(element, "enabled");
+					name = XMLUtils.getStringFromElement(element, "name");
+					String mStatus = XMLUtils.getStringFromElement(element, "enabled");
 					if (mStatus.equalsIgnoreCase("FALSE")) {
 						status = false;
 					}
-					time = XMLUtils.getElementTest(element, "time");
-					type = XMLUtils.getElementTest(element, "type");
-					volume = XMLUtils.getElementTest(element, "volume");
-					shuffle = XMLUtils.getElementTest(element, "shuffle");
-					channel = XMLUtils.getElementTest(element, "channel");
+					time = XMLUtils.getStringFromElement(element, "time");
+					type = XMLUtils.getStringFromElement(element, "type");
+					volume = XMLUtils.getStringFromElement(element, "volume");
+					shuffle = XMLUtils.getStringFromElement(element, "shuffle");
+					channel = XMLUtils.getStringFromElement(element, "channel");
 				}
 				if (status) {
 					createSchedule(name, time, type, channel, volume, shuffle);
