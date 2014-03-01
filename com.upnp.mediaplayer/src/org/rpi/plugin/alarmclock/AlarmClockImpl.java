@@ -120,8 +120,8 @@ public class AlarmClockImpl implements AlarmClockInterface {
 				if (alarm.getNodeType() == Node.ELEMENT_NODE) {
 					Element element = (Element) alarm;
 					name = XMLUtils.getElementTest(element, "name");
-					String mStatus = XMLUtils.getElementTest(element, "status");
-					if (mStatus.equalsIgnoreCase("OFF")) {
+					String mStatus = XMLUtils.getElementTest(element, "enabled");
+					if (mStatus.equalsIgnoreCase("FALSE")) {
 						status = false;
 					}
 					time = XMLUtils.getElementTest(element, "time");
