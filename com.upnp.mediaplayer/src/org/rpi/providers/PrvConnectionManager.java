@@ -7,7 +7,7 @@ import org.openhome.net.device.providers.DvProviderUpnpOrgConnectionManager1;
 import org.rpi.config.Config;
 import org.rpi.utils.Utils;
 
-public class PrvConnectionManager extends DvProviderUpnpOrgConnectionManager1 {
+public class PrvConnectionManager extends DvProviderUpnpOrgConnectionManager1 implements IDisposableDevice {
 
 	private Logger log = Logger.getLogger(PrvConnectionManager.class);
 
@@ -98,5 +98,10 @@ public class PrvConnectionManager extends DvProviderUpnpOrgConnectionManager1 {
 	// log.debug("GetProtocol");
 	// return sinkProtocolInfo;
 	// }
+
+    @Override
+    public String getName() {
+        return "ConnectionManager";
+    }
 
 }

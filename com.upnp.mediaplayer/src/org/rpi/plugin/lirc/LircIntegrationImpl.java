@@ -18,6 +18,7 @@ import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventSourceChanged;
 import org.rpi.player.events.EventStandbyChanged;
 import org.rpi.plugingateway.PluginGateWay;
+import org.rpi.utils.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -41,7 +42,7 @@ public class LircIntegrationImpl implements LircIntegrationInterface, Observer {
 		getConfig();
 
 		// Register for Volume Events
-		PlayManager.getInstance().observVolumeEvents(this);
+		PlayManager.getInstance().observeVolumeEvents(this);
 		PlayManager.getInstance().observeProductEvents(this);
 		// Register for Source Events
 		PluginGateWay.getInstance().addObserver(this);
@@ -112,9 +113,9 @@ public class LircIntegrationImpl implements LircIntegrationInterface, Observer {
 				Node mapping = mappings.item(s);
 				if (mapping.getNodeType() == Node.ELEMENT_NODE) {
 					Element element = (Element) mapping;
-					event = getElementTest(element, "Event");
-					command = getElementTest(element, "Command");
-					name = getElementTest(element, "Name");
+					event = XMLUtils.getElementTest(element, "Event");
+					command = XMLUtils.getElementTest(element, "Command");
+					name = XMLUtils.getElementTest(element, "Name");
 					String key = event;
 					if (name != null && !name.equalsIgnoreCase(""))
 						key += "@" + name;
@@ -131,25 +132,6 @@ public class LircIntegrationImpl implements LircIntegrationInterface, Observer {
 			LIRCCommand cmd = new LIRCCommand(command, name);
 			commands.put(event, cmd);
 		}
-	}
-
-	/***
-	 * 
-	 * @param element
-	 * @param name
-	 * @return
-	 */
-	private String getElementTest(Element element, String name) {
-		String res = "";
-		NodeList nid = element.getElementsByTagName(name);
-		if (nid != null) {
-			Element fid = (Element) nid.item(0);
-			if (fid != null) {
-				res = fid.getTextContent();
-				return res;
-			}
-		}
-		return res;
 	}
 
 	@Shutdown

@@ -21,7 +21,7 @@ public class OHMManager implements Observer {
 	private Thread tSender = null;
 	
 	private UDPReceiver udpReceiver = null;
-	private UPDSender udpSender = null;
+	private UDPSender udpSender = null;
 	private String nic = "";
 
 	public OHMManager(String uri, String zoneID,String nic) {
@@ -57,7 +57,7 @@ public class OHMManager implements Observer {
 		}
 
 		// start new thread to send multicasts
-		udpSender = new UPDSender(mcastPort, mcastAddr, zoneID,nic);
+		udpSender = new UDPSender(mcastPort, mcastAddr, zoneID,nic);
 		tSender = new Thread(udpSender, "OHMMcastRepeater");
 		tSender.start();
 		//OHZJoin join = new OHZJoin(zoneID);

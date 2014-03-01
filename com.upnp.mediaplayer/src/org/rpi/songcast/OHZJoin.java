@@ -11,11 +11,11 @@ import org.apache.log4j.Logger;
 //12        n                       Zone
 
 public class OHZJoin extends SongcastMessage {
-	
+
 	private Logger log = Logger.getLogger(this.getClass());
-	
+
 	private String header = "4f687a200100";
-	
+
 
 	public  OHZJoin(String zone)
 	{
@@ -30,5 +30,5 @@ public class OHZJoin extends SongcastMessage {
 		String sZL= DecToHex(zl/2, 8);
 		data = hexStringToByteArray(header+ lengthPacket +  sZL + zoneHex);
 	}
-	
+
 }

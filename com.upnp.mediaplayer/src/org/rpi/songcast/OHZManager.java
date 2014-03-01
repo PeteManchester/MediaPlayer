@@ -23,11 +23,11 @@ public class OHZManager implements Observer {
 	private Thread tSender = null;
 	
 	private UDPReceiver udpReceiver = null;
-	private UPDSender udpSender = null;
+	private UDPSender udpSender = null;
 	private String nic = "";
 	private OHZJoin join = null;
 
-	public OHZManager(String uri, String zoneID,String nic) {
+	public OHZManager(String uri, String zoneID, String nic) {
 		try {
 			this.nic = nic;
 			int lastColon = uri.lastIndexOf(":");
@@ -60,7 +60,7 @@ public class OHZManager implements Observer {
 		}
 
 		// start new thread to send multicasts
-		udpSender = new UPDSender(mcastPort, mcastAddr, zoneID,nic);
+		udpSender = new UDPSender(mcastPort, mcastAddr, zoneID,nic);
 		tSender = new Thread(udpSender, "McastRepeater");
 		tSender.start();
 		join = new OHZJoin(zoneID);
