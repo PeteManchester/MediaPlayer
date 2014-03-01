@@ -61,7 +61,7 @@ public class OHMManager implements Observer {
 		tSender = new Thread(udpSender, "OHMMcastRepeater");
 		tSender.start();
 		//OHZJoin join = new OHZJoin(zoneID);
-		OHMJoin join = new OHMJoin(zoneID);
+		OHMRequestJoin join = new OHMRequestJoin(zoneID);
 		join.addObserver(this);
 		udpSender.put(join.data);
 	}

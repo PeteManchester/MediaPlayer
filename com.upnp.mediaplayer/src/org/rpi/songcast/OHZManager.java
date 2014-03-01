@@ -25,7 +25,7 @@ public class OHZManager implements Observer {
 	private UDPReceiver udpReceiver = null;
 	private UDPSender udpSender = null;
 	private String nic = "";
-	private OHZJoin join = null;
+	private OHZRequestJoin join = null;
 
 	public OHZManager(String uri, String zoneID, String nic) {
 		try {
@@ -63,7 +63,7 @@ public class OHZManager implements Observer {
 		udpSender = new UDPSender(mcastPort, mcastAddr, zoneID,nic);
 		tSender = new Thread(udpSender, "McastRepeater");
 		tSender.start();
-		join = new OHZJoin(zoneID);
+		join = new OHZRequestJoin(zoneID);
 		udpSender.put(join.data);
 	}
 	

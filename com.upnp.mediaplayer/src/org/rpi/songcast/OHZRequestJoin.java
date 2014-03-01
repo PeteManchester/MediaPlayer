@@ -10,14 +10,14 @@ import org.apache.log4j.Logger;
 //8         4                       Length of Zone n
 //12        n                       Zone
 
-public class OHZJoin extends SongcastMessage {
+public class OHZRequestJoin extends SongcastMessage {
 
 	private Logger log = Logger.getLogger(this.getClass());
 
 	private String header = "4f687a200100";
 
 
-	public  OHZJoin(String zone)
+	public  OHZRequestJoin(String zone)
 	{
 		String zoneHex = stringToHex(zone);
 		log.debug("Zone in HEX: " + zoneHex);

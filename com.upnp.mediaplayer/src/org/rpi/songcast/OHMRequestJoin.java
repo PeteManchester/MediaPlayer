@@ -13,13 +13,13 @@ import org.apache.log4j.Logger;
 //6         2                       Total Bytes (Absolutely all bytes in the entire frame)
 
 
-public class OHMJoin extends SongcastMessage {
+public class OHMRequestJoin extends SongcastMessage {
 	
 private Logger log = Logger.getLogger(this.getClass());
 	
 	private String header = "4f686d200100";
 
-	public  OHMJoin(String zone)
+	public  OHMRequestJoin(String zone)
 	{
 		String zoneHex = stringToHex(zone);
 		log.debug("Zone in HEX: " + zoneHex);
