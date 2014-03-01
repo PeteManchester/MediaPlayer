@@ -1,6 +1,5 @@
 package org.rpi.songcast;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 
 import org.apache.log4j.Logger;
@@ -100,13 +99,11 @@ public class OHMessage extends SongcastMessage {
 					//	e.printStackTrace();
 					//}
 				}
-					
-					
+								
 
 			}
 		} else {
 			log.debug("MesageType = " + s);
 		}
 	}
-
 }

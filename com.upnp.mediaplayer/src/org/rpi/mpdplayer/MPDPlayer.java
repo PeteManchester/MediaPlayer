@@ -66,6 +66,7 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 		ev.setStatus("Buffering");
 		fireEvent(ev);
 		List<String> commands = new ArrayList<String>();
+		commands.add(tcp.createCommand("stop"));
 		commands.add(tcp.createCommand("clear"));
 		List<String> params = new ArrayList<String>();
 		String url = checkURL(track.getUri());
