@@ -5,6 +5,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.log4j.Logger;
+import org.rpi.songcast.events.EventSongCastBase;
 
 public class OHMManager implements Observer {
 	
@@ -44,8 +45,7 @@ public class OHMManager implements Observer {
 		// start new thread to receive multicasts
 		udpReceiver = new UDPReceiver(mcastPort, mcastAddr, zoneID,nic);
 		tReceiver = new Thread(udpReceiver, "OHMMcastReceiver");
-		//new Thread(new UDPReceiver(mcastPort, mcastAddr, zoneID), "McastReceiver").start();
-
+		udpReceiver.addObserver(this);
 		tReceiver.start();
 		
 		while(!udpReceiver.isConnected())
@@ -63,12 +63,14 @@ public class OHMManager implements Observer {
 		//OHZJoin join = new OHZJoin(zoneID);
 		OHMRequestJoin join = new OHMRequestJoin(zoneID);
 		join.addObserver(this);
+		SongcastPlayerJavaSound.getInstance().createFile();
 		udpSender.put(join.data);
 	}
 	
 	
-	public void stop()
+	public void disconnect()
 	{
+		SongcastPlayerJavaSound.getInstance().stop();
 		udpSender.disconnect();
 		udpReceiver.disconnect();
 		tReceiver = null;
@@ -76,8 +78,14 @@ public class OHMManager implements Observer {
 	}
 
 	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
+	public void update(Observable o, Object ev) {
+	}
+
+	/**
+	 * Not used at the moment.
+	 * @param zoneID
+	 */
+	public void stop(String zoneID) {
+
 	}
 }

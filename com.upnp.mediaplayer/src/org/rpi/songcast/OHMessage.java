@@ -15,17 +15,25 @@ public class OHMessage extends SongcastMessage {
 		String sProtocol = byteToString(protocol);
 		byte[] type = getBytes(5, 5);
 
-		// Get the MessageType
-		StringBuilder sb = new StringBuilder();
-		for (byte b : type) {
-			sb.append(String.format("%02X ", b));
-		}
-		String messageType = sb.toString().trim();
+		int iType = new BigInteger(type).intValue();
 
-		if (sProtocol.toUpperCase().startsWith("OHZ")) {
-			if (messageType.equalsIgnoreCase("00")) {
+		 if (sProtocol.toUpperCase().startsWith("OHM")) {
+			switch (iType) {
+			case 3:
+				OHMResponseJoin res = new OHMResponseJoin();
+				res.data = data;
+				res.checkMessageType();
+				break;
+			default:
+				log.debug("OHM Message: " + iType);
+			}
+
+		} else if (sProtocol.toUpperCase().startsWith("OHZ")) {
+			switch (iType) {
+			case 0:
 				log.debug("URL Requst");
-			} else if (messageType.equalsIgnoreCase("01")) {
+				break;
+			case 1:
 				log.debug("URL Response");
 				byte[] bHeader = getBytes(0, 7);
 				try {
@@ -48,17 +56,10 @@ public class OHMessage extends SongcastMessage {
 				} catch (Exception e) {
 					log.error("Error Message Type 1", e);
 				}
+				break;
+			default:
+				log.debug("OHZ Message: " + iType);
 			}
-		} else if (sProtocol.toUpperCase().startsWith("OHM")) {
-			if (messageType.equalsIgnoreCase("03")) {
-				OHMResponseJoin res = new OHMResponseJoin();
-				res.data = data;
-				res.checkMessageType();
-			}
-		}
-
-		else {
-			log.debug("MesageType = " + messageType);
 		}
 	}
 }

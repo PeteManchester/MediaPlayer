@@ -1,6 +1,7 @@
 package org.rpi.songcast;
 
 import org.apache.log4j.Logger;
+import org.rpi.songcast.events.EventOHMAudio;
 
 public class OHMResponseJoin extends SongcastMessage {
 
@@ -62,6 +63,7 @@ public class OHMResponseJoin extends SongcastMessage {
 				int myLength = data.length;
 				// log.debug("DataLength: " + myLength);
 				byte[] sound = getBytes(soundStart, soundEnd - 1);
+				
 				if (iLength < 1828) {
 					log.debug("Codec :" + byteToString(codec) + " Bit Rate: " + iBitRate + " SampleRate: " + iSampleRate + " BitDepth: " + iBitDepth + " FrameNumber: " + iFrameNumber + " Length: " + iLength);
 					// try {
@@ -71,7 +73,7 @@ public class OHMResponseJoin extends SongcastMessage {
 					// e.printStackTrace();
 					// }
 				}
-
+				SongcastPlayerJavaSound.getInstance().addData(sound);
 			}
 		} else {
 			log.debug("MesageType = " + s);

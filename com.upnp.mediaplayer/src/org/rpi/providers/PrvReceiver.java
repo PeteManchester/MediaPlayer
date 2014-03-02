@@ -15,6 +15,7 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
     private boolean bPlay = false;
     private CustomTrack track = null;
     private OHZManager manager = null;
+    private String zoneID = "";
 
 
 
@@ -77,12 +78,12 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
             track = t;
             if(manager!=null)
             {
-                manager.stop();
+                manager.disconnect();
                 manager = null;
             }
             int lastSlash = uri.lastIndexOf("/");
             String songcast_url = uri.substring(0, lastSlash);
-            String zoneID = uri.substring(lastSlash+1);
+            zoneID = uri.substring(lastSlash+1);
             log.debug("SongCast URL: " + songcast_url + " ZoneID: " + zoneID );
             //TODO add config for NIC..
             manager = new OHZManager(songcast_url, zoneID,"eth8");
@@ -93,9 +94,8 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 
     @Override
     protected void stop(IDvInvocation paramIDvInvocation) {
-        log.debug("Stop" + Utils.getLogText(paramIDvInvocation));
-        // TODO Auto-generated method stub
-        //super.stop(arg0);
+        log.debug("Stop" + Utils.getLogText(paramIDvInvocation));    
+        manager.stop(zoneID);
     }
 
     @Override
