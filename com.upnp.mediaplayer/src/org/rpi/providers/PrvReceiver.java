@@ -74,6 +74,12 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 
         if(bPlay = true)
         {
+        	String nic = Config.songcastNICName;
+        	if(nic.equalsIgnoreCase(""))
+        	{
+        		log.error("No NIC Configured for SONGCAST");
+        		return;
+        	}
             CustomTrack t = new CustomTrack(uri, metadata, 1);
             track = t;
             if(manager!=null)
@@ -85,9 +91,8 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
             String songcast_url = uri.substring(0, lastSlash);
             zoneID = uri.substring(lastSlash+1);
             log.debug("SongCast URL: " + songcast_url + " ZoneID: " + zoneID );
-            //TODO add config for NIC..
-            manager = new OHZManager(songcast_url, zoneID,"eth8");
-            manager.start();
+            
+            manager = new OHZManager(songcast_url, zoneID,nic);
             manager.start();
         }
     }

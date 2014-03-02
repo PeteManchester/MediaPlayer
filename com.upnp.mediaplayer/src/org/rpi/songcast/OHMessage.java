@@ -8,8 +8,12 @@ import org.rpi.songcast.events.EventOHZIURI;
 public class OHMessage extends SongcastMessage {
 
 	private Logger log = Logger.getLogger(this.getClass());
-
+	
 	public void checkMessageType() {
+		checkMessageType(null);
+	}
+
+	public void checkMessageType(OHMManager ohmManager) {
 		byte[] protocol = getBytes(0, 3);
 		// Get the Protocol
 		String sProtocol = byteToString(protocol);
@@ -18,23 +22,15 @@ public class OHMessage extends SongcastMessage {
 		int iType = new BigInteger(type).intValue();
 
 		 if (sProtocol.toUpperCase().startsWith("OHM")) {
-			switch (iType) {
-			case 3:
-				OHMResponseJoin res = new OHMResponseJoin();
-				res.data = data;
-				res.checkMessageType();
-				break;
-			default:
-				log.debug("OHM Message: " + iType);
-			}
-
+			 //Put OHM messages into a seperate thread so we don't block the receiver..
+			 ohmManager.putMessage(data);
 		} else if (sProtocol.toUpperCase().startsWith("OHZ")) {
 			switch (iType) {
 			case 0:
-				log.debug("URL Requst");
+				log.warn("URL Requst");
 				break;
 			case 1:
-				log.debug("URL Response");
+				log.warn("URL Response");
 				byte[] bHeader = getBytes(0, 7);
 				try {
 					String header = new String(bHeader, "UTF-8");

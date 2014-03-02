@@ -6,13 +6,14 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 
 /**
  * Created by triplem on 24.02.14.
  */
 public class NetworkUtils {
 
-    private static final Logger LOG = Logger.getLogger(NetworkUtils.class);
+    private static final Logger log = Logger.getLogger(NetworkUtils.class);
 
     /**
      * private constructor, this is a utility class
@@ -45,10 +46,10 @@ public class NetworkUtils {
 
         }
         catch (UnknownHostException uhex) {
-            LOG.error(uhex);
+            log.error(uhex);
         }
         catch (SocketException sex) {
-            LOG.error(sex);
+            log.error(sex);
         }
 
         return sb.toString();
@@ -66,9 +67,31 @@ public class NetworkUtils {
             // String canonicalHostName = iAddress.getCanonicalHostName();
             return hostName;
         } catch (Exception e) {
-            LOG.error("Error Getting HostName: ", e);
+            log.error("Error Getting HostName: ", e);
         }
 
         return getMacAddress();
+    }
+    
+    public static String getNICName(String displayName)
+    {
+    	String res = "";
+    	try
+    	{
+    	Enumeration e = NetworkInterface.getNetworkInterfaces();
+		while (e.hasMoreElements()) {
+			NetworkInterface n = (NetworkInterface) e.nextElement();
+			//Enumeration ee = n.getInetAddresses();
+			if(n.getDisplayName().equals(displayName))
+			{
+				return n.getName();
+			}
+		}
+    	}
+    	catch(Exception e)
+    	{
+    		log.error("Error Getting NIC Name. DisplayName: " + displayName,e);
+    	}
+    	return res;
     }
 }

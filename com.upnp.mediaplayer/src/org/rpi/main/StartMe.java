@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.RollingFileAppender;
 import org.rpi.config.Config;
 import org.rpi.log.CustomPatternLayout;
+import org.rpi.utils.NetworkUtils;
 
 public class StartMe {
 
@@ -47,7 +48,7 @@ public class StartMe {
 			while (e.hasMoreElements()) {
 				NetworkInterface n = (NetworkInterface) e.nextElement();
 				Enumeration ee = n.getInetAddresses();
-				log.info("Network Interface Name: " + n.getDisplayName());
+				log.info("Network Interface Display Name: " + n.getDisplayName());
 				log.info("NIC Name: " + n.getName());
 				while (ee.hasMoreElements()) {
 					InetAddress i = (InetAddress) ee.nextElement();
@@ -167,6 +168,7 @@ public class StartMe {
 			Config.player = pr.getProperty("player");
 			Config.enableAVTransport = Config.convertStringToBoolean(pr.getProperty("enableAVTransport"), true);
 			Config.enableReceiver = Config.convertStringToBoolean(pr.getProperty("enableReceiver"), true);
+			Config.songcastNICName = NetworkUtils.getNICName(pr.getProperty("songcast.nic.name"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

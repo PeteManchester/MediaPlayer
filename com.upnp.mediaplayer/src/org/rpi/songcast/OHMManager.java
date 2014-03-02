@@ -24,9 +24,13 @@ public class OHMManager implements Observer {
 	private UDPReceiver udpReceiver = null;
 	private UDPSender udpSender = null;
 	private String nic = "";
+	
+	private OHMMessageQueue mq = new OHMMessageQueue();
+	Thread threadMessageQueue = null;
 
 	public OHMManager(String uri, String zoneID,String nic) {
 		try {
+			log.warn("Creating OHM Manager");
 			this.nic = nic;
 			int lastColon = uri.lastIndexOf(":");
 			int lastSlash = uri.lastIndexOf("/");
@@ -43,7 +47,9 @@ public class OHMManager implements Observer {
 
 	public void start() {
 		// start new thread to receive multicasts
-		udpReceiver = new UDPReceiver(mcastPort, mcastAddr, zoneID,nic);
+		threadMessageQueue = new Thread(mq,"OHMMessageQueue");
+		threadMessageQueue.start();
+		udpReceiver = new UDPReceiver(mcastPort, mcastAddr, zoneID,nic, this);
 		tReceiver = new Thread(udpReceiver, "OHMMcastReceiver");
 		udpReceiver.addObserver(this);
 		tReceiver.start();
@@ -75,10 +81,13 @@ public class OHMManager implements Observer {
 		udpReceiver.disconnect();
 		tReceiver = null;
 		tSender = null;
+		mq.clear();
+		threadMessageQueue = null;
 	}
 
 	@Override
 	public void update(Observable o, Object ev) {
+
 	}
 
 	/**
@@ -87,5 +96,9 @@ public class OHMManager implements Observer {
 	 */
 	public void stop(String zoneID) {
 
+	}
+
+	public void putMessage(byte[] data) {
+		mq.put(data);
 	}
 }

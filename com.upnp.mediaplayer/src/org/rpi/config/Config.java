@@ -28,6 +28,7 @@ public class Config {
 	public static int mpd_preload_timer = 10;
 	public static boolean enableAVTransport =true;
 	public static boolean enableReceiver = true;
+	public static String songcastNICName = "";
 	
 	private static Calendar cal = Calendar.getInstance();
 	

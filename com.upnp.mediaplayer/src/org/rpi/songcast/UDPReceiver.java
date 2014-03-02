@@ -28,6 +28,8 @@ class UDPReceiver extends Observable implements Runnable, Observer  {
 	
 	private MulticastSocket mSocket = null;
 	
+	private OHMManager ohmManager = null;
+	
 	private boolean bRunning = true;
 	private String nic = "";
 
@@ -39,6 +41,14 @@ class UDPReceiver extends Observable implements Runnable, Observer  {
 		mcastPort = port;
 		mcastAddr = addr;
 		this.zoneID = zoneID;
+	}
+	
+	public UDPReceiver(int port, InetAddress addr, String zoneID,String nic, OHMManager ohmManager) {
+		this.nic = nic;
+		mcastPort = port;
+		mcastAddr = addr;
+		this.zoneID = zoneID;
+		this.ohmManager = ohmManager;
 	}
 
 	/*
@@ -73,7 +83,7 @@ class UDPReceiver extends Observable implements Runnable, Observer  {
 				OHMessage mess = new OHMessage();
 				mess.addObserver(this);
 				mess.data = data;
-				mess.checkMessageType();
+				mess.checkMessageType(ohmManager);
 			} catch (Exception e) {
 				log.error("Trouble reading multicast message", e);
 			}

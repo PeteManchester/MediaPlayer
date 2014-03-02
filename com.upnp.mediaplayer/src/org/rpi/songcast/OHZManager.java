@@ -45,6 +45,7 @@ public class OHZManager implements Observer {
 	}
 
 	public void start() {
+
 		// start new thread to receive multicasts
 		udpReceiver = new UDPReceiver(mcastPort, mcastAddr, zoneID, nic);
 		tReceiver = new Thread(udpReceiver, "McastReceiver");
@@ -91,10 +92,10 @@ public class OHZManager implements Observer {
 	}
 
 	public void stop(String zoneID) {
-		if(ohm ==null)
+		if (ohm == null)
 			return;
 		ohm.disconnect();
-		ohm=null;
+		ohm = null;
 		disconnect();
 	}
 
