@@ -14,7 +14,7 @@ public class SongcastPlayerJavaSound implements ISongcastPlayer {
 	private Logger log = Logger.getLogger(this.getClass());
 
 	final AudioFormat audioFormat = new AudioFormat(44100, 16, 2, true, true);
-	final DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, 1764);
+	final DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
 	private SourceDataLine soundLine = null;
 
 	private boolean bWrite = false;
