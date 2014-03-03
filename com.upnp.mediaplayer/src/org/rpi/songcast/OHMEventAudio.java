@@ -2,11 +2,27 @@ package org.rpi.songcast;
 
 import java.math.BigInteger;
 
-import org.apache.log4j.Logger;
+//Offset    Bytes                   Desc
+//0         1                       Msg Header Bytes (without the codec name)
+//1         1                       Flags (lsb first: halt flag, lossless flag, timestamped flag all other bits 0)
+//2         2                       Samples in this msg
+//4         4                       Frame
+//8         4                       Network timestamp
+//12        4                       Media Latency
+//16        4                       Media Timestamp
+//20        8                       Sample Start (first sample's offset from the beginiing of this track)
+//28        8                       Samples Total (total samples for this track)
+//36        4                       Sample Rate
+//40        4                       Bit Rate
+//44		2						Volume Offset
+//46        1                       Bit depth of audio (16, 24)
+//47        1                       Channels
+//48        1                       Reserved (must be zero)
+//49        1                       Codec Name Bytes
+//50        n                       Codec Name
+//50 + n    Msg Total Bytes - Msg Header Bytes - Code Name Bytes (Sample data in big endian, channels interleaved, packed)
 
-import sun.security.util.BigInt;
-
-public class OHMResponseJoin extends SongcastMessage {
+public class OHMEventAudio extends SongcastMessage {
 
 	//private Logger log = Logger.getLogger(this.getClass());
 

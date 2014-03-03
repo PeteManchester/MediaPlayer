@@ -28,27 +28,27 @@ class UDPReceiver extends Observable implements Runnable, Observer  {
 	
 	private MulticastSocket mSocket = null;
 	
-	private OHMManager ohmManager = null;
+	private SongcastManager scManager = null;
 	
 	private boolean bRunning = true;
 	private String nic = "";
 
-	/*
-	 * 
-	 */
-	public UDPReceiver(int port, InetAddress addr, String zoneID,String nic) {
-		this.nic = nic;
-		mcastPort = port;
-		mcastAddr = addr;
-		this.zoneID = zoneID;
-	}
+//	/*
+//	 * 
+//	 */
+//	public UDPReceiver(int port, InetAddress addr, String zoneID,String nic) {
+//		this.nic = nic;
+//		mcastPort = port;
+//		mcastAddr = addr;
+//		this.zoneID = zoneID;
+//	}
 	
-	public UDPReceiver(int port, InetAddress addr, String zoneID,String nic, OHMManager ohmManager) {
+	public UDPReceiver(int port, InetAddress addr, String zoneID,String nic, SongcastManager scManager) {
 		this.nic = nic;
 		mcastPort = port;
 		mcastAddr = addr;
 		this.zoneID = zoneID;
-		this.ohmManager = ohmManager;
+		this.scManager = scManager;
 	}
 
 	/*
@@ -64,8 +64,7 @@ class UDPReceiver extends Observable implements Runnable, Observer  {
 			mSocket.setNetworkInterface(netIf);
 			mSocket.setReuseAddress(true);
 			NetworkInterface ifs = mSocket.getNetworkInterface();
-			log.debug("Receiver NetworkInterface: " + ifs.getDisplayName());
-			log.debug("Joining Mutlicast Group: " + mcastAddr.getHostAddress() + ":" + mcastPort);
+			log.debug("Joining Mutlicast Group: " + mcastAddr.getHostAddress() + ":" + mcastPort + "NIC: " + ifs.getDisplayName());
 			mSocket.joinGroup(mcastAddr);
 			setConnected(true);
 		} catch (IOException ioe) {
@@ -83,7 +82,7 @@ class UDPReceiver extends Observable implements Runnable, Observer  {
 				OHMessage mess = new OHMessage();
 				mess.addObserver(this);
 				mess.data = data;
-				mess.checkMessageType(ohmManager);
+				mess.checkMessageType(scManager);
 			} catch (Exception e) {
 				log.error("Trouble reading multicast message", e);
 			}

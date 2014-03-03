@@ -3,11 +3,9 @@ package org.rpi.songcast;
 import java.net.InetAddress;
 import java.util.Observable;
 import java.util.Observer;
-
 import org.apache.log4j.Logger;
-import org.rpi.songcast.events.EventSongCastBase;
 
-public class OHMManager implements Observer {
+public class OHMManager implements Observer, SongcastManager {
 	
 	private Logger log = Logger.getLogger(this.getClass());
 
@@ -100,5 +98,9 @@ public class OHMManager implements Observer {
 
 	public void putMessage(byte[] data) {
 		mq.put(data);
+	}
+
+	public String getZoneID() {
+		return zoneID;
 	}
 }

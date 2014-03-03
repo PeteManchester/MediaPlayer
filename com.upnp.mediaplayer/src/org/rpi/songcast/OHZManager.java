@@ -1,5 +1,6 @@
 package org.rpi.songcast;
 
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.Observable;
 import java.util.Observer;
@@ -8,7 +9,7 @@ import org.apache.log4j.Logger;
 import org.rpi.songcast.events.EventOHZIURI;
 import org.rpi.songcast.events.EventSongCastBase;
 
-public class OHZManager implements Observer {
+public class OHZManager implements Observer, SongcastManager {
 
 	private Logger log = Logger.getLogger(this.getClass());
 
@@ -47,7 +48,7 @@ public class OHZManager implements Observer {
 	public void start() {
 
 		// start new thread to receive multicasts
-		udpReceiver = new UDPReceiver(mcastPort, mcastAddr, zoneID, nic);
+		udpReceiver = new UDPReceiver(mcastPort, mcastAddr, zoneID, nic, this);
 		tReceiver = new Thread(udpReceiver, "McastReceiver");
 		udpReceiver.addObserver(this);
 		tReceiver.start();
@@ -87,6 +88,13 @@ public class OHZManager implements Observer {
 	}
 
 	public void connectToOHM(String uri, String zone) {
+		if (ohm != null) {
+			if (ohm.getZoneID().equalsIgnoreCase(zone)) {
+				log.debug("Already Connected to Zone: " + zone);
+				return;
+			}
+		}
+		log.debug("Not Connected to Zone, attempt to connect: " + zone);
 		ohm = new OHMManager(uri, zone, nic);
 		ohm.start();
 	}
@@ -97,6 +105,41 @@ public class OHZManager implements Observer {
 		ohm.disconnect();
 		ohm = null;
 		disconnect();
+	}
+
+	public void putMessage(byte[] data) {
+		int iType = new BigInteger(getBytes(5, 5, data)).intValue();
+		switch (iType) {
+		case 0:
+			log.warn("URL Requst arrived at Receiver");
+			break;
+		case 1:// ZoneURI
+			OHZEventZoneURI resURI = new OHZEventZoneURI();
+			resURI.data = data;
+			resURI.checkMessageType();
+			if (resURI.isOKToConnect()) {
+				connectToOHM(resURI.getUri(), resURI.getZoneName());
+			}
+			break;
+
+		default:
+			log.debug("OHZ Message: " + iType);
+			break;
+		}
+	}
+
+	/*
+	 * DUPLICATE refactor later.. Get a portion of the bytes in the array.
+	 */
+	public byte[] getBytes(int start, int end, byte[] data) {
+		int size = (end - start) + 1;
+		int count = 0;
+		byte[] res = new byte[size];
+		for (int i = start; i <= end; i++) {
+			res[count] = data[i];
+			count++;
+		}
+		return res;
 	}
 
 }

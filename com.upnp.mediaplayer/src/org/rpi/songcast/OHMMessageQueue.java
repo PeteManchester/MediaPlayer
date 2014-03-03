@@ -86,10 +86,21 @@ public class OHMMessageQueue implements Runnable {
 
 		int iType = new BigInteger(type).intValue();
 		switch (iType) {
-		case 3:
-			OHMResponseJoin audio = new OHMResponseJoin();
+		case 3://AUDIO
+			OHMEventAudio audio = new OHMEventAudio();
 			audio.data = data;
 			audio.checkMessageType();
+			break;
+		case 4://TRACK INFO
+			OHMEventTrack evt = new OHMEventTrack();
+			evt.data = data;
+			evt.checkMessageType();
+			//Do Something..
+			break;
+		case 5://MetaText INFO
+			OHMEventMetaData evm = new OHMEventMetaData();
+			evm.data = data;
+			evm.checkMessageType();
 			break;
 		default:
 			log.debug("OHM Mesage: " + iType);
