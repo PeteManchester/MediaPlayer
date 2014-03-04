@@ -12,12 +12,16 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeSet;
 
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Mixer;
+
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.RollingFileAppender;
 import org.rpi.config.Config;
 import org.rpi.log.CustomPatternLayout;
 import org.rpi.utils.NetworkUtils;
+import org.rpi.utils.Utils;
 
 public class StartMe {
 
@@ -48,8 +52,8 @@ public class StartMe {
 			while (e.hasMoreElements()) {
 				NetworkInterface n = (NetworkInterface) e.nextElement();
 				Enumeration ee = n.getInetAddresses();
-				log.info("Network Interface Display Name: " + n.getDisplayName());
-				log.info("NIC Name: " + n.getName());
+				log.info("Network Interface Display Name: '" + n.getDisplayName() + "'");
+				log.info("NIC Name: '" + n.getName() + "'");
 				while (ee.hasMoreElements()) {
 					InetAddress i = (InetAddress) ee.nextElement();
 					log.info("IPAddress for Network Interface: " + n.getDisplayName() + " : " + i.getHostAddress());
@@ -58,7 +62,19 @@ public class StartMe {
 		} catch (Exception e) {
 			log.error("Error Getting IPAddress", e);
 		}
+
 		log.info("End Of Network Interfaces");
+		log.info("Available Audio Devices:");
+		try {
+			Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
+
+			for (int cnt = 0; cnt < mixerInfo.length; cnt++) {
+				log.info("'" + mixerInfo[cnt].getName() + "'");
+			}
+		} catch (Exception e) {
+			log.error("Error getting Audio Devices");
+		}
+		log.info("End Of Audio Devices");
 		log.info("JVM Version: " + System.getProperty("java.version"));
 		printSystemProperties();
 		SimpleDevice sd = new SimpleDevice();
@@ -91,26 +107,25 @@ public class StartMe {
 		System.exit(0);
 	}
 
-
 	/***
 	 * List all the files in this directory and sub directories.
 	 * 
 	 * @param directoryName
 	 * @return
 	 */
-//	public static List<File> listFiles(String directoryName) {
-//		File directory = new File(directoryName);
-//		List<File> resultList = new ArrayList<File>();
-//		File[] fList = directory.listFiles();
-//		resultList.addAll(Arrays.asList(fList));
-//		for (File file : fList) {
-//			if (file.isFile()) {
-//			} else if (file.isDirectory()) {
-//				resultList.addAll(listFiles(file.getAbsolutePath()));
-//			}
-//		}
-//		return resultList;
-//	}
+	// public static List<File> listFiles(String directoryName) {
+	// File directory = new File(directoryName);
+	// List<File> resultList = new ArrayList<File>();
+	// File[] fList = directory.listFiles();
+	// resultList.addAll(Arrays.asList(fList));
+	// for (File file : fList) {
+	// if (file.isFile()) {
+	// } else if (file.isDirectory()) {
+	// resultList.addAll(listFiles(file.getAbsolutePath()));
+	// }
+	// }
+	// return resultList;
+	// }
 
 	/***
 	 * Print out the System Properties.
@@ -169,9 +184,23 @@ public class StartMe {
 			Config.enableAVTransport = Config.convertStringToBoolean(pr.getProperty("enableAVTransport"), true);
 			Config.enableReceiver = Config.convertStringToBoolean(pr.getProperty("enableReceiver"), true);
 			Config.songcastNICName = NetworkUtils.getNICName(pr.getProperty("songcast.nic.name"));
+			Config.songcastSoundCardName = pr.getProperty("songcast.soundcard.name");
+			if (!Utils.isEmpty(Config.songcastSoundCardName)) {
+				setAudioDevice();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Used to set the Songcast Audio Device
+	 */
+	private static void setAudioDevice() {
+		Properties props = System.getProperties();
+		String name = "#" + Config.songcastSoundCardName;
+		props.setProperty("javax.sound.sampled.SourceDataLine", name);
+		log.warn("###Setting Sound Card Name: " + name);
 	}
 
 	/***

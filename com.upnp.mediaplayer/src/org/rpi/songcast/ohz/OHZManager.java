@@ -33,12 +33,11 @@ public class OHZManager implements Observer, SongcastManager {
 	private String nic = "";
 	private OHZRequestJoin join = null;
 	private OHMManager ohm = null;
-	private CHannelSongcast track = null;
 
-	public OHZManager(String uri, String zoneID, String nic, CHannelSongcast track) {
+
+	public OHZManager(String uri, String zoneID, String nic) {
 		try {
 			this.nic = nic;
-			this.track = track;
 			int lastColon = uri.lastIndexOf(":");
 			int lastSlash = uri.lastIndexOf("/");
 			String host = uri.substring(lastSlash + 1, lastColon);
@@ -83,6 +82,7 @@ public class OHZManager implements Observer, SongcastManager {
 		if (udpReceiver != null) {
 			udpReceiver.disconnect();
 		}
+		
 		tReceiver = null;
 		tSender = null;
 	}
@@ -100,19 +100,19 @@ public class OHZManager implements Observer, SongcastManager {
 	}
 
 	public void connectToOHM(String uri, String zone) {
-		PlayManager.getInstance().setStatus("Buffering");
 		if (ohm != null) {
-			if (ohm.getZoneID().equalsIgnoreCase(zone)) {
+			//if (ohm.getZoneID().equalsIgnoreCase(zone)) {
 				log.debug("Already Connected to Zone: " + zone);
 				return;
-			}
+			//}
 		}
 		log.debug("Not Connected to Zone, attempt to connect: " + zone);
+		PlayManager.getInstance().setStatus("Buffering");
 		ohm = new OHMManager(uri, zone, nic);
 		ohm.start();
 	}
 
-	private void stop(String zoneID) {
+	public void stop(String zoneID) {
 		if (ohm == null)
 			return;
 		ohm.disconnect();

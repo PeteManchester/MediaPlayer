@@ -1,9 +1,13 @@
 package org.rpi.songcast.ohm;
 
 import java.math.BigInteger;
-
 import org.apache.log4j.Logger;
 import org.rpi.songcast.core.SongcastMessage;
+
+//Offset    Bytes                   Desc
+//0         4                       Sequence (n)
+//4         4                       Metatext Bytes (n)
+//8         n                       n bytes of metatext
 
 public class OHMEventMetaData extends SongcastMessage {
 
@@ -13,12 +17,12 @@ public class OHMEventMetaData extends SongcastMessage {
 	private String metaText = "";
 
 	public void checkMessageType() {
-		StringBuilder sb = new StringBuilder();
-		for (byte b : data) {
-			sb.append(String.format("%02X ", b));
-		}
-		String s = sb.toString().trim();
-		log.debug(s);
+//		StringBuilder sb = new StringBuilder();
+//		for (byte b : data) {
+//			sb.append(String.format("%02X ", b));
+//		}
+//		String s = sb.toString().trim();
+//		log.debug(s);
 
 		sequence = new BigInteger(getBytes(8, 11)).intValue();
 		int meta_length = new BigInteger(getBytes(12, 15)).intValue();

@@ -8,11 +8,11 @@ import org.apache.log4j.Logger;
 public class OHMMessageQueue implements Runnable {
 
 	private Logger log = Logger.getLogger(this.getClass());
-	private SongcastTimer timer = null;
-	private Thread timerThread = null;
+	//private SongcastTimer timer = null;
+	//private Thread timerThread = null;
 	private Vector mWorkQueue = new Vector();
 	private boolean run = true;
-	private boolean started = false;
+	//private boolean started = false;
 
 	public OHMMessageQueue() {
 		log.warn("Opening OHM Message Queue");
@@ -89,12 +89,12 @@ public class OHMMessageQueue implements Runnable {
 		int iType = new BigInteger(type).intValue();
 		switch (iType) {
 		case 3:// AUDIO
-			if (!started) {
-				timer = new SongcastTimer();
-				timerThread = new Thread(timer, "SongcastTimer");
-				timerThread.start();
-				started = true;
-			}
+//			if (!started) {
+//				timer = new SongcastTimer();
+//				timerThread = new Thread(timer, "SongcastTimer");
+//				timerThread.start();
+//				started = true;
+//			}
 			OHMEventAudio audio = new OHMEventAudio();
 			audio.data = data;
 			audio.checkMessageType();
@@ -118,13 +118,13 @@ public class OHMMessageQueue implements Runnable {
 
 	public void stop() {
 		run = false;
-		if (timer != null) {
-			timer.setRun(false);
-			timer = null;
-		}
-		if (timerThread != null) {
-			timerThread = null;
-		}
+//		if (timer != null) {
+//			timer.setRun(false);
+//			timer = null;
+//		}
+		//if (timerThread != null) {
+		//	timerThread = null;
+		//}
 	}
 
 	/*

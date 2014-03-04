@@ -3,6 +3,9 @@ package org.rpi.songcast.ohm;
 import java.math.BigInteger;
 
 import org.apache.log4j.Logger;
+import org.rpi.player.PlayManager;
+import org.rpi.player.events.EventMuteChanged;
+import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.songcast.core.SongcastMessage;
 
 //Offset    Bytes                   Desc
@@ -22,13 +25,13 @@ public class OHMEventTrack extends SongcastMessage {
 
 	public void checkMessageType() {
 
-		StringBuilder sb = new StringBuilder();
-		for (byte b : data) {
-			sb.append(String.format("%02X ", b));
-		}
-		String s = sb.toString().trim();
-
-		log.debug(s);
+//		StringBuilder sb = new StringBuilder();
+//		for (byte b : data) {
+//			sb.append(String.format("%02X ", b));
+//		}
+//		String s = sb.toString().trim();
+//
+//		log.debug(s);
 
 		sequence = new BigInteger(getBytes(8, 11)).intValue();
 		int uri_length = new BigInteger(getBytes(12, 15)).intValue();
@@ -39,9 +42,13 @@ public class OHMEventTrack extends SongcastMessage {
 			log.debug("URI: " + uri);
 		}
 		if (meta_length > 0) {
-			byte[] bMetaLength = getBytes(20+ uri_length, meta_length - 1);
+			log.debug("Length = " + data.length + " " + meta_length);
+			byte[] bMetaLength = getBytes(20+ uri_length, data.length - 1);
 			metaData = byteToString(bMetaLength);
 			log.debug("MetaData: " + metaData);
+			EventUpdateTrackMetaText ev = new EventUpdateTrackMetaText();
+			ev.setMetaText(metaData);
+			PlayManager.getInstance().updateMetaText(ev);
 		}
 	}
 

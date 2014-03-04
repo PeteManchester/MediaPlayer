@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
 import org.apache.log4j.Level;
 
 public class Config {
@@ -29,10 +30,9 @@ public class Config {
 	public static boolean enableAVTransport =true;
 	public static boolean enableReceiver = true;
 	public static String songcastNICName = "";
+	public static String songcastSoundCardName = "";
 	
-	private static Calendar cal = Calendar.getInstance();
-	
-	
+	private static Calendar cal = Calendar.getInstance();	
 	
 	public static String getProtocolInfo() {
 		StringBuilder sb = new StringBuilder();

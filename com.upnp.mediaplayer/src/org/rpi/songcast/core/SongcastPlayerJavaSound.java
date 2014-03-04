@@ -13,11 +13,13 @@ public class SongcastPlayerJavaSound implements ISongcastPlayer {
 
 	private Logger log = Logger.getLogger(this.getClass());
 
-	final AudioFormat audioFormat = new AudioFormat(44100, 16, 2, true, true);
-	final DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
+	private AudioFormat audioFormat = new AudioFormat(44100, 16, 2, true, true);
+	private DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
+
 	private SourceDataLine soundLine = null;
 
-	private boolean bWrite = false;
+	private boolean bWrite = false;	
+
 
 	public static SongcastPlayerJavaSound getInstance() {
 		if (instance == null) {
@@ -25,19 +27,21 @@ public class SongcastPlayerJavaSound implements ISongcastPlayer {
 		}
 		return instance;
 	}
-
+	
 	private SongcastPlayerJavaSound() {
 
 	}
 
-	public void createFile() {
+
+
+	public void createSoundLine() {
 		try {
 			soundLine = (SourceDataLine) AudioSystem.getLine(info);
 			soundLine.open(audioFormat);
 			soundLine.start();
 			bWrite = true;
 		} catch (Exception e) {
-			log.error("Error opening Sound:",e);
+			log.error("Error opening Sound:", e);
 		}
 	}
 
@@ -60,9 +64,8 @@ public class SongcastPlayerJavaSound implements ISongcastPlayer {
 		if (!bWrite)
 			return;
 		try {
-			if(soundLine !=null)
-			{ 
-				//log.debug(data.length);
+			if (soundLine != null) {
+				// log.debug(data.length);
 				soundLine.write(data, 0, data.length);
 			}
 		} catch (Exception e) {

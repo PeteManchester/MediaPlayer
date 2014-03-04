@@ -10,9 +10,7 @@ import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgReceiver1;
 import org.rpi.config.Config;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
-import org.rpi.player.events.EventPlayListPlayingTrackID;
 import org.rpi.player.events.EventPlayListStatusChanged;
-import org.rpi.player.events.EventPlayListUpdateShuffle;
 import org.rpi.playlist.ChannelPlayList;
 import org.rpi.songcast.ohz.CHannelSongcast;
 import org.rpi.songcast.ohz.OHZManager;
@@ -88,7 +86,7 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 				return;
 			}
 			if (manager != null) {
-				manager.disconnect();
+				manager.stop(zoneID);
 				manager = null;
 			}
 			int lastSlash = uri.lastIndexOf("/");
@@ -96,7 +94,7 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 			zoneID = uri.substring(lastSlash + 1);
 			log.debug("SongCast URL: " + songcast_url + " ZoneID: " + zoneID);
 
-			manager = new OHZManager(songcast_url, zoneID, nic, track);
+			manager = new OHZManager(songcast_url, zoneID, nic);
 			manager.start();
 		}
 	}
@@ -109,7 +107,7 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 	
 	private void stop()
 	{	
-		manager.disconnect();
+		manager.stop(zoneID);
 		PlayManager.getInstance().setStatus("Stopped");
 	}
 

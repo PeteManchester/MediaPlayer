@@ -1073,6 +1073,15 @@ public class PlayManager implements Observer {
 	{
 		obsvTime.notifyChange(e);
 	}
+	
+	/**
+	 * Used by Songcast to update the metat text
+	 * @param e
+	 */
+	public void updateMetaText(EventUpdateTrackMetaText e)
+	{
+		obsvInfo.notifyChange(e);
+	}
 
 	public synchronized boolean isUseExternalVolume() {
 		return bExternalVolume;
