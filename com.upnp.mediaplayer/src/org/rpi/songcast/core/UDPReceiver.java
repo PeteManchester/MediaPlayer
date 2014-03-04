@@ -1,4 +1,4 @@
-package org.rpi.songcast;
+package org.rpi.songcast.core;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -11,8 +11,9 @@ import java.util.Observer;
 
 import org.apache.log4j.Logger;
 import org.rpi.songcast.events.EventSongCastBase;
+import org.rpi.songcast.ohm.OHMessage;
 
-class UDPReceiver extends Observable implements Runnable, Observer  {
+public class UDPReceiver extends Observable implements Runnable, Observer  {
 
 	private Logger log = Logger.getLogger(this.getClass());
 

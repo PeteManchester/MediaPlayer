@@ -16,16 +16,16 @@ import org.rpi.player.events.EventStatusChanged;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.player.events.EventVolumeChanged;
-import org.rpi.playlist.CustomTrack;
+import org.rpi.playlist.ChannelPlayList;
 import org.rpi.radio.parsers.FileParser;
 
 public class MPDPlayer extends Observable implements IPlayer, Observer {
 
 	private static Logger log = Logger.getLogger(MPDPlayer.class);
-	HashMap<String, CustomTrack> tracks = new HashMap<String, CustomTrack>();
+	HashMap<String, ChannelPlayList> tracks = new HashMap<String, ChannelPlayList>();
 
 	private TCPConnector tcp = null;
-	private CustomTrack current_track = null;
+	private ChannelPlayList current_track = null;
 	private String current_status = "";
 	private long current_volume = 100;
 	private long mute_volume = 100;
@@ -41,7 +41,7 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 	}
 
 	@Override
-	public void preLoadTrack(CustomTrack track) {
+	public void preLoadTrack(ChannelPlayList track) {
 		log.debug("PreLoad Next Track: " + track.getUri());
 		List<String> params = new ArrayList<String>();
 		String url = checkURL(track.getUri());
@@ -60,7 +60,7 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 	}
 
 	@Override
-	public boolean playTrack(CustomTrack track, long volume, boolean mute) {
+	public boolean playTrack(ChannelPlayList track, long volume, boolean mute) {
 		current_track = track;
 		EventStatusChanged ev = new EventStatusChanged();
 		ev.setStatus("Buffering");
@@ -86,7 +86,7 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 	}
 
 	@Override
-	public void openFile(CustomTrack track) {
+	public void openFile(ChannelPlayList track) {
 		// TODO Auto-generated method stub
 
 	}
@@ -209,7 +209,7 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 		case EVENTTRACKCHANGED:
 			EventTrackChanged ev = (EventTrackChanged) e;
 			if (tracks.containsKey(ev.getMPD_id())) {
-				CustomTrack t = tracks.get(ev.getMPD_id());
+				ChannelPlayList t = tracks.get(ev.getMPD_id());
 				removeTrack(ev.getMPD_id());
 				ev.setTrack(t);
 				fireEvent(ev);

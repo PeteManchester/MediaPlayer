@@ -35,7 +35,7 @@ import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
-import org.rpi.playlist.CustomTrack;
+import org.rpi.playlist.ChannelPlayList;
 import org.rpi.utils.Utils;
 import org.rpi.utils.XMLUtils;
 import org.w3c.dom.Document;
@@ -100,7 +100,7 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
         switch (base.getType()) {
             case EVENTTRACKCHANGED:
                 EventTrackChanged etc = (EventTrackChanged) e;
-                CustomTrack track = etc.getTrack();
+                ChannelPlayList track = etc.getTrack();
                 if (track != null) {
                     scrobble(track.getTitle(), track.getPerformer(), track.getAlbum());
                 } else {

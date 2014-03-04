@@ -10,14 +10,14 @@ public class PlayListWriter extends Thread {
 
 	private boolean save = false;
 	private int counter = 0;
-	private CopyOnWriteArrayList<CustomTrack> tracks = null;
+	private CopyOnWriteArrayList<ChannelPlayList> tracks = null;
 	private Logger log = Logger.getLogger(PlayListWriter.class);
 
 	public PlayListWriter() {
 		this.setName("PlayListWriter");
 	}
 
-	public void trigger(CopyOnWriteArrayList<CustomTrack> tracks) {
+	public void trigger(CopyOnWriteArrayList<ChannelPlayList> tracks) {
 		this.tracks = tracks;
 		save = true;
 		counter = 0;
@@ -27,7 +27,7 @@ public class PlayListWriter extends Thread {
 		int i = 0;
 		StringBuilder sb = new StringBuilder();
 		sb.append("<TrackList>");
-		for (CustomTrack t : tracks) {
+		for (ChannelPlayList t : tracks) {
 			i++;
 			sb.append(t.getFullText());
 		}

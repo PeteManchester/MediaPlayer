@@ -1,6 +1,7 @@
-package org.rpi.songcast;
+package org.rpi.songcast.ohm;
 
 import org.apache.log4j.Logger;
+import org.rpi.songcast.core.SongcastMessage;
 
 /*
  * Leave the OHM stream to start receiving audio stream.

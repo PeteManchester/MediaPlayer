@@ -1,4 +1,4 @@
-package org.rpi.songcast;
+package org.rpi.songcast.core;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;

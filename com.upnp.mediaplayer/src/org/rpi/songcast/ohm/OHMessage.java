@@ -1,6 +1,8 @@
-package org.rpi.songcast;
+package org.rpi.songcast.ohm;
 
 import org.apache.log4j.Logger;
+import org.rpi.songcast.core.SongcastManager;
+import org.rpi.songcast.core.SongcastMessage;
 public class OHMessage extends SongcastMessage {
 
 	private Logger log = Logger.getLogger(this.getClass());

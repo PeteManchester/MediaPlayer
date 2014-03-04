@@ -10,7 +10,7 @@ import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackInfo;
 import org.rpi.player.events.EventUpdateTrackMetaText;
-import org.rpi.playlist.CustomTrack;
+import org.rpi.playlist.ChannelPlayList;
 import org.rpi.utils.Utils;
 
 import java.util.Observable;
@@ -64,7 +64,7 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer, I
 	 * 
 	 * @param track
 	 */
-	private void setTrack(CustomTrack track) {
+	private void setTrack(ChannelPlayList track) {
 		try {
 			if(track ==null)
 				return;

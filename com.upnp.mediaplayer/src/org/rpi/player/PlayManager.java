@@ -23,6 +23,7 @@ import org.rpi.player.events.EventRequestVolumeDec;
 import org.rpi.player.events.EventRequestVolumeInc;
 import org.rpi.player.events.EventStandbyChanged;
 import org.rpi.player.events.EventStatusChanged;
+import org.rpi.player.events.EventStopSongcast;
 import org.rpi.player.events.EventTimeUpdate;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
@@ -34,15 +35,16 @@ import org.rpi.player.observers.ObservableProduct;
 import org.rpi.player.observers.ObservableRadio;
 import org.rpi.player.observers.ObservableVolume;
 import org.rpi.player.observers.ObservsableTime;
-import org.rpi.playlist.CustomTrack;
-import org.rpi.radio.CustomChannel;
+import org.rpi.playlist.ChannelPlayList;
+import org.rpi.radio.ChannelRadio;
 //import org.rpi.mplayer.MPlayer;
 //import org.rpi.player.IPlayer;
+import org.rpi.songcast.ohz.CHannelSongcast;
 
 public class PlayManager implements Observer {
 
-	private CustomTrack current_track = null;
-	private CopyOnWriteArrayList<CustomTrack> tracks = new CopyOnWriteArrayList<CustomTrack>();
+	private ChannelPlayList current_track = null;
+	private CopyOnWriteArrayList<ChannelPlayList> tracks = new CopyOnWriteArrayList<ChannelPlayList>();
 	private CopyOnWriteArrayList<String> shuffled_tracks = new CopyOnWriteArrayList<String>();
 
 	private static Logger log = Logger.getLogger(PlayManager.class);
@@ -67,6 +69,7 @@ public class PlayManager implements Observer {
 	private ObservablePlayList obsvPlayList = new ObservablePlayList();
 	private ObservableProduct obsvProduct = new ObservableProduct();
 	private ObservableAVTransport obsvAVTransport = new ObservableAVTransport();
+	private ObservableSongcast obsvSongcast = new ObservableSongcast();
 	private String status = "";
 
 	private static PlayManager instance = null;
@@ -102,8 +105,10 @@ public class PlayManager implements Observer {
 	 * 
 	 * @param t
 	 */
-	private void playThis(CustomTrack t) {
+	private void playThis(ChannelPlayList t) {
 		if (t != null) {
+			EventStopSongcast ev = new EventStopSongcast();
+			obsvSongcast.notifyChange(ev);
 			current_track = t;
 			long v = mplayer_volume;
 			if (!isUseExternalVolume())
@@ -118,7 +123,7 @@ public class PlayManager implements Observer {
 	 * @param offset
 	 * @return
 	 */
-	public CustomTrack getNextTrack(int offset) {
+	public ChannelPlayList getNextTrack(int offset) {
 		if (shuffle) {
 			return getRandomTrack(offset);
 		} else {
@@ -132,9 +137,9 @@ public class PlayManager implements Observer {
 	 * @param offset
 	 * @return
 	 */
-	private CustomTrack getRandomTrack(int offset) {
+	private ChannelPlayList getRandomTrack(int offset) {
 		if (current_track != null) {
-			if (!(current_track instanceof CustomChannel)) {
+			if (!(current_track instanceof ChannelRadio)) {
 				try {
 					int i = 0;
 					for (String t : getShuffledTracks()) {
@@ -146,7 +151,7 @@ public class PlayManager implements Observer {
 					if (getShuffledTracks().size() > i + offset) {
 						if (i + offset >= 0) {
 							String track_id = getShuffledTracks().get(i + offset);
-							CustomTrack newTrack = getTrackFromId(Integer.parseInt(track_id));
+							ChannelPlayList newTrack = getTrackFromId(Integer.parseInt(track_id));
 							log.debug("Returning Next Shuffled Track: " + newTrack.getUri());
 							return (newTrack);
 						}
@@ -157,7 +162,7 @@ public class PlayManager implements Observer {
 							shuffleTracks();
 							if (getShuffledTracks().size() > 0) {
 								String track_id = getShuffledTracks().get(0);
-								CustomTrack newTrack = getTrackFromId(Integer.parseInt(track_id));
+								ChannelPlayList newTrack = getTrackFromId(Integer.parseInt(track_id));
 								return newTrack;
 							}
 						} else {
@@ -173,7 +178,7 @@ public class PlayManager implements Observer {
 		}
 		if (shuffled_tracks.size() > 0) {
 			String id = shuffled_tracks.get(0);
-			CustomTrack t = getTrackFromId(Integer.parseInt(id));
+			ChannelPlayList t = getTrackFromId(Integer.parseInt(id));
 			return t;
 		}
 		return null;
@@ -185,12 +190,12 @@ public class PlayManager implements Observer {
 	 * @param offset
 	 * @return
 	 */
-	private CustomTrack getTrack(int offset) {
+	private ChannelPlayList getTrack(int offset) {
 		if (current_track != null)
 			try {
 				log.debug("Getting Next Track, CurrentTrack is: " + current_track.getUri());
 				int i = 0;
-				for (CustomTrack t : getTracks()) {
+				for (ChannelPlayList t : getTracks()) {
 					if (current_track.getId() == t.getId()) {
 						break;
 					}
@@ -198,7 +203,7 @@ public class PlayManager implements Observer {
 				}
 				if (getTracks().size() > i + offset) {
 					if (i + offset >= 0) {
-						CustomTrack newTrack = getTracks().get(i + offset);
+						ChannelPlayList newTrack = getTracks().get(i + offset);
 						log.debug("Returning Next Track: " + newTrack.getUri());
 						return (newTrack);
 					}
@@ -207,7 +212,7 @@ public class PlayManager implements Observer {
 					if (isRepeatPlayList()) {
 						log.info("Repeat Playlsit is Set so start again...");
 						if (getTracks().size() > 0) {
-							CustomTrack newTrack = getTracks().get(0);
+							ChannelPlayList newTrack = getTracks().get(0);
 							return newTrack;
 						}
 					}
@@ -229,7 +234,7 @@ public class PlayManager implements Observer {
 	 * @param index
 	 * @return
 	 */
-	public CustomTrack getTrackFromIndex(int index) {
+	public ChannelPlayList getTrackFromIndex(int index) {
 		log.debug("GetTrackFromIndex: " + index);
 		try {
 			return tracks.get(index);
@@ -245,9 +250,9 @@ public class PlayManager implements Observer {
 	 * @param id
 	 * @return
 	 */
-	public CustomTrack getTrackFromId(int id) {
+	public ChannelPlayList getTrackFromId(int id) {
 		log.debug("GetTrakcFromId: " + id);
-		for (CustomTrack t : tracks) {
+		for (ChannelPlayList t : tracks) {
 			if (t.getId() == id) {
 				return t;
 			}
@@ -314,13 +319,13 @@ public class PlayManager implements Observer {
 	 * 
 	 * @param t
 	 */
-	private void addAsNextShuffleTrack(CustomTrack t) {
+	private void addAsNextShuffleTrack(ChannelPlayList t) {
 		int this_track = getTrackIndexShuffled(t.getId());
 		if (this_track >= 0) {
 			shuffled_tracks.remove(this_track);
 		}
 		if (current_track != null) {
-			if (!(current_track instanceof CustomChannel)) {
+			if (!(current_track instanceof ChannelRadio)) {
 				int index = getTrackIndexShuffled(current_track.getId());
 				if (index >= 0) {
 					shuffled_tracks.add(index + 1, "" + t.getId());
@@ -337,13 +342,13 @@ public class PlayManager implements Observer {
 	 */
 	private void shuffleTracks() {
 		shuffled_tracks.clear();
-		for (CustomTrack t : tracks) {
+		for (ChannelPlayList t : tracks) {
 			shuffled_tracks.add("" + t.getId());
 		}
 		long seed = System.nanoTime();
 		Collections.shuffle(shuffled_tracks, new Random(seed));
 		if (current_track != null) {
-			if (current_track instanceof CustomChannel)
+			if (current_track instanceof ChannelRadio)
 				return;
 			log.debug("We have shuffled so set the current track to index ZERO");
 			int index = getTrackIndexShuffled(current_track.getId());
@@ -373,7 +378,7 @@ public class PlayManager implements Observer {
 	/**
 	 * @return the tracks
 	 */
-	private synchronized CopyOnWriteArrayList<CustomTrack> getTracks() {
+	private synchronized CopyOnWriteArrayList<ChannelPlayList> getTracks() {
 		return tracks;
 	}
 
@@ -390,11 +395,11 @@ public class PlayManager implements Observer {
 	 * 
 	 * @param tracks
 	 */
-	public synchronized void setTracks(CopyOnWriteArrayList<CustomTrack> tracks) {
-		this.tracks = (CopyOnWriteArrayList<CustomTrack>) tracks.clone();
+	public synchronized void setTracks(CopyOnWriteArrayList<ChannelPlayList> tracks) {
+		this.tracks = (CopyOnWriteArrayList<ChannelPlayList>) tracks.clone();
 	}
 
-	public synchronized void setCurrentTrack(CustomTrack track) {
+	public synchronized void setCurrentTrack(ChannelPlayList track) {
 		current_track = track;
 		log.debug("Current Track Id: " + track.getId());
 	}
@@ -403,7 +408,7 @@ public class PlayManager implements Observer {
 	 * 
 	 * @return
 	 */
-	public synchronized CustomTrack getCurrentTrack() {
+	public synchronized ChannelPlayList getCurrentTrack() {
 		return current_track;
 	}
 
@@ -470,7 +475,7 @@ public class PlayManager implements Observer {
 	 * @param index
 	 */
 	public synchronized void playIndex(long index) {
-		CustomTrack t = getTrackFromIndex((int) index);
+		ChannelPlayList t = getTrackFromIndex((int) index);
 		if (shuffle) {
 			if (!mPlayer.isPlaying()) {
 				shuffleTracks();
@@ -483,15 +488,12 @@ public class PlayManager implements Observer {
 			log.debug("Next Track was NULL");
 		}
 	}
-	
-	public synchronized void playTrackId(long id)
-	{
-		CustomTrack t = getTrackFromId((int)id);
-		if(t !=null)
-		{
+
+	public synchronized void playTrackId(long id) {
+		ChannelPlayList t = getTrackFromId((int) id);
+		if (t != null) {
 			playThis(t);
-		}
-		else {
+		} else {
 			log.debug("Next Track was NULL");
 		}
 	}
@@ -508,22 +510,22 @@ public class PlayManager implements Observer {
 			setStatus("Playing");
 			setPaused(false);
 		} else {
-			//if (!(status.equalsIgnoreCase("PLAYING") || status.equalsIgnoreCase("BUFFERING"))) {
-				if(current_track ==null)
-				{
-					log.debug("CurrentTrack was NULL");
-				}
-				if (shuffle)
-					shuffleTracks();
-				CustomTrack t = getNextTrack(1);
-				if (t != null) {
-					playThis(t);
-				}
-			//}
-			//else
-			//{
-			//	log.warn("Track is Already Playing, do not Play");
-			//}
+			// if (!(status.equalsIgnoreCase("PLAYING") ||
+			// status.equalsIgnoreCase("BUFFERING"))) {
+			if (current_track == null) {
+				log.debug("CurrentTrack was NULL");
+			}
+			if (shuffle)
+				shuffleTracks();
+			ChannelPlayList t = getNextTrack(1);
+			if (t != null) {
+				playThis(t);
+			}
+			// }
+			// else
+			// {
+			// log.warn("Track is Already Playing, do not Play");
+			// }
 		}
 	}
 
@@ -532,13 +534,23 @@ public class PlayManager implements Observer {
 	 * 
 	 * @param c
 	 */
-	public synchronized void playFile(CustomChannel c) {
+	public synchronized void playRadio(ChannelRadio c) {
 		log.debug("Play Radio Id:  " + c.getId());
 		playThis(c);
 	}
-	
-	public synchronized void playAV(CustomTrack c)
-	{
+
+	/**
+	 * Play a Songcast Channel
+	 * 
+	 * @param track
+	 */
+	public void playSongcast(CHannelSongcast track) {
+		log.debug("Playing Songcast Channel. Stop Playing current Track");
+		setCurrentTrack(track);
+		stop();
+	}
+
+	public synchronized void playAV(ChannelPlayList c) {
 		log.debug("Play AV Track :  " + c.getUri());
 		playThis(c);
 	}
@@ -558,7 +570,7 @@ public class PlayManager implements Observer {
 	 * Play the Next Track
 	 */
 	public synchronized void nextTrack() {
-		CustomTrack t = getNextTrack(1);
+		ChannelPlayList t = getNextTrack(1);
 		if (t != null) {
 			playThis(t);
 		}
@@ -575,7 +587,7 @@ public class PlayManager implements Observer {
 			}
 
 		}
-		CustomTrack t = getNextTrack(-1);
+		ChannelPlayList t = getNextTrack(-1);
 		if (t != null) {
 			playThis(t);
 		}
@@ -602,8 +614,7 @@ public class PlayManager implements Observer {
 	 */
 	public synchronized void setVolume(long volume) {
 		if (!bMute) {
-			if(this.volume <0 ||volume > 100)
-			{
+			if (this.volume < 0 || volume > 100) {
 				log.debug("Volume is less than Zero, assume the DAC doesn't support Hardware Volume Control");
 				return;
 			}
@@ -627,8 +638,7 @@ public class PlayManager implements Observer {
 	 * @param mute
 	 */
 	public synchronized void setMute(boolean mute) {
-		if(volume< 0)
-		{
+		if (volume < 0) {
 			log.debug("Volume is less than Zero, assume the DAC doesn't support Hardware Volume Control");
 			return;
 		}
@@ -652,7 +662,7 @@ public class PlayManager implements Observer {
 	 * @param aAfterId
 	 * @param track
 	 */
-	public synchronized void insertTrack(long aAfterId, CustomTrack track) {
+	public synchronized void insertTrack(long aAfterId, ChannelPlayList track) {
 		insertAfterTrack(aAfterId, track);
 		if (shuffle) {
 			insertAfterShuffleTrack(aAfterId, track);
@@ -665,7 +675,7 @@ public class PlayManager implements Observer {
 	 * @param aAfterId
 	 * @param track
 	 */
-	private void insertAfterTrack(long aAfterId, CustomTrack track) {
+	private void insertAfterTrack(long aAfterId, ChannelPlayList track) {
 		int index = 0;
 		if (aAfterId != 0)
 			index = getTrackIndex(aAfterId) + 1;
@@ -678,7 +688,7 @@ public class PlayManager implements Observer {
 	 * @param aAfterId
 	 * @param track
 	 */
-	private void insertAfterShuffleTrack(long aAfterId, CustomTrack track) {
+	private void insertAfterShuffleTrack(long aAfterId, ChannelPlayList track) {
 		int index = 0;
 		if (aAfterId != 0)
 			index = getTrackIndexShuffled(aAfterId);
@@ -708,7 +718,7 @@ public class PlayManager implements Observer {
 	 */
 	private int getTrackIndex(long aAfterId) {
 		int i = 0;
-		for (CustomTrack t : getTracks()) {
+		for (ChannelPlayList t : getTracks()) {
 			if (aAfterId == t.getId()) {
 				return i;
 			}
@@ -739,7 +749,7 @@ public class PlayManager implements Observer {
 	 */
 	public synchronized void deleteAllTracks() {
 		deletedAllTracks();
-		if (!(getCurrentTrack() instanceof CustomChannel)) {
+		if (!(getCurrentTrack() instanceof ChannelRadio)) {
 			current_track = null;
 			if (mPlayer.isPlaying()) {
 				mPlayer.stop();
@@ -755,9 +765,9 @@ public class PlayManager implements Observer {
 	 */
 	public synchronized void DeleteTrack(long iD) {
 		deletedTrack(iD);
-		CustomTrack t = getCurrentTrack();
+		ChannelPlayList t = getCurrentTrack();
 		if (t != null)
-			if (t.getId() == iD && !(t instanceof CustomChannel)) {
+			if (t.getId() == iD && !(t instanceof ChannelRadio)) {
 				if (mPlayer.isPlaying()) {
 					mPlayer.stop();
 				}
@@ -797,11 +807,16 @@ public class PlayManager implements Observer {
 			}
 
 		}
-		if (current_track instanceof CustomChannel) {
+		if (current_track instanceof ChannelRadio) {
 			EventRadioStatusChanged evr = new EventRadioStatusChanged();
 			evr.setStatus(status);
 			obsvRadio.notifyChange(evr);
-		} else {
+		} else if (current_track instanceof CHannelSongcast){
+			//TODO borrowed EventPlayListChanged, may need to create one for Songcast.
+			EventPlayListStatusChanged evr = new EventPlayListStatusChanged();
+			evr.setStatus(status);
+			obsvSongcast.notifyChange(evr);
+		} else if (current_track instanceof ChannelPlayList) {
 			EventPlayListStatusChanged evr = new EventPlayListStatusChanged();
 			evr.setStatus(status);
 			obsvPlayList.notifyChange(evr);
@@ -814,7 +829,7 @@ public class PlayManager implements Observer {
 	 * @param iD
 	 */
 	public synchronized void playingTrack(int iD) {
-		if (current_track instanceof CustomChannel) {
+		if (current_track instanceof ChannelRadio) {
 			EventRadioPlayingTrackID evrp = new EventRadioPlayingTrackID();
 			evrp.setId(iD);
 			obsvRadio.notifyChange(evrp);
@@ -833,7 +848,7 @@ public class PlayManager implements Observer {
 	public synchronized long incVolume() {
 		EventRequestVolumeInc ev = new EventRequestVolumeInc();
 		obsvVolume.notifyChange(ev);
-		if (volume < 100 ) {
+		if (volume < 100) {
 			long v = volume;
 			v++;
 			setVolume(v);
@@ -877,7 +892,7 @@ public class PlayManager implements Observer {
 					log.debug("Track was Stopped, do not select Next Track");
 				} else {
 					log.debug("Track Stopped, get Next Track");
-					CustomTrack t = getNextTrack(1);
+					ChannelPlayList t = getNextTrack(1);
 					if (t != null) {
 						playThis(t);
 					}
@@ -888,7 +903,7 @@ public class PlayManager implements Observer {
 			break;
 		case EVENTCURRENTTRACKFINISHING:
 			log.debug("Current Track is going to finish, get NextTrack and PreLoad");
-			CustomTrack t = getNextTrack(1);
+			ChannelPlayList t = getNextTrack(1);
 			if (t != null) {
 				mPlayer.preLoadTrack(t);
 			}
@@ -935,9 +950,8 @@ public class PlayManager implements Observer {
 			try {
 				EventUpdateTrackMetaText etm = (EventUpdateTrackMetaText) e;
 				if (current_track != null) {
-					if (current_track instanceof CustomChannel) {
-						if(current_track.isICYReverse())
-						{
+					if (current_track instanceof ChannelRadio) {
+						if (current_track.isICYReverse()) {
 							String title = etm.getArtist();
 							String artist = etm.getTitle();
 							etm.setTitle(title);
@@ -1035,10 +1049,29 @@ public class PlayManager implements Observer {
 	public synchronized void observeRadioEvents(Observer o) {
 		obsvRadio.addObserver(o);
 	}
-	
+
+	/**
+	 * Register for Songcast Events
+	 * 
+	 * @param prvReceiver
+	 */
+	public void observeSongcastEvents(Observer o) {
+		obsvSongcast.addObserver(o);
+
+	}
+
 	public void observeAVEvents(Observer o) {
 		obsvAVTransport.addObserver(o);
-		
+
+	}
+	
+	/**
+	 * Used by Songcast to update the time info
+	 * @param e
+	 */
+	public void updateTime(EventTimeUpdate e)
+	{
+		obsvTime.notifyChange(e);
 	}
 
 	public synchronized boolean isUseExternalVolume() {
@@ -1060,7 +1093,5 @@ public class PlayManager implements Observer {
 	public void pause() {
 		pause(!bPaused);
 	}
-
-
 
 }

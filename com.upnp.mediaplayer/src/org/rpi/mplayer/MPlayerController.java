@@ -11,7 +11,7 @@ import java.util.Observer;
 import org.apache.log4j.Logger;
 import org.rpi.player.IPlayer;
 import org.rpi.player.IPlayerController;
-import org.rpi.playlist.CustomTrack;
+import org.rpi.playlist.ChannelPlayList;
 
 public class MPlayerController extends Observable implements IPlayerController, Observer {
 
@@ -19,7 +19,7 @@ public class MPlayerController extends Observable implements IPlayerController, 
 	private static Logger log = Logger.getLogger(MPlayerController.class);
 
 	@Override
-	public void preLoadTrack(CustomTrack track) {
+	public void preLoadTrack(ChannelPlayList track) {
 		// TODO Auto-generated method stub
 
 	}
@@ -37,12 +37,12 @@ public class MPlayerController extends Observable implements IPlayerController, 
 	// }
 
 	@Override
-	public void openFile(CustomTrack track) {
+	public void openFile(ChannelPlayList track) {
 		mPlayer.openFile(track);
 	}
 
 	@Override
-	public void playThis(CustomTrack t, long v, boolean bMute) {
+	public void playThis(ChannelPlayList t, long v, boolean bMute) {
 		if (t != null) {
 
 			log.debug("Destroy current MPlayer");

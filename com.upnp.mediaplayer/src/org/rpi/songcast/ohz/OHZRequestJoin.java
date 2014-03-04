@@ -1,6 +1,7 @@
-package org.rpi.songcast;
+package org.rpi.songcast.ohz;
 
 import org.apache.log4j.Logger;
+import org.rpi.songcast.core.SongcastMessage;
 
 //Offset    Bytes                   Desc
 //0         4                       "Ohz "

@@ -1,4 +1,4 @@
-package org.rpi.songcast;
+package org.rpi.songcast.ohm;
 
 import java.math.BigInteger;
 import java.util.Vector;
@@ -8,9 +8,11 @@ import org.apache.log4j.Logger;
 public class OHMMessageQueue implements Runnable {
 
 	private Logger log = Logger.getLogger(this.getClass());
-
+	private SongcastTimer timer = null;
+	private Thread timerThread = null;
 	private Vector mWorkQueue = new Vector();
 	private boolean run = true;
+	private boolean started = false;
 
 	public OHMMessageQueue() {
 		log.warn("Opening OHM Message Queue");
@@ -86,18 +88,24 @@ public class OHMMessageQueue implements Runnable {
 
 		int iType = new BigInteger(type).intValue();
 		switch (iType) {
-		case 3://AUDIO
+		case 3:// AUDIO
+			if (!started) {
+				timer = new SongcastTimer();
+				timerThread = new Thread(timer, "SongcastTimer");
+				timerThread.start();
+				started = true;
+			}
 			OHMEventAudio audio = new OHMEventAudio();
 			audio.data = data;
 			audio.checkMessageType();
 			break;
-		case 4://TRACK INFO
+		case 4:// TRACK INFO
 			OHMEventTrack evt = new OHMEventTrack();
 			evt.data = data;
 			evt.checkMessageType();
-			//Do Something..
+			// Do Something..
 			break;
-		case 5://MetaText INFO
+		case 5:// MetaText INFO
 			OHMEventMetaData evm = new OHMEventMetaData();
 			evm.data = data;
 			evm.checkMessageType();
@@ -105,6 +113,17 @@ public class OHMMessageQueue implements Runnable {
 		default:
 			log.debug("OHM Mesage: " + iType);
 			break;
+		}
+	}
+
+	public void stop() {
+		run = false;
+		if (timer != null) {
+			timer.setRun(false);
+			timer = null;
+		}
+		if (timerThread != null) {
+			timerThread = null;
 		}
 	}
 

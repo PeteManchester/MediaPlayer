@@ -1,6 +1,9 @@
-package org.rpi.songcast;
+package org.rpi.songcast.ohm;
 
 import java.math.BigInteger;
+
+import org.rpi.songcast.core.SongcastMessage;
+import org.rpi.songcast.core.SongcastPlayerJavaSound;
 
 //Offset    Bytes                   Desc
 //0         1                       Msg Header Bytes (without the codec name)

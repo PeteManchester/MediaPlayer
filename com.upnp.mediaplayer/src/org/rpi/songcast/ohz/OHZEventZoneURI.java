@@ -1,8 +1,9 @@
-package org.rpi.songcast;
+package org.rpi.songcast.ohz;
 
 import java.math.BigInteger;
 
 import org.apache.log4j.Logger;
+import org.rpi.songcast.core.SongcastMessage;
 import org.rpi.utils.Utils;
 
 public class OHZEventZoneURI extends SongcastMessage {

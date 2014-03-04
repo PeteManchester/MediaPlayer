@@ -7,16 +7,16 @@ package org.rpi.player;
 import java.util.Observer;
 
 import org.rpi.player.events.EventBase;
-import org.rpi.playlist.CustomTrack;
+import org.rpi.playlist.ChannelPlayList;
 
 public interface IPlayer {
 	
-	public void preLoadTrack(CustomTrack track);
+	public void preLoadTrack(ChannelPlayList track);
 	public  void loaded();
 	
 	//Player control
-	public boolean playTrack(CustomTrack track,long volume, boolean mute);
-	public void openFile(CustomTrack track);
+	public boolean playTrack(ChannelPlayList track,long volume, boolean mute);
+	public void openFile(ChannelPlayList track);
 	public void pause(boolean bPause);	
 	public void resume();
 	public void stop();

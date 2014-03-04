@@ -10,7 +10,7 @@ import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventRadioPlayName;
 import org.rpi.player.events.EventRadioPlayingTrackID;
 import org.rpi.player.events.EventRadioStatusChanged;
-import org.rpi.radio.CustomChannel;
+import org.rpi.radio.ChannelRadio;
 import org.rpi.utils.Utils;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 
 	private byte[] array = new byte[100];
 
-	private List<CustomChannel> channels = new ArrayList<CustomChannel>();
+	private List<ChannelRadio> channels = new ArrayList<ChannelRadio>();
 	private int current_channel = -99;
 
 	// "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='6000' nrAudioChannels='2' protocolInfo='http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01'>http://cast.secureradiocast.co.uk:8004/;stream.mp3</res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>http://www.mediauk.com/logos/100/226.png</upnp:albumArtURI></item></DIDL-Lite>";
@@ -75,7 +75,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	 * 
 	 * @param channels
 	 */
-	public void addChannels(List<CustomChannel> channels) {
+	public void addChannels(List<ChannelRadio> channels) {
 		this.channels = channels;
 		UpdateIdArray();
 		propertiesLock();
@@ -88,7 +88,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 
 	protected Channel channel(IDvInvocation paramIDvInvocation) {
 		log.debug("Channel" + Utils.getLogText(paramIDvInvocation));
-		CustomChannel c = channels.get(0);
+		ChannelRadio c = channels.get(0);
 		Channel channel = new Channel(c.getUri(), c.getMetadata());
 		return channel;
 	};
@@ -143,7 +143,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	@Override
 	protected void setChannel(IDvInvocation paramIDvInvocation, String uri, String metadata) {
 		log.debug("SetChannel"  + Utils.getLogText(paramIDvInvocation));
-		CustomChannel channel = new CustomChannel(uri, metadata, 2,"");
+		ChannelRadio channel = new ChannelRadio(uri, metadata, 2,"");
 		channels.add(channel);
 		UpdateIdArray();
 	}
@@ -156,7 +156,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 		log.debug("ReadList");
 		StringBuilder sb = new StringBuilder();
 		sb.append("<ChannelList>");
-		for (CustomChannel c : channels) {
+		for (ChannelRadio c : channels) {
 			i++;
 			sb.append(c.getFull_text());
 		}
@@ -168,7 +168,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	@Override
 	protected String read(IDvInvocation paramIDvInvocation, long id) {
 		log.debug("Read: " + id  + Utils.getLogText(paramIDvInvocation));
-		CustomChannel c = channels.get((int) id);
+		ChannelRadio c = channels.get((int) id);
 		return c.getMetadata();
 	}
 
@@ -208,7 +208,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	 */
 	private void getChannelById() {
 		if (current_channel > 0) {
-			for (CustomChannel c : channels) {
+			for (ChannelRadio c : channels) {
 				if (c.getId() == current_channel) {
 					playChannel(c);
 					break;
@@ -223,7 +223,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	 * @param name
 	 */
 	private synchronized void getChannelByName(String name) {
-		for (CustomChannel c :channels)
+		for (ChannelRadio c :channels)
 		{
 			if(c.getName().equalsIgnoreCase(name))
 			{
@@ -237,11 +237,11 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	 * Play the Channel
 	 * @param c
 	 */
-	private void playChannel(CustomChannel c)
+	private void playChannel(ChannelRadio c)
 	{
 		current_channel = c.getId();
 		log.debug("Play Found the Channel: " + current_channel);
-		PlayManager.getInstance().playFile(c);
+		PlayManager.getInstance().playRadio(c);
 	}
 
 	/***
@@ -254,7 +254,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 		StringBuilder sb = new StringBuilder();
 		byte[] bytes = new byte[size];
 		int intValue = 1;
-		for (CustomChannel c : channels) {
+		for (ChannelRadio c : channels) {
 			try {
 				String binValue = Integer.toBinaryString(intValue);
 				binValue = padLeft(binValue, 32, '0');

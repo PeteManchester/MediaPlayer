@@ -1,4 +1,4 @@
-package org.rpi.songcast;
+package org.rpi.songcast.core;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -13,7 +13,7 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
-class UDPSender implements Runnable {
+public class UDPSender implements Runnable {
 
 	private Logger log = Logger.getLogger(this.getClass());
 	private boolean run = true;
@@ -25,7 +25,7 @@ class UDPSender implements Runnable {
 	private Vector mWorkQueue = new Vector();
 	private String nic = "";
 
-	UDPSender(int port, InetAddress addr, String zoneID, String nic) {
+	public UDPSender(int port, InetAddress addr, String zoneID, String nic) {
 		this.nic = nic;
 		mcastPort = port;
 		mcastAddr = addr;

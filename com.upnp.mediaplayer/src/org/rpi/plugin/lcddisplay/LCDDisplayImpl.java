@@ -24,7 +24,7 @@ import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.player.events.EventVolumeChanged;
 import org.rpi.player.observers.ObservableVolume;
-import org.rpi.playlist.CustomTrack;
+import org.rpi.playlist.ChannelPlayList;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -126,7 +126,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 		switch (base.getType()) {
 		case EVENTTRACKCHANGED:
 			EventTrackChanged etc = (EventTrackChanged) e;
-			CustomTrack track = etc.getTrack();
+			ChannelPlayList track = etc.getTrack();
 			if (track != null) {
 				String s = track.getFullDetails();
 				log.debug("TrackChanged: " + s);

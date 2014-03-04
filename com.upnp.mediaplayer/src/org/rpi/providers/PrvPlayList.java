@@ -11,7 +11,7 @@ import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventPlayListPlayingTrackID;
 import org.rpi.player.events.EventPlayListStatusChanged;
 import org.rpi.player.events.EventPlayListUpdateShuffle;
-import org.rpi.playlist.CustomTrack;
+import org.rpi.playlist.ChannelPlayList;
 import org.rpi.playlist.PlayListReader;
 import org.rpi.playlist.PlayListWriter;
 import org.rpi.utils.Utils;
@@ -29,7 +29,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 	private int playlist_max = Config.playlist_max;
 	private CommandTracker tracker = new CommandTracker();
 
-	private CopyOnWriteArrayList<CustomTrack> tracks = new CopyOnWriteArrayList<CustomTrack>();
+	private CopyOnWriteArrayList<ChannelPlayList> tracks = new CopyOnWriteArrayList<ChannelPlayList>();
 
 	private PlayManager iPlayer = PlayManager.getInstance();
 
@@ -137,10 +137,10 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		}
 		log.debug("Insert After: " + aAfterId + " URI: " + aUri + " MetaDate: \r\n" + aMetaData + Utils.getLogText(paramIDvInvocation));
 		int id = getNext_id();
-		CustomTrack track = new CustomTrack(aUri, aMetaData, id);
+		ChannelPlayList track = new ChannelPlayList(aUri, aMetaData, id);
 		int iCount = 0;
 		if (aAfterId != 0) {
-			for (CustomTrack t : tracks) {
+			for (ChannelPlayList t : tracks) {
 				if (t.getId() == aAfterId) {
 					iCount++;
 					break;
@@ -170,7 +170,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		log.debug("DeleteId: " + iD + Utils.getLogText(paramIDvInvocation));
 		int iCount = 0;
 		boolean found = false;
-		for (CustomTrack t : tracks) {
+		for (ChannelPlayList t : tracks) {
 			if (t.getId() == iD) {
 				found = true;
 				break;
@@ -227,7 +227,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 	protected Read read(IDvInvocation paramIDvInvocation, long paramLong) {
 		log.debug("Read Index: " + paramLong + Utils.getLogText(paramIDvInvocation));
 		try {
-			for (CustomTrack t : tracks) {
+			for (ChannelPlayList t : tracks) {
 				if (t.getId() == paramLong) {
 					DvProviderAvOpenhomeOrgPlaylist1.Read read = new Read(t.getUri(), t.getMetadata());
 					return read;
@@ -307,7 +307,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		int size = tracks.size() * 4;
 		StringBuilder sb = new StringBuilder();
 		byte[] bytes = new byte[size];
-		for (CustomTrack t : tracks) {
+		for (ChannelPlayList t : tracks) {
 			try {
 				int intValue = (int) t.getId();
 				String binValue = Integer.toBinaryString(intValue);
@@ -378,7 +378,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		setPropertyId(iD);
 	}
 
-	public synchronized void setTracks(CopyOnWriteArrayList<CustomTrack> tracks) {
+	public synchronized void setTracks(CopyOnWriteArrayList<ChannelPlayList> tracks) {
 		this.tracks = tracks;
 		iPlayer.setTracks(tracks);
 		UpdateIdArray(false);
@@ -397,7 +397,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("<TrackList>");
-		for (CustomTrack t : tracks) {
+		for (ChannelPlayList t : tracks) {
 			if (trackIds.containsKey("" + t.getId())) {
 				i++;
 				sb.append(t.getFullText());

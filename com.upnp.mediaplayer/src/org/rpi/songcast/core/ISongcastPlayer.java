@@ -1,4 +1,4 @@
-package org.rpi.songcast;
+package org.rpi.songcast.core;
 
 public interface ISongcastPlayer {
 	

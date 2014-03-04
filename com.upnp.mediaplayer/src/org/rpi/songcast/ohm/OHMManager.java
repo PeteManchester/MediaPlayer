@@ -1,9 +1,15 @@
-package org.rpi.songcast;
+package org.rpi.songcast.ohm;
 
 import java.net.InetAddress;
 import java.util.Observable;
 import java.util.Observer;
+
 import org.apache.log4j.Logger;
+import org.rpi.player.PlayManager;
+import org.rpi.songcast.core.SongcastManager;
+import org.rpi.songcast.core.SongcastPlayerJavaSound;
+import org.rpi.songcast.core.UDPReceiver;
+import org.rpi.songcast.core.UDPSender;
 
 public class OHMManager implements Observer, SongcastManager {
 	
@@ -69,6 +75,8 @@ public class OHMManager implements Observer, SongcastManager {
 		join.addObserver(this);
 		SongcastPlayerJavaSound.getInstance().createFile();
 		udpSender.put(join.data);
+		//TODO maybe move this Playing status....
+		PlayManager.getInstance().setStatus("Playing");
 	}
 	
 	
@@ -80,6 +88,8 @@ public class OHMManager implements Observer, SongcastManager {
 		tReceiver = null;
 		tSender = null;
 		mq.clear();
+		mq.stop();
+		mq = null;
 		threadMessageQueue = null;
 	}
 

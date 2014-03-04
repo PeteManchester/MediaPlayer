@@ -14,7 +14,7 @@ import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventFinishedCurrentTrack;
 import org.rpi.player.events.EventStatusChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
-import org.rpi.playlist.CustomTrack;
+import org.rpi.playlist.ChannelPlayList;
 
 public class MPlayer extends Observable   implements IPlayer, Observer  {
 
@@ -35,7 +35,7 @@ public class MPlayer extends Observable   implements IPlayer, Observer  {
 
 	private String uniqueId = "";
 
-	private CustomTrack current_track = null;
+	private ChannelPlayList current_track = null;
 	private boolean bMute;//Used to mute when playing a track
 	
 	private boolean mute = false; //Used to keep track of mute status
@@ -46,7 +46,7 @@ public class MPlayer extends Observable   implements IPlayer, Observer  {
 	 * @param track
 	 * @return
 	 */
-	public boolean playTrack(CustomTrack track, long volume, boolean mute) {
+	public boolean playTrack(ChannelPlayList track, long volume, boolean mute) {
 		uniqueId = track.getUniqueId();
 		this.volume = volume;
 		this.bMute = mute;
@@ -64,7 +64,7 @@ public class MPlayer extends Observable   implements IPlayer, Observer  {
 	/***
 	 * PreLoad the Track ready for when the current Track ends
 	 */
-	public void preLoadTrack(CustomTrack track) {
+	public void preLoadTrack(ChannelPlayList track) {
 	}
 
 	/***
@@ -79,7 +79,7 @@ public class MPlayer extends Observable   implements IPlayer, Observer  {
 	 * 
 	 * @param t
 	 */
-	public void openFile(CustomTrack t) {
+	public void openFile(ChannelPlayList t) {
 	}
 
 	public synchronized void startPlaying() {

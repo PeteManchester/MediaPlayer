@@ -1,4 +1,4 @@
-package org.rpi.songcast;
+package org.rpi.songcast.ohz;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -6,8 +6,13 @@ import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.log4j.Logger;
+import org.rpi.player.PlayManager;
+import org.rpi.songcast.core.SongcastManager;
+import org.rpi.songcast.core.UDPReceiver;
+import org.rpi.songcast.core.UDPSender;
 import org.rpi.songcast.events.EventOHZIURI;
 import org.rpi.songcast.events.EventSongCastBase;
+import org.rpi.songcast.ohm.OHMManager;
 
 public class OHZManager implements Observer, SongcastManager {
 
@@ -28,10 +33,12 @@ public class OHZManager implements Observer, SongcastManager {
 	private String nic = "";
 	private OHZRequestJoin join = null;
 	private OHMManager ohm = null;
+	private CHannelSongcast track = null;
 
-	public OHZManager(String uri, String zoneID, String nic) {
+	public OHZManager(String uri, String zoneID, String nic, CHannelSongcast track) {
 		try {
 			this.nic = nic;
+			this.track = track;
 			int lastColon = uri.lastIndexOf(":");
 			int lastSlash = uri.lastIndexOf("/");
 			String host = uri.substring(lastSlash + 1, lastColon);
@@ -69,8 +76,13 @@ public class OHZManager implements Observer, SongcastManager {
 	}
 
 	public void disconnect() {
-		udpSender.disconnect();
-		udpReceiver.disconnect();
+		stop(zoneID);
+		if (udpSender != null) {
+			udpSender.disconnect();
+		}
+		if (udpReceiver != null) {
+			udpReceiver.disconnect();
+		}
 		tReceiver = null;
 		tSender = null;
 	}
@@ -88,6 +100,7 @@ public class OHZManager implements Observer, SongcastManager {
 	}
 
 	public void connectToOHM(String uri, String zone) {
+		PlayManager.getInstance().setStatus("Buffering");
 		if (ohm != null) {
 			if (ohm.getZoneID().equalsIgnoreCase(zone)) {
 				log.debug("Already Connected to Zone: " + zone);
@@ -99,7 +112,7 @@ public class OHZManager implements Observer, SongcastManager {
 		ohm.start();
 	}
 
-	public void stop(String zoneID) {
+	private void stop(String zoneID) {
 		if (ohm == null)
 			return;
 		ohm.disconnect();

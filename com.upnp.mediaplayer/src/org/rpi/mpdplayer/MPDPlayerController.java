@@ -10,7 +10,7 @@ import java.util.Observer;
 import org.apache.log4j.Logger;
 import org.rpi.player.IPlayerController;
 import org.rpi.player.events.EventBase;
-import org.rpi.playlist.CustomTrack;
+import org.rpi.playlist.ChannelPlayList;
 
 
 public class MPDPlayerController extends Observable implements IPlayerController, Observer {
@@ -24,7 +24,7 @@ public class MPDPlayerController extends Observable implements IPlayerController
 	}
 
 	@Override
-	public void preLoadTrack(CustomTrack track) {
+	public void preLoadTrack(ChannelPlayList track) {
 		mpdPlayer.preLoadTrack(track);
 	}
 
@@ -34,12 +34,12 @@ public class MPDPlayerController extends Observable implements IPlayerController
 	}
 
 	@Override
-	public void openFile(CustomTrack track) {
+	public void openFile(ChannelPlayList track) {
 		// TODO Auto-generated method stub
 	}
 
 	@Override
-	public void playThis(CustomTrack t, long v, boolean bMute) {
+	public void playThis(ChannelPlayList t, long v, boolean bMute) {
 		mpdPlayer.playTrack(t, v, bMute);
 	}
 
