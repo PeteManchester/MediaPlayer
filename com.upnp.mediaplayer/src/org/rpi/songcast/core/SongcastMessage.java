@@ -6,7 +6,7 @@ import java.util.Observable;
 import org.rpi.player.events.EventBase;
 import org.rpi.songcast.events.EventSongCastBase;
 
-public class SongcastMessage extends Observable {
+public class SongcastMessage {
 
 	public byte[] data = null;
 	
@@ -151,9 +151,9 @@ public class SongcastMessage extends Observable {
 		return s;
 	}
 	
-	public void fireEvent(EventSongCastBase ev) {
-		setChanged();
-		notifyObservers(ev);
-	}
+//	public void fireEvent(EventSongCastBase ev) {
+//		setChanged();
+//		notifyObservers(ev);
+//	}
 	
 }

@@ -15,10 +15,8 @@ public class OHMessage extends SongcastMessage {
 		byte[] protocol = getBytes(0, 3);
 		// Get the Protocol
 		String sProtocol = byteToString(protocol);
-		byte[] type = getBytes(5, 5);
-
+		//byte[] type = getBytes(5, 5);
 		//int iType = new BigInteger(type).intValue();
-
 		 if (sProtocol.toUpperCase().startsWith("OHM")) {
 			 //Put OHM messages into a seperate thread so we don't block the receiver..
 			 scManager.putMessage(data);

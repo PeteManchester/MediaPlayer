@@ -6,10 +6,12 @@ import java.util.Observer;
 
 import org.apache.log4j.Logger;
 import org.rpi.player.PlayManager;
+import org.rpi.songcast.core.MulticastReceiver;
+import org.rpi.songcast.core.MutlicastSender;
 import org.rpi.songcast.core.SongcastManager;
 import org.rpi.songcast.core.SongcastPlayerJavaSound;
-import org.rpi.songcast.core.UDPReceiver;
-import org.rpi.songcast.core.UDPSender;
+import org.rpi.songcast.core.SongcastSocket;
+import org.rpi.songcast.events.EventSongCastBase;
 
 public class OHMManager implements Observer, SongcastManager {
 
@@ -22,15 +24,19 @@ public class OHMManager implements Observer, SongcastManager {
 	private String zoneID = "";
 
 	private Thread tReceiver = null;
-
 	private Thread tSender = null;
 
-	private UDPReceiver udpReceiver = null;
-	private UDPSender udpSender = null;
+	//private MulticastReceiver udpReceiver = null;
+	//private MutlicastSender udpSender = null;
+	private SongcastSocket songcastSocket = null;
+
 	private String nic = "";
 
 	private SongcastTimer timer = null;
 	private Thread timerThread = null;
+
+	private OHUThreadRequester ohuRequester = null;
+	private Thread ohuThread = null;
 
 	private OHMMessageQueue mq = new OHMMessageQueue();
 	Thread threadMessageQueue = null;
@@ -54,29 +60,43 @@ public class OHMManager implements Observer, SongcastManager {
 
 	public void start() {
 		// start new thread to receive multicasts
+//		MulticastSocket mSocket = null;
+//		try {
+//			mSocket = new MulticastSocket(mcastPort);
+//			NetworkInterface netIf = NetworkInterface.getByName(nic);
+//			mSocket.setReuseAddress(true);
+//			//mSocket.setSoTimeout(5000);
+//			mSocket.setNetworkInterface(netIf);
+//			mSocket.setReuseAddress(true);
+//		} catch (Exception e) {
+//			log.error("Error Creating MulticastSocket", e);
+//		}
+
 		threadMessageQueue = new Thread(mq, "OHMMessageQueue");
+		mq.addObserver(this);
 		threadMessageQueue.start();
-		udpReceiver = new UDPReceiver(mcastPort, mcastAddr, zoneID, nic, this);
-		tReceiver = new Thread(udpReceiver, "OHMMcastReceiver");
-		udpReceiver.addObserver(this);
+		songcastSocket = new SongcastSocket(mcastPort, mcastAddr, zoneID, nic, this);
+		tReceiver = new Thread(songcastSocket, "OHMMcastReceiver");
+		//udpReceiver.addObserver(this);
 		tReceiver.start();
 
-		while (!udpReceiver.isConnected()) {
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-			}
-		}
+//		while (!udpReceiver.isConnected()) {
+//			try {
+//				Thread.sleep(500);
+//			} catch (InterruptedException e) {
+//			}
+//		}
 
 		// start new thread to send multicasts
-		udpSender = new UDPSender(mcastPort, mcastAddr, zoneID, nic);
-		tSender = new Thread(udpSender, "OHMMcastRepeater");
-		tSender.start();
-		// OHZJoin join = new OHZJoin(zoneID);
+//		udpSender = new MutlicastSender(mcastPort, mcastAddr, zoneID, nic);
+//		//udpSender = new MutlicastSender(mSocket,mcastAddr, zoneID, nic);
+//		tSender = new Thread(udpSender, "OHMMcastRepeater");
+//		tSender.start();
+//		SongcastPlayerJavaSound.getInstance().createSoundLine();
+//		//OHMRequestListen listen = new OHMRequestListen(zoneID);
 		OHMRequestJoin join = new OHMRequestJoin(zoneID);
-		join.addObserver(this);
-		SongcastPlayerJavaSound.getInstance().createSoundLine();
-		udpSender.put(join.data);
+		//join.addObserver(this);
+		songcastSocket.put(join);
 		// TODO maybe move this Playing status....
 		PlayManager.getInstance().setStatus("Playing");
 		startTimer();
@@ -84,12 +104,12 @@ public class OHMManager implements Observer, SongcastManager {
 
 	public void disconnect() {
 		SongcastPlayerJavaSound.getInstance().stop();
-		if (udpSender != null) {
-			udpSender.disconnect();
+		if (songcastSocket != null) {
+			songcastSocket.disconnect();
 		}
-		if (udpReceiver != null) {
-			udpReceiver.disconnect();
-		}
+//		if (udpReceiver != null) {
+//			udpReceiver.disconnect();
+//		}
 		tReceiver = null;
 		tSender = null;
 		if (mq != null) {
@@ -105,11 +125,29 @@ public class OHMManager implements Observer, SongcastManager {
 		if (timerThread != null) {
 			timerThread = null;
 		}
+
+		if (ohuRequester != null) {
+			ohuRequester.setRun(false);
+			ohuRequester = null;
+		}
+
+		if (ohuThread != null) {
+			ohuThread = null;
+		}
 	}
 
 	@Override
 	public void update(Observable o, Object ev) {
-
+		EventSongCastBase e = (EventSongCastBase) ev;
+		switch (e.getType()) {
+		case EVENT_OHM_AUDIO_STARTED:
+			if (ohuRequester == null) {
+				ohuRequester = new OHUThreadRequester(songcastSocket);
+				ohuThread = new Thread(ohuRequester, "ohuRequester");
+				ohuThread.start();
+			}
+			break;
+		}
 	}
 
 	/**

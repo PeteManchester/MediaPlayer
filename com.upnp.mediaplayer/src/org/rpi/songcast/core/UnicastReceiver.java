@@ -2,10 +2,10 @@ package org.rpi.songcast.core;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
-import java.net.UnknownHostException;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -13,8 +13,8 @@ import org.apache.log4j.Logger;
 import org.rpi.songcast.events.EventSongCastBase;
 import org.rpi.songcast.ohm.OHMessage;
 
-public class UDPReceiver extends Observable implements Runnable, Observer  {
-
+public class UnicastReceiver extends Observable implements Runnable, Observer {
+	
 	private Logger log = Logger.getLogger(this.getClass());
 
 	int mcastPort = 0;
@@ -27,24 +27,14 @@ public class UDPReceiver extends Observable implements Runnable, Observer  {
 	
 	private boolean bConnected = false;
 	
-	private MulticastSocket mSocket = null;
+	private DatagramSocket mSocket = null;
 	
 	private SongcastManager scManager = null;
 	
 	private boolean bRunning = true;
 	private String nic = "";
-
-//	/*
-//	 * 
-//	 */
-//	public UDPReceiver(int port, InetAddress addr, String zoneID,String nic) {
-//		this.nic = nic;
-//		mcastPort = port;
-//		mcastAddr = addr;
-//		this.zoneID = zoneID;
-//	}
 	
-	public UDPReceiver(int port, InetAddress addr, String zoneID,String nic, SongcastManager scManager) {
+	public UnicastReceiver(int port, InetAddress addr, String zoneID,String nic, SongcastManager scManager) {
 		this.nic = nic;
 		mcastPort = port;
 		mcastAddr = addr;
@@ -62,11 +52,11 @@ public class UDPReceiver extends Observable implements Runnable, Observer  {
 			//We need to ensure that the Receiver is bound to the correct Network address..
 			mSocket = new MulticastSocket(mcastPort);
 			NetworkInterface netIf = NetworkInterface.getByName(nic);
-			mSocket.setNetworkInterface(netIf);
+			//mSocket.setNetworkInterface(netIf);
 			mSocket.setReuseAddress(true);
-			NetworkInterface ifs = mSocket.getNetworkInterface();
-			log.debug("Joining Mutlicast Group: " + mcastAddr.getHostAddress() + ":" + mcastPort + "NIC: " + ifs.getDisplayName());
-			mSocket.joinGroup(mcastAddr);
+			//NetworkInterface ifs = mSocket.getNetworkInterface();
+			//log.debug("Joining Mutlicast Group: " + mcastAddr.getHostAddress() + ":" + mcastPort + " NIC: " + ifs.getDisplayName());
+			//mSocket.joinGroup(mcastAddr);
 			setConnected(true);
 		} catch (IOException ioe) {
 			log.error("Trouble opening multicast port", ioe);
@@ -82,7 +72,7 @@ public class UDPReceiver extends Observable implements Runnable, Observer  {
 				mSocket.receive(packet);
 				byte[] data = packet.getData();
 				OHMessage mess = new OHMessage();
-				mess.addObserver(this);
+				//mess.addObserver(this);
 				mess.data = data;
 				mess.checkMessageType(scManager);
 			} catch (Exception e) {
@@ -114,11 +104,11 @@ public class UDPReceiver extends Observable implements Runnable, Observer  {
 		bRunning = false;
 		if(mSocket !=null)
 		{
-			try {
-				mSocket.leaveGroup(mcastAddr);
-			} catch (IOException e) {
-				log.error("Error Leave Group");
-			}
+//			try {
+//				mSocket.leaveGroup(mcastAddr);
+//			} catch (IOException e) {
+//				log.error("Error Leave Group");
+//			}
 			try
 			{
 			mSocket.close();

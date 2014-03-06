@@ -39,7 +39,7 @@ import org.rpi.playlist.ChannelPlayList;
 import org.rpi.radio.ChannelRadio;
 //import org.rpi.mplayer.MPlayer;
 //import org.rpi.player.IPlayer;
-import org.rpi.songcast.ohz.CHannelSongcast;
+import org.rpi.songcast.core.ChannelSongcast;
 
 public class PlayManager implements Observer {
 
@@ -544,7 +544,7 @@ public class PlayManager implements Observer {
 	 * 
 	 * @param track
 	 */
-	public void playSongcast(CHannelSongcast track) {
+	public void playSongcast(ChannelSongcast track) {
 		log.debug("Playing Songcast Channel. Stop Playing current Track");
 		setCurrentTrack(track);
 		stop();
@@ -811,7 +811,7 @@ public class PlayManager implements Observer {
 			EventRadioStatusChanged evr = new EventRadioStatusChanged();
 			evr.setStatus(status);
 			obsvRadio.notifyChange(evr);
-		} else if (current_track instanceof CHannelSongcast){
+		} else if (current_track instanceof ChannelSongcast){
 			//TODO borrowed EventPlayListChanged, may need to create one for Songcast.
 			EventPlayListStatusChanged evr = new EventPlayListStatusChanged();
 			evr.setStatus(status);

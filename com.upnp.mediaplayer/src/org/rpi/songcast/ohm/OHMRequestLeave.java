@@ -22,13 +22,19 @@ private Logger log = Logger.getLogger(this.getClass());
 
 	public  OHMRequestLeave(String zone)
 	{
-		String zoneHex = stringToHex(zone);
-		log.debug("Zone in HEX: " + zoneHex);
+		//String zoneHex = stringToHex(zone);
+		//log.debug("Zone in HEX: " + zoneHex);
 		String lengthPacket = "0000";
 		int length = header.length() + lengthPacket.length();
 		length = length/2;
 		lengthPacket = DecToHex(length, 4);
 		data = hexStringToByteArray(header+ lengthPacket);
+	}
+	
+	@Override
+	public String toString()
+	{
+		return this.getClass().getName() +  " : " + header;
 	}
 
 }

@@ -42,7 +42,6 @@ public class OHMEventTrack extends SongcastMessage {
 			log.debug("URI: " + uri);
 		}
 		if (meta_length > 0) {
-			log.debug("Length = " + data.length + " " + meta_length);
 			byte[] bMetaLength = getBytes(20+ uri_length, data.length - 1);
 			metaData = byteToString(bMetaLength);
 			log.debug("MetaData: " + metaData);

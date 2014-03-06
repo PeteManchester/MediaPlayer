@@ -31,5 +31,11 @@ public class OHZRequestJoin extends SongcastMessage {
 		String sZL= DecToHex(zl/2, 8);
 		data = hexStringToByteArray(header+ lengthPacket +  sZL + zoneHex);
 	}
+	
+	@Override
+	public String toString()
+	{
+		return this.getClass().getName() +  " : " + header;
+	}
 
 }

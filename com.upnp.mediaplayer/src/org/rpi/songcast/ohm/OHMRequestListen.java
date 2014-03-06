@@ -14,15 +14,15 @@ import org.rpi.songcast.core.SongcastMessage;
 //6         2                       Total Bytes (Absolutely all bytes in the entire frame)
 
 
-public class OHMRequestJoin extends SongcastMessage {
+public class OHMRequestListen extends SongcastMessage {
 	
 private Logger log = Logger.getLogger(this.getClass());
 	
-	private String header = "4f686d200100";
+	private String header = "4f686d200101";
 
-	public  OHMRequestJoin(String zone)
+	public  OHMRequestListen(String zone)
 	{
-		//String zoneHex = stringToHex(zone);
+		String zoneHex = stringToHex(zone);
 		//log.debug("Zone in HEX: " + zoneHex);
 		String lengthPacket = "0000";
 		int length = header.length() + lengthPacket.length();

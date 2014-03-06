@@ -18,8 +18,7 @@ public class SongcastPlayerJavaSound implements ISongcastPlayer {
 
 	private SourceDataLine soundLine = null;
 
-	private boolean bWrite = false;	
-
+	private boolean bWrite = false;
 
 	public static SongcastPlayerJavaSound getInstance() {
 		if (instance == null) {
@@ -27,19 +26,19 @@ public class SongcastPlayerJavaSound implements ISongcastPlayer {
 		}
 		return instance;
 	}
-	
+
 	private SongcastPlayerJavaSound() {
-
+		createSoundLine();
 	}
-
-
 
 	public void createSoundLine() {
 		try {
-			soundLine = (SourceDataLine) AudioSystem.getLine(info);
-			soundLine.open(audioFormat);
-			soundLine.start();
-			bWrite = true;
+			if (soundLine == null) {
+				soundLine = (SourceDataLine) AudioSystem.getLine(info);
+				soundLine.open(audioFormat);
+				soundLine.start();
+				bWrite = true;
+			}
 		} catch (Exception e) {
 			log.error("Error opening Sound:", e);
 		}
@@ -54,6 +53,9 @@ public class SongcastPlayerJavaSound implements ISongcastPlayer {
 	public void stop() {
 		try {
 			soundLine.close();
+			soundLine = null;
+			bWrite = false;
+			instance = null;
 		} catch (Exception e) {
 			log.error("Error Closing Stream", e);
 		}

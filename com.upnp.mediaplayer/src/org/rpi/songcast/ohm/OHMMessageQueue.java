@@ -1,18 +1,22 @@
 package org.rpi.songcast.ohm;
 
 import java.math.BigInteger;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.rpi.songcast.events.EventOHMAudioStarted;
+import org.rpi.songcast.events.EventSongCastBase;
 
-public class OHMMessageQueue implements Runnable {
+public class OHMMessageQueue extends Observable implements Runnable {
 
 	private Logger log = Logger.getLogger(this.getClass());
 	//private SongcastTimer timer = null;
 	//private Thread timerThread = null;
 	private Vector mWorkQueue = new Vector();
 	private boolean run = true;
-	//private boolean started = false;
+	private boolean started = false;
 
 	public OHMMessageQueue() {
 		log.warn("Opening OHM Message Queue");
@@ -89,30 +93,38 @@ public class OHMMessageQueue implements Runnable {
 		int iType = new BigInteger(type).intValue();
 		switch (iType) {
 		case 3:// AUDIO
-//			if (!started) {
-//				timer = new SongcastTimer();
-//				timerThread = new Thread(timer, "SongcastTimer");
-//				timerThread.start();
-//				started = true;
-//			}
+			startListen();
 			OHMEventAudio audio = new OHMEventAudio();
 			audio.data = data;
 			audio.checkMessageType();
 			break;
 		case 4:// TRACK INFO
+			startListen();
+			log.debug("TrackInfo");
 			OHMEventTrack evt = new OHMEventTrack();
 			evt.data = data;
 			evt.checkMessageType();
 			// Do Something..
 			break;
 		case 5:// MetaText INFO
+			startListen();
+			log.debug("MetaInfo");
 			OHMEventMetaData evm = new OHMEventMetaData();
 			evm.data = data;
 			evm.checkMessageType();
 			break;
 		default:
-			log.debug("OHM Mesage: " + iType);
+			log.debug("OHM Message: " + iType);
 			break;
+		}
+	}
+	
+	private void startListen()
+	{
+		if (!started) {
+		EventOHMAudioStarted ev = new EventOHMAudioStarted();
+		fireEvent(ev);
+		started = true;
 		}
 	}
 
@@ -139,6 +151,16 @@ public class OHMMessageQueue implements Runnable {
 			count++;
 		}
 		return res;
+	}
+	
+	/**
+	 * Fire the Events
+	 * 
+	 * @param ev
+	 */
+	public void fireEvent(EventSongCastBase ev) {
+		setChanged();
+		notifyObservers(ev);
 	}
 
 }

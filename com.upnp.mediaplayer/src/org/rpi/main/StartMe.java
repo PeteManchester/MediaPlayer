@@ -46,6 +46,9 @@ public class StartMe {
 		getConfig();
 		ConfigureLogging();
 		log.info("Starting......");
+		if (!Utils.isEmpty(Config.songcastSoundCardName)) {
+			setAudioDevice();
+		}
 		try {
 			log.info("Getting Network Interfaces");
 			Enumeration e = NetworkInterface.getNetworkInterfaces();
@@ -185,9 +188,6 @@ public class StartMe {
 			Config.enableReceiver = Config.convertStringToBoolean(pr.getProperty("enableReceiver"), true);
 			Config.songcastNICName = NetworkUtils.getNICName(pr.getProperty("songcast.nic.name"));
 			Config.songcastSoundCardName = pr.getProperty("songcast.soundcard.name");
-			if (!Utils.isEmpty(Config.songcastSoundCardName)) {
-				setAudioDevice();
-			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

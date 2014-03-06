@@ -12,7 +12,7 @@ import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventPlayListStatusChanged;
 import org.rpi.playlist.ChannelPlayList;
-import org.rpi.songcast.ohz.CHannelSongcast;
+import org.rpi.songcast.core.ChannelSongcast;
 import org.rpi.songcast.ohz.OHZManager;
 import org.rpi.utils.Utils;
 
@@ -78,7 +78,7 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 		setPropertyMetadata(metadata);
 
 		if (bPlay = true) {
-			CHannelSongcast track = new CHannelSongcast(uri, metadata, 1);
+			ChannelSongcast track = new ChannelSongcast(uri, metadata, 1);
 			PlayManager.getInstance().playSongcast(track);
 			String nic = Config.songcastNICName;
 			if (nic.equalsIgnoreCase("")) {
