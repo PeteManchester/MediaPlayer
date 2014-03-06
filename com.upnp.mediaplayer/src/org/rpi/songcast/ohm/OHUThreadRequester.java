@@ -1,7 +1,6 @@
 package org.rpi.songcast.ohm;
 
 import org.apache.log4j.Logger;
-import org.rpi.songcast.core.MutlicastSender;
 import org.rpi.songcast.core.SongcastSocket;
 
 public class OHUThreadRequester implements Runnable {

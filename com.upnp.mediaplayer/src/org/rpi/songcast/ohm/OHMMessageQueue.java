@@ -1,22 +1,27 @@
 package org.rpi.songcast.ohm;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Observable;
-import java.util.Observer;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
+import org.rpi.songcast.core.SlaveEndpoint;
 import org.rpi.songcast.events.EventOHMAudioStarted;
 import org.rpi.songcast.events.EventSongCastBase;
 
 public class OHMMessageQueue extends Observable implements Runnable {
 
 	private Logger log = Logger.getLogger(this.getClass());
-	//private SongcastTimer timer = null;
-	//private Thread timerThread = null;
+	// private SongcastTimer timer = null;
+	// private Thread timerThread = null;
 	private Vector mWorkQueue = new Vector();
 	private boolean run = true;
 	private boolean started = false;
+
+	private ConcurrentHashMap<String, SlaveEndpoint> endpoints = new ConcurrentHashMap<String, SlaveEndpoint>();
+	private boolean bSentInfo  = false;
 
 	public OHMMessageQueue() {
 		log.warn("Opening OHM Message Queue");
@@ -96,48 +101,63 @@ public class OHMMessageQueue extends Observable implements Runnable {
 			startListen();
 			OHMEventAudio audio = new OHMEventAudio();
 			audio.data = data;
+			if(!bSentInfo)
+			{
+				audio.getTrackInfo();
+				bSentInfo = true;
+			}
+			forwardToSlaves(data);
+			
 			audio.checkMessageType();
 			break;
 		case 4:// TRACK INFO
 			startListen();
-			log.debug("TrackInfo");
+			log.debug("OHM TrackInfo");
 			OHMEventTrack evt = new OHMEventTrack();
 			evt.data = data;
 			evt.checkMessageType();
+			forwardToSlaves(data);
 			// Do Something..
 			break;
 		case 5:// MetaText INFO
 			startListen();
-			log.debug("MetaInfo");
+			log.debug("OHM MetaInfo");
 			OHMEventMetaData evm = new OHMEventMetaData();
 			evm.data = data;
 			evm.checkMessageType();
+			break;
+		case 6:
+			log.debug("OHU Slave Info");
+			OHMEventSlave evs = new OHMEventSlave();
+			evs.data = data;
+			evs.checkMessageType(this);
 			break;
 		default:
 			log.debug("OHM Message: " + iType);
 			break;
 		}
 	}
-	
-	private void startListen()
-	{
+
+	private void forwardToSlaves(byte[] bytes) {
+		for (SlaveEndpoint endpoint : endpoints.values()) {
+			endpoint.sendData(bytes);
+		}
+	}
+
+	private void startListen() {
 		if (!started) {
-		EventOHMAudioStarted ev = new EventOHMAudioStarted();
-		fireEvent(ev);
-		started = true;
+			EventOHMAudioStarted ev = new EventOHMAudioStarted();
+			fireEvent(ev);
+			started = true;
 		}
 	}
 
 	public void stop() {
 		run = false;
-//		if (timer != null) {
-//			timer.setRun(false);
-//			timer = null;
-//		}
-		//if (timerThread != null) {
-		//	timerThread = null;
-		//}
+		removeAllEndpoints();
 	}
+	
+	
 
 	/*
 	 * DUPLICATE refactor later.. Get a portion of the bytes in the array.
@@ -152,7 +172,7 @@ public class OHMMessageQueue extends Observable implements Runnable {
 		}
 		return res;
 	}
-	
+
 	/**
 	 * Fire the Events
 	 * 
@@ -161,6 +181,58 @@ public class OHMMessageQueue extends Observable implements Runnable {
 	public void fireEvent(EventSongCastBase ev) {
 		setChanged();
 		notifyObservers(ev);
+	}
+
+	/**
+	 * @param endpoints
+	 *            the endpoints to set
+	 */
+	public synchronized void setEndpoints(ConcurrentHashMap<String, SlaveEndpoint> endpoints) {
+		this.endpoints = endpoints;
+	}
+	
+	public synchronized ConcurrentHashMap<String, SlaveEndpoint> getEndpoints()
+	{
+		return endpoints;
+	}
+	
+	/**
+	 * Add an Endpoint
+	 * @param slave
+	 */
+	public synchronized void addEndpoint(SlaveEndpoint slave)
+	{
+		if(!getEndpoints().containsKey(slave.getName()))
+		{
+			slave.createSocket();
+			getEndpoints().put(slave.getName(), slave);
+		}
+
+	}
+	
+	/**
+	 * Dispose and Remove the Endpoint
+	 * @param list
+	 */
+	public synchronized void removeEndpoint(List<String> list)
+	{
+		for(String s : list)
+		{
+			if(getEndpoints().containsKey(s))
+			{
+				getEndpoints().get(s).dispose();
+				getEndpoints().remove(s);
+			}
+		}
+	}
+	
+	private synchronized void removeAllEndpoints()
+	{
+		for(SlaveEndpoint slave : getEndpoints().values())
+		{
+			slave.dispose();
+		}
+		getEndpoints().clear();
 	}
 
 }

@@ -2,19 +2,11 @@ package org.rpi.songcast.ohz;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.NetworkInterface;
-import java.util.Observable;
-import java.util.Observer;
 
 import org.apache.log4j.Logger;
 import org.rpi.player.PlayManager;
 import org.rpi.songcast.core.SongcastManager;
-import org.rpi.songcast.core.MulticastReceiver;
-import org.rpi.songcast.core.MutlicastSender;
 import org.rpi.songcast.core.SongcastSocket;
-import org.rpi.songcast.events.EventOHZIURI;
-import org.rpi.songcast.events.EventSongCastBase;
 import org.rpi.songcast.ohm.OHMManager;
 
 public class OHZManager implements  SongcastManager {
@@ -27,12 +19,8 @@ public class OHZManager implements  SongcastManager {
 
 	private String zoneID = "";
 
-	private Thread tReceiver = null;
+	private Thread threadSocket = null;
 
-	private Thread tSender = null;
-
-	//private MulticastReceiver udpReceiver = null;
-	//private MutlicastSender udpSender = null;
 	private SongcastSocket songcastSocket = null;
 	private String nic = "";
 	private OHZRequestJoin join = null;
@@ -56,72 +44,27 @@ public class OHZManager implements  SongcastManager {
 	}
 
 	public void start() {
-		
-//		MulticastSocket mSocket = null;
-//		try {
-//			mSocket = new MulticastSocket(mcastPort);
-//			NetworkInterface netIf = NetworkInterface.getByName(nic);
-//			mSocket.setReuseAddress(true);
-//			//mSocket.setSoTimeout(5000);
-//			mSocket.setNetworkInterface(netIf);
-//			mSocket.setReuseAddress(true);
-//		} catch (Exception e) {
-//			log.error("Error Creating MulticastSocket", e);
-//		}
-
-		// start new thread to receive multicasts
-		//udpReceiver = new MulticastReceiver(mSocket,mcastAddr, zoneID, nic, this);
 		songcastSocket = new SongcastSocket(mcastPort, mcastAddr, zoneID, nic, this);
-		tReceiver = new Thread(songcastSocket, "McastReceiver");
-		//udpReceiver.addObserver(this);
-		tReceiver.start();
-
-//		while (!udpReceiver.isConnected()) {
-//			try {
-//				Thread.sleep(500);
-//			} catch (InterruptedException e) {
-//			}
-//		}
-
-		// start new thread to send multicasts
-		//udpSender = new MutlicastSender(mSocket,mcastAddr, zoneID, nic);
-//		udpSender = new MutlicastSender(mcastPort, mcastAddr, zoneID, nic);
-//		tSender = new Thread(udpSender, "McastRepeater");
-//		tSender.start();
+		threadSocket = new Thread(songcastSocket, "OHZSongcastSocket");
+		threadSocket.start();
 		OHZRequestJoin join = new OHZRequestJoin(zoneID);
 		songcastSocket.put(join);
 	}
 
-	public void disconnect() {
+	public void dispose() {
 		stop(zoneID);
 		if (songcastSocket != null) {
-			songcastSocket.disconnect();
+			songcastSocket.dispose();
 		}
-//		if (udpReceiver != null) {
-//			udpReceiver.disconnect();
-//		}
 		
-		tReceiver = null;
-		tSender = null;
 		if(ohm !=null)
 		{
-			ohm.disconnect();
+			ohm.dispose();
 			ohm = null;
 		}
-		
+		threadSocket.interrupt();
+		threadSocket = null;
 	}
-
-//	@Override
-//	public void update(Observable arg0, Object ev) {
-//		EventSongCastBase e = (EventSongCastBase) ev;
-//		switch (e.getType()) {
-//		case EVENT_OHZ_URI:
-//			EventOHZIURI ohz = (EventOHZIURI) e;
-//			connectToOHM(ohz.getUri(), ohz.getZone());
-//			break;
-//		}
-//
-//	}
 
 	public void connectToOHM(String uri, String zone) {
 		if (ohm != null) {
@@ -139,9 +82,9 @@ public class OHZManager implements  SongcastManager {
 	public void stop(String zoneID) {
 		if (ohm == null)
 			return;
-		ohm.disconnect();
+		ohm.dispose();
 		ohm = null;
-		disconnect();
+		dispose();
 	}
 
 	public void putMessage(byte[] data) {

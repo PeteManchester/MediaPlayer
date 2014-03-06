@@ -3,12 +3,12 @@ package org.rpi.songcast.core;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.rpi.songcast.ohm.OHMRequestLeave;
 import org.rpi.songcast.ohm.OHMessage;
 
 public class SongcastSocket implements Runnable {
@@ -23,8 +23,9 @@ public class SongcastSocket implements Runnable {
 	private Vector mWorkQueue = new Vector();
 	private String nic = "";
 	private SongcastManager scManager = null;
+	private Receive receiver = null;
 
-	public SongcastSocket(int port, InetAddress addr, String zoneID, String nic,SongcastManager scManager) {
+	public SongcastSocket(int port, InetAddress addr, String zoneID, String nic, SongcastManager scManager) {
 		this.nic = nic;
 		mcastPort = port;
 		mcastAddr = addr;
@@ -32,7 +33,8 @@ public class SongcastSocket implements Runnable {
 		this.scManager = scManager;
 
 		try {
-			InetSocketAddress localAddress = new InetSocketAddress("192.168.1.72", mcastPort);
+			// InetSocketAddress localAddress = new
+			// InetSocketAddress("192.168.1.72", mcastPort);
 			if (addr.isMulticastAddress()) {
 				mSocket = new MulticastSocket(mcastPort);
 			} else {
@@ -42,17 +44,17 @@ public class SongcastSocket implements Runnable {
 			NetworkInterface netIf = NetworkInterface.getByName(nic);
 			mSocket.setNetworkInterface(netIf);
 			// log.debug("ReUseAddress: " + mSocket.getReuseAddress());
-			//mSocket.setSoTimeout(5000);
+			// mSocket.setSoTimeout(5000);
 			NetworkInterface ifs = mSocket.getNetworkInterface();
 			log.debug("Receiver NetworkInterface: " + ifs.getDisplayName());
 			if (addr.isMulticastAddress()) {
 				mSocket.joinGroup(mcastAddr);
 			} else {
 			}
-			new Receive(scManager);
+			receiver = new Receive(scManager);
 		} catch (IOException ioe) {
 			log.error("problems creating the datagram socket. " + mSocket.getLocalAddress().toString(), ioe);
-			
+
 		}
 	}
 
@@ -107,18 +109,18 @@ public class SongcastSocket implements Runnable {
 	}
 
 	public void run() {
-		while (run) {
-			if (!isEmpty()) {
-				try {
-					SongcastMessage mess = (SongcastMessage) get();
-					processEvent(mess);
-				} catch (Exception e) {
-					log.error(e.getMessage(), e);
+			while (run) {
+				if (!isEmpty()) {
+					try {
+						SongcastMessage mess = (SongcastMessage) get();
+						processEvent(mess);
+					} catch (Exception e) {
+						log.error(e.getMessage(), e);
+					}
+				} else {
+					sleep(100);
 				}
-			} else {
-				sleep(100);
 			}
-		}
 	}
 
 	private void processEvent(SongcastMessage mess) {
@@ -127,7 +129,11 @@ public class SongcastSocket implements Runnable {
 			byte[] bytes = mess.data;
 			if (bytes == null)
 				return;
-			log.debug("Sending Command to : " + mcastAddr.getHostAddress() + ":" + mcastPort + " " + mess.toString());
+			if (mess instanceof OHMRequestLeave) {
+				log.debug("OHM Leave Message being Sent");
+			}
+			// log.debug("Sending Command to : " + mcastAddr.getHostAddress() +
+			// ":" + mcastPort + " " + mess.toString());
 			DatagramPacket packet = new DatagramPacket(bytes, bytes.length, mcastAddr, mcastPort);
 			mSocket.send(packet);
 		} catch (Exception e) {
@@ -135,7 +141,12 @@ public class SongcastSocket implements Runnable {
 		}
 	}
 
-	public void disconnect() {
+	public void dispose() {
+		run = false;
+		if (receiver != null) {
+			receiver.stopThread();
+			receiver = null;
+		}
 		if (mSocket != null) {
 			try {
 				if (mcastAddr.isMulticastAddress()) {
@@ -151,9 +162,11 @@ public class SongcastSocket implements Runnable {
 			}
 		}
 	}
-	
+
 	class Receive extends Thread {
 		private SongcastManager scManager = null;
+		private boolean run = true;
+
 		Receive(SongcastManager scManager) {
 			log.debug("Start of SongcastReceive Thread");
 			this.scManager = scManager;
@@ -161,7 +174,7 @@ public class SongcastSocket implements Runnable {
 		}
 
 		public void run() {
-			while (true) {
+			while (run) {
 				try {
 					byte b[] = new byte[1828];
 					DatagramPacket packet = new DatagramPacket(b, b.length);
@@ -170,12 +183,17 @@ public class SongcastSocket implements Runnable {
 					OHMessage mess = new OHMessage();
 					mess.data = data;
 					mess.checkMessageType(scManager);
-					//log.debug("From " + packet.getPort() + ": " + new String(packet.getData(), 0, packet.getLength()));
+					// log.debug("From " + packet.getPort() + ": " + new
+					// String(packet.getData(), 0, packet.getLength()));
 				} catch (Exception e) {
 
 				}
 			}
 
+		}
+
+		public void stopThread() {
+			run = false;
 		}
 	}
 

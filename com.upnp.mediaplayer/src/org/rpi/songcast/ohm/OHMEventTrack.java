@@ -47,7 +47,7 @@ public class OHMEventTrack extends SongcastMessage {
 			log.debug("MetaData: " + metaData);
 			EventUpdateTrackMetaText ev = new EventUpdateTrackMetaText();
 			ev.setMetaText(metaData);
-			PlayManager.getInstance().updateMetaText(ev);
+			PlayManager.getInstance().updateTrackInfo(ev);
 		}
 	}
 
