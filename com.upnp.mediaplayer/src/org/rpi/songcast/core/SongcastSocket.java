@@ -21,7 +21,7 @@ public class SongcastSocket implements Runnable {
 	private InetAddress mcastAddr = null;
 	private String zoneID = "";
 	private Vector mWorkQueue = new Vector();
-	private String nic = "";
+	private String nic = null;
 	private SongcastManager scManager = null;
 	private Receive receiver = null;
 

@@ -3,6 +3,7 @@ package org.rpi.songcast.ohm;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 
+import org.apache.log4j.Logger;
 import org.rpi.mplayer.TrackInfo;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventUpdateTrackInfo;
@@ -30,21 +31,50 @@ import org.rpi.songcast.core.SongcastPlayerJavaSound;
 //50 + n    Msg Total Bytes - Msg Header Bytes - Code Name Bytes (Sample data in big endian, channels interleaved, packed)
 
 public class OHMEventAudio extends SongcastMessage {
+	private Logger log = Logger.getLogger(this.getClass());
+
+	private long time_to_play = 0;
+
+	private byte[] sound = null;
+
+	private int attempts = 0;
 
 	/**
 	 * Get the Audio Data
 	 */
 	public void checkMessageType() {
-		int headerLength = new BigInteger(getBytes(8,8)).intValue();
+
+		// log.debug("Latency " + bytesToHex(getBytes(20, 23)));
+		// byte[] b = getBytes(9, 9);
+		// String s1 = String.format("%8s", Integer.toBinaryString(b[0] &
+		// 0xFF)).replace(' ', '0');
+		// log.debug(s1);
+		int headerLength = new BigInteger(getBytes(8, 8)).intValue();
 		int sampleCount = new BigInteger(getBytes(10, 11)).intValue();
+		long network_timestamp = new BigInteger(getBytes(16, 19)).longValue();
+		// log.debug("TimeStamp " + bytesToHex(getBytes(16,19)));
+		long latency = new BigInteger(getBytes(20, 23)).intValue();
+		// log.debug("Latency: " + latency);
+		long time = System.currentTimeMillis();
+		if (latency > 0) {
+			long iSampleRate = new BigInteger(getBytes(44, 47)).longValue();
+			latency = latency/10000;
+			if(iSampleRate ==0)
+				iSampleRate = 44100;
+			time = (latency * iSampleRate * 256)/1000;
+		}
+		setTimeToPlay(time );
+		long media_timestamp = new BigInteger(getBytes(24, 27)).longValue();
 		int iBitDepth = new BigInteger(getBytes(54, 54)).intValue();
 		int channels = new BigInteger(getBytes(55, 55)).intValue();
 		int codecNameLength = new BigInteger(getBytes(57, 57)).intValue();
 		int soundStart = 8 + headerLength + codecNameLength;
 		int soundEnd = soundStart + ((channels * iBitDepth * (sampleCount) / 8));
-		byte[] sound = getBytes(soundStart, soundEnd - 1);
-
-		SongcastPlayerJavaSound.getInstance().addData(sound);
+		setSound(getBytes(soundStart, soundEnd - 1));
+		// log.debug("TimeStamp:" + network_timestamp + " CurrentTimeStamp: " +
+		// System.currentTimeMillis() + " Latency:" + latency + " Latency HEX: "
+		// + bytesToHex(getBytes(20, 23)) + "  MediaTimestamp:" +
+		// media_timestamp);
 	}
 
 	/**
@@ -55,13 +85,10 @@ public class OHMEventAudio extends SongcastMessage {
 		long iBitDepth = new BigInteger(getBytes(54, 54)).longValue();
 		info.setBitDepth(iBitDepth);
 		long iBitRate = new BigInteger(getBytes(48, 51)).longValue();
-		try
-		{
-			iBitRate = iBitRate /1000;
-		}
-		catch(Exception e)
-		{
-			
+		try {
+			iBitRate = iBitRate / 1000;
+		} catch (Exception e) {
+
 		}
 		info.setBitrate(iBitRate);
 		int codecNameLength = new BigInteger(getBytes(57, 57)).intValue();
@@ -80,5 +107,54 @@ public class OHMEventAudio extends SongcastMessage {
 		ev.setTrackInfo(info);
 		PlayManager.getInstance().updateTrackInfo(ev);
 
+	}
+
+	/**
+	 * @return the time_to_play
+	 */
+	public long getTimeToPlay() {
+		return time_to_play;
+	}
+
+	/**
+	 * @param time_to_play
+	 *            the time_to_play to set
+	 */
+	private void setTimeToPlay(long time_to_play) {
+		this.time_to_play = time_to_play;
+	}
+
+	/**
+	 * @return the sound
+	 */
+	public byte[] getSound() {
+		return sound;
+	}
+
+	/**
+	 * @param sound
+	 *            the sound to set
+	 */
+	public void setSound(byte[] sound) {
+		this.sound = sound;
+	}
+
+	/**
+	 * Increase the Number of attempts.
+	 */
+	public void incAttempts() {
+		attempts++;
+	}
+
+	/**
+	 * Has this Event expired
+	 * 
+	 * @return
+	 */
+	public boolean expired() {
+		if (attempts > 500) {
+			return true;
+		}
+		return false;
 	}
 }

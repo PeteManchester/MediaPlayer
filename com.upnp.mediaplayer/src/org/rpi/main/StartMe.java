@@ -186,7 +186,7 @@ public class StartMe {
 			Config.player = pr.getProperty("player");
 			Config.enableAVTransport = Config.convertStringToBoolean(pr.getProperty("enableAVTransport"), true);
 			Config.enableReceiver = Config.convertStringToBoolean(pr.getProperty("enableReceiver"), true);
-			Config.songcastNICName = NetworkUtils.getNICName(pr.getProperty("songcast.nic.name"));
+			//Config.songcastNICName = NetworkUtils.getNICName(pr.getProperty("songcast.nic.name"));
 			Config.songcastSoundCardName = pr.getProperty("songcast.soundcard.name");
 		} catch (Exception e) {
 			e.printStackTrace();

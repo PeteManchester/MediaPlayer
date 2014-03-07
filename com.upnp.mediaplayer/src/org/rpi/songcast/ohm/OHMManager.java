@@ -34,6 +34,8 @@ public class OHMManager implements Observer, SongcastManager {
 
 	private OHMMessageQueue mq = new OHMMessageQueue();
 	Thread threadMessageQueue = null;
+	
+
 
 	public OHMManager(String uri, String zoneID, String nic) {
 		try {
@@ -53,6 +55,7 @@ public class OHMManager implements Observer, SongcastManager {
 	}
 
 	public void start() {
+		
 		threadMessageQueue = new Thread(mq, "OHMMessageQueue");
 		mq.addObserver(this);
 		threadMessageQueue.start();
@@ -73,7 +76,8 @@ public class OHMManager implements Observer, SongcastManager {
 	public void dispose() {
 		OHMRequestLeave leave = new OHMRequestLeave(zoneID);
 		songcastSocket.put(leave);
-		SongcastPlayerJavaSound.getInstance().stop();
+		
+
 		if (songcastSocket != null) {
 			songcastSocket.dispose();
 		}		

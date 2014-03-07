@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.rpi.songcast.core.SlaveEndpoint;
+import org.rpi.songcast.core.SongcastPlayerJavaSound;
 import org.rpi.songcast.events.EventOHMAudioStarted;
 import org.rpi.songcast.events.EventSongCastBase;
 
@@ -21,10 +22,13 @@ public class OHMMessageQueue extends Observable implements Runnable {
 	private boolean started = false;
 
 	private ConcurrentHashMap<String, SlaveEndpoint> endpoints = new ConcurrentHashMap<String, SlaveEndpoint>();
-	private boolean bSentInfo  = false;
+	private boolean bSentInfo  = false;	
+	
+	private SongcastPlayerJavaSound player = new SongcastPlayerJavaSound();
+	private Thread threadPlayer = null;
 
 	public OHMMessageQueue() {
-		log.warn("Opening OHM Message Queue");
+		log.debug("Opening OHM Message Queue");
 	}
 
 	public synchronized boolean isEmpty() {
@@ -78,6 +82,8 @@ public class OHMMessageQueue extends Observable implements Runnable {
 	}
 
 	public void run() {
+		threadPlayer = new Thread(player,"SongcastPlayerJavaSound");
+		threadPlayer.start();
 		while (run) {
 			if (!isEmpty()) {
 				try {
@@ -87,7 +93,7 @@ public class OHMMessageQueue extends Observable implements Runnable {
 
 				}
 			} else {
-				sleep(100);
+				sleep(2);
 			}
 		}
 	}
@@ -109,6 +115,7 @@ public class OHMMessageQueue extends Observable implements Runnable {
 			forwardToSlaves(data);
 			
 			audio.checkMessageType();
+			player.put(audio);
 			break;
 		case 4:// TRACK INFO
 			startListen();
@@ -154,6 +161,12 @@ public class OHMMessageQueue extends Observable implements Runnable {
 
 	public void stop() {
 		run = false;
+		clear();
+		player.stop();
+		if(threadPlayer !=null)
+		{
+			threadPlayer =null;
+		}
 		removeAllEndpoints();
 	}
 	
