@@ -4,9 +4,10 @@ import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderUpnpOrgAVTransport1;
+import org.rpi.channel.ChannelBase;
+import org.rpi.channel.ChannelPlayList;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.*;
-import org.rpi.playlist.ChannelPlayList;
 import org.rpi.utils.Utils;
 
 import java.util.Observable;
@@ -283,7 +284,7 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 		switch (e.getType()) {
 		case EVENTTRACKCHANGED:
 			EventTrackChanged ec = (EventTrackChanged) e;
-			ChannelPlayList track = ec.getTrack();
+			ChannelBase track = ec.getTrack();
 			String m_uri = "";
 			String m_metadata = "";
 			if (track != null) {

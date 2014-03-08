@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.log4j.Logger;
+import org.rpi.channel.ChannelPlayList;
 import org.rpi.config.Config;
 
 public class PlayListWriter extends Thread {

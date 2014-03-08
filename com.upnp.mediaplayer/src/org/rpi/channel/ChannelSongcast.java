@@ -1,9 +1,8 @@
-package org.rpi.songcast.core;
+package org.rpi.channel;
 
 import org.apache.log4j.Logger;
-import org.rpi.playlist.ChannelPlayList;
 
-public class ChannelSongcast extends ChannelPlayList {
+public class ChannelSongcast extends ChannelBase {
 	
 	private Logger log = Logger.getLogger(this.getClass());
 

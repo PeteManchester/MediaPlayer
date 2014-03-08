@@ -7,6 +7,10 @@ import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.log4j.Logger;
+import org.rpi.channel.ChannelBase;
+import org.rpi.channel.ChannelPlayList;
+import org.rpi.channel.ChannelRadio;
+import org.rpi.channel.ChannelSongcast;
 import org.rpi.config.Config;
 import org.rpi.mpdplayer.MPDPlayerController;
 import org.rpi.mplayer.MPlayerController;
@@ -35,15 +39,10 @@ import org.rpi.player.observers.ObservableProduct;
 import org.rpi.player.observers.ObservableRadio;
 import org.rpi.player.observers.ObservableVolume;
 import org.rpi.player.observers.ObservsableTime;
-import org.rpi.playlist.ChannelPlayList;
-import org.rpi.radio.ChannelRadio;
-//import org.rpi.mplayer.MPlayer;
-//import org.rpi.player.IPlayer;
-import org.rpi.songcast.core.ChannelSongcast;
 
 public class PlayManager implements Observer {
 
-	private ChannelPlayList current_track = null;
+	private ChannelBase current_track = null;
 	private CopyOnWriteArrayList<ChannelPlayList> tracks = new CopyOnWriteArrayList<ChannelPlayList>();
 	private CopyOnWriteArrayList<String> shuffled_tracks = new CopyOnWriteArrayList<String>();
 
@@ -105,7 +104,7 @@ public class PlayManager implements Observer {
 	 * 
 	 * @param t
 	 */
-	private void playThis(ChannelPlayList t) {
+	private void playThis(ChannelBase t) {
 		if (t != null) {
 			EventStopSongcast ev = new EventStopSongcast();
 			obsvSongcast.notifyChange(ev);
@@ -139,7 +138,7 @@ public class PlayManager implements Observer {
 	 */
 	private ChannelPlayList getRandomTrack(int offset) {
 		if (current_track != null) {
-			if (!(current_track instanceof ChannelRadio)) {
+			if ((current_track instanceof ChannelPlayList)) {
 				try {
 					int i = 0;
 					for (String t : getShuffledTracks()) {
@@ -325,7 +324,7 @@ public class PlayManager implements Observer {
 			shuffled_tracks.remove(this_track);
 		}
 		if (current_track != null) {
-			if (!(current_track instanceof ChannelRadio)) {
+			if ((current_track instanceof ChannelPlayList)) {
 				int index = getTrackIndexShuffled(current_track.getId());
 				if (index >= 0) {
 					shuffled_tracks.add(index + 1, "" + t.getId());
@@ -348,12 +347,12 @@ public class PlayManager implements Observer {
 		long seed = System.nanoTime();
 		Collections.shuffle(shuffled_tracks, new Random(seed));
 		if (current_track != null) {
-			if (current_track instanceof ChannelRadio)
-				return;
-			log.debug("We have shuffled so set the current track to index ZERO");
-			int index = getTrackIndexShuffled(current_track.getId());
-			shuffled_tracks.remove(index);
-			shuffled_tracks.add(0, "" + current_track.getId());
+			if (current_track instanceof ChannelPlayList) {
+				log.debug("We have shuffled so set the current track to index ZERO");
+				int index = getTrackIndexShuffled(current_track.getId());
+				shuffled_tracks.remove(index);
+				shuffled_tracks.add(0, "" + current_track.getId());
+			}
 		}
 	}
 
@@ -399,7 +398,7 @@ public class PlayManager implements Observer {
 		this.tracks = (CopyOnWriteArrayList<ChannelPlayList>) tracks.clone();
 	}
 
-	public synchronized void setCurrentTrack(ChannelPlayList track) {
+	public synchronized void setCurrentTrack(ChannelBase track) {
 		current_track = track;
 		log.debug("Current Track Id: " + track.getId());
 	}
@@ -408,7 +407,7 @@ public class PlayManager implements Observer {
 	 * 
 	 * @return
 	 */
-	public synchronized ChannelPlayList getCurrentTrack() {
+	public synchronized ChannelBase getCurrentTrack() {
 		return current_track;
 	}
 
@@ -749,7 +748,7 @@ public class PlayManager implements Observer {
 	 */
 	public synchronized void deleteAllTracks() {
 		deletedAllTracks();
-		if (!(getCurrentTrack() instanceof ChannelRadio)) {
+		if ((getCurrentTrack() instanceof ChannelPlayList)) {
 			current_track = null;
 			if (mPlayer.isPlaying()) {
 				mPlayer.stop();
@@ -765,9 +764,9 @@ public class PlayManager implements Observer {
 	 */
 	public synchronized void DeleteTrack(long iD) {
 		deletedTrack(iD);
-		ChannelPlayList t = getCurrentTrack();
+		ChannelBase t = getCurrentTrack();
 		if (t != null)
-			if (t.getId() == iD && !(t instanceof ChannelRadio)) {
+			if (t.getId() == iD && (t instanceof ChannelPlayList)) {
 				if (mPlayer.isPlaying()) {
 					mPlayer.stop();
 				}
@@ -811,8 +810,9 @@ public class PlayManager implements Observer {
 			EventRadioStatusChanged evr = new EventRadioStatusChanged();
 			evr.setStatus(status);
 			obsvRadio.notifyChange(evr);
-		} else if (current_track instanceof ChannelSongcast){
-			//TODO borrowed EventPlayListChanged, may need to create one for Songcast.
+		} else if (current_track instanceof ChannelSongcast) {
+			// TODO borrowed EventPlayListChanged, may need to create one for
+			// Songcast.
 			EventPlayListStatusChanged evr = new EventPlayListStatusChanged();
 			evr.setStatus(status);
 			obsvSongcast.notifyChange(evr);
@@ -1064,25 +1064,24 @@ public class PlayManager implements Observer {
 		obsvAVTransport.addObserver(o);
 
 	}
-	
+
 	/**
 	 * Used by Songcast to update the time info
+	 * 
 	 * @param e
 	 */
-	public void updateTime(EventTimeUpdate e)
-	{
+	public void updateTime(EventTimeUpdate e) {
 		obsvTime.notifyChange(e);
 	}
-	
+
 	/**
 	 * Used by Songcast to update the metat text
+	 * 
 	 * @param e
 	 */
-	public void updateTrackInfo(EventBase e)
-	{
+	public void updateTrackInfo(EventBase e) {
 		obsvInfo.notifyChange(e);
 	}
-	
 
 	public synchronized boolean isUseExternalVolume() {
 		return bExternalVolume;

@@ -14,6 +14,8 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 import net.xeoh.plugins.base.annotations.events.Shutdown;
 
 import org.apache.log4j.Logger;
+import org.rpi.channel.ChannelBase;
+import org.rpi.channel.ChannelPlayList;
 import org.rpi.os.OSManager;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
@@ -24,7 +26,6 @@ import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.player.events.EventVolumeChanged;
 import org.rpi.player.observers.ObservableVolume;
-import org.rpi.playlist.ChannelPlayList;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -126,7 +127,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 		switch (base.getType()) {
 		case EVENTTRACKCHANGED:
 			EventTrackChanged etc = (EventTrackChanged) e;
-			ChannelPlayList track = etc.getTrack();
+			ChannelBase track = etc.getTrack();
 			if (track != null) {
 				String s = track.getFullDetails();
 				log.debug("TrackChanged: " + s);

@@ -1,4 +1,4 @@
-package org.rpi.playlist;
+package org.rpi.channel;
 
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -20,10 +20,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-public class ChannelPlayList {
-
-    private static final Logger LOG = Logger.getLogger(ChannelPlayList.class);
-
+public class ChannelBase {
+	private Logger log = Logger.getLogger(this.getClass());
+	
     private static final String ENTRY_START = "<Entry>";
     private static final String ENTRY_END = "</Entry>";
     private static final String ID_START = "<Id>";
@@ -54,7 +53,7 @@ public class ChannelPlayList {
     private long time = -99;
     private String full_details;
 
-    public ChannelPlayList(String uri, String metadata, int id) {
+    public ChannelBase(String uri, String metadata, int id) {
         // long startTime = System.nanoTime();
         setUri(uri);
         setMetadata(metadata);
@@ -177,7 +176,7 @@ public class ChannelPlayList {
             transformer.transform(source, result);
             return result.getWriter().toString();
         } catch (Exception e) {
-            LOG.error("Erorr TidyMetaData", e);
+            log.error("Erorr TidyMetaData", e);
         }
 
         return "";
@@ -195,7 +194,7 @@ public class ChannelPlayList {
                 Node n = childs.item(i);
                 if (n.getNodeName() == "dc:title") {
                     n.setTextContent(full_title);
-                    LOG.info("ICY INFO Replacing dc:title: " + full_title);
+                    log.info("ICY INFO Replacing dc:title: " + full_title);
                     break;
                 }
             }
@@ -206,7 +205,7 @@ public class ChannelPlayList {
             metatext = result.getWriter().toString();
             return metatext;
         } catch (Exception e) {
-            LOG.error("Error Creating XML Doc", e);
+            log.error("Error Creating XML Doc", e);
         }
         return null;
     }
@@ -220,7 +219,7 @@ public class ChannelPlayList {
                 try {
                     word = word.replace(word.substring(1), word.substring(1).toLowerCase());
                 } catch (Exception e) {
-                    LOG.debug("Error with Word: " + word);
+                    log.debug("Error with Word: " + word);
                 }
                 string += word + " ";
             }
@@ -298,7 +297,7 @@ public class ChannelPlayList {
             String artist = xPath.compile(ex_artist).evaluate(doc);
             setArtist(artist);
         } catch (Exception e) {
-            LOG.error("Erorr TidyMetaData", e);
+            log.error("Erorr TidyMetaData", e);
         }
     }
 
@@ -349,7 +348,7 @@ public class ChannelPlayList {
                 }
             }
         } catch (Exception e) {
-            LOG.error("Error GetTrackDetails", e);
+            log.error("Error GetTrackDetails", e);
         }
     }
 
@@ -384,7 +383,6 @@ public class ChannelPlayList {
     }
 
     public void setTime(long duration) {
-        // TODO Auto-generated method stub
         this.time = duration;
     }
 
@@ -424,10 +422,6 @@ public class ChannelPlayList {
     }
 
     public String getArtist() {
-//        String text = artist.toString();
-//        if(text.endsWith(","))
-//            text = text.substring(0,text.length()-1);
-//        return text;
         return getPerformer();
     }
 
@@ -504,51 +498,4 @@ public class ChannelPlayList {
         this.albumArtUri = albumArtUri;
     }
 
-    // public void updateTitle(String title) {
-    // // title = WordUtils.capitalizeFully(title);
-    // String meta_data = Metadata;
-    // String sStart =
-    // "<dc:title xmlns:dc=\"http://purl.org/dc/elements/1.1/\">";
-    // String sEnd = "</dc:title>";
-    // int start = meta_data.indexOf(sStart);
-    // int end = meta_data.indexOf(sEnd);
-    // if (start > 0) {
-    // if (end > 0) {
-    // String s = meta_data.substring(start, end);
-    // LOG.debug("Found Title: " + s);
-    // LOG.debug("Replace With: " + sStart + title);
-    //
-    // meta_data = meta_data.replace(s, sStart + title);
-    // LOG.debug(meta_data);
-    // Metadata = meta_data;
-    // }
-    // }
-    // }
-
-    // public void updateArtist(String artist) {
-    // // Probably need to replace "<item id="...
-    // // artist = WordUtils.capitalizeFully(artist);
-    // String meta_data = Metadata;
-    // String sStart =
-    // "<upnp:artist role=\"Performer\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\">";
-    // String sEnd = "</upnp:artist>";
-    // int start = meta_data.indexOf(sStart);
-    // int end = meta_data.indexOf(sEnd);
-    // if (start > 0) {
-    // if (end > 0) {
-    // String s = meta_data.substring(start, end);
-    // LOG.debug("Found Artist: " + s);
-    // LOG.debug("Replace With: " + sStart + title);
-    //
-    // meta_data = meta_data.replace(s, sStart + title);
-    // LOG.debug(meta_data);
-    // Metadata = meta_data;
-    // }
-    // } else {
-    // String first_part = meta_data.substring(0,
-    // meta_data.indexOf("</item></DIDL-Lite>"));
-    // meta_data = first_part + sStart + artist + sEnd + "</item></DIDL-Lite>";
-    // Metadata = meta_data;
-    // }
-    // }
 }

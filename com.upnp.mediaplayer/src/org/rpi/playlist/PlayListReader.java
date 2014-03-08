@@ -5,7 +5,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import org.rpi.playlist.ChannelPlayList;
+
+import org.rpi.channel.ChannelPlayList;
 import org.apache.log4j.Logger;
 import org.rpi.providers.PrvPlayList;
 import org.rpi.utils.XMLUtils;

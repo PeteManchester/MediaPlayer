@@ -4,13 +4,14 @@ import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgInfo1;
+import org.rpi.channel.ChannelBase;
+import org.rpi.channel.ChannelPlayList;
 import org.rpi.mplayer.TrackInfo;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackInfo;
 import org.rpi.player.events.EventUpdateTrackMetaText;
-import org.rpi.playlist.ChannelPlayList;
 import org.rpi.utils.Utils;
 
 import java.util.Observable;
@@ -64,7 +65,7 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer, I
 	 * 
 	 * @param track
 	 */
-	private void setTrack(ChannelPlayList track) {
+	private void setTrack(ChannelBase track) {
 		try {
 			if(track ==null)
 				return;

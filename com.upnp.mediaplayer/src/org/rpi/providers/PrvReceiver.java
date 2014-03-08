@@ -10,12 +10,12 @@ import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgReceiver1;
+import org.rpi.channel.ChannelPlayList;
+import org.rpi.channel.ChannelSongcast;
 import org.rpi.config.Config;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventPlayListStatusChanged;
-import org.rpi.playlist.ChannelPlayList;
-import org.rpi.songcast.core.ChannelSongcast;
 import org.rpi.songcast.ohz.OHZManager;
 import org.rpi.utils.Utils;
 

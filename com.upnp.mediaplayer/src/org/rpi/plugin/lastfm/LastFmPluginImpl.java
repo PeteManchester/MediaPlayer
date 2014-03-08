@@ -30,12 +30,13 @@ import javax.xml.transform.stream.StreamResult;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 
 import org.apache.log4j.Logger;
+import org.rpi.channel.ChannelBase;
+import org.rpi.channel.ChannelPlayList;
 import org.rpi.os.OSManager;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
-import org.rpi.playlist.ChannelPlayList;
 import org.rpi.utils.Utils;
 import org.rpi.utils.XMLUtils;
 import org.w3c.dom.Document;
@@ -100,7 +101,7 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
         switch (base.getType()) {
             case EVENTTRACKCHANGED:
                 EventTrackChanged etc = (EventTrackChanged) e;
-                ChannelPlayList track = etc.getTrack();
+                ChannelBase track = etc.getTrack();
                 if (track != null) {
                     scrobble(track.getTitle(), track.getPerformer(), track.getAlbum());
                 } else {

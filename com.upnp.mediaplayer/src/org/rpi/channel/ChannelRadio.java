@@ -1,9 +1,8 @@
-package org.rpi.radio;
+package org.rpi.channel;
 
 import org.apache.log4j.Logger;
-import org.rpi.playlist.ChannelPlayList;
 
-public class ChannelRadio extends ChannelPlayList {
+public class ChannelRadio extends ChannelBase {
 
 	private static Logger log = Logger.getLogger(ChannelRadio.class);
 
