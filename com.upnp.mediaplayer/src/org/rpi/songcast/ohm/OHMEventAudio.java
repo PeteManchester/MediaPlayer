@@ -8,7 +8,7 @@ import org.rpi.mplayer.TrackInfo;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventUpdateTrackInfo;
 import org.rpi.songcast.core.SongcastMessage;
-import org.rpi.songcast.core.SongcastPlayerJavaSound;
+import org.rpi.songcast.core.SongcastPlayerJSLatency;
 
 //Offset    Bytes                   Desc
 //0         1                       Msg Header Bytes (without the codec name)

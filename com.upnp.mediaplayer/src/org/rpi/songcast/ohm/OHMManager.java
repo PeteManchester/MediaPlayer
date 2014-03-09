@@ -7,7 +7,7 @@ import java.util.Observer;
 import org.apache.log4j.Logger;
 import org.rpi.player.PlayManager;
 import org.rpi.songcast.core.SongcastManager;
-import org.rpi.songcast.core.SongcastPlayerJavaSound;
+import org.rpi.songcast.core.SongcastPlayerJSLatency;
 import org.rpi.songcast.core.SongcastSocket;
 import org.rpi.songcast.events.EventSongCastBase;
 

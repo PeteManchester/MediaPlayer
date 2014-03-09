@@ -15,7 +15,7 @@ public class Config {
 	public static String debug = "None";
 	public static String mplayer_path= "/usr/bin/mplayer";
 	public static boolean save_local_playlist = false;
-	public static String version = "0.0.0.7";
+	public static String version = "0.0.0.8";
 	public static String logfile = "mediaplayer.log";
 	public static int port = -99;
 	public static int mplayer_cache = 500;
@@ -32,7 +32,8 @@ public class Config {
 	public static String songcastNICName = "";
 	public static String songcastSoundCardName = "";
 	
-	private static Calendar cal = Calendar.getInstance();	
+	private static Calendar cal = Calendar.getInstance();
+	public static boolean songcastLatencyEnabled = false;	
 	
 	public static String getProtocolInfo() {
 		StringBuilder sb = new StringBuilder();

@@ -188,6 +188,8 @@ public class StartMe {
 			Config.enableReceiver = Config.convertStringToBoolean(pr.getProperty("enableReceiver"), true);
 			//Config.songcastNICName = NetworkUtils.getNICName(pr.getProperty("songcast.nic.name"));
 			Config.songcastSoundCardName = pr.getProperty("songcast.soundcard.name");
+			Config.songcastLatencyEnabled = Config.convertStringToBoolean(pr.getProperty("songcast.latency.enabled"),true);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

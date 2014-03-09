@@ -31,7 +31,7 @@
 		<scp remoteTodir="root:root@${server_name}:/home/pi/mediaplayer/plugins/LCDDisplay" trust="yes" sftp="true">
 			<fileset dir="${basedir}/plugins//LCDDisplay">
 				<include name="LCDDisplay.jar" />
-				<include name="LCD.xml" />
+				<!--include name="LCD.xml" /-->
 			</fileset>
 		</scp>
 					

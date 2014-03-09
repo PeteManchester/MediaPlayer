@@ -43,7 +43,7 @@
 		<scp remoteTodir="root:root@${server_name}:/home/pi/mediaplayer/plugins/LastFM" trust="yes" sftp="true">
 			<fileset dir="${basedir}/plugins/LastFM">
 				<include name="LastFM.jar" />
-				<include name="LastFM.xml" />
+				<!--include name="LastFM.xml" /-->
 			</fileset>
 		</scp>
 					

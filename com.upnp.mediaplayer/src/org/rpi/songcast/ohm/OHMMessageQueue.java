@@ -7,7 +7,10 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
+import org.rpi.config.Config;
+import org.rpi.songcast.core.ISongcastPlayer;
 import org.rpi.songcast.core.SlaveEndpoint;
+import org.rpi.songcast.core.SongcastPlayerJSLatency;
 import org.rpi.songcast.core.SongcastPlayerJavaSound;
 import org.rpi.songcast.events.EventOHMAudioStarted;
 import org.rpi.songcast.events.EventSongCastBase;
@@ -24,7 +27,7 @@ public class OHMMessageQueue extends Observable implements Runnable {
 	private ConcurrentHashMap<String, SlaveEndpoint> endpoints = new ConcurrentHashMap<String, SlaveEndpoint>();
 	private boolean bSentInfo  = false;	
 	
-	private SongcastPlayerJavaSound player = new SongcastPlayerJavaSound();
+	private ISongcastPlayer player = null;
 	private Thread threadPlayer = null;
 
 	public OHMMessageQueue() {
@@ -82,7 +85,19 @@ public class OHMMessageQueue extends Observable implements Runnable {
 	}
 
 	public void run() {
-		threadPlayer = new Thread(player,"SongcastPlayerJavaSound");
+		if(Config.songcastLatencyEnabled)
+		{
+			//With Latency
+			player = new SongcastPlayerJSLatency();
+			threadPlayer = new Thread(player,"SongcastPlayerJavaSoundLatency");
+			
+		}
+		else
+		{
+			player = new SongcastPlayerJavaSound();
+			threadPlayer = new Thread(player,"SongcastPlayerJavaSound");
+		}		
+		
 		threadPlayer.start();
 		while (run) {
 			if (!isEmpty()) {
