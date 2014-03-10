@@ -8,6 +8,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/pi4j"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ohNet"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/lastFM"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/SimpleFramework"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jetty"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

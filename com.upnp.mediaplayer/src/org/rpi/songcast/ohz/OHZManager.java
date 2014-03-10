@@ -9,7 +9,7 @@ import org.rpi.songcast.core.SongcastManager;
 import org.rpi.songcast.core.SongcastSocket;
 import org.rpi.songcast.ohm.OHMManager;
 
-public class OHZManager implements  SongcastManager {
+public class OHZManager implements SongcastManager {
 
 	private Logger log = Logger.getLogger(this.getClass());
 
@@ -25,7 +25,6 @@ public class OHZManager implements  SongcastManager {
 	private String nic = "";
 	private OHZRequestJoin join = null;
 	private OHMManager ohm = null;
-
 
 	public OHZManager(String uri, String zoneID, String nic) {
 		try {
@@ -51,27 +50,20 @@ public class OHZManager implements  SongcastManager {
 		songcastSocket.put(join);
 	}
 
-	public void dispose() {
-		stop(zoneID);
-		if (songcastSocket != null) {
-			songcastSocket.dispose();
-		}
-		
-		if(ohm !=null)
-		{
-			ohm.dispose();
-			ohm = null;
-		}
-		threadSocket.interrupt();
-		threadSocket = null;
-	}
-
 	public void connectToOHM(String uri, String zone) {
+		if (uri.endsWith("0.0.0.0:0") && zone.equalsIgnoreCase(this.zoneID)) {
+			log.debug("Sender has sent Reset Message..");
+			stopOHM();
+		}
+		if (uri.endsWith("0.0.0.0:0")) {
+			log.debug("URI: " + uri + " Zone: " + zone + " Not Connected to that Zone so ignore");
+			return;
+		}
 		if (ohm != null) {
-			//if (ohm.getZoneID().equalsIgnoreCase(zone)) {
-				log.debug("Already Connected to Zone: " + zone);
-				return;
-			//}
+			// if (ohm.getZoneID().equalsIgnoreCase(zone)) {
+			log.debug("Already Connected to Zone: " + zone);
+			return;
+			// }
 		}
 		log.debug("Not Connected to Zone, attempt to connect: " + zone);
 		PlayManager.getInstance().setStatus("Buffering");
@@ -79,12 +71,36 @@ public class OHZManager implements  SongcastManager {
 		ohm.start();
 	}
 
-	public void stop(String zoneID) {
+	private void stopOHM() {
 		if (ohm == null)
 			return;
-		ohm.dispose();
-		ohm = null;
+		try {
+			PlayManager.getInstance().setStatus("Stopped");
+			ohm.dispose();
+			ohm = null;
+		} catch (Exception e) {
+			log.error("Error Closing OHM:", e);
+		}
+	}
+
+	public void stop(String zoneID) {
 		dispose();
+	}
+
+	public void dispose() {
+		stopOHM();
+		if (songcastSocket != null) {
+			songcastSocket.dispose();
+			songcastSocket = null;
+		}
+		try {
+			if (threadSocket != null) {
+				threadSocket.interrupt();
+			}
+		} catch (Exception e) {
+			log.error(e);
+		}
+		threadSocket = null;
 	}
 
 	public void putMessage(byte[] data) {

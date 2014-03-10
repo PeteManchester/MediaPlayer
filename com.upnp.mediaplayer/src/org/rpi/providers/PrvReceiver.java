@@ -121,6 +121,7 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 				manager = new OHZManager(songcast_url, zoneID, nic);
 				manager.start();
 			} catch (Exception e) {
+				log.error("Error Starting Songcast Playback: ", e);
 
 			}
 
@@ -135,6 +136,7 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 
 	private void stop() {
 		manager.stop(zoneID);
+		manager = null;
 		PlayManager.getInstance().setStatus("Stopped");
 	}
 

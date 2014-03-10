@@ -108,7 +108,7 @@ public class OHMMessageQueue extends Observable implements Runnable {
 
 				}
 			} else {
-				sleep(2);
+				sleep(1);
 			}
 		}
 	}

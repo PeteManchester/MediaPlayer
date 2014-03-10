@@ -37,7 +37,7 @@
 	</Source>
 	
 	<Source>
-	    <name>SongCast</name>
+	    <name>Receiver</name>
 	    <type>Receiver</type>
 	    <GPIO_PIN>9</GPIO_PIN>
 	</Source>

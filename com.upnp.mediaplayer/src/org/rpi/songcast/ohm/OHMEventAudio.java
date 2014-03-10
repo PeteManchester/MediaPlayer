@@ -43,15 +43,9 @@ public class OHMEventAudio extends SongcastMessage {
 	 * Get the Audio Data
 	 */
 	public void checkMessageType() {
-
-		// log.debug("Latency " + bytesToHex(getBytes(20, 23)));
-		// byte[] b = getBytes(9, 9);
-		// String s1 = String.format("%8s", Integer.toBinaryString(b[0] &
-		// 0xFF)).replace(' ', '0');
-		// log.debug(s1);
 		int headerLength = new BigInteger(getBytes(8, 8)).intValue();
 		int sampleCount = new BigInteger(getBytes(10, 11)).intValue();
-		long network_timestamp = new BigInteger(getBytes(16, 19)).longValue();
+		//long network_timestamp = new BigInteger(getBytes(16, 19)).longValue();
 		// log.debug("TimeStamp " + bytesToHex(getBytes(16,19)));
 		long latency = new BigInteger(getBytes(20, 23)).intValue();
 		// log.debug("Latency: " + latency);
@@ -64,17 +58,13 @@ public class OHMEventAudio extends SongcastMessage {
 			time = (latency * iSampleRate * 256)/1000;
 		}
 		setTimeToPlay(time );
-		long media_timestamp = new BigInteger(getBytes(24, 27)).longValue();
+		//long media_timestamp = new BigInteger(getBytes(24, 27)).longValue();
 		int iBitDepth = new BigInteger(getBytes(54, 54)).intValue();
 		int channels = new BigInteger(getBytes(55, 55)).intValue();
 		int codecNameLength = new BigInteger(getBytes(57, 57)).intValue();
 		int soundStart = 8 + headerLength + codecNameLength;
 		int soundEnd = soundStart + ((channels * iBitDepth * (sampleCount) / 8));
 		setSound(getBytes(soundStart, soundEnd - 1));
-		// log.debug("TimeStamp:" + network_timestamp + " CurrentTimeStamp: " +
-		// System.currentTimeMillis() + " Latency:" + latency + " Latency HEX: "
-		// + bytesToHex(getBytes(20, 23)) + "  MediaTimestamp:" +
-		// media_timestamp);
 	}
 
 	/**

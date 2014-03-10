@@ -59,7 +59,7 @@ public class SongcastPlayerJavaSound implements ISongcastPlayer, Runnable {
 	public void run() {
 		while(run)
 		{
-			sleep(5000);
+			sleep(100);
 		}
 		
 	}

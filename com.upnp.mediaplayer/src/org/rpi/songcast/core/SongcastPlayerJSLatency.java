@@ -143,7 +143,7 @@ public class SongcastPlayerJSLatency implements ISongcastPlayer, Runnable {
 						{
 							break;
 						}
-						sleep(2);
+						sleep(1);
 						audio.incAttempts();
 					}
 					addData(audio.getSound());					
