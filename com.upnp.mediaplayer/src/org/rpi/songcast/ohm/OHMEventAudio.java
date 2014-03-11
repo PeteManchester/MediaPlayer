@@ -84,7 +84,7 @@ public class OHMEventAudio extends SongcastMessage {
 		int codecNameLength = new BigInteger(getBytes(57, 57)).intValue();
 
 		byte[] codec = getBytes(58, (58 + codecNameLength) - 1);
-		String sCodec;
+		String sCodec = "";
 		try {
 			sCodec = new String(codec, "UTF-8");
 			info.setCodec(sCodec);
@@ -93,6 +93,7 @@ public class OHMEventAudio extends SongcastMessage {
 		long iSampleRate = new BigInteger(getBytes(44, 47)).longValue();
 		info.setSampleRate(iSampleRate);
 		info.setDuration(0);
+		log.info("Songcast Stream: Codec: " + sCodec + " SampleRate: " + iSampleRate + " BitRate: " + iBitRate + " BitDepth: " + iBitDepth);
 		EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
 		ev.setTrackInfo(info);
 		PlayManager.getInstance().updateTrackInfo(ev);
