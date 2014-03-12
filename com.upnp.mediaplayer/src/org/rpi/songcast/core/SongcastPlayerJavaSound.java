@@ -10,13 +10,14 @@ import org.rpi.songcast.ohm.OHMEventAudio;
 
 /**
  * SongcastPlayer that uses JavaSound
+ * 
  * @author phoyle
- *
+ * 
  */
 
 public class SongcastPlayerJavaSound implements ISongcastPlayer, Runnable {
-	
-	private Logger log = Logger.getLogger(this.getClass());	
+
+	private Logger log = Logger.getLogger(this.getClass());
 	private boolean run = true;
 
 	private AudioFormat audioFormat = new AudioFormat(44100, 16, 2, true, true);
@@ -25,14 +26,16 @@ public class SongcastPlayerJavaSound implements ISongcastPlayer, Runnable {
 	private SourceDataLine soundLine = null;
 
 	private boolean bWrite = false;
-	
-	public SongcastPlayerJavaSound()
-	{
-		createSoundLine();
+
+	public SongcastPlayerJavaSound() {
+
 	}
-	
-	private void createSoundLine() {
+
+	public void createSoundLine(AudioInformation audioInf) {
 		try {
+			log.info("Creating Audio Format: " + audioInf.toString());
+			audioFormat = new AudioFormat(audioInf.getSampleRate(), audioInf.getBitDepth(), audioInf.getChannels(), audioInf.isSigned(), audioInf.isBigEndian());
+			info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
 			if (soundLine == null) {
 				soundLine = (SourceDataLine) AudioSystem.getLine(info);
 				soundLine.open(audioFormat);
@@ -43,12 +46,14 @@ public class SongcastPlayerJavaSound implements ISongcastPlayer, Runnable {
 			log.error("Error opening Sound:", e);
 		}
 	}
-	
+
 	private void close() {
 		try {
-			soundLine.close();
-			soundLine = null;
-			bWrite = false;
+			if (soundLine != null) {
+				soundLine.close();
+				soundLine = null;
+				bWrite = false;
+			}
 		} catch (Exception e) {
 			log.error("Error Closing Stream", e);
 		}
@@ -57,13 +62,12 @@ public class SongcastPlayerJavaSound implements ISongcastPlayer, Runnable {
 
 	@Override
 	public void run() {
-		while(run)
-		{
+		while (run) {
 			sleep(100);
 		}
-		
+
 	}
-	
+
 	private void sleep(int value) {
 		try {
 			Thread.sleep(value);
@@ -74,13 +78,13 @@ public class SongcastPlayerJavaSound implements ISongcastPlayer, Runnable {
 
 	@Override
 	public void play() {
-				
+
 	}
 
 	@Override
 	public void stop() {
 		run = false;
-		close();	
+		close();
 	}
 
 	@Override
@@ -95,9 +99,7 @@ public class SongcastPlayerJavaSound implements ISongcastPlayer, Runnable {
 		} catch (Exception e) {
 			log.error("Error Writing Data", e);
 		}
-		
+
 	}
-	
-	
 
 }

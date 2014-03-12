@@ -10,7 +10,8 @@ import org.apache.log4j.Logger;
 import org.rpi.songcast.ohm.OHMEventAudio;
 
 /**
- * SongcastPlayer that uses JavaSound and tries to implement the latency attribute that is send by the Songcast Sender
+ * SongcastPlayer that uses JavaSound and tries to implement the latency
+ * attribute that is send by the Songcast Sender
  */
 
 public class SongcastPlayerJSLatency implements ISongcastPlayer, Runnable {
@@ -20,26 +21,31 @@ public class SongcastPlayerJSLatency implements ISongcastPlayer, Runnable {
 
 	private Logger log = Logger.getLogger(this.getClass());
 
-	private AudioFormat audioFormat = new AudioFormat(44100, 16, 2, true, true);
-	private DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
+	private AudioFormat audioFormat = null;// new AudioFormat(44100, 16, 2,
+											// true, true);
+	private DataLine.Info info = null;// new DataLine.Info(SourceDataLine.class,
+										// audioFormat, 16000);
 
 	private SourceDataLine soundLine = null;
 
 	private boolean bWrite = false;
 
-//	public static SongcastPlayerJavaSound getInstance() {
-//		if (instance == null) {
-//			instance = new SongcastPlayerJavaSound();
-//		}
-//		return instance;
-//	}
+	// public static SongcastPlayerJavaSound getInstance() {
+	// if (instance == null) {
+	// instance = new SongcastPlayerJavaSound();
+	// }
+	// return instance;
+	// }
 
 	public SongcastPlayerJSLatency() {
-		createSoundLine();
+		// createSoundLine();
 	}
 
-	private void createSoundLine() {
+	public void createSoundLine(AudioInformation audioInf) {
 		try {
+			log.info("Creating Audio Format: " + audioInf.toString());
+			audioFormat = new AudioFormat(audioInf.getSampleRate(), audioInf.getBitDepth(), audioInf.getChannels(), audioInf.isSigned(), audioInf.isBigEndian());
+			info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
 			if (soundLine == null) {
 				soundLine = (SourceDataLine) AudioSystem.getLine(info);
 				soundLine.open(audioFormat);
@@ -56,12 +62,13 @@ public class SongcastPlayerJSLatency implements ISongcastPlayer, Runnable {
 
 	}
 
-
 	private void close() {
 		try {
-			soundLine.close();
-			soundLine = null;
-			bWrite = false;
+			if (soundLine != null) {
+				soundLine.close();
+				soundLine = null;
+				bWrite = false;
+			}
 		} catch (Exception e) {
 			log.error("Error Closing Stream", e);
 		}
@@ -80,7 +87,7 @@ public class SongcastPlayerJSLatency implements ISongcastPlayer, Runnable {
 			log.error("Error Writing Data", e);
 		}
 	}
-	
+
 	public synchronized boolean isEmpty() {
 		return mWorkQueue.isEmpty();
 	}
@@ -130,23 +137,21 @@ public class SongcastPlayerJSLatency implements ISongcastPlayer, Runnable {
 			log.debug(e.getMessage(), e);
 		}
 	}
-	
+
 	@Override
 	public void run() {
 		while (run) {
 			if (!isEmpty()) {
 				try {
-					OHMEventAudio audio  = get();
-					while(audio.getTimeToPlay() > System.currentTimeMillis())
-					{
-						if(audio.expired())
-						{
+					OHMEventAudio audio = get();
+					while (audio.getTimeToPlay() > System.currentTimeMillis()) {
+						if (audio.expired()) {
 							break;
 						}
 						sleep(1);
 						audio.incAttempts();
 					}
-					addData(audio.getSound());					
+					addData(audio.getSound());
 				} catch (Exception e) {
 					log.error("Error in Run Method");
 				}
@@ -155,13 +160,12 @@ public class SongcastPlayerJSLatency implements ISongcastPlayer, Runnable {
 			}
 		}
 	}
-	
+
 	@Override
 	public void stop() {
 		run = false;
 		clear();
 		close();
 	}
-	
 
 }

@@ -8,6 +8,8 @@ public interface ISongcastPlayer extends Runnable{
 	
 	public void stop();
 	
+	public void createSoundLine(AudioInformation audioInf);
+	
 	public void put(OHMEventAudio event);
 
 }

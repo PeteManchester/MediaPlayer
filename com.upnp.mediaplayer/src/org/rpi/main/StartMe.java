@@ -22,6 +22,7 @@ import org.rpi.config.Config;
 import org.rpi.log.CustomPatternLayout;
 import org.rpi.utils.NetworkUtils;
 import org.rpi.utils.Utils;
+import org.scratchpad.http.server.HttpServerGrizzly;
 
 public class StartMe {
 
@@ -81,6 +82,7 @@ public class StartMe {
 		log.info("JVM Version: " + System.getProperty("java.version"));
 		printSystemProperties();
 		SimpleDevice sd = new SimpleDevice();
+		
 		// loadPlugins();
 		sd.attachShutDownHook();
 		if (bInput) {
@@ -189,6 +191,7 @@ public class StartMe {
 			//Config.songcastNICName = NetworkUtils.getNICName(pr.getProperty("songcast.nic.name"));
 			Config.songcastSoundCardName = pr.getProperty("songcast.soundcard.name");
 			Config.songcastLatencyEnabled = Config.convertStringToBoolean(pr.getProperty("songcast.latency.enabled"),true);
+			Config.webHttpPort=pr.getProperty("web.http.port");
 			
 		} catch (Exception e) {
 			e.printStackTrace();

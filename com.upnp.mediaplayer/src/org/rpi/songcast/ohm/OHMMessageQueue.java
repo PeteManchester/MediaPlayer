@@ -124,7 +124,7 @@ public class OHMMessageQueue extends Observable implements Runnable {
 			audio.data = data;
 			if(!bSentInfo)
 			{
-				audio.getTrackInfo();
+				player.createSoundLine(audio.getTrackInfo());
 				bSentInfo = true;
 			}
 			forwardToSlaves(data);

@@ -5067,3 +5067,266 @@ Timezone :			Europe/London, Greenwich Mean Time, British Summer Time
 2014-03-11 08:35:31,858 [Thread-22] WARN  [org.rpi.songcast.ohm.OHMManager] Creating OHM Manager
 2014-03-11 08:38:00,444 [OHMMessageQueue] INFO  [org.rpi.songcast.ohm.OHMEventAudio] Songcast Stream: Codec: PCM    SampleRate: 44100 BitRate: 1411 BitDepth: 16
 2014-03-11 08:39:06,071 [Thread-8] INFO  [org.rpi.main.SimpleDevice] writeResource Called: org/rpi/image/mediaplayer50.png
+Friendly Name :		Default
+Version :			0.0.0.8
+Host name  : 			D067E5492684
+StartTime :			Tue Mar 11 18:59:40 GMT 2014
+LocalTime :			Tue Mar 11 18:59:40 GMT 2014
+DST  :				Offset = 1
+Timezone :			Europe/London, Greenwich Mean Time, British Summer Time
+
+
+2014-03-11 18:59:40,544 [main] INFO  [org.rpi.main.StartMe] Starting......
+2014-03-11 18:59:40,546 [main] WARN  [org.rpi.main.StartMe] ###Setting Sound Card Name: #Audio [plughw:0,0]
+2014-03-11 18:59:40,547 [main] INFO  [org.rpi.main.StartMe] Getting Network Interfaces
+2014-03-11 18:59:40,800 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Software Loopback Interface 1'
+2014-03-11 18:59:40,800 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'lo'
+2014-03-11 18:59:40,800 [main] INFO  [org.rpi.main.StartMe] IPAddress for Network Interface: Software Loopback Interface 1 : 127.0.0.1
+2014-03-11 18:59:40,800 [main] INFO  [org.rpi.main.StartMe] IPAddress for Network Interface: Software Loopback Interface 1 : 0:0:0:0:0:0:0:1
+2014-03-11 18:59:40,800 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'WAN Miniport (SSTP)'
+2014-03-11 18:59:40,801 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'net0'
+2014-03-11 18:59:40,801 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'WAN Miniport (L2TP)'
+2014-03-11 18:59:40,801 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'net1'
+2014-03-11 18:59:40,801 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'WAN Miniport (PPTP)'
+2014-03-11 18:59:40,801 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'net2'
+2014-03-11 18:59:40,801 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'WAN Miniport (PPPOE)'
+2014-03-11 18:59:40,801 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'ppp0'
+2014-03-11 18:59:40,801 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'WAN Miniport (IPv6)'
+2014-03-11 18:59:40,801 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth0'
+2014-03-11 18:59:40,801 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'WAN Miniport (Network Monitor)'
+2014-03-11 18:59:40,801 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth1'
+2014-03-11 18:59:40,801 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'WAN Miniport (IP)'
+2014-03-11 18:59:40,801 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth2'
+2014-03-11 18:59:40,801 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'RAS Async Adapter'
+2014-03-11 18:59:40,801 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'ppp1'
+2014-03-11 18:59:40,801 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'WAN Miniport (IKEv2)'
+2014-03-11 18:59:40,801 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'net3'
+2014-03-11 18:59:40,801 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Deterministic Network Enhancer Miniport'
+2014-03-11 18:59:40,802 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth3'
+2014-03-11 18:59:40,802 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Deterministic Network Enhancer Miniport'
+2014-03-11 18:59:40,802 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth4'
+2014-03-11 18:59:40,802 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Cisco Systems VPN Adapter for 64-bit Windows'
+2014-03-11 18:59:40,802 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth5'
+2014-03-11 18:59:40,802 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Deterministic Network Enhancer Miniport'
+2014-03-11 18:59:40,802 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth6'
+2014-03-11 18:59:40,802 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Intel(R) Centrino(R) Ultimate-N 6300 AGN'
+2014-03-11 18:59:40,802 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'net4'
+2014-03-11 18:59:40,802 [main] INFO  [org.rpi.main.StartMe] IPAddress for Network Interface: Intel(R) Centrino(R) Ultimate-N 6300 AGN : fe80:0:0:0:f949:4d59:1065:43c6%15
+2014-03-11 18:59:40,802 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Intel(R) Centrino(R) Ultimate-N 6300 AGN - Deterministic Network Enhancer Miniport'
+2014-03-11 18:59:40,802 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth7'
+2014-03-11 18:59:40,802 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Broadcom NetXtreme 57xx Gigabit Controller'
+2014-03-11 18:59:40,802 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth8'
+2014-03-11 18:59:40,802 [main] INFO  [org.rpi.main.StartMe] IPAddress for Network Interface: Broadcom NetXtreme 57xx Gigabit Controller : 192.168.1.72
+2014-03-11 18:59:40,802 [main] INFO  [org.rpi.main.StartMe] IPAddress for Network Interface: Broadcom NetXtreme 57xx Gigabit Controller : fe80:0:0:0:3c46:7b45:224e:68bf%17
+2014-03-11 18:59:40,803 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Broadcom NetXtreme 57xx Gigabit Controller - Deterministic Network Enhancer Miniport'
+2014-03-11 18:59:40,803 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth9'
+2014-03-11 18:59:40,803 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Bluetooth Device (RFCOMM Protocol TDI)'
+2014-03-11 18:59:40,803 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'net5'
+2014-03-11 18:59:40,803 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Bluetooth Device (Personal Area Network)'
+2014-03-11 18:59:40,803 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth10'
+2014-03-11 18:59:40,803 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Teredo Tunneling Pseudo-Interface'
+2014-03-11 18:59:40,803 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'net6'
+2014-03-11 18:59:40,803 [main] INFO  [org.rpi.main.StartMe] IPAddress for Network Interface: Teredo Tunneling Pseudo-Interface : fe80:0:0:0:0:100:7f:fffe%21
+2014-03-11 18:59:40,803 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Microsoft Virtual WiFi Miniport Adapter'
+2014-03-11 18:59:40,803 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'net7'
+2014-03-11 18:59:40,803 [main] INFO  [org.rpi.main.StartMe] IPAddress for Network Interface: Microsoft Virtual WiFi Miniport Adapter : fe80:0:0:0:d598:39c6:d03b:e9e3%22
+2014-03-11 18:59:40,803 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Microsoft Virtual WiFi Miniport Adapter - Deterministic Network Enhancer Miniport'
+2014-03-11 18:59:40,803 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth11'
+2014-03-11 18:59:40,803 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Microsoft Loopback Adapter'
+2014-03-11 18:59:40,803 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth12'
+2014-03-11 18:59:40,803 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Microsoft Loopback Adapter - Deterministic Network Enhancer Miniport'
+2014-03-11 18:59:40,803 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth13'
+2014-03-11 18:59:40,803 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'PPPoP WAN Adapter'
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'ppp2'
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Microsoft 6to4 Adapter'
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'net8'
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Microsoft ISATAP Adapter #5'
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'net9'
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] IPAddress for Network Interface: Microsoft ISATAP Adapter #5 : fe80:0:0:0:0:5efe:c0a8:b301%28
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'null'
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'net10'
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'null'
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'net11'
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Microsoft ISATAP Adapter'
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'net12'
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] IPAddress for Network Interface: Microsoft ISATAP Adapter : fe80:0:0:0:0:5efe:c0a8:2c01%31
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'VMware Virtual Ethernet Adapter for VMnet1'
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth14'
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] IPAddress for Network Interface: VMware Virtual Ethernet Adapter for VMnet1 : 192.168.44.1
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] IPAddress for Network Interface: VMware Virtual Ethernet Adapter for VMnet1 : fe80:0:0:0:1c3b:d593:b817:a3b5%32
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'VMware Virtual Ethernet Adapter for VMnet8'
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth15'
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] IPAddress for Network Interface: VMware Virtual Ethernet Adapter for VMnet8 : 192.168.179.1
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] IPAddress for Network Interface: VMware Virtual Ethernet Adapter for VMnet8 : fe80:0:0:0:4874:ecfb:4037:c90e%33
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Microsoft ISATAP Adapter #2'
+2014-03-11 18:59:40,804 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'net13'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] IPAddress for Network Interface: Microsoft ISATAP Adapter #2 : fe80:0:0:0:0:5efe:c0a8:148%34
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Microsoft ISATAP Adapter #3'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'net14'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Cisco AnyConnect Secure Mobility Client Virtual Miniport Adapter for Windows x64'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth16'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Cisco AnyConnect Secure Mobility Client Virtual Miniport Adapter for Windows x64 - Deterministic Network Enhancer Miniport'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth17'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Microsoft ISATAP Adapter #6'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'net15'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Intel(R) Centrino(R) Ultimate-N 6300 AGN-Virtual WiFi Filter Driver-0000'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'net16'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Broadcom NetXtreme 57xx Gigabit Controller - Deterministic Network Enhancer Miniport-QoS Packet Scheduler-0000'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth18'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Broadcom NetXtreme 57xx Gigabit Controller - Deterministic Network Enhancer Miniport-WFP LightWeight Filter-0000'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth19'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Deterministic Network Enhancer Miniport-QoS Packet Scheduler-0000'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth20'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Deterministic Network Enhancer Miniport-QoS Packet Scheduler-0000'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth21'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'WAN Miniport (IPv6)-QoS Packet Scheduler-0000'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth22'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Intel(R) Centrino(R) Ultimate-N 6300 AGN-Native WiFi Filter Driver-0000'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'net17'
+2014-03-11 18:59:40,805 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Intel(R) Centrino(R) Ultimate-N 6300 AGN - Deterministic Network Enhancer Miniport-QoS Packet Scheduler-0000'
+2014-03-11 18:59:40,806 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth23'
+2014-03-11 18:59:40,806 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Intel(R) Centrino(R) Ultimate-N 6300 AGN - Deterministic Network Enhancer Miniport-WFP LightWeight Filter-0000'
+2014-03-11 18:59:40,806 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth24'
+2014-03-11 18:59:40,806 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Microsoft Virtual WiFi Miniport Adapter-Native WiFi Filter Driver-0000'
+2014-03-11 18:59:40,806 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'net18'
+2014-03-11 18:59:40,806 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Microsoft Virtual WiFi Miniport Adapter - Deterministic Network Enhancer Miniport-QoS Packet Scheduler-0000'
+2014-03-11 18:59:40,806 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth25'
+2014-03-11 18:59:40,806 [main] INFO  [org.rpi.main.StartMe] Network Interface Display Name: 'Microsoft Virtual WiFi Miniport Adapter - Deterministic Network Enhancer Miniport-WFP LightWeight Filter-0000'
+2014-03-11 18:59:40,806 [main] INFO  [org.rpi.main.StartMe] NIC Name: 'eth26'
+2014-03-11 18:59:40,806 [main] INFO  [org.rpi.main.StartMe] End Of Network Interfaces
+2014-03-11 18:59:40,806 [main] INFO  [org.rpi.main.StartMe] Available Audio Devices:
+2014-03-11 18:59:40,959 [main] INFO  [org.rpi.main.StartMe] 'Primary Sound Driver'
+2014-03-11 18:59:40,959 [main] INFO  [org.rpi.main.StartMe] 'Speakers (UD110)'
+2014-03-11 18:59:40,959 [main] INFO  [org.rpi.main.StartMe] 'Communications Headphones (IDT High Definition Audio CODEC)'
+2014-03-11 18:59:40,959 [main] INFO  [org.rpi.main.StartMe] 'Speakers / Headphones (IDT High Definition Audio CODEC)'
+2014-03-11 18:59:40,959 [main] INFO  [org.rpi.main.StartMe] 'Primary Sound Capture Driver'
+2014-03-11 18:59:40,959 [main] INFO  [org.rpi.main.StartMe] 'Microphone (USB PnP Audio Devic'
+2014-03-11 18:59:40,959 [main] INFO  [org.rpi.main.StartMe] 'Jack Mic (IDT High Definition A'
+2014-03-11 18:59:40,959 [main] INFO  [org.rpi.main.StartMe] 'Dock Mic (IDT High Definition A'
+2014-03-11 18:59:40,959 [main] INFO  [org.rpi.main.StartMe] 'Rec. Playback (IDT High Definit'
+2014-03-11 18:59:40,959 [main] INFO  [org.rpi.main.StartMe] 'Port Speakers (UD110)'
+2014-03-11 18:59:40,959 [main] INFO  [org.rpi.main.StartMe] 'Port Communications Headphones (IDT '
+2014-03-11 18:59:40,959 [main] INFO  [org.rpi.main.StartMe] 'Port Speakers / Headphones (IDT High'
+2014-03-11 18:59:40,959 [main] INFO  [org.rpi.main.StartMe] 'Port Jack Mic (IDT High Definition A'
+2014-03-11 18:59:40,959 [main] INFO  [org.rpi.main.StartMe] 'Port Dock Mic (IDT High Definition A'
+2014-03-11 18:59:40,959 [main] INFO  [org.rpi.main.StartMe] 'Port Rec. Playback (IDT High Definit'
+2014-03-11 18:59:40,959 [main] INFO  [org.rpi.main.StartMe] 'Port Microphone (USB PnP Audio Devic'
+2014-03-11 18:59:40,959 [main] INFO  [org.rpi.main.StartMe] End Of Audio Devices
+2014-03-11 18:59:40,959 [main] INFO  [org.rpi.main.StartMe] JVM Version: 1.7.0_17
+2014-03-11 18:59:40,959 [main] WARN  [org.rpi.main.StartMe] #####Start of System Properties#########
+2014-03-11 18:59:40,960 [main] WARN  [org.rpi.main.StartMe] awt.toolkit=sun.awt.windows.WToolkit
+2014-03-11 18:59:40,960 [main] WARN  [org.rpi.main.StartMe] com.sun.management.jmxremote=
+2014-03-11 18:59:40,960 [main] WARN  [org.rpi.main.StartMe] com.sun.management.jmxremote.authenticate=false
+2014-03-11 18:59:40,960 [main] WARN  [org.rpi.main.StartMe] com.sun.management.jmxremote.local.only=false
+2014-03-11 18:59:40,960 [main] WARN  [org.rpi.main.StartMe] com.sun.management.jmxremote.port=9010
+2014-03-11 18:59:40,960 [main] WARN  [org.rpi.main.StartMe] file.encoding=Cp1252
+2014-03-11 18:59:40,960 [main] WARN  [org.rpi.main.StartMe] file.encoding.pkg=sun.io
+2014-03-11 18:59:40,960 [main] WARN  [org.rpi.main.StartMe] file.separator=\
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.awt.graphicsenv=sun.awt.Win32GraphicsEnvironment
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.awt.printerjob=sun.awt.windows.WPrinterJob
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.class.path=C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\bin;C:\Keep\Repository\java\log4j\log4j\1.2.16\apache-log4j-1.2.16\log4j-1.2.16.jar;C:\Keep\Repository\java\jspf\dist\jspf.core-1.0.2.jar;C:\Keep\Repository\java\quartz\quartz\2.1.1\quartz-2.1.1.jar;C:\Keep\Repository\java\quartz\quartz\2.1.1\lib\slf4j-api-1.6.1.jar;C:\Keep\Repository\java\quartz\quartz\2.1.1\lib\slf4j-log4j12-1.6.1.jar;C:\Keep\Repository\java\pi4j\pi4j-1.0-SNAPSHOT\lib\pi4j-core.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\ohnet-Pete.jar;C:\Keep\Repository\java\lastFM\lastfm-java-0.1.2.jar;C:\Keep\Repository\java\Jetty\jetty-all-9.0.4.v20130625.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\Grizzly\aopalliance-repackaged-2.2.0.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\Grizzly\grizzly-framework-2.3.8.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\Grizzly\grizzly-http-2.3.8.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\Grizzly\grizzly-http-server-2.3.8.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\Grizzly\hamcrest-core-1.1.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\Grizzly\hk2-api-2.2.0.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\Grizzly\hk2-locator-2.2.0.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\Grizzly\hk2-utils-2.2.0.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\Grizzly\javassist-3.18.1-GA.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\Grizzly\javax.annotation-api-1.2.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\Grizzly\javax.inject-2.2.0.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\Grizzly\javax.ws.rs-api-2.0.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\Grizzly\jersey-client-2.6.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\Grizzly\jersey-common-2.6.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\Grizzly\jersey-container-grizzly2-http-2.6.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\Grizzly\jersey-guava-2.6.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\Grizzly\jersey-server-2.6.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\Grizzly\junit-4.9.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\Grizzly\osgi-resource-locator-1.0.1.jar;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\lib\core\Grizzly\validation-api-1.1.0.Final.jar
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.class.version=51.0
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.endorsed.dirs=C:\Program Files (x86)\Java\jre7\lib\endorsed
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.ext.dirs=C:\Program Files (x86)\Java\jre7\lib\ext;C:\Windows\Sun\Java\lib\ext
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.home=C:\Program Files (x86)\Java\jre7
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.io.tmpdir=C:\Users\phoyle\AppData\Local\Temp\
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.library.path=C:\Program Files (x86)\Java\jre7\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\Perl\bin\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\WIDCOMM\Bluetooth Software\;C:\Program Files\WIDCOMM\Bluetooth Software\syswow64;C:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\DTS\Binn\;C:\Program Files\SlikSvn\bin;C:\Program Files\TortoiseSVN\bin;C:\Program Files\SourceGear\Common\DiffMerge\;C:\Keep\LinnDevelopment\Mono\Mono-2.10.8\bin\;C:\Keep\LinnDevelopment\Python\;C:\Keep\LinnDevelopment\Python\Scripts;C:\Keep\LinnDevelopment\NSIS\;C:\Keep\LinnDevelopment\GnuWin32\GnuWin32\bin\;C:\Keep\LinnDevelopment\xsltproc\bin\;C:\Keep\LinnDevelopment\Doxygen\doxygen\bin;C:\Keep\LinnDevelopment\Doxygen\doxygen\bin;C:\Windows\Microsoft.NET\Framework\v4.0.30319;C:\Keep\LinnDevelopment\ZIP\bin;C:\Program Files (x86)\msi2xml\;C:\Program Files (x86)\Common Files\GTK\2.0\bin;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\build\beta\libs\win32PETE;C:\Program Files\TortoiseHg\;C:\Program Files\TortoiseGit\bin;C:\Keep\Genesys\Projects\BT\DWP Phonebook\code\jar files;C:\Program Files (x86)\Git\cmd;C:\Program Files (x86)\Apache Software Foundation\apache-maven-3.2.1\bin;.
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.rmi.server.randomIDs=true
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.runtime.name=Java(TM) SE Runtime Environment
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.runtime.version=1.7.0_17-b02
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.specification.name=Java Platform API Specification
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.specification.vendor=Oracle Corporation
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.specification.version=1.7
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.vendor=Oracle Corporation
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.vendor.url=http://java.oracle.com/
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.vendor.url.bug=http://bugreport.sun.com/bugreport/
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.version=1.7.0_17
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.vm.info=mixed mode
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.vm.name=Java HotSpot(TM) Client VM
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.vm.specification.name=Java Virtual Machine Specification
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.vm.specification.vendor=Oracle Corporation
+2014-03-11 18:59:40,961 [main] WARN  [org.rpi.main.StartMe] java.vm.specification.version=1.7
+2014-03-11 18:59:40,962 [main] WARN  [org.rpi.main.StartMe] java.vm.vendor=Oracle Corporation
+2014-03-11 18:59:40,962 [main] WARN  [org.rpi.main.StartMe] java.vm.version=23.7-b01
+2014-03-11 18:59:40,962 [main] WARN  [org.rpi.main.StartMe] javax.sound.sampled.SourceDataLine=#Audio [plughw:0,0]
+2014-03-11 18:59:40,962 [main] WARN  [org.rpi.main.StartMe] line.separator=
+
+2014-03-11 18:59:40,962 [main] WARN  [org.rpi.main.StartMe] os.arch=x86
+2014-03-11 18:59:40,962 [main] WARN  [org.rpi.main.StartMe] os.name=Windows 7
+2014-03-11 18:59:40,962 [main] WARN  [org.rpi.main.StartMe] os.version=6.1
+2014-03-11 18:59:40,962 [main] WARN  [org.rpi.main.StartMe] path.separator=;
+2014-03-11 18:59:40,962 [main] WARN  [org.rpi.main.StartMe] sun.arch.data.model=32
+2014-03-11 18:59:40,962 [main] WARN  [org.rpi.main.StartMe] sun.boot.class.path=C:\Program Files (x86)\Java\jre7\lib\resources.jar;C:\Program Files (x86)\Java\jre7\lib\rt.jar;C:\Program Files (x86)\Java\jre7\lib\sunrsasign.jar;C:\Program Files (x86)\Java\jre7\lib\jsse.jar;C:\Program Files (x86)\Java\jre7\lib\jce.jar;C:\Program Files (x86)\Java\jre7\lib\charsets.jar;C:\Program Files (x86)\Java\jre7\lib\jfr.jar;C:\Program Files (x86)\Java\jre7\classes
+2014-03-11 18:59:40,962 [main] WARN  [org.rpi.main.StartMe] sun.boot.library.path=C:\Program Files (x86)\Java\jre7\bin
+2014-03-11 18:59:40,962 [main] WARN  [org.rpi.main.StartMe] sun.cpu.endian=little
+2014-03-11 18:59:40,963 [main] WARN  [org.rpi.main.StartMe] sun.cpu.isalist=pentium_pro+mmx pentium_pro pentium+mmx pentium i486 i386 i86
+2014-03-11 18:59:40,963 [main] WARN  [org.rpi.main.StartMe] sun.desktop=windows
+2014-03-11 18:59:40,963 [main] WARN  [org.rpi.main.StartMe] sun.io.unicode.encoding=UnicodeLittle
+2014-03-11 18:59:40,963 [main] WARN  [org.rpi.main.StartMe] sun.java.command=org.rpi.main.StartMe -input
+2014-03-11 18:59:40,963 [main] WARN  [org.rpi.main.StartMe] sun.java.launcher=SUN_STANDARD
+2014-03-11 18:59:40,963 [main] WARN  [org.rpi.main.StartMe] sun.jnu.encoding=Cp1252
+2014-03-11 18:59:40,963 [main] WARN  [org.rpi.main.StartMe] sun.management.compiler=HotSpot Client Compiler
+2014-03-11 18:59:40,963 [main] WARN  [org.rpi.main.StartMe] sun.os.patch.level=Service Pack 1
+2014-03-11 18:59:40,963 [main] WARN  [org.rpi.main.StartMe] user.country=GB
+2014-03-11 18:59:40,963 [main] WARN  [org.rpi.main.StartMe] user.dir=C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer
+2014-03-11 18:59:40,963 [main] WARN  [org.rpi.main.StartMe] user.home=C:\Users\phoyle
+2014-03-11 18:59:40,963 [main] WARN  [org.rpi.main.StartMe] user.language=en
+2014-03-11 18:59:40,963 [main] WARN  [org.rpi.main.StartMe] user.name=phoyle
+2014-03-11 18:59:40,963 [main] WARN  [org.rpi.main.StartMe] user.script=
+2014-03-11 18:59:40,963 [main] WARN  [org.rpi.main.StartMe] user.timezone=Europe/London
+2014-03-11 18:59:40,963 [main] WARN  [org.rpi.main.StartMe] user.variant=
+2014-03-11 18:59:40,963 [main] WARN  [org.rpi.main.StartMe] #####End of System Properties#########
+2014-03-11 18:59:40,963 [main] WARN  [org.rpi.main.StartMe] 
+2014-03-11 18:59:40,965 [main] WARN  [org.rpi.main.StartMe] #####Start of System Variables#########
+2014-03-11 18:59:40,967 [main] WARN  [org.rpi.main.StartMe] USERPROFILE=C:\Users\phoyle
+2014-03-11 18:59:40,967 [main] WARN  [org.rpi.main.StartMe] JAVA_HOME=C:\Keep\Java\jdk1.7.0_51
+2014-03-11 18:59:40,967 [main] WARN  [org.rpi.main.StartMe] SSH_AGENT_PID=8944
+2014-03-11 18:59:40,967 [main] WARN  [org.rpi.main.StartMe] SystemDrive=C:
+2014-03-11 18:59:40,967 [main] WARN  [org.rpi.main.StartMe] M2=C:\Program Files (x86)\Apache Software Foundation\apache-maven-3.2.1\bin
+2014-03-11 18:59:40,967 [main] WARN  [org.rpi.main.StartMe] Path=C:\Perl\bin\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files\WIDCOMM\Bluetooth Software\;C:\Program Files\WIDCOMM\Bluetooth Software\syswow64;C:\Program Files (x86)\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\Tools\Binn\;C:\Program Files\Microsoft SQL Server\100\DTS\Binn\;C:\Program Files\SlikSvn\bin;C:\Program Files\TortoiseSVN\bin;C:\Program Files\SourceGear\Common\DiffMerge\;C:\Keep\LinnDevelopment\Mono\Mono-2.10.8\bin\;C:\Keep\LinnDevelopment\Python\;C:\Keep\LinnDevelopment\Python\Scripts;C:\Keep\LinnDevelopment\NSIS\;C:\Keep\LinnDevelopment\GnuWin32\GnuWin32\bin\;C:\Keep\LinnDevelopment\xsltproc\bin\;C:\Keep\LinnDevelopment\Doxygen\doxygen\bin;C:\Keep\LinnDevelopment\Doxygen\doxygen\bin;C:\Windows\Microsoft.NET\Framework\v4.0.30319;C:\Keep\LinnDevelopment\ZIP\bin;C:\Program Files (x86)\msi2xml\;C:\Program Files (x86)\Common Files\GTK\2.0\bin;C:\Keep\git\repository\MediaPlayer\com.upnp.mediaplayer\build\beta\libs\win32PETE;C:\Program Files\TortoiseHg\;C:\Program Files\TortoiseGit\bin;C:\Keep\Genesys\Projects\BT\DWP Phonebook\code\jar files;C:\Program Files (x86)\Git\cmd;C:\Program Files (x86)\Apache Software Foundation\apache-maven-3.2.1\bin
+2014-03-11 18:59:40,967 [main] WARN  [org.rpi.main.StartMe] PROCESSOR_REVISION=2a07
+2014-03-11 18:59:40,967 [main] WARN  [org.rpi.main.StartMe] USERDOMAIN=GENESYS_EUROPE
+2014-03-11 18:59:40,968 [main] WARN  [org.rpi.main.StartMe] ALLUSERSPROFILE=C:\ProgramData
+2014-03-11 18:59:40,968 [main] WARN  [org.rpi.main.StartMe] SESSIONNAME=Console
+2014-03-11 18:59:40,968 [main] WARN  [org.rpi.main.StartMe] TMP=C:\Users\phoyle\AppData\Local\Temp
+2014-03-11 18:59:40,968 [main] WARN  [org.rpi.main.StartMe] M2_HOME=C:\Program Files (x86)\Apache Software Foundation\apache-maven-3.2.1
+2014-03-11 18:59:40,968 [main] WARN  [org.rpi.main.StartMe] LOGONSERVER=\\US-DC-EMEADC
+2014-03-11 18:59:40,968 [main] WARN  [org.rpi.main.StartMe] =::=::\
+2014-03-11 18:59:40,968 [main] WARN  [org.rpi.main.StartMe] CommonProgramFiles=C:\Program Files (x86)\Common Files
+2014-03-11 18:59:40,968 [main] WARN  [org.rpi.main.StartMe] VS100COMNTOOLS=C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\Tools\
+2014-03-11 18:59:40,968 [main] WARN  [org.rpi.main.StartMe] PROCESSOR_LEVEL=6
+2014-03-11 18:59:40,968 [main] WARN  [org.rpi.main.StartMe] USERDOMAIN_ROAMINGPROFILE=GENESYS_EUROPE
+2014-03-11 18:59:40,968 [main] WARN  [org.rpi.main.StartMe] LOCALAPPDATA=C:\Users\phoyle\AppData\Local
+2014-03-11 18:59:40,968 [main] WARN  [org.rpi.main.StartMe] COMPUTERNAME=D067E5492684
+2014-03-11 18:59:40,968 [main] WARN  [org.rpi.main.StartMe] SystemRoot=C:\Windows
+2014-03-11 18:59:40,968 [main] WARN  [org.rpi.main.StartMe] USERNAME=phoyle
+2014-03-11 18:59:40,968 [main] WARN  [org.rpi.main.StartMe] APPDATA=C:\Users\phoyle\AppData\Roaming
+2014-03-11 18:59:40,968 [main] WARN  [org.rpi.main.StartMe] ProgramData=C:\ProgramData
+2014-03-11 18:59:40,968 [main] WARN  [org.rpi.main.StartMe] PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC
+2014-03-11 18:59:40,969 [main] WARN  [org.rpi.main.StartMe] USERDNSDOMAIN=EMEA.INT.GENESYSLAB.COM
+2014-03-11 18:59:40,969 [main] WARN  [org.rpi.main.StartMe] ProgramFiles(x86)=C:\Program Files (x86)
+2014-03-11 18:59:40,969 [main] WARN  [org.rpi.main.StartMe] TEMP=C:\Users\phoyle\AppData\Local\Temp
+2014-03-11 18:59:40,969 [main] WARN  [org.rpi.main.StartMe] ProgramFiles=C:\Program Files (x86)
+2014-03-11 18:59:40,969 [main] WARN  [org.rpi.main.StartMe] HOMEDRIVE=C:
+2014-03-11 18:59:40,969 [main] WARN  [org.rpi.main.StartMe] UATDATA=C:\Windows\CCM\UATData\D9F8C395-CAB8-491d-B8AC-179A1FE1BE77
+2014-03-11 18:59:40,969 [main] WARN  [org.rpi.main.StartMe] ProgramW6432=C:\Program Files
+2014-03-11 18:59:40,969 [main] WARN  [org.rpi.main.StartMe] SSH_AUTH_SOCK=/tmp/ssh-CzxsPx8872/agent.8872
+2014-03-11 18:59:40,969 [main] WARN  [org.rpi.main.StartMe] JAVA_HOME_OLD=C:\Keep\Java\jdk1.5.0_01
+2014-03-11 18:59:40,969 [main] WARN  [org.rpi.main.StartMe] PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 42 Stepping 7, GenuineIntel
+2014-03-11 18:59:40,969 [main] WARN  [org.rpi.main.StartMe] PROCESSOR_ARCHITECTURE=x86
+2014-03-11 18:59:40,969 [main] WARN  [org.rpi.main.StartMe] OS=Windows_NT
+2014-03-11 18:59:40,969 [main] WARN  [org.rpi.main.StartMe] FP_NO_HOST_CHECK=NO
+2014-03-11 18:59:40,969 [main] WARN  [org.rpi.main.StartMe] PROCESSOR_ARCHITEW6432=AMD64
+2014-03-11 18:59:40,969 [main] WARN  [org.rpi.main.StartMe] HOMEPATH=\Users\phoyle
+2014-03-11 18:59:40,969 [main] WARN  [org.rpi.main.StartMe] CommonProgramW6432=C:\Program Files\Common Files
+2014-03-11 18:59:40,969 [main] WARN  [org.rpi.main.StartMe] HOME=C:\temp\Mono
+2014-03-11 18:59:40,969 [main] WARN  [org.rpi.main.StartMe] windir=C:\Windows
+2014-03-11 18:59:40,970 [main] WARN  [org.rpi.main.StartMe] DellClientSystemUpdatePath=C:\Program Files (x86)\Dell\ClientSystemUpdate\
+2014-03-11 18:59:40,970 [main] WARN  [org.rpi.main.StartMe] NUMBER_OF_PROCESSORS=4
+2014-03-11 18:59:40,970 [main] WARN  [org.rpi.main.StartMe] PSModulePath=C:\Windows\system32\WindowsPowerShell\v1.0\Modules\
+2014-03-11 18:59:40,970 [main] WARN  [org.rpi.main.StartMe] PUBLIC=C:\Users\Public
+2014-03-11 18:59:40,970 [main] WARN  [org.rpi.main.StartMe] CommonProgramFiles(x86)=C:\Program Files (x86)\Common Files
+2014-03-11 18:59:40,970 [main] WARN  [org.rpi.main.StartMe] ComSpec=C:\Windows\system32\cmd.exe
+2014-03-11 18:59:40,970 [main] WARN  [org.rpi.main.StartMe] #####End of System Variables#########
+2014-03-11 18:59:40,970 [main] WARN  [org.rpi.main.StartMe] 
+2014-03-11 18:59:40,993 [main] WARN  [org.rpi.os.OSManager] Using full_path /C:/Keep/git/repository/MediaPlayer/com.upnp.mediaplayer/bin/mediaplayer_lib/ohNet/windows/x86

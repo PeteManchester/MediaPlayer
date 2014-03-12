@@ -33,7 +33,8 @@ public class Config {
 	public static String songcastSoundCardName = "";
 	
 	private static Calendar cal = Calendar.getInstance();
-	public static boolean songcastLatencyEnabled = false;	
+	public static boolean songcastLatencyEnabled = false;
+	public static String webHttpPort = "8088";	
 	
 	public static String getProtocolInfo() {
 		StringBuilder sb = new StringBuilder();

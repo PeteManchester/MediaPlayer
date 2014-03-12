@@ -1,51 +1,39 @@
 $(document).ready(function(){
-	
 	var news= "Players (mpd and mplayer) Config..";
 	var info= "Songcast Config....";
 	var lyrics = "Media Player Config....";
 	var title = "Change the Config";
-	var response = '[{ "option":"friendly_name",    "value":"Study"},    {     "option":"log_file_name",      "value":"mediaplayer.log"},    {     "option":"songcast_soundcard_name",      "value":"Audio [plughw:0,0]"}]';
+	var response = '{ "friendly_name": "Bedroom","player":"mpd", "log_file_name": "mediaplayer.log",  "songcast_soundcard_name": "Audio [plughw:0,0]"}';
 	
     try {	    	
-    	// convert string to JSON
-    	response = $.parseJSON(response);
-    	//alert("After Response");
-    	$(function() {
-    	    $.each(response, function(i, item) {
-    	        //var $tr = $('<tr>').append( $('<td>').text(item.option), $('<td>').text(item.value)).appendTo('#my-table');
-    	        //alert($tr.wrap('<p>').html());
-    	    	var eachrow = "<tr>" + "<td>" + item.option + "</td>"  + "<td>" + item.value + "</td>" + "</tr>" ;
-    	    	$('#tbody').append(eachrow);
-    	    	//$('<tr>').html("<td>" + response[i].option + "</td><td>" + response[i].value + "</td>").appendTo('#tbody');
-    	    });
-    	});
 		 
-  }
-  catch(e)
-  {
-  	alert(e);
-  }
-	
-	
-	checkStatus();
-    // setInterval(checkStatus,1000);
+	  }
+	  catch(e)
+	  {
+	  	alert(e);
+	  }
+  
+  checkStatus();
+    //setInterval(checkStatus,10000);
 
-  $("#MediaPlayer").click(function(){
-	    $("#text").text(lyrics);
-	    $("#header").text(title);
+  $("#Status").click(function(){
+	    //$("#text").text(lyrics);
+	    //$("#header").text(title);
 	  });
-  $("#Songcast").click(function(){
+  $("#Config").click(function(){
 	    // alert('Info');
-	  $("#text").text(info);
+	  //$("#text").text(info);
 	  });
-  $("#Players").click(function(){
-	  $("#text").text(news);
+  $("#Track").click(function(){
+	  //$("#text").text(news);
 	  });
 	  
-	  $('<input type="radio" name="radio-choice-1" id="radio-choice-4"><label for="radio-choice-4">Cow</label>').appendTo("fieldset");
+	  //$('<input type="radio" name="radio-choice-1" id="radio-choice-4"><label for="radio-choice-4">Cow</label>').appendTo("fieldset");
 
       $("div").trigger('create');
       $("input[type='radio']").checkboxradio().checkboxradio("refresh");
+      
+      
 });
 
 /*
@@ -60,19 +48,47 @@ function checkStatus()
 {
     // http://stackoverflow.com/questions/8922343/dynamically-creating-vertically-grouped-radio-buttons-with-jquery
 	$.ajax({
-
+		
     	dataType: 'json',
         headers: {
             Accept:"application/json",
             "Access-Control-Allow-Origin": "*"
         },
         type:'GET',
-        url:'http://d067e5492684:8090/com.upnp.mediaplayer/pretech/state/Pete,Test',
+        url:'/myapp/rest/config',
         success: function(data)
         {
-        	var test = data.value;
-        	test = test.replace("\r\n", "<br/>");
-        	$("#text").html(test);
+        	
+        	$("#friendlyName").val(data.friendly_name);
+        	
+        	$("#select-choice-player").val(data.player);
+    		$("#select-choice-player").selectmenu("refresh");
+    		
+    		$("#playlistMax").val(data.playlist_max);
+        	
+        	$("#logFileName").val(data.log_file);
+        	
+        	$("#savePlayList").val(data.save_local_playlist);
+        	$("#savePlayList").slider("refresh");
+        	
+        	$("#AVTransport").val(data.enableAVTransport);
+        	$("#AVTransport").slider("refresh");
+        	
+        	$("#songcastReceiver").val(data.enableReceiver);
+        	$("#songcastReceiver").slider("refresh");
+        	
+        	$("#mplayerPlayList").val(data.log_file);
+        	
+        	$("#mplayerPath").val(data.mplayer_path);
+        	
+        	$("#mplayerCache").val(data.mplayer_cache);
+        	
+        	$("#mplayerCacheMin").val(data.mplayer_cache_min);
+        	
+        	$("#mpdHost").val(data.mpd_host);
+        	
+        	$("#mpdPort").val(data.mpd_port);
+        	
         },
         error: function (result) {
         	alert("Error " + result);
@@ -80,4 +96,6 @@ function checkStatus()
         
     });
 	
+	
 }
+

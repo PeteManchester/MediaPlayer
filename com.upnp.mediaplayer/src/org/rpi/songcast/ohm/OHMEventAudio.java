@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.rpi.mplayer.TrackInfo;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventUpdateTrackInfo;
+import org.rpi.songcast.core.AudioInformation;
 import org.rpi.songcast.core.SongcastMessage;
 import org.rpi.songcast.core.SongcastPlayerJSLatency;
 
@@ -70,9 +71,10 @@ public class OHMEventAudio extends SongcastMessage {
 	/**
 	 * Used to set the Track Info
 	 */
-	public void getTrackInfo() {
+	public AudioInformation getTrackInfo() {
 		TrackInfo info = new TrackInfo();
 		long iBitDepth = new BigInteger(getBytes(54, 54)).longValue();
+		
 		info.setBitDepth(iBitDepth);
 		long iBitRate = new BigInteger(getBytes(48, 51)).longValue();
 		try {
@@ -81,6 +83,7 @@ public class OHMEventAudio extends SongcastMessage {
 
 		}
 		info.setBitrate(iBitRate);
+		
 		int codecNameLength = new BigInteger(getBytes(57, 57)).intValue();
 
 		byte[] codec = getBytes(58, (58 + codecNameLength) - 1);
@@ -90,14 +93,17 @@ public class OHMEventAudio extends SongcastMessage {
 			info.setCodec(sCodec);
 		} catch (UnsupportedEncodingException e) {
 		}
+		
 		long iSampleRate = new BigInteger(getBytes(44, 47)).longValue();
 		info.setSampleRate(iSampleRate);
 		info.setDuration(0);
+		int channels = new BigInteger(getBytes(55, 55)).intValue();
 		log.info("Songcast Stream: Codec: " + sCodec + " SampleRate: " + iSampleRate + " BitRate: " + iBitRate + " BitDepth: " + iBitDepth);
+		AudioInformation audioInf = new AudioInformation(iSampleRate, iBitRate, iBitDepth, channels, sCodec);
 		EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
 		ev.setTrackInfo(info);
 		PlayManager.getInstance().updateTrackInfo(ev);
-
+		return audioInf;
 	}
 
 	/**

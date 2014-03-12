@@ -145,6 +145,11 @@
 
         <!-- copy additional files to application -->
         <copy file="${basedir}/license.txt" todir="${release_dir}" />
+    	
+    	<!-- copy web files to the application -->
+    	<copy todir="${release_dir}/web">
+    	            <fileset dir="${basedir}/web"/>
+    	</copy>
 
         <copy todir="${release_dir}">
             <fileset dir="${lib_dir}/application"/>
