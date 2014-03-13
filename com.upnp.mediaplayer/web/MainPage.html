@@ -93,19 +93,6 @@
 				</ul>
 			</form>
 
-
-
-			<table id="my-table">
-				<thead>
-					<tr>
-						<th align="left">Option</th>
-						<th align="left">Value</th>
-					</tr>
-				</thead>
-				<tbody id="tbody">
-				</tbody>
-			</table>
-
 		</div>
 
 		<!-- /content -->
@@ -121,17 +108,25 @@
 		<div data-role="panel" id="leftpanel1" data-position="left"
 			data-display="reveal" data-dismissible="true" data-theme="a">
 
-			<h3>Renderers</h3>
-			<div data-role="content" id="radios">
-				<fieldset data-role="controlgroup" data-mini="true"
-					data-inline="true">
-					<input type="radio" name="radio-choice-1" id="radio-choice-1"
-						value="choice-1" checked="checked" /> <label for="radio-choice-1">Study</label>
+			<h3>Control</h3>
+			
+			<h4>MediaPlayer</h4>
+			<div data-role="content" id="mediaplayer">
+				<fieldset data-role="controlgroup" data-mini="true" 	data-inline="true">
+					<input type="button" id="Stop" name="Stop" data-mini="true" value="Stop" />
+					<p>
+					<input type="button" id="Restart" name="Restart" data-mini="true" value="Restart" />
+					<p>
 
-					<input type="radio" name="radio-choice-1" id="radio-choice-2"
-						value="choice-2" /> <label for="radio-choice-2">Lounge</label> <input
-						type="radio" name="radio-choice-1" id="radio-choice-3"
-						value="choice-3" /> <label for="radio-choice-3">Bedroom</label>
+				</fieldset>
+				<p>
+				<h4>OS</h4>
+				<fieldset data-role="controlgroupOS" data-mini="true" 	data-inline="true">
+
+					<input type="button" id="Reboot" name="Reboot" data-mini="true" value="Reboot" />
+					<p>
+					<input type="button" id="Shutdown" name="Shutdown" data-mini="true" value="Shutdown" />
+					<p>
 				</fieldset>
 			</div>
 			<a href="#demo-links" data-rel="close" data-role="button"

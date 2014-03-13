@@ -4,7 +4,6 @@ $(document).ready(function(){
 	var lyrics = "Media Player Config....";
 	var title = "Change the Config";
 	var response = '{ "friendly_name": "Bedroom","player":"mpd", "log_file_name": "mediaplayer.log",  "songcast_soundcard_name": "Audio [plughw:0,0]"}';
-	
     try {	    	
 
 		 
@@ -12,9 +11,7 @@ $(document).ready(function(){
     catch(e)
     {
   	  alert(e);
-    }
-  
-	
+    }	
 	checkStatus();
     //setInterval(checkStatus,10000);
 
@@ -48,6 +45,6 @@ $(document).ready(function(){
  */
 function checkStatus()
 {
-	
+	alert('Alarm Check Status');
 }
 

@@ -65,6 +65,7 @@ public class OHMEventAudio extends SongcastMessage {
 		int codecNameLength = new BigInteger(getBytes(57, 57)).intValue();
 		int soundStart = 8 + headerLength + codecNameLength;
 		int soundEnd = soundStart + ((channels * iBitDepth * (sampleCount) / 8));
+		int length = soundEnd - soundStart;
 		setSound(getBytes(soundStart, soundEnd - 1));
 	}
 
@@ -78,7 +79,7 @@ public class OHMEventAudio extends SongcastMessage {
 		info.setBitDepth(iBitDepth);
 		long iBitRate = new BigInteger(getBytes(48, 51)).longValue();
 		try {
-			iBitRate = iBitRate / 1000;
+			iBitRate = iBitRate;
 		} catch (Exception e) {
 
 		}

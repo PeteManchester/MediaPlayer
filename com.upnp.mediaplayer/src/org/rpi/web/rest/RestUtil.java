@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
+import java.net.URLEncoder;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -14,6 +15,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
+
+import com.sun.xml.internal.bind.v2.runtime.output.Encoded;
 
 /**
  * Root resource (exposed at "myresource" path)
@@ -32,7 +35,7 @@ public class RestUtil {
 	 */
 	@Path("config")
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces("text/html; charset=utf-8")
 	public String getIt() {
 		StringBuilder sb = new StringBuilder();
 		try {
@@ -67,9 +70,10 @@ public class RestUtil {
 
 	private String converValues(String value) {
 		try {
-			value = value.replace('\\', '/');
+			//value = value.replace('\\', '/');
+			value = URLEncoder.encode(value, "UTF-8");
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Error creating Encoding JSON",e);
 		}
 		return value;
 	}
@@ -96,7 +100,7 @@ public class RestUtil {
 			sb.append(comma + q + "cpu_time" + q + colon + space + q + mxbean.getProcessCpuTime() + q);
 			sb.append("}");
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Error creating Status JSON",e);
 		}
 		return sb.toString();
 	}

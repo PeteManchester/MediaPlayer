@@ -20,7 +20,7 @@ public class SongcastPlayerJavaSound implements ISongcastPlayer, Runnable {
 	private Logger log = Logger.getLogger(this.getClass());
 	private boolean run = true;
 
-	private AudioFormat audioFormat = new AudioFormat(44100, 16, 2, true, true);
+	private AudioFormat audioFormat = null;
 	private DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
 
 	private SourceDataLine soundLine = null;
@@ -35,6 +35,7 @@ public class SongcastPlayerJavaSound implements ISongcastPlayer, Runnable {
 		try {
 			log.info("Creating Audio Format: " + audioInf.toString());
 			audioFormat = new AudioFormat(audioInf.getSampleRate(), audioInf.getBitDepth(), audioInf.getChannels(), audioInf.isSigned(), audioInf.isBigEndian());
+			log.debug("AudioFormat: " + audioFormat.toString());
 			info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
 			if (soundLine == null) {
 				soundLine = (SourceDataLine) AudioSystem.getLine(info);

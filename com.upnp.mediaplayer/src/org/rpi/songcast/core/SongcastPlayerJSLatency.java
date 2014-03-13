@@ -1,7 +1,9 @@
 package org.rpi.songcast.core;
 
 import java.util.Vector;
+
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
@@ -39,13 +41,26 @@ public class SongcastPlayerJSLatency implements ISongcastPlayer, Runnable {
 
 	public SongcastPlayerJSLatency() {
 		// createSoundLine();
+		
 	}
 
 	public void createSoundLine(AudioInformation audioInf) {
 		try {
 			log.info("Creating Audio Format: " + audioInf.toString());
+			
 			audioFormat = new AudioFormat(audioInf.getSampleRate(), audioInf.getBitDepth(), audioInf.getChannels(), audioInf.isSigned(), audioInf.isBigEndian());
-			info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
+			//audioFormat = new AudioFormat(Encoding.PCM_SIGNED, audioInf.getSampleRate(), , audioInf.getChannels(),8,audioInf.getBitRate(), audioInf.isBigEndian());
+			//audioFormat = new AudioFormat(Encoding.PCM_SIGNED, audioInf.getSampleRate(), audioInf.getBitDepth(), audioInf.getChannels(),4,audioInf.getSampleRate(), audioInf.isBigEndian());
+			int adjust_frameBufferSize = audioFormat.getFrameSize();
+			log.debug("FrameSize: " + adjust_frameBufferSize);
+			int buffer_size = 32000;
+			buffer_size = buffer_size - (buffer_size %adjust_frameBufferSize);
+			log.debug("Adjusted Buffer Size: " + buffer_size);
+			info = new DataLine.Info(SourceDataLine.class, audioFormat, buffer_size);
+			for (AudioFormat lineFormat : info.getFormats())
+			{
+				log.debug(lineFormat.toString());
+			}
 			if (soundLine == null) {
 				soundLine = (SourceDataLine) AudioSystem.getLine(info);
 				soundLine.open(audioFormat);

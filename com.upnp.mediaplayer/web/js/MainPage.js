@@ -46,48 +46,50 @@ $(document).ready(function(){
  */
 function checkStatus()
 {
+	//alert('MainPage CheckStatus');
     // http://stackoverflow.com/questions/8922343/dynamically-creating-vertically-grouped-radio-buttons-with-jquery
 	$.ajax({
 		
-    	dataType: 'json',
+    	dataType: 'text',
         headers: {
-            Accept:"application/json",
+            Accept:"text/html; charset=utf-8",
             "Access-Control-Allow-Origin": "*"
         },
         type:'GET',
         url:'/myapp/rest/config',
-        success: function(data)
+        success: function(text)
         {
         	
-        	$("#friendlyName").val(data.friendly_name);
+        	var data = JSON.parse(text);
+        	$("#friendlyName").val(decodeURIComponent(data.friendly_name));
         	
-        	$("#select-choice-player").val(data.player);
+        	$("#select-choice-player").val(decodeURIComponent(data.player));
     		$("#select-choice-player").selectmenu("refresh");
     		
-    		$("#playlistMax").val(data.playlist_max);
+    		$("#playlistMax").val(decodeURIComponent(data.playlist_max));
         	
-        	$("#logFileName").val(data.log_file);
+        	$("#logFileName").val(decodeURIComponent(data.log_file));
         	
-        	$("#savePlayList").val(data.save_local_playlist);
+        	$("#savePlayList").val(decodeURIComponent(data.save_local_playlist));
         	$("#savePlayList").slider("refresh");
         	
-        	$("#AVTransport").val(data.enableAVTransport);
+        	$("#AVTransport").val(decodeURIComponent(data.enableAVTransport));
         	$("#AVTransport").slider("refresh");
         	
-        	$("#songcastReceiver").val(data.enableReceiver);
+        	$("#songcastReceiver").val(decodeURIComponent(data.enableReceiver));
         	$("#songcastReceiver").slider("refresh");
         	
-        	$("#mplayerPlayList").val(data.log_file);
+        	$("#mplayerPlayList").val(decodeURIComponent(data.log_file));
         	
-        	$("#mplayerPath").val(data.mplayer_path);
+        	$("#mplayerPath").val(decodeURIComponent(data.mplayer_path));
         	
-        	$("#mplayerCache").val(data.mplayer_cache);
+        	$("#mplayerCache").val(decodeURIComponent(data.mplayer_cache));
         	
-        	$("#mplayerCacheMin").val(data.mplayer_cache_min);
+        	$("#mplayerCacheMin").val(decodeURIComponent(data.mplayer_cache_min));
         	
-        	$("#mpdHost").val(data.mpd_host);
+        	$("#mpdHost").val(decodeURIComponent(data.mpd_host));
         	
-        	$("#mpdPort").val(data.mpd_port);
+        	$("#mpdPort").val(decodeURIComponent(data.mpd_port));
         	
         },
         error: function (result) {
@@ -98,4 +100,5 @@ function checkStatus()
 	
 	
 }
+
 
