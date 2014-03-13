@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="build_plugin" name="Fullscreen Plugin">
+
+    <target name="clean_plugin">
+        <delete dir="${plugin_target_dir}/Fullscreen"/>
+    </target>
+
+    <target name="build_plugin">
+        <jar destfile="${plugin_target_dir}/Fullscreen/Fullscreen.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="${classes_dir}">
+                <include name="**/plugin/fullscreen/**" />
+            </fileset>
+
+            <zipfileset excludes="META-INF/*.SF" src="${lib_dir}/plugins/imgscalr-lib-4.2.jar"/>
+        </jar>
+    </target>
+
+</project>

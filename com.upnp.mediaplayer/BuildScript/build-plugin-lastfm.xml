@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="build_plugin" name="LastFM Plugin">
+
+    <target name="clean_plugin">
+        <delete dir="${plugin_target_dir}/LastFM"/>
+    </target>
+
+    <target name="build_plugin" depends="clean_plugin">
+        <jar destfile="${plugin_target_dir}/LastFM/LastFM.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="${classes_dir}">
+                <include name="**/plugin/lastfm/**" />
+            </fileset>
+
+            <zipfileset excludes="META-INF/*.SF" src="${lib_dir}/plugins/lastfm-java-0.1.2.jar"/>
+        </jar>
+
+        <copy file="${src_dir}/org/rpi/plugin/lastfm/LastFM.xml" todir="${plugin_target_dir}/LastFM"/>
+    </target>
+
+</project>

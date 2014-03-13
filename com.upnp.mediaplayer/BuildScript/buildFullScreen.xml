@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="build_plugin" name="Create Fullscreen Plugin" basedir="$basedir">
+    <!--ANT 1.7 is required                                        -->
+    <property name="builddir" value="${basedir}/build" />
+	<property name="buildbeta" value="${builddir}/beta" />
+    
+    <target name="build_plugin">
+        <jar destfile="${basedir}/plugins/Fullscreen/Fullscreen.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="${basedir}/bin">
+                <include name = "/org/rpi/plugin/fullscreen/*" />
+            </fileset>
+             
+            <zipfileset excludes="META-INF/*.SF" src="${basedir}/../build/lib/plugins/imgscalr-lib-4.2.jar"/>
+        </jar>
+    </target>
+</project>
