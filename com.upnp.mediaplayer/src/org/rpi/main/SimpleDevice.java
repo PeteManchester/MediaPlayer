@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.openhome.net.core.*;
 import org.openhome.net.device.*;
 import org.rpi.config.Config;
+import org.rpi.http.HttpServerGrizzly;
 import org.rpi.os.OSManager;
 import org.rpi.player.PlayManager;
 import org.rpi.plugingateway.PluginGateWay;
@@ -13,7 +14,10 @@ import org.rpi.sources.Source;
 import org.rpi.sources.SourceReader;
 import org.rpi.utils.NetworkUtils;
 
+
+
 import javax.imageio.ImageIO;
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -39,6 +43,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	private PrvReceiver iReceiver = null;
 	private PrvAVTransport iAVTransport = null;
 	private PrvRenderingControl iRenderingControl = null;
+	private HttpServerGrizzly httpServer = null;
 
 	private PlayManager iPlayer = PlayManager.getInstance();
 
@@ -142,6 +147,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		iDevice.setEnabled();
 		log.debug("Device Enabled UDN: " + iDevice.getUdn());
 		iProduct.setSourceByname("PlayList");
+		httpServer = new HttpServerGrizzly(Config.webHttpPort);
 		OSManager.getInstance().loadPlugins();
 	}
 
@@ -246,6 +252,18 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	}
 
 	public void dispose() {
+		
+		try
+		{
+			if(httpServer !=null)
+			{
+				httpServer.shutdown();
+			}
+		}
+		catch(Exception e)
+		{
+			log.error("Error Stopping HTTP Server:", e);
+		}
 
 		try {
 			OSManager.getInstance().dispose();

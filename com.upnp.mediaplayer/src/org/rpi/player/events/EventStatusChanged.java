@@ -1,6 +1,7 @@
 package org.rpi.player.events;
 
-import org.rpi.playlist.CustomTrack;
+import org.rpi.channel.ChannelBase;
+import org.rpi.channel.ChannelPlayList;
 
 public class EventStatusChanged implements EventBase {
 	
@@ -9,7 +10,7 @@ public class EventStatusChanged implements EventBase {
 		return EnumPlayerEvents.EVENTSTATUSCHANGED;
 	}
 	
-	private CustomTrack current_track = null;
+	private ChannelBase current_track = null;
 
 //	public EventStatusChanged(Object source) {
 //		super(source);
@@ -31,11 +32,11 @@ public class EventStatusChanged implements EventBase {
 
 	private String status = "";
 
-	public void setTrack(CustomTrack current_track) {
+	public void setTrack(ChannelBase current_track) {
 		this.current_track = current_track;
 	}
 	
-	public CustomTrack getTrack()
+	public ChannelBase getTrack()
 	{
 		return current_track;
 	}

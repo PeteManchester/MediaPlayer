@@ -1,0 +1,8 @@
+[Unit]
+Description=MediaPlayer
+
+[Service]
+ExecStart=/home/pi/mediaplayer/run_systemd.sh
+
+[Install]
+WantedBy=multi-user.target

@@ -18,4 +18,39 @@
         </jar>
         <copy file="${basedir}\src\org\rpi\plugin\lirc\LIRCConfig.xml" todir="${basedir}/plugins/LIRC"/>
     </target>
+    
+        <target name="deployStudy">
+		<antcall target="CopyFilesToRaspi">
+			<param name="server_name" value="rpistudy.local" />
+		</antcall>
+	</target>
+	
+   <target name="deployBedroom">
+		<antcall target="CopyFilesToRaspi">
+			<param name="server_name" value="rpibedroom.local" />
+		</antcall>
+	</target>
+	
+   <target name="deployLounge">
+		<antcall target="CopyFilesToRaspi">
+			<param name="server_name" value="rpilounge.local" />
+		</antcall>
+	</target>
+	
+    	<target name="CopyFilesToRaspi">
+		<echo>Sending to ${server_name} </echo>
+		<echo>Sending to ${server_name} Stopping mediaplayer</echo>
+		<sshexec host="${server_name}" username="root" password="root" command="sudo service mediaplayer stop" trust="true" />
+		<echo>Sending to ${server_name} Copying files </echo>
+		<scp remoteTodir="root:root@${server_name}:/home/pi/mediaplayer/plugins/LIRC" trust="yes" sftp="true">
+			<fileset dir="${basedir}/plugins/LIRC">
+				<include name="LIRCIntegration.jar" />
+				<!--include name="LIRCIntegration.xml" /-->
+			</fileset>
+		</scp>
+					
+		<echo>Sending to ${server_name} Starting mediaplayer</echo>
+		<sshexec host="${server_name}" username="root" password="root" command="sudo service mediaplayer start" trust="true" />
+		
+	</target>
 </project>

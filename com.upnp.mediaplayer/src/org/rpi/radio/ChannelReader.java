@@ -14,6 +14,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
+import org.rpi.channel.ChannelRadio;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -25,7 +26,7 @@ public class ChannelReader {
 	
 	private static Logger log = Logger.getLogger(ChannelReader.class);
 	
-	private List<CustomChannel> channels = new ArrayList<CustomChannel>();
+	private List<ChannelRadio> channels = new ArrayList<ChannelRadio>();
 	
 	private String metaData = "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:artist role='Performer' xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:artist><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='' nrAudioChannels='' protocolInfo='http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01'></res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:albumArtURI></item></DIDL-Lite>";
 	
@@ -33,7 +34,7 @@ public class ChannelReader {
 	 * Read the RadioList.xml file and build a List of Radio Channels
 	 * @return
 	 */
-	public List<CustomChannel> getChannels() {
+	public List<ChannelRadio> getChannels() {
 		
 		try {
 			channels.clear();
@@ -104,7 +105,7 @@ public class ChannelReader {
 	 */
 	private void addChannel(String name, String url, String image, int id,boolean icy_reverse) {
 		String m = createMetaData(name, url, image);
-		CustomChannel channel = new CustomChannel(url, m, id,name);
+		ChannelRadio channel = new ChannelRadio(url, m, id,name);
 		channel.setICYReverse(icy_reverse);
 		channels.add(channel);
 		log.debug("Added Channel: " + channel.getUri() + " " + channel.getFullDetails());

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>MediaPlayer Main Page</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"	href="js/jquery/jquery.mobile-1.4.2.css" />
+<script src="js/jquery/jquery-1.11.0.min.js"></script>
+<script	src="js/jquery/jquery.mobile-1.4.2.min.js"></script>
+
+
+</head>
+<body>
+
+
+
+
+	<div data-role="page">
+	<script src="js/MainPage.js"></script>
+		<div data-role="header" data-id="header1" data-position="fixed" >
+			<a href="#leftpanel1" data-role="button" data-icon="gear"	data-inline="true" data-mini="true" class="ui-btn-right"></a> 
+			<h1 id="header">
+			<img id="image_portrait" src="./images/mediaplayer240.png" alt="chef etat" width="40" height="40" class="ui-btn-left" />
+			MediaPlayer Config
+			</h1>
+			<br>
+			<div data-role="navbar">
+				<ul>
+					<li><a href="StatusPage.html" id="Status">Status</a></li>
+					<li><a href="MainPage.html" data-prefetch="true" data-transition="none" class="ui-btn-active ui-state-persist">Config</a></li>
+					<li><a href="AlarmPage.html" id="Alarm">Alarm</a></li>
+				</ul>
+			</div>
+			<!-- /navbar -->
+		</div>
+		<!-- /header -->
+
+		<div data-role="content" id="text" height="100%">
+
+			<form>
+				<ul data-role="listview" data-inset="true">
+					<li class="ui-field-contain"><label for="friendlyName">Friendly	Name:</label> <input type="text" name="friendlyName" id="friendlyName" value="" data-clear-btn="true"></li>
+					<li class="ui-field-contain"><label for="select-choice-player"	class="select">Choose Player:</label> 
+					<select	name="select-choice-player" id="select-choice-player">
+							<option value="mplayer">MPlayer</option>
+							<option value="mpd">MPD</option>
+					</select></li>
+					<li class="ui-field-contain"><label for="playlistMax">PlayList	Maximum:</label> <input type="text" name="playlistMax" id="playlistMax" value="" data-clear-btn="true"></li>
+					
+					<li class="ui-field-contain"><label for="savePlayList">Save	PlayList Locally:</label> <select name="savePlayList" id="savePlayList"	data-role="slider">
+							<option value="false">False</option>
+							<option value="true">True</option>
+					</select></li>
+
+					<li class="ui-field-contain"><label for="AVTransport">Enable AVTransport:</label>
+						<select name="AVTransport" id="AVTransport" data-role="slider">
+							<option value="false">Off</option>
+							<option value="true">On</option>
+					</select></li>
+
+					<li class="ui-field-contain"><label for="songcastReceiver">Enable Songcast Receiver:</label> <select name="songcastReceiver" id="songcastReceiver" data-role="slider">
+							<option value="false">Off</option>
+							<option value="true">On</option>
+					</select></li>
+					
+					<li class="ui-field-contain"><label for="mplayerPlayList">MPlayer Playlist:</label> <input type="text" name="mplayerPlayList" id="mplayerPlayList" value="" data-clear-btn="true"></li>
+
+					<li class="ui-field-contain"><label for="mplayerPath">MPlayer Path:</label> <input type="text" name="mplayerPath" id="mplayerPath" value="" data-clear-btn="true"></li>
+					
+					<li class="ui-field-contain"><label for="mplayerCache">MPlayer Cache:</label> <input type="text" name="mplayerCache" id="mplayerCache" value="" data-clear-btn="true"></li>
+					
+					<li class="ui-field-contain"><label for="mplayerCacheMin">MPlayer Cache Min:</label> <input type="text" name="mplayerCacheMin" id="mplayerCacheMin" value="" data-clear-btn="true"></li>
+					
+					<li class="ui-field-contain"><label for="mpdHost">MPD Host:</label> <input type="text" name="mpdHost" id="mpdHost" value="" data-clear-btn="true"></li>
+					
+					<li class="ui-field-contain"><label for="mpdPort">MPD Port:</label> <input type="text" name="mpdPort" id="mpdPort" value="" data-clear-btn="true"></li>
+					
+					<li class="ui-field-contain"><label for="logFileName">Log File Name:</label> <input type="text" name="logFileName" id="logFileName" value="" data-clear-btn="true"></li>
+
+					<li class="ui-field-contain"><label for="slider2">Slider:</label>
+						<input type="range" name="slider2" id="slider2" value="0" min="0"
+						max="100" data-highlight="true"></li>
+
+					<li class="ui-body ui-body-b">
+						<fieldset class="ui-grid-a">
+							<div class="ui-block-a">
+								<button type="submit" class="ui-btn ui-corner-all ui-btn-a">Cancel</button>
+							</div>
+							<div class="ui-block-b">
+								<button type="submit" class="ui-btn ui-corner-all ui-btn-a">Submit</button>
+							</div>
+						</fieldset>
+					</li>
+				</ul>
+			</form>
+
+
+
+			<table id="my-table">
+				<thead>
+					<tr>
+						<th align="left">Option</th>
+						<th align="left">Value</th>
+					</tr>
+				</thead>
+				<tbody id="tbody">
+				</tbody>
+			</table>
+
+		</div>
+
+		<!-- /content -->
+
+
+
+
+		<div data-role="footer" class="footer-docs" data-theme="c">
+			<p class="jqm-version"></p>
+			<p>&copy; 2014 Pete Hoyle</p>
+		</div>
+
+		<div data-role="panel" id="leftpanel1" data-position="left"
+			data-display="reveal" data-dismissible="true" data-theme="a">
+
+			<h3>Renderers</h3>
+			<div data-role="content" id="radios">
+				<fieldset data-role="controlgroup" data-mini="true"
+					data-inline="true">
+					<input type="radio" name="radio-choice-1" id="radio-choice-1"
+						value="choice-1" checked="checked" /> <label for="radio-choice-1">Study</label>
+
+					<input type="radio" name="radio-choice-1" id="radio-choice-2"
+						value="choice-2" /> <label for="radio-choice-2">Lounge</label> <input
+						type="radio" name="radio-choice-1" id="radio-choice-3"
+						value="choice-3" /> <label for="radio-choice-3">Bedroom</label>
+				</fieldset>
+			</div>
+			<a href="#demo-links" data-rel="close" data-role="button"
+				data-theme="a" data-icon="delete" data-inline="true"
+				data-mini="true">Close panel</a>
+
+		</div>
+		<!-- /leftpanel1 -->
+
+
+	</div>
+	<!-- /page -->
+
+</body>
+</html>

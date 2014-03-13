@@ -32,7 +32,7 @@ public class Utils {
         return sb.toString();
     }
 
-    private static String getAdapterIP(int ip) {
+    public static String getAdapterIP(int ip) {
         String ipStr = String.format("%d.%d.%d.%d", (ip >>> 24 & 0xff), (ip >>> 16 & 0xff), (ip >>> 8 & 0xff), (ip & 0xff));
         return ipStr;
     }

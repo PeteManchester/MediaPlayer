@@ -1,4 +1,4 @@
-package org.rpi.songcast;
+package org.rpi.songcast.core;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Observable;
@@ -6,7 +6,7 @@ import java.util.Observable;
 import org.rpi.player.events.EventBase;
 import org.rpi.songcast.events.EventSongCastBase;
 
-public class SongcastMessage extends Observable {
+public class SongcastMessage {
 
 	public byte[] data = null;
 	
@@ -31,6 +31,17 @@ public class SongcastMessage extends Observable {
 		System.out.println("Decimal : " + temp.toString());
 
 		return sb.toString();
+	}
+	
+	final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+	public static String bytesToHex(byte[] bytes) {
+	    char[] hexChars = new char[bytes.length * 2];
+	    for ( int j = 0; j < bytes.length; j++ ) {
+	        int v = bytes[j] & 0xFF;
+	        hexChars[j * 2] = hexArray[v >>> 4];
+	        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+	    }
+	    return new String(hexChars);
 	}
 
 	public String DecToHex(int number, int length) {
@@ -151,9 +162,9 @@ public class SongcastMessage extends Observable {
 		return s;
 	}
 	
-	public void fireEvent(EventSongCastBase ev) {
-		setChanged();
-		notifyObservers(ev);
-	}
+//	public void fireEvent(EventSongCastBase ev) {
+//		setChanged();
+//		notifyObservers(ev);
+//	}
 	
 }

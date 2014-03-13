@@ -1,6 +1,6 @@
 package org.rpi.player.events;
 
-import org.rpi.playlist.CustomTrack;
+import org.rpi.channel.ChannelBase;
 
 public class EventTrackChanged implements EventBase {
 	
@@ -16,14 +16,14 @@ public class EventTrackChanged implements EventBase {
 	/**
 	 * @return the track
 	 */
-	public CustomTrack getTrack() {
+	public ChannelBase getTrack() {
 		return track;
 	}
 
 	/**
 	 * @param track the track to set
 	 */
-	public void setTrack(CustomTrack track) {
+	public void setTrack(ChannelBase track) {
 		this.track = track;
 	}
 	
@@ -38,7 +38,7 @@ public class EventTrackChanged implements EventBase {
 	private String mpd_id = "";
 	
 
-	private CustomTrack track = null;
+	private ChannelBase track = null;
 
 
 
