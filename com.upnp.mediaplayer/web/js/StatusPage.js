@@ -56,7 +56,7 @@ $.ajax({
             "Access-Control-Allow-Origin": "*"
         },
         type:'GET',
-        url:'/myapp/rest/status',
+        url:'/myapp/config/getStatus',
         success: function(data)
         {
         	$('#status-table tr').remove();

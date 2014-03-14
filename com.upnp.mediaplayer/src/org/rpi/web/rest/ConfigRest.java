@@ -16,22 +16,24 @@ import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
 
+import com.sun.xml.internal.bind.v2.runtime.output.Encoded;
+
 /**
  * Root resource (exposed at "myresource" path)
  * http://localhost:8090/myapp/myresource
  */
-@Path("rest")
-public class RestUtil {
+@Path("config")
+public class ConfigRest {
 
     private Logger log = Logger.getLogger(this.getClass());
 
     /**
      * Method handling HTTP GET requests. The returned object will be sent to
      * the client as "text/plain" media type.
-     *
+     * 
      * @return String that will be returned as a text/plain response.
      */
-    @Path("config")
+    @Path("getConfig")
     @GET
     @Produces("text/html; charset=utf-8")
     public String getIt() {
@@ -76,7 +78,7 @@ public class RestUtil {
         return value;
     }
 
-    @Path("status")
+    @Path("getStatus")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getStatus() {

@@ -39,6 +39,8 @@ public class OHMEventAudio extends SongcastMessage {
 	private byte[] sound = null;
 
 	private int attempts = 0;
+	
+	private AudioInformation audioInfo = null;
 
 	/**
 	 * Get the Audio Data
@@ -46,66 +48,94 @@ public class OHMEventAudio extends SongcastMessage {
 	public void checkMessageType() {
 		int headerLength = new BigInteger(getBytes(8, 8)).intValue();
 		int sampleCount = new BigInteger(getBytes(10, 11)).intValue();
-		//long network_timestamp = new BigInteger(getBytes(16, 19)).longValue();
+		//if(sampleCount !=1)
+		//{
+		//	log.info("Sample Count: " + sampleCount);
+		//}
+		// long network_timestamp = new BigInteger(getBytes(16,
+		// 19)).longValue();
 		// log.debug("TimeStamp " + bytesToHex(getBytes(16,19)));
 		long latency = new BigInteger(getBytes(20, 23)).intValue();
 		// log.debug("Latency: " + latency);
 		long time = System.currentTimeMillis();
+		
+		long iSampleRate = new BigInteger(getBytes(44, 47)).longValue();
+		
 		if (latency > 0) {
-			long iSampleRate = new BigInteger(getBytes(44, 47)).longValue();
-			latency = latency/10000;
-			if(iSampleRate ==0)
+			
+			latency = latency / 10000;
+			if (iSampleRate == 0)
 				iSampleRate = 44100;
-			time = (latency * iSampleRate * 256)/1000;
+			time = (latency * iSampleRate * 256) / 1000;
 		}
-		setTimeToPlay(time );
-		//long media_timestamp = new BigInteger(getBytes(24, 27)).longValue();
+		setTimeToPlay(time);
+		// long media_timestamp = new BigInteger(getBytes(24, 27)).longValue();
+		long iBitRate = new BigInteger(getBytes(48, 51)).longValue();
+		try {
+			iBitRate = iBitRate / 1000;
+		} catch (Exception e) {
+
+		}		
 		int iBitDepth = new BigInteger(getBytes(54, 54)).intValue();
 		int channels = new BigInteger(getBytes(55, 55)).intValue();
 		int codecNameLength = new BigInteger(getBytes(57, 57)).intValue();
 		int soundStart = 8 + headerLength + codecNameLength;
-		int soundEnd = soundStart + ((channels * iBitDepth * (sampleCount) / 8));
-		int length = soundEnd - soundStart;
-		setSound(getBytes(soundStart, soundEnd - 1));
-	}
-
-	/**
-	 * Used to set the Track Info
-	 */
-	public AudioInformation getTrackInfo() {
-		TrackInfo info = new TrackInfo();
-		long iBitDepth = new BigInteger(getBytes(54, 54)).longValue();
 		
-		info.setBitDepth(iBitDepth);
-		long iBitRate = new BigInteger(getBytes(48, 51)).longValue();
-		try {
-			iBitRate = iBitRate;
-		} catch (Exception e) {
+		int soundEnd = soundStart + ((channels * iBitDepth * sampleCount) / 8);
 
-		}
-		info.setBitrate(iBitRate);
-		
-		int codecNameLength = new BigInteger(getBytes(57, 57)).intValue();
-
-		byte[] codec = getBytes(58, (58 + codecNameLength) - 1);
-		String sCodec = "";
+		byte[] codec = getBytes(58, (58 + codecNameLength) - 1);		String sCodec = "";
 		try {
 			sCodec = new String(codec, "UTF-8");
-			info.setCodec(sCodec);
 		} catch (UnsupportedEncodingException e) {
 		}
-		
-		long iSampleRate = new BigInteger(getBytes(44, 47)).longValue();
-		info.setSampleRate(iSampleRate);
-		info.setDuration(0);
-		int channels = new BigInteger(getBytes(55, 55)).intValue();
-		log.info("Songcast Stream: Codec: " + sCodec + " SampleRate: " + iSampleRate + " BitRate: " + iBitRate + " BitDepth: " + iBitDepth);
-		AudioInformation audioInf = new AudioInformation(iSampleRate, iBitRate, iBitDepth, channels, sCodec);
-		EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
-		ev.setTrackInfo(info);
-		PlayManager.getInstance().updateTrackInfo(ev);
-		return audioInf;
+		setSound(getBytes(soundStart, soundEnd - 1));
+		audioInfo = new AudioInformation(iSampleRate, iBitRate, iBitDepth, channels, sCodec, sound.length,sampleCount );
 	}
+
+//	/**
+//	 * Used to set the Track Info
+//	 */
+//	public AudioInformation getTrackInfo() {
+//		TrackInfo info = new TrackInfo();
+//		long iBitDepth = new BigInteger(getBytes(54, 54)).longValue();
+//
+//		info.setBitDepth(iBitDepth);
+//		long iBitRate = new BigInteger(getBytes(48, 51)).longValue();
+//		try {
+//			iBitRate = iBitRate / 1000;
+//		} catch (Exception e) {
+//
+//		}
+//		info.setBitrate(iBitRate);
+//
+//		int codecNameLength = new BigInteger(getBytes(57, 57)).intValue();
+//
+//		byte[] codec = getBytes(58, (58 + codecNameLength) - 1);
+//		String sCodec = "";
+//		try {
+//			sCodec = new String(codec, "UTF-8");
+//			info.setCodec(sCodec);
+//		} catch (UnsupportedEncodingException e) {
+//		}
+//
+//		long iSampleRate = new BigInteger(getBytes(44, 47)).longValue();
+//		info.setSampleRate(iSampleRate);
+//		info.setDuration(0);
+//		int channels = new BigInteger(getBytes(55, 55)).intValue();
+//		log.info("Songcast Stream: Codec: " + sCodec + " SampleRate: " + iSampleRate + " BitRate: " + iBitRate + " BitDepth: " + iBitDepth);
+//		AudioInformation audioInf = new AudioInformation(iSampleRate, iBitRate, iBitDepth, channels, sCodec);
+//		EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
+//		ev.setTrackInfo(info);
+//		PlayManager.getInstance().updateTrackInfo(ev);
+//		// Added by Pete
+//		int headerLength = new BigInteger(getBytes(8, 8)).intValue();
+//		int sampleCount = new BigInteger(getBytes(10, 11)).intValue();
+//		int soundStart = 8 + headerLength + codecNameLength;
+//		int soundEnd = soundStart + ((channels * (int) iBitDepth * (sampleCount) / 8));
+//		int length = soundEnd - soundStart;
+//		log.debug("Audio Length: " + length);
+//		return audioInf;
+//	}
 
 	/**
 	 * @return the time_to_play
@@ -154,5 +184,19 @@ public class OHMEventAudio extends SongcastMessage {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * @return the audioInfo
+	 */
+	public AudioInformation getAudioInfo() {
+		return audioInfo;
+	}
+
+	/**
+	 * @param audioInfo the audioInfo to set
+	 */
+	public void setAudioInfo(AudioInformation audioInfo) {
+		this.audioInfo = audioInfo;
 	}
 }

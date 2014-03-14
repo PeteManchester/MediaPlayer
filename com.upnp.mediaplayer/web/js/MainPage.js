@@ -16,17 +16,7 @@ $(document).ready(function(){
   checkStatus();
     //setInterval(checkStatus,10000);
 
-  $("#Status").click(function(){
-	    //$("#text").text(lyrics);
-	    //$("#header").text(title);
-	  });
-  $("#Config").click(function(){
-	    // alert('Info');
-	  //$("#text").text(info);
-	  });
-  $("#Track").click(function(){
-	  //$("#text").text(news);
-	  });
+
 	  
 	  //$('<input type="radio" name="radio-choice-1" id="radio-choice-4"><label for="radio-choice-4">Cow</label>').appendTo("fieldset");
 
@@ -46,6 +36,7 @@ $(document).ready(function(){
  */
 function checkStatus()
 {
+	commonStatus();
 	//alert('MainPage CheckStatus');
     // http://stackoverflow.com/questions/8922343/dynamically-creating-vertically-grouped-radio-buttons-with-jquery
 	$.ajax({
@@ -56,7 +47,7 @@ function checkStatus()
             "Access-Control-Allow-Origin": "*"
         },
         type:'GET',
-        url:'/myapp/rest/config',
+        url:'/myapp/config/getConfig',
         success: function(text)
         {
         	

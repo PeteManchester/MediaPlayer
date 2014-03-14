@@ -23,7 +23,6 @@ public class FullscreenDisplayView extends JFrame {
     private MarqueePanel trackPanel;
     private MarqueePanel albumPanel;
     private MarqueePanel artistPanel;
-    private MarqueePanel genrePanel;
 
     private JLabel imageLabel;
     private JLabel playTimeLabel;
@@ -48,10 +47,12 @@ public class FullscreenDisplayView extends JFrame {
         // Image Panel
         try {
             ImageIcon icon = this.calculateImageLabel(getClass().getResource("/mediaplayer-original.png"));
-            imageLabel = new JLabel(icon);
-            imageLabel.setBounds(new Rectangle(new Point(10, 65), imageLabel.getPreferredSize()));
+            if (icon != null) {
+                imageLabel = new JLabel(icon);
+                imageLabel.setBounds(new Rectangle(new Point(10, 50), imageLabel.getPreferredSize()));
 
-            d_pane.add(imageLabel);
+                d_pane.add(imageLabel);
+            }
         } catch (IOException e) {
             LOGGER.error("Cannot determine Track Image", e);
         }
@@ -61,36 +62,30 @@ public class FullscreenDisplayView extends JFrame {
         artistPanel = this.addTextToPane(artistText, null, 320, 65, 326, 45);
         d_pane.add(artistPanel);
 
-
-        Font smallFont = new Font(Font.SANS_SERIF, Font.PLAIN, 30);
-
         // album text
         String albumText = "Album";
-        albumPanel = this.addTextToPane(albumText, smallFont, 320, 115, 326, 45);
+        Font albumFont = new Font(Font.SANS_SERIF, Font.PLAIN, 30);
+        albumPanel = this.addTextToPane(albumText, albumFont, 320, 115, 326, 45);
         d_pane.add(albumPanel);
 
-        // album text
-        String genreText = "Genre";
-        genrePanel = this.addTextToPane(genreText, smallFont, 320, 165, 326, 45);
-        d_pane.add(genrePanel);
-
         Font timeFont = new Font(Font.SANS_SERIF, Font.PLAIN, 20);
-        String initialTime = "00:00:00";
 
         // label with playing time
-        playTimeLabel = new JLabel(initialTime);
+        String playTime = "100:00";
+        playTimeLabel = new JLabel(playTime);
         playTimeLabel.setForeground(Color.YELLOW);
         playTimeLabel.setBackground(Color.BLACK);
         playTimeLabel.setFont(timeFont);
-        playTimeLabel.setBounds(10, 350, 140, 45);
+        playTimeLabel.setBounds(10, 350, 100, 45);
         d_pane.add(playTimeLabel);
 
         // label with track time
-        trackDurationLabel = new JLabel(initialTime);
+        String trackTime = "100:45";
+        trackDurationLabel = new JLabel(playTime);
         trackDurationLabel.setForeground(Color.YELLOW);
         trackDurationLabel.setBackground(Color.BLACK);
         trackDurationLabel.setFont(timeFont);
-        trackDurationLabel.setBounds(220, 350, 140, 45);
+        trackDurationLabel.setBounds(120, 350, 100, 45);
         d_pane.add(trackDurationLabel);
 
         this.add(d_pane);
@@ -135,11 +130,9 @@ public class FullscreenDisplayView extends JFrame {
         return trackDurationLabel;
     }
 
-    public MarqueePanel getGenrePanel() {
-        return genrePanel;
-    }
-
     public ImageIcon calculateImageLabel(URL url) throws IOException {
+        if (url == null)
+            return null;
         BufferedImage image = ImageIO.read(url);
         image = Scalr.resize(image, Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH, 300, Scalr.OP_ANTIALIAS);
         ImageIcon icon = new ImageIcon(image);

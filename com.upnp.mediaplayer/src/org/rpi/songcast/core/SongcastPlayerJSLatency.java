@@ -3,9 +3,11 @@ package org.rpi.songcast.core;
 import java.util.Vector;
 
 import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Control;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.Line;
+import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 
 import org.apache.log4j.Logger;
@@ -31,6 +33,8 @@ public class SongcastPlayerJSLatency implements ISongcastPlayer, Runnable {
 	private SourceDataLine soundLine = null;
 
 	private boolean bWrite = false;
+	
+	private int counter = 0;
 
 	// public static SongcastPlayerJavaSound getInstance() {
 	// if (instance == null) {
@@ -41,29 +45,77 @@ public class SongcastPlayerJSLatency implements ISongcastPlayer, Runnable {
 
 	public SongcastPlayerJSLatency() {
 		// createSoundLine();
-		
+
 	}
 
 	public void createSoundLine(AudioInformation audioInf) {
 		try {
-			log.info("Creating Audio Format: " + audioInf.toString());
-			
-			audioFormat = new AudioFormat(audioInf.getSampleRate(), audioInf.getBitDepth(), audioInf.getChannels(), audioInf.isSigned(), audioInf.isBigEndian());
-			//audioFormat = new AudioFormat(Encoding.PCM_SIGNED, audioInf.getSampleRate(), , audioInf.getChannels(),8,audioInf.getBitRate(), audioInf.isBigEndian());
-			//audioFormat = new AudioFormat(Encoding.PCM_SIGNED, audioInf.getSampleRate(), audioInf.getBitDepth(), audioInf.getChannels(),4,audioInf.getSampleRate(), audioInf.isBigEndian());
-			int adjust_frameBufferSize = audioFormat.getFrameSize();
-			log.debug("FrameSize: " + adjust_frameBufferSize);
-			int buffer_size = 32000;
-			buffer_size = buffer_size - (buffer_size %adjust_frameBufferSize);
-			log.debug("Adjusted Buffer Size: " + buffer_size);
-			info = new DataLine.Info(SourceDataLine.class, audioFormat, buffer_size);
-			for (AudioFormat lineFormat : info.getFormats())
+			bWrite = false;//Stop trying to write to the SoundLine
+			if(soundLine !=null)
 			{
-				log.debug(lineFormat.toString());
+				close();
+			}
+//			Mixer.Info[] infos = AudioSystem.getMixerInfo();
+//			for (Mixer.Info info : infos) {
+//				log.debug(info.getName());
+//				//if (info.getName().equalsIgnoreCase("Primary Sound Driver")) {
+//					Mixer mixer = AudioSystem.getMixer(info);
+//					if(!mixer.isOpen())
+//					{
+//						//mixer.open();
+//						Line.Info[] lines = mixer.getSourceLineInfo();
+//						for(Line.Info line : lines)
+//						{
+//							
+//							Line l = mixer.getLine(line);
+//							Control[] controls = l.getControls();
+//							if(l instanceof DataLine)
+//							{
+//								DataLine dataLine =(DataLine)l;
+//								AudioFormat audioFormat = dataLine.getFormat();
+//								log.debug("audioFormat: " + audioFormat.toString());
+//							}
+//							//log.debug("LineInfo: " + l.getControl());
+//						}
+//						Line.Info linfo = mixer.getLineInfo();
+//						
+//					}
+//				//}
+//			}
+			log.info("Creating Audio Format: " + audioInf.toString());
+			audioFormat = new AudioFormat(audioInf.getSampleRate(), audioInf.getBitDepth(), audioInf.getChannels(), audioInf.isSigned(), audioInf.isBigEndian());
+			// audioFormat = new AudioFormat(96000.0f, 24,
+			// audioInf.getChannels(), audioInf.isSigned(),
+			// audioInf.isBigEndian());
+			// audioFormat = new AudioFormat(Encoding.PCM_SIGNED,
+			// audioInf.getSampleRate(), ,
+			// audioInf.getChannels(),8,audioInf.getBitRate(),
+			// audioInf.isBigEndian());
+			// audioFormat = new AudioFormat(Encoding.PCM_SIGNED,
+			// audioInf.getSampleRate(), audioInf.getBitDepth(),
+			// audioInf.getChannels(),4,audioInf.getSampleRate(),
+			// audioInf.isBigEndian());
+
+			int frameSize = audioFormat.getFrameSize();
+			log.info("FrameSize: " + frameSize);
+			// int buffer_size = 1103 * frameSize;
+			// buffer_size = buffer_size - (buffer_size %adjust_frameBufferSize)
+			// + 7;
+			// log.info("Adjusted Buffer Size: " + buffer_size);
+			try {
+				info = new DataLine.Info(SourceDataLine.class, audioFormat);
+			} catch (Exception eline) {
+				log.error("Error Creating DataLine: ", eline);
+			}
+			log.debug("MinBuffer Size: " + info.getMinBufferSize() + " MaxBuffer Size" + info.getMaxBufferSize());
+			for (AudioFormat lineFormat : info.getFormats()) {
+				log.info(lineFormat.toString());
 			}
 			if (soundLine == null) {
 				soundLine = (SourceDataLine) AudioSystem.getLine(info);
-				soundLine.open(audioFormat);
+				int bufferSize = (int) (audioFormat.getFrameSize() * audioFormat.getFrameRate() / 2.0f);
+				log.debug("Opening SoundLine, BufferSize: " + bufferSize);
+				soundLine.open(audioFormat, bufferSize);
 				soundLine.start();
 				bWrite = true;
 			}
@@ -91,11 +143,20 @@ public class SongcastPlayerJSLatency implements ISongcastPlayer, Runnable {
 	}
 
 	private void addData(byte[] data) {
+		
 		if (!bWrite)
 			return;
 		try {
 			if (soundLine != null) {
-				// log.debug(data.length);
+				if(counter==0)
+				{
+					log.debug("SoundByte Length: " + data.length);
+				}
+				counter++;
+				if(counter > 100)
+				{
+					counter = 0;
+				}
 				soundLine.write(data, 0, data.length);
 			}
 		} catch (Exception e) {
