@@ -2,20 +2,24 @@ package org.rpi.songcast.core;
 
 public class AudioInformation {
 	
-	public AudioInformation(long sampleRate, long bitRate, long bitDepth, int channels, String codec )
+	public AudioInformation(long sampleRate, long bitRate, long bitDepth, int channels, String codec, int length, int sampleCount )
 	{
 		this.sampleRate = sampleRate;
 		this.bitRate = (int)bitRate;
 		this.bitDepth = (int)bitDepth;
 		this.channels = channels;
 		this.codec = codec;
+		this.soundByteSize = length;
+		this.sampleCount = sampleCount;
 	}
 	
 	private float sampleRate = 0;
 	private int bitRate = 0;
-	private int bitDepth = 16;
+	private int bitDepth = 0;
 	private String codec = "";
-	private int channels = 2;
+	private int channels = 0;
+	private int soundByteSize = 0;
+	private int sampleCount = 0;
 	/**
 	 * @return the sampleRate
 	 */
@@ -83,6 +87,18 @@ public class AudioInformation {
 		return true;
 	}
 	
+	public boolean compare(AudioInformation ai)
+	{
+		if(ai==null)
+			return false;
+		if(this.sampleRate!= ai.getSampleRate() ||this.bitRate != ai.getBitRate() || this.bitDepth != ai.getBitDepth())
+		{
+		return false;
+		}
+		return true;
+		
+	}
+	
 	@Override
 	public String toString()
 	{
@@ -99,7 +115,10 @@ public class AudioInformation {
 		sb.append(" ");
 		sb.append("Signed:" + isSigned());
 		sb.append(" ");
-		sb.append("BigEndian:" + isBigEndian());
+		sb.append("SoundByteSize:" + soundByteSize);
+		sb.append(" ");
+		sb.append("SamplesCount:" + sampleCount);
+		
 		return sb.toString();
 	}
 	

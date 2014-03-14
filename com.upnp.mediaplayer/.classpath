@@ -9,5 +9,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ohNet"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/lastFM"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Grizzly"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/imagescalr"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

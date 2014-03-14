@@ -8,6 +8,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
+import org.rpi.mplayer.TrackInfo;
+import org.rpi.player.events.EventUpdateTrackInfo;
+import org.rpi.songcast.core.AudioInformation;
 import org.rpi.songcast.core.ISongcastPlayer;
 import org.rpi.songcast.core.SlaveEndpoint;
 import org.rpi.songcast.core.SongcastPlayerJSLatency;
@@ -25,10 +28,10 @@ public class OHMMessageQueue extends Observable implements Runnable {
 	private boolean started = false;
 
 	private ConcurrentHashMap<String, SlaveEndpoint> endpoints = new ConcurrentHashMap<String, SlaveEndpoint>();
-	private boolean bSentInfo  = false;	
 	
 	private ISongcastPlayer player = null;
 	private Thread threadPlayer = null;
+	private AudioInformation audioInformation = null;
 
 	public OHMMessageQueue() {
 		log.debug("Opening OHM Message Queue");
@@ -122,13 +125,23 @@ public class OHMMessageQueue extends Observable implements Runnable {
 			startListen();
 			OHMEventAudio audio = new OHMEventAudio();
 			audio.data = data;
-			if(!bSentInfo)
-			{
-				player.createSoundLine(audio.getTrackInfo());
-				bSentInfo = true;
-			}
 			forwardToSlaves(data);
-			
+			audio.checkMessageType();
+			AudioInformation ai = audio.getAudioInfo();
+			if(!ai.compare(audioInformation))
+			{
+				log.debug("AudioFormat has changed: " + ai.toString());
+				player.createSoundLine(ai);
+				audioInformation = ai;
+				TrackInfo info = new TrackInfo();
+				info.setBitDepth(ai.getBitDepth());
+				info.setCodec(ai.getCodec());
+				info.setBitrate(ai.getBitRate());
+				info.setSampleRate((long)ai.getSampleRate());
+				info.setDuration(0);
+				EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
+				ev.setTrackInfo(info);
+			}
 			audio.checkMessageType();
 			player.put(audio);
 			break;
