@@ -39,6 +39,7 @@
 
 <!-- compile -->
     <property name="target_dir" value="${basedir}/build"/>
+    <property name="plugin_target_dir" value="${basedir}/plugins"/>
     <property name="classes_dir" value="${target_dir}/classes"/>
     <property name="test_classes_dir" value="${target_dir}/test-classes"/>
 
@@ -184,4 +185,15 @@
             <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"/>
         </java>
     </target>
+
+    <target name="build_plugins" description="builds the plugins">
+        <subant target="build_plugin">
+            <property name="classes_dir" value="${classes_dir}"/>
+            <property name="lib_dir" value="${lib_dir}"/>
+            <property name="plugin_target_dir" value="${plugin_target_dir}"/>
+            <property name="src_dir" value="${basedir}/src"/>
+            <fileset dir="BuildScript" includes="build-plugin-*.xml"/>
+        </subant>
+    </target>
+
 </project>

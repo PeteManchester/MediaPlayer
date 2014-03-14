@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="build_plugin" name="AlarmClock Plugin">
+
+    <target name="clean_plugin">
+        <delete dir="${plugin_target_dir}/AlarmClock"/>
+    </target>
+
+    <target name="build_plugin" depends="clean_plugin">
+
+        <jar destfile="${plugin_target_dir}/AlarmClock/AlarmClock.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="${classes_dir}">
+                <include name="**/plugin/alarmclock/**" />
+            </fileset>
+
+            <zipfileset excludes="META-INF/*.SF" src="${lib_dir}/plugins/quartz-2.2.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib_dir}/plugins/slf4j-api-1.6.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib_dir}/plugins/slf4j-log4j12-1.6.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib_dir}/core/pi4j-core-0.0.5.jar"/>
+        </jar>
+
+        <copy file="${src_dir}/org/rpi/plugin/alarmclock/AlarmClock.xml" todir="${plugin_target_dir}/AlarmClock"/>
+    </target>
+</project>

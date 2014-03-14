@@ -203,7 +203,7 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
                 log.debug("SessionKey: " + session.getKey());
             }
         } catch (Exception e) {
-            log.error(e);
+          	log.error("An error occured during initialization of the lastfm connection", e);
         }
         log.debug("End of INIT");
     }

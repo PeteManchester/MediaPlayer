@@ -24,6 +24,7 @@ public class ObservableInfo extends Observable {
 		}
 		catch(Exception e)
 		{
+            e.printStackTrace();
 		}
 		
 	}

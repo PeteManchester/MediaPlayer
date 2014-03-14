@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="build_plugin" name="Custom Input Plugin">
+
+    <target name="clean_plugin">
+        <delete dir="${plugin_target_dir}/CustomInputSource"/>
+    </target>
+
+    <target name="build_plugin" depends="clean_plugin">
+        <jar destfile="${plugin_target_dir}/CustomInputSource/CustomInputSource.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Class-Path" value="." />
+            </manifest>
+            <fileset dir="${classes_dir}">
+                <include name="**/plugin/input/**" />
+            </fileset>
+
+            <zipfileset excludes="META-INF/*.SF" src="${lib_dir}/core/pi4j-core-0.0.5.jar"/>
+        </jar>
+    </target>
+</project>
