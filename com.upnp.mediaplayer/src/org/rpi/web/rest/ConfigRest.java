@@ -16,8 +16,6 @@ import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
 
-import com.sun.xml.internal.bind.v2.runtime.output.Encoded;
-
 /**
  * Root resource (exposed at "myresource" path)
  * http://localhost:8090/myapp/myresource
