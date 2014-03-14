@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.rpi.channel.ChannelBase;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
+import org.rpi.player.events.EventTimeUpdate;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 
@@ -59,6 +60,7 @@ public class FullscreenDisplayImpl implements FullscreenDisplayInterface, Observ
 
         PlayManager.getInstance().observeInfoEvents(this);
         PlayManager.getInstance().observeProductEvents(this);
+        PlayManager.getInstance().observeTimeEvents(this);
 
         LOGGER.info("Finished FullscreenDisplay Plugin Init");
     }
@@ -75,18 +77,17 @@ public class FullscreenDisplayImpl implements FullscreenDisplayInterface, Observ
                     model.setArtist(track.getArtist());
                     model.setTrackTitle(track.getTitle());
                     model.setImageURI(track.getAlbumArtUri());
-                    model.setTrackDuration(track.getTime());
+                    model.setTrackDuration(track.getDuration());
+                    model.setGenre(track.getGenre());
                 } else {
                     LOGGER.info("Track was NULL");
                 }
 
                 break;
-            case EVENTUPDATETRACKMETATEXT:
-                EventUpdateTrackMetaText et = (EventUpdateTrackMetaText) e;
-
-                if (et != null)
-//                    scrobble(et.getTitle(), et.getArtist());
-                    break;
+            case EVENTTIMEUPDATED:
+                EventTimeUpdate ed = (EventTimeUpdate) e;
+                model.setPlayTime(ed.getTime());
+                break;
         }
     }
 

@@ -1,5 +1,6 @@
 package org.rpi.plugin.fullscreen;
 
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;

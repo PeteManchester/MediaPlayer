@@ -23,6 +23,7 @@ public class FullscreenDisplayView extends JFrame {
     private MarqueePanel trackPanel;
     private MarqueePanel albumPanel;
     private MarqueePanel artistPanel;
+    private MarqueePanel genrePanel;
 
     private JLabel imageLabel;
     private JLabel playTimeLabel;
@@ -48,7 +49,7 @@ public class FullscreenDisplayView extends JFrame {
         try {
             ImageIcon icon = this.calculateImageLabel(getClass().getResource("/mediaplayer-original.png"));
             imageLabel = new JLabel(icon);
-            imageLabel.setBounds(new Rectangle(new Point(10, 50), imageLabel.getPreferredSize()));
+            imageLabel.setBounds(new Rectangle(new Point(10, 65), imageLabel.getPreferredSize()));
 
             d_pane.add(imageLabel);
         } catch (IOException e) {
@@ -60,30 +61,36 @@ public class FullscreenDisplayView extends JFrame {
         artistPanel = this.addTextToPane(artistText, null, 320, 65, 326, 45);
         d_pane.add(artistPanel);
 
+
+        Font smallFont = new Font(Font.SANS_SERIF, Font.PLAIN, 30);
+
         // album text
         String albumText = "Album";
-        Font albumFont = new Font(Font.SANS_SERIF, Font.PLAIN, 30);
-        albumPanel = this.addTextToPane(albumText, albumFont, 320, 115, 326, 45);
+        albumPanel = this.addTextToPane(albumText, smallFont, 320, 115, 326, 45);
         d_pane.add(albumPanel);
 
+        // album text
+        String genreText = "Genre";
+        genrePanel = this.addTextToPane(genreText, smallFont, 320, 165, 326, 45);
+        d_pane.add(genrePanel);
+
         Font timeFont = new Font(Font.SANS_SERIF, Font.PLAIN, 20);
+        String initialTime = "00:00:00";
 
         // label with playing time
-        String playTime = "100:00";
-        playTimeLabel = new JLabel(playTime);
+        playTimeLabel = new JLabel(initialTime);
         playTimeLabel.setForeground(Color.YELLOW);
         playTimeLabel.setBackground(Color.BLACK);
         playTimeLabel.setFont(timeFont);
-        playTimeLabel.setBounds(10, 350, 100, 45);
+        playTimeLabel.setBounds(10, 350, 140, 45);
         d_pane.add(playTimeLabel);
 
         // label with track time
-        String trackTime = "100:45";
-        trackDurationLabel = new JLabel(playTime);
+        trackDurationLabel = new JLabel(initialTime);
         trackDurationLabel.setForeground(Color.YELLOW);
         trackDurationLabel.setBackground(Color.BLACK);
         trackDurationLabel.setFont(timeFont);
-        trackDurationLabel.setBounds(120, 350, 100, 45);
+        trackDurationLabel.setBounds(220, 350, 140, 45);
         d_pane.add(trackDurationLabel);
 
         this.add(d_pane);
@@ -126,6 +133,10 @@ public class FullscreenDisplayView extends JFrame {
 
     public JLabel getTrackDurationLabel() {
         return trackDurationLabel;
+    }
+
+    public MarqueePanel getGenrePanel() {
+        return genrePanel;
     }
 
     public ImageIcon calculateImageLabel(URL url) throws IOException {

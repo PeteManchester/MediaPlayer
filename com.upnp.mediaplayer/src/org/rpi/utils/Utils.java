@@ -5,11 +5,34 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 import org.openhome.net.device.IDvInvocation;
 
 public class Utils {
 
     private static Logger log = Logger.getLogger(Utils.class);
+
+    private static PeriodFormatter pf = new PeriodFormatterBuilder()
+            .printZeroAlways()
+            .maximumParsedDigits(2)
+            .minimumPrintedDigits(2)
+            .appendHours()
+            .appendSeparator(":")
+            .maximumParsedDigits(2)
+            .minimumPrintedDigits(2)
+            .appendMinutes()
+            .appendSeparator(":")
+            .maximumParsedDigits(2)
+            .minimumPrintedDigits(2)
+            .appendSeconds()
+            .appendSeparator(".")
+            .printZeroRarelyFirst()
+            .maximumParsedDigits(3)
+            .appendMillis()
+            .toFormatter();
 
     public static String getLogText(IDvInvocation paramIDvInvocation) {
         if (!log.isDebugEnabled())
@@ -95,6 +118,30 @@ public class Utils {
         }
 
         return false;
+    }
+
+    /**
+     * Parses the given duration String and returns the milliseconds value.
+     *
+     * This method uses the statically initialized Formatter pf.
+     *
+     * @param duration
+     * @return
+     */
+    public static Long parseDurationString(String duration) {
+        Period result = Period.parse(duration, pf);
+        return result.toStandardDuration().getMillis();
+    }
+
+    /**
+     * Prints the given time value as a String using the pf Formatter.
+     *
+     * @param time
+     * @return
+     */
+    public static String printTimeString(Long time) {
+        Duration duration = new Duration(time.longValue());
+        return pf.print(duration.toPeriod());
     }
 
 }
