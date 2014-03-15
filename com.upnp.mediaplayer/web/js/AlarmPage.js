@@ -14,6 +14,23 @@ $(document).ready(function(){
     }	
 	checkStatus();
     //setInterval(checkStatus,10000);
+	
+
+					  $("#Stop").click(function() {
+						stopMediaPlayer();
+					});
+
+					$("#Restart").click(function() {
+						restartMediaPlayer();
+					});
+
+					$("#Reboot").click(function() {
+						rebootOS();
+					});
+
+					$("#Shutdown").click(function() {
+						shutdownOS();
+					});
 
   $("#Status").click(function(){
 	    //$("#text").text(lyrics);

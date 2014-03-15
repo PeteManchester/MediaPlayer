@@ -218,11 +218,20 @@ public class LCDScroller extends Thread {
 	 * @param value
 	 */
 	public synchronized void updateValues(String name, String value) {
+		try
+		{
+			if(value==null)
+				value = "";
 		if (values.containsKey(name)) {
 			values.remove(name);
 		}
 		values.put(name, value);
 		updateRows();
+		}
+		catch(Exception e)
+		{
+			log.error("Error Updating Values: " ,e);
+		}
 	}
 
 	/**

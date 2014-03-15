@@ -48,10 +48,6 @@ public class OHMEventAudio extends SongcastMessage {
 	public void checkMessageType() {
 		int headerLength = new BigInteger(getBytes(8, 8)).intValue();
 		int sampleCount = new BigInteger(getBytes(10, 11)).intValue();
-		//if(sampleCount !=1)
-		//{
-		//	log.info("Sample Count: " + sampleCount);
-		//}
 		// long network_timestamp = new BigInteger(getBytes(16,
 		// 19)).longValue();
 		// log.debug("TimeStamp " + bytesToHex(getBytes(16,19)));
@@ -71,6 +67,7 @@ public class OHMEventAudio extends SongcastMessage {
 		setTimeToPlay(time);
 		// long media_timestamp = new BigInteger(getBytes(24, 27)).longValue();
 		long iBitRate = new BigInteger(getBytes(48, 51)).longValue();
+		log.debug("BitRate: " + iBitRate);
 		try {
 			iBitRate = iBitRate / 1000;
 		} catch (Exception e) {
