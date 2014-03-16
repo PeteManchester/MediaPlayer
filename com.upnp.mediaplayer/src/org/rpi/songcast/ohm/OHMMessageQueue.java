@@ -129,7 +129,7 @@ public class OHMMessageQueue extends Observable implements Runnable {
 			forwardToSlaves(data);
 			audio.checkMessageType();
 			AudioInformation ai = audio.getAudioInfo();
-			if(!ai.compare(audioInformation))
+			if(ai!=null && !ai.compare(audioInformation))
 			{
 				log.debug("AudioFormat has changed: " + ai.toString());
 				player.createSoundLine(ai);
