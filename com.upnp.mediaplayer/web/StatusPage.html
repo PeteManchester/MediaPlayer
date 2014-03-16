@@ -6,17 +6,15 @@
 <link rel="stylesheet"	href="js/jquery/jquery.mobile-1.4.2.css" />
 <script src="js/jquery/jquery-1.11.0.min.js"></script>
 <script	src="js/jquery/jquery.mobile-1.4.2.min.js"></script>
+<script src="js/MainPage.js"></script>
 <script src="js/Common.js"></script>
-
-
 </head>
 <body>
 
 
 
 
-	<div data-role="page" >
-	<script src="js/StatusPage.js"></script>
+	<div data-role="page" id="status">
 		<div data-role="header" data-id="header1" data-position="fixed" >
 			<a href="#leftpanel1" data-role="button" data-icon="gear"	data-inline="true" data-mini="true" class="ui-btn-right"></a> 
 			<h1 id="header">
@@ -26,9 +24,9 @@
 			<br>
 			<div data-role="navbar">
 				<ul>
-					<li><a href="StatusPage.html" id="Status" class="ui-btn-active ui-state-persist">Status</a></li>
-					<li><a href="MainPage.html"  id="Main" data-transition="none" >Config</a></li>
-					<li><a href="AlarmPage.html" id="Alarm" >Alarm</a></li>
+					<li><a href="StatusPage.html" data-transition="slide" class="ui-btn-active">Status</a></li>
+					<li><a href="MainPage.html"   data-transition="slide">Config</a></li>
+					<li><a href="AlarmPage.html"  data-transition="slide" >Alarm</a></li>
 				</ul>
 			</div>
 			<!-- /navbar -->
@@ -68,9 +66,9 @@
 			<h4>MediaPlayer</h4>
 			<div data-role="content" id="mediaplayer">
 				<fieldset data-role="controlgroup" data-mini="true" 	data-inline="true">
-					<input type="button" id="Stop" name="Stop" data-mini="true" value="Stop" />
+					<input type="button" id="Stops" name="Stops" data-mini="true" value="Stop" />
 					<p>
-					<input type="button" id="Restart" name="Restart" data-mini="true" value="Restart" />
+					<input type="button" id="Restarts" name="Restarts" data-mini="true" value="Restart" />
 					<p>
 
 				</fieldset>
@@ -78,9 +76,9 @@
 				<h4>OS</h4>
 				<fieldset data-role="controlgroupOS" data-mini="true" 	data-inline="true">
 
-					<input type="button" id="Reboot" name="Reboot" data-mini="true" value="Reboot" />
+					<input type="button" id="Reboots" name="Reboots" data-mini="true" value="Reboot" />
 					<p>
-					<input type="button" id="Shutdown" name="Shutdown" data-mini="true" value="Shutdown" />
+					<input type="button" id="Shutdowns" name="Shutdowns" data-mini="true" value="Shutdown" />
 					<p>
 				</fieldset>
 			</div>

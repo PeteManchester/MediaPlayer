@@ -1,30 +1,23 @@
+//Only one js script for all pages in my NavBar!!
+//Could be a messy..
+//http://stackoverflow.com/questions/15800121/why-i-have-to-put-all-the-script-to-index-html-in-jquery-mobile/15806954#15806954
 $(document)
-		.ready(
+		.on(
+				'pageshow',
+				'#main',
 				function() {
-					var news = "Players (mpd and mplayer) Config..";
-					var info = "Songcast Config....";
-					var lyrics = "Media Player Config....";
-					var title = "Change the Config";
+					// alert("MainPage Ready");
 					var response = '{ "friendly_name": "Bedroom","player":"mpd", "log_file_name": "mediaplayer.log",  "songcast_soundcard_name": "Audio [plughw:0,0]"}';
 
 					try {
-
+						checkStatusConfig();
 					} catch (e) {
 						alert(e);
 					}
 
-					checkStatus();
-					// setInterval(checkStatus,10000);
-
-					// $('<input type="radio" name="radio-choice-1"
-					// id="radio-choice-4"><label
-					// for="radio-choice-4">Cow</label>').appendTo("fieldset");
-
-					// $("div").trigger('create');
-					// $("input[type='radio']").checkboxradio().checkboxradio("refresh");
-
 					$("#Stop").click(function() {
 						stopMediaPlayer();
+						alert("After Stop");
 					});
 
 					$("#Restart").click(function() {
@@ -38,19 +31,62 @@ $(document)
 					$("#Shutdown").click(function() {
 						shutdownOS();
 					});
-
 				});
+
+$(document).on('pageshow', '#status', function() {
+	// alert("StatusPage Ready");
+	checkStatus();
+	setInterval(checkStatus, 1000);
+
+	$("#Stops").click(function() {
+		stopMediaPlayer();
+	});
+
+	$("#Restarts").click(function() {
+		restartMediaPlayer();
+	});
+
+	$("#Reboots").click(function() {
+		rebootOS();
+	});
+
+	$("#Shutdowns").click(function() {
+		shutdownOS();
+	});
+
+});
+
+$(document).on('pageshow', '#alarm', function() {
+
+	// alert("AlarmPage Ready");
+
+	$("#Stopa").click(function() {
+		stopMediaPlayer();
+	});
+
+	$("#Restarta").click(function() {
+		restartMediaPlayer();
+	});
+
+	$("#Reboota").click(function() {
+		rebootOS();
+	});
+
+	$("#Shutdowna").click(function() {
+		shutdownOS();
+	});
+
+});
 
 /*
  * Call a Restful Web Service
  */
 
 /**
- * Call restful web service to get the statistics Then show/hide button
- * depending on the result.
+ * Call restful web service to get the MediaPlayer Config details
  */
-function checkStatus() {
-	commonStatus();
+function checkStatusConfig() {
+	// commonStatus();
 	// alert('MainPage CheckStatus');
 	// http://stackoverflow.com/questions/8922343/dynamically-creating-vertically-grouped-radio-buttons-with-jquery
 	$
@@ -112,5 +148,43 @@ function checkStatus() {
 				}
 
 			});
+}
 
+/**
+ * Call restful web service
+ * 
+ */
+function checkStatus() {
+	$.ajax({
+
+		dataType : 'json',
+		headers : {
+			Accept : "application/json",
+			"Access-Control-Allow-Origin" : "*"
+		},
+		type : 'GET',
+		url : '/myapp/config/getStatus',
+		success : function(data) {
+			$('#status-table tr').remove();
+			$('#status-table > tbody:last').append(
+					'<tr> <th>Java Version</th> <td class="title">'
+							+ data.java_version + '</a></td> </tr>');
+			$('#status-table > tbody:last').append(
+					'<tr> <th>MediaPlayer Version</th> <td class="title">'
+							+ data.version + '</a></td> </tr>');
+			$('#status-table > tbody:last').append(
+					'<tr> <th>Memory Heap Used</th> <td class="title">'
+							+ data.memory_heap_used + '</a></td> </tr>');
+			$('#status-table > tbody:last').append(
+					'<tr> <th>Memory NonHeap Used</th> <td class="title">'
+							+ data.memory_nonheap_used + '</a></td> </tr>');
+			$('#status-table > tbody:last').append(
+					'<tr> <th>CPU Time</th> <td class="title">' + data.cpu_time
+							+ '</a></td> </tr>');
+		},
+		error : function(result) {
+			alert("Error " + result);
+		}
+
+	});
 }
