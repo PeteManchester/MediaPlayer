@@ -103,7 +103,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 		enableActionAttributes();
 		enableActionSourceXmlChangeCount();
 		PlayManager.getInstance().observeProductEvents(this);
-		//initSources();
+		// initSources();
 		setPropertySourceIndex(0);
 
 	}
@@ -157,8 +157,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	protected void setStandby(IDvInvocation paramIDvInvocation, boolean paramBoolean) {
 		log.debug("SetStandby: " + paramBoolean + Utils.getLogText(paramIDvInvocation));
 		PlayManager.getInstance().setStandby(paramBoolean);
-		if(paramBoolean==false)
-		{
+		if (paramBoolean == false) {
 			updateCurrentSource();
 		}
 	}
@@ -221,12 +220,12 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	@Override
 	protected void setSourceIndex(IDvInvocation paramIDvInvocation, long paramLong) {
 		log.debug("SetSourceIndex: " + paramLong + Utils.getLogText(paramIDvInvocation));
-		Source source = sources.get((int)paramLong);
+		Source source = sources.get((int) paramLong);
 		String name = source.getName();
 		log.debug("Source Selected: " + name);
 		setPropertySourceIndex(paramLong);
-		PluginGateWay.getInstance().setSourceId(name);
-		
+		PluginGateWay.getInstance().setSourceId(name,source.getType());
+
 	}
 
 	@Override
@@ -295,23 +294,20 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	 * Test to see of the initial Source can be obtained.
 	 */
 	public void updateCurrentSource() {
-		try
-		{
+		try {
 			long source_index = getPropertySourceIndex();
-			Source source = sources.get((int)source_index);
+			Source source = sources.get((int) source_index);
 			String name = source.getName();
 			log.debug("Source Selected: " + name);
-			PluginGateWay.getInstance().setSourceId(name);
-		}
-		catch(Exception e)
-		{
+			PluginGateWay.getInstance().setSourceId(name,source.getType());
+		} catch (Exception e) {
 			log.error(e);
 		}
-		
+
 	}
 
-    @Override
-    public String getName() {
-        return "Product";
-    }
+	@Override
+	public String getName() {
+		return "Product";
+	}
 }

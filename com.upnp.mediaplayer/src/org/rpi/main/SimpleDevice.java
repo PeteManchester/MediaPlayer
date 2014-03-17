@@ -3,16 +3,24 @@ package org.rpi.main;
 import org.apache.log4j.Logger;
 import org.openhome.net.core.*;
 import org.openhome.net.device.*;
+import org.quartz.utils.UpdateChecker;
 import org.rpi.config.Config;
 import org.rpi.http.HttpServerGrizzly;
 import org.rpi.os.OSManager;
 import org.rpi.player.PlayManager;
+import org.rpi.player.events.EventBase;
+import org.rpi.player.events.EventSourceChanged;
 import org.rpi.plugingateway.PluginGateWay;
 import org.rpi.providers.*;
 import org.rpi.radio.ChannelReader;
 import org.rpi.sources.Source;
 import org.rpi.sources.SourceReader;
 import org.rpi.utils.NetworkUtils;
+
+
+
+
+
 
 
 
@@ -25,9 +33,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessageListener {
+public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessageListener,Observer {
 
 	private Logger log = Logger.getLogger(SimpleDevice.class);
 	private DvDevice iDevice = null;
@@ -46,6 +56,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	private HttpServerGrizzly httpServer = null;
 
 	private PlayManager iPlayer = PlayManager.getInstance();
+	//private int iCount = 0;
 
 	//private PluginManager pm = null;
 
@@ -106,12 +117,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			iRenderingControl = new PrvRenderingControl(iDevice);
 		}
 
-		try {
-			ChannelReader cr = new ChannelReader();
-			iRadio.addChannels(cr.getChannels());
-		} catch (Exception e) {
-			log.error("Error Reading Radio Channels");
-		}
+		updateRadioList();
 		
 		try{
 			SourceReader sr = new SourceReader();
@@ -391,5 +397,31 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	public PrvProduct getProduct()
 	{
 		return iProduct;
+	}
+	
+	
+	private void updateRadioList()
+	{
+		try {
+			ChannelReader cr = new ChannelReader();
+			iRadio.addChannels(cr.getChannels());
+			//iCount  = cr.getCount();
+		} catch (Exception e) {
+			log.error("Error Reading Radio Channels");
+		}
+	}
+
+	@Override
+	public void update(Observable arg0, Object event) {
+		EventBase base = (EventBase) event;
+		switch (base.getType()) {
+		case EVENTSOURCECHANGED:
+			EventSourceChanged ev = (EventSourceChanged)event;
+			if(ev.getSourceType().equalsIgnoreCase("RADIO"))
+			{
+				updateRadioList();
+			}
+			break;
+		}
 	}
 }

@@ -42,7 +42,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 		enablePropertyTransportState();
 		enablePropertyUri();
 
-		setPropertyChannelsMax(100);
+		setPropertyChannelsMax(0);
 		setPropertyId(0);
 		setPropertyIdArray(array);
 		setPropertyMetadata("");
@@ -77,8 +77,8 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	 */
 	public void addChannels(List<ChannelRadio> channels) {
 		this.channels = channels;
-		UpdateIdArray();
 		propertiesLock();
+		UpdateIdArray();
 		setPropertyIdArray(array);
 		setPropertyChannelsMax(channels.size());
 		propertiesUnlock();

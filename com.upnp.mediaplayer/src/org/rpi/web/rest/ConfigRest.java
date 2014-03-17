@@ -5,6 +5,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -91,6 +92,8 @@ public class ConfigRest {
 			String comma = ",";
 			sb.append(q + "version" + q + colon + space + q + Config.version + q);
 			sb.append(comma + q + "java_version" + q + colon + space + q + System.getProperty("java.version") + q);
+			sb.append(comma + q + "mp_starttime" + q + colon + space + q + Config.getStartTime() + q);
+			sb.append(comma + q + "mp_currenttime" + q + colon + space + q + new Date() + q);
 			MemoryMXBean memBean = ManagementFactory.getMemoryMXBean();
 			MemoryUsage heap = memBean.getHeapMemoryUsage();
 			MemoryUsage nonHeap = memBean.getNonHeapMemoryUsage();

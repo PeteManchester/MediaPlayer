@@ -31,6 +31,7 @@ public class Config {
 	public static boolean enableReceiver = true;
 	public static String songcastNICName = "";
 	public static String songcastSoundCardName = "";
+	public static String radio_tunein_username = "";
 	
 	private static Calendar cal = Calendar.getInstance();
 	public static boolean songcastLatencyEnabled = false;

@@ -57,12 +57,14 @@ public class OHMEventAudio extends SongcastMessage {
 			int headerLength = -99;
 			try {
 				headerLength = new BigInteger(getBytes(8, 8)).intValue();
+				log.debug("HeaderLength: " + headerLength);
 			} catch (Exception e) {
 				log.error("Error getting HeaderLength",e);
 			}
 			
 			try {
 				sampleCount = new BigInteger(getBytes(10, 11)).intValue();
+				log.debug("SampleCount: " + sampleCount);
 			} catch (Exception e) {
 				log.error("Error getting SampelCount",e);
 			}			
@@ -73,6 +75,7 @@ public class OHMEventAudio extends SongcastMessage {
 			long latency = -99;
 			try {
 				latency = new BigInteger(getBytes(20, 23)).intValue();
+				log.debug("Latency: " + latency);
 			} catch (Exception e) {
 				log.error("Error getting Latency",e);
 			}
@@ -81,6 +84,7 @@ public class OHMEventAudio extends SongcastMessage {
 			
 			try {
 				iSampleRate = new BigInteger(getBytes(44, 47)).longValue();
+				log.debug("SampleRate: " + iSampleRate);
 			} catch (Exception e) {
 				log.error("Error getting SampleRate",e);
 			}		
@@ -92,6 +96,7 @@ public class OHMEventAudio extends SongcastMessage {
 				if (iSampleRate == 0)
 					iSampleRate = 44100;
 				time = (latency * iSampleRate * 256) / 1000;
+				log.debug("Calculated time for Latency: " + time);
 				} catch (Exception e) {
 					log.error("Error calculating latency",e);
 				}
@@ -109,6 +114,7 @@ public class OHMEventAudio extends SongcastMessage {
 			// 27)).longValue();
 			try {
 				iBitRate = new BigInteger(getBytes(48, 51)).longValue();
+				log.debug("BitRate: " + iBitRate);
 			} catch (Exception e) {
 				log.error("Error getting BitRate",e);
 			}			
@@ -117,18 +123,21 @@ public class OHMEventAudio extends SongcastMessage {
 			
 			try {
 				iBitRate = iBitRate / 1000;
+				log.debug("BitRate/1000: " + iBitRate);
 			} catch (Exception e) {
 				log.error("Error calculating BitRate",e);
 			}
 			
 			try {
 				iBitDepth = new BigInteger(getBytes(54, 54)).intValue();
+				log.debug("BitDepth: " + iBitDepth);
 			} catch (Exception e) {
 				log.error("Error getting BitDepth",e);
 			}
 			
 			try {
 				channels = new BigInteger(getBytes(55, 55)).intValue();
+				log.debug("Channels: " + channels);
 			} catch (Exception e) {
 				log.error("Error getting Channels",e);
 			}						
@@ -137,6 +146,7 @@ public class OHMEventAudio extends SongcastMessage {
 			
 			try {
 				codecNameLength = new BigInteger(getBytes(57, 57)).intValue();
+				log.debug("CodecNameLength: " + codecNameLength);
 			} catch (Exception e) {
 				log.error("Error Codec Name Length",e);
 			}
@@ -145,6 +155,7 @@ public class OHMEventAudio extends SongcastMessage {
 			
 			try {
 				soundStart = 8 + headerLength + codecNameLength;
+				log.debug("SoundStart: " + soundStart);
 			} catch (Exception e) {
 				log.error("Error Calculating SoundStart",e);
 			}
@@ -153,6 +164,7 @@ public class OHMEventAudio extends SongcastMessage {
 			
 			try {
 				soundEnd =  soundStart + ((channels * iBitDepth * sampleCount) / 8);
+				log.debug("SoundEnd: " + soundEnd);
 			} catch (Exception e) {
 				log.error("Error Calculating SoundEnd",e);
 			}
@@ -160,12 +172,14 @@ public class OHMEventAudio extends SongcastMessage {
 			try {
 				byte[] codec = getBytes(58, (58 + codecNameLength) - 1);
 				sCodec = new String(codec, "UTF-8");
+				log.debug("Codec: " + sCodec);
 			} catch (Exception e) {
 				log.error("Error getting Codec",e);
 			}
 			
 			try {
 				setSound(getBytes(soundStart, soundEnd - 1));
+				log.debug("SetSound: " + sound.length);
 			} catch (Exception e) {
 				log.error("Error settingSound",e);
 			}

@@ -21,6 +21,24 @@ public class EventSourceChanged implements EventBase {
 	}
 
 	private String name = "";
+	private String type = "";
+
+	/**
+	 * 
+	 * @param type
+	 */
+	public void setSourceType(String type) {
+		this.type  = type;	
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public String getSourceType()
+	{
+		return type;
+	}
 	
 
 }

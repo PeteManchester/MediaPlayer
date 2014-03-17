@@ -1,11 +1,13 @@
 //Only one js script for all pages in my NavBar!!
 //Could be a messy..
 //http://stackoverflow.com/questions/15800121/why-i-have-to-put-all-the-script-to-index-html-in-jquery-mobile/15806954#15806954
+var interval;
 $(document)
 		.on(
 				'pageshow',
 				'#main',
 				function() {
+					clearInterval(interval);
 					// alert("MainPage Ready");
 					var response = '{ "friendly_name": "Bedroom","player":"mpd", "log_file_name": "mediaplayer.log",  "songcast_soundcard_name": "Audio [plughw:0,0]"}';
 
@@ -31,12 +33,25 @@ $(document)
 					$("#Shutdown").click(function() {
 						shutdownOS();
 					});
+					
+					//CancelButton
+					$("#mpCancel").click(function() {
+						checkStatusConfig();
+					});
+					
+					//Submit Button
+					$("#mpSubmit").click(function() {
+						alert('Submit');
+					});
+					
+					
 				});
 
 $(document).on('pageshow', '#status', function() {
 	// alert("StatusPage Ready");
 	checkStatus();
-	setInterval(checkStatus, 1000);
+
+	interval = setInterval(checkStatus, 1000);	
 
 	$("#Stops").click(function() {
 		stopMediaPlayer();
@@ -59,7 +74,7 @@ $(document).on('pageshow', '#status', function() {
 $(document).on('pageshow', '#alarm', function() {
 
 	// alert("AlarmPage Ready");
-
+	clearInterval(interval);
 	$("#Stopa").click(function() {
 		stopMediaPlayer();
 	});
@@ -173,6 +188,12 @@ function checkStatus() {
 					'<tr> <th>MediaPlayer Version</th> <td class="title">'
 							+ data.version + '</a></td> </tr>');
 			$('#status-table > tbody:last').append(
+					'<tr> <th>Start Time</th> <td class="title">'
+							+ data.mp_starttime + '</a></td> </tr>');
+			$('#status-table > tbody:last').append(
+					'<tr> <th>Current Time</th> <td class="title">'
+							+ data.mp_currenttime + '</a></td> </tr>');
+			$('#status-table > tbody:last').append(
 					'<tr> <th>Memory Heap Used</th> <td class="title">'
 							+ data.memory_heap_used + '</a></td> </tr>');
 			$('#status-table > tbody:last').append(
@@ -181,6 +202,8 @@ function checkStatus() {
 			$('#status-table > tbody:last').append(
 					'<tr> <th>CPU Time</th> <td class="title">' + data.cpu_time
 							+ '</a></td> </tr>');
+			
+			
 		},
 		error : function(result) {
 			alert("Error " + result);
