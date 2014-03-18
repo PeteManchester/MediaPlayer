@@ -32,8 +32,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import com.sun.xml.internal.fastinfoset.stax.events.Util;
-
 public class ChannelReader {
 
 	private static Logger log = Logger.getLogger(ChannelReader.class);
@@ -226,7 +224,7 @@ public class ChannelReader {
 	 * Get the Favourites from the TuneIn Radio Account
 	 */
 	private void getTuneInChannels() {
-		if (Util.isEmptyString(Config.radio_tunein_username)) {
+		if (Utils.isEmpty(Config.radio_tunein_username)) {
 			log.debug("TuneIn UserName not configured, do not attempt to load TuneIn stations");
 			return;
 		}
