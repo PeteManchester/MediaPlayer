@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
+import org.rpi.plugingateway.PluginGateWay;
 
 /**
  * Root resource (exposed at "myresource" path)
@@ -101,6 +102,46 @@ public class ConfigRest {
 			com.sun.management.OperatingSystemMXBean mxbean = (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 			sb.append(comma + q + "cpu_time" + q + colon + space + q + mxbean.getProcessCpuTime() + q);
 			sb.append("}");
+		} catch (Exception e) {
+			log.error("Error creating Status JSON",e);
+		}
+		return sb.toString();
+	}
+	
+	
+	@Path("setSleepTimer")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String setSleepTimer() {
+		StringBuilder sb = new StringBuilder();
+		try {
+			sb.append(PluginGateWay.getInstance().setSleepTimer());
+		} catch (Exception e) {
+			log.error("Error creating Status JSON",e);
+		}
+		return sb.toString();
+	}
+	
+	@Path("cancelSleepTimer")
+	@GET
+	@Produces(MediaType.TEXT_HTML)
+	public String cancelSleepTimer() {
+		StringBuilder sb = new StringBuilder();
+		try {
+			sb.append(PluginGateWay.getInstance().cancelSleepTimer());
+		} catch (Exception e) {
+			log.error("Error creating Status JSON",e);
+		}
+		return sb.toString();
+	}
+	
+	@Path("getSleepTimer")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getSleepTimer() {
+		StringBuilder sb = new StringBuilder();
+		try {
+			sb.append(PluginGateWay.getInstance().getSleepTimer());
 		} catch (Exception e) {
 			log.error("Error creating Status JSON",e);
 		}

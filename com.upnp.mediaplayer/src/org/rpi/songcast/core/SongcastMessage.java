@@ -149,6 +149,7 @@ public class SongcastMessage {
 		StringBuilder sb = new StringBuilder();
 		for (byte b : bytes) {
 			sb.append(String.format("%02X ", b));
+			//sb.append(" ");
 		}
 		return sb.toString();
 	}
