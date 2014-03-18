@@ -189,6 +189,7 @@ public class StartMe {
 			Config.songcastSoundCardName = pr.getProperty("songcast.soundcard.name");
 			Config.songcastLatencyEnabled = Config.convertStringToBoolean(pr.getProperty("songcast.latency.enabled"),true);
 			Config.webHttpPort=pr.getProperty("web.http.port");
+			Config.radio_tunein_username = pr.getProperty("radio.tunein.username");
 			
 		} catch (Exception e) {
 			e.printStackTrace();

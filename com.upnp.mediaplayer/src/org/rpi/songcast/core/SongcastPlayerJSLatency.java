@@ -33,7 +33,7 @@ public class SongcastPlayerJSLatency implements ISongcastPlayer, Runnable {
 	private SourceDataLine soundLine = null;
 
 	private boolean bWrite = false;
-	
+
 	private int counter = 0;
 
 	// public static SongcastPlayerJavaSound getInstance() {
@@ -50,38 +50,37 @@ public class SongcastPlayerJSLatency implements ISongcastPlayer, Runnable {
 
 	public void createSoundLine(AudioInformation audioInf) {
 		try {
-			bWrite = false;//Stop trying to write to the SoundLine
-			if(soundLine !=null)
-			{
+			bWrite = false;// Stop trying to write to the SoundLine
+			if (soundLine != null) {
 				close();
 			}
-//			Mixer.Info[] infos = AudioSystem.getMixerInfo();
-//			for (Mixer.Info info : infos) {
-//				log.debug(info.getName());
-//				//if (info.getName().equalsIgnoreCase("Primary Sound Driver")) {
-//					Mixer mixer = AudioSystem.getMixer(info);
-//					if(!mixer.isOpen())
-//					{
-//						//mixer.open();
-//						Line.Info[] lines = mixer.getSourceLineInfo();
-//						for(Line.Info line : lines)
-//						{
-//							
-//							Line l = mixer.getLine(line);
-//							Control[] controls = l.getControls();
-//							if(l instanceof DataLine)
-//							{
-//								DataLine dataLine =(DataLine)l;
-//								AudioFormat audioFormat = dataLine.getFormat();
-//								log.debug("audioFormat: " + audioFormat.toString());
-//							}
-//							//log.debug("LineInfo: " + l.getControl());
-//						}
-//						Line.Info linfo = mixer.getLineInfo();
-//						
-//					}
-//				//}
-//			}
+			// Mixer.Info[] infos = AudioSystem.getMixerInfo();
+			// for (Mixer.Info info : infos) {
+			// log.debug(info.getName());
+			// //if (info.getName().equalsIgnoreCase("Primary Sound Driver")) {
+			// Mixer mixer = AudioSystem.getMixer(info);
+			// if(!mixer.isOpen())
+			// {
+			// //mixer.open();
+			// Line.Info[] lines = mixer.getSourceLineInfo();
+			// for(Line.Info line : lines)
+			// {
+			//
+			// Line l = mixer.getLine(line);
+			// Control[] controls = l.getControls();
+			// if(l instanceof DataLine)
+			// {
+			// DataLine dataLine =(DataLine)l;
+			// AudioFormat audioFormat = dataLine.getFormat();
+			// log.debug("audioFormat: " + audioFormat.toString());
+			// }
+			// //log.debug("LineInfo: " + l.getControl());
+			// }
+			// Line.Info linfo = mixer.getLineInfo();
+			//
+			// }
+			// //}
+			// }
 			log.info("Creating Audio Format: " + audioInf.toString());
 			audioFormat = new AudioFormat(audioInf.getSampleRate(), audioInf.getBitDepth(), audioInf.getChannels(), audioInf.isSigned(), audioInf.isBigEndian());
 			// audioFormat = new AudioFormat(96000.0f, 24,
@@ -143,24 +142,26 @@ public class SongcastPlayerJSLatency implements ISongcastPlayer, Runnable {
 	}
 
 	private void addData(byte[] data) {
-		
+
 		if (!bWrite)
 			return;
 		try {
 			if (soundLine != null) {
-				if(counter==0)
-				{
+				if (counter == 0) {
 					log.debug("SoundByte Length: " + data.length);
 				}
 				counter++;
-				if(counter > 100)
-				{
+				if (counter > 100) {
 					counter = 0;
 				}
 				soundLine.write(data, 0, data.length);
 			}
 		} catch (Exception e) {
-			log.error("Error Writing Data", e);
+			int length = -99;
+			if (data != null) {
+				length = data.length;
+			}
+			log.error("Error Writing Data, Data Length: " + length, e);
 		}
 	}
 

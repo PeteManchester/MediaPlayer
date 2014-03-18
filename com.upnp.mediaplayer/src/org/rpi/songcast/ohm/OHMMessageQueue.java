@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
 import org.rpi.mplayer.TrackInfo;
+import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventUpdateTrackInfo;
 import org.rpi.songcast.core.AudioInformation;
 import org.rpi.songcast.core.ISongcastPlayer;
@@ -128,7 +129,7 @@ public class OHMMessageQueue extends Observable implements Runnable {
 			forwardToSlaves(data);
 			audio.checkMessageType();
 			AudioInformation ai = audio.getAudioInfo();
-			if(!ai.compare(audioInformation))
+			if(ai!=null && !ai.compare(audioInformation))
 			{
 				log.debug("AudioFormat has changed: " + ai.toString());
 				player.createSoundLine(ai);
@@ -141,6 +142,7 @@ public class OHMMessageQueue extends Observable implements Runnable {
 				info.setDuration(0);
 				EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
 				ev.setTrackInfo(info);
+				PlayManager.getInstance().updateTrackInfo(ev);
 			}
 			audio.checkMessageType();
 			player.put(audio);

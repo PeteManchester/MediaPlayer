@@ -34,6 +34,7 @@ public class PluginGateWay extends Observable {
 
 	public void setSimpleDevice(SimpleDevice simpleDevice) {
 		this.simpleDevice = simpleDevice;
+		addObserver(simpleDevice);
 	}
 
 	/**
@@ -52,10 +53,11 @@ public class PluginGateWay extends Observable {
 	 * 
 	 * @param name
 	 */
-	public synchronized void setSourceId(String name) {
+	public synchronized void setSourceId(String name,String type) {
 		setSourceName(name);
 		EventSourceChanged ev = new EventSourceChanged();
 		ev.setName(name);
+		ev.setSourceType(type);
 		fireEvent(ev);
 	}
 	
