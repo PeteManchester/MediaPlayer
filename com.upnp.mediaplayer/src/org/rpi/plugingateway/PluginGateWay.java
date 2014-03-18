@@ -2,11 +2,15 @@ package org.rpi.plugingateway;
 
 import java.util.Observable;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
 import org.rpi.main.SimpleDevice;
+import org.rpi.os.OSManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventSourceChanged;
+import org.rpi.plug.interfaces.AlarmClockInterface;
+import org.rpi.plugin.alarmclock.AlarmClockImpl;
 import org.rpi.sources.Source;
 
 public class PluginGateWay extends Observable {
@@ -97,6 +101,63 @@ public class PluginGateWay extends Observable {
 	public String getDefaultSourcePin() {
 		return default_pin;
 	}
+	
+	
+	public String setSleepTimer()
+	{
+		try
+		{
+			AlarmClockInterface alarm = OSManager.getInstance().getPlugin();
+			if(alarm !=null)
+			{
+				 return alarm.createSleepTimer();
+			}
+		}
+		 catch(Exception e)
+		 {
+			 log.error("Error Setting SleepTimer: ", e) ;
+			 return "Error: " + e.getMessage();
+		 }
+		return "";
+	}
+	
+	public String cancelSleepTimer()
+	{
+		try
+		{
+			AlarmClockInterface alarm = OSManager.getInstance().getPlugin();
+			if(alarm !=null)
+			{
+				 return alarm.cancelSleepTimer();
+			}
+		}
+		 catch(Exception e)
+		 {
+			 log.error("Error Cancelling SleepTimer: ", e) ;
+			 return "Error: " + e.getMessage();
+		 }
+		return "";
+	}
+	
+	public String getSleepTimer()
+	{
+		try
+		{
+			AlarmClockInterface alarm = OSManager.getInstance().getPlugin();
+			if(alarm !=null)
+			{
+				 return alarm.getSleepTimer();
+			}
+		}
+		 catch(Exception e)
+		 {
+			 log.error("Error Getting SleepTimer: ", e) ;
+			 return "Error: " + e.getMessage();
+		 }
+		return "";
+	}
+	
+	
 }
 
 

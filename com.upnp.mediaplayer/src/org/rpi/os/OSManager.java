@@ -8,9 +8,14 @@ import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import org.apache.log4j.Logger;
+import org.rpi.plug.interfaces.AlarmClockInterface;
+import org.rpi.plugin.alarmclock.AlarmClockImpl;
 import org.rpi.utils.Utils;
+
 import com.pi4j.io.gpio.GpioController;
+
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.PluginManager;
 
@@ -86,13 +91,10 @@ public class OSManager {
 			String class_name = this.getClass().getName();
 			log.debug("Find Class, ClassName: " + class_name);
 			String path = getFilePath(this.getClass(), true);
-			if(path.endsWith("/"))
-			{
-				path = path.substring(0, (path.length()-1));
+			if (path.endsWith("/")) {
+				path = path.substring(0, (path.length() - 1));
 				log.debug("Path ended with '/'. Updated Path to be: " + path);
-			}
-			else
-			{
+			} else {
 				log.debug("Path did not end with '/': " + path);
 			}
 			String full_path = path + OHNET_LIB_DIR + "/default";
@@ -119,12 +121,12 @@ public class OSManager {
 
 					log.debug("Its an ARM device, now check, which revision");
 					try {
-                        String armVersion = getReadElfTag("Tag_CPU_arch");
+						String armVersion = getReadElfTag("Tag_CPU_arch");
 
 						if (armVersion == null) {
-                            log.error("Cannot determine ARM version...");
-                            osArch = "UNKNOWN";
-                        } else if (armVersion.equals("v5")) {
+							log.error("Cannot determine ARM version...");
+							osArch = "UNKNOWN";
+						} else if (armVersion.equals("v5")) {
 							osArch = osArch + "v5sf";
 						} else if (armVersion.equals("v6")) {
 							// we believe that a v6 arm is always a raspi (could
@@ -139,13 +141,13 @@ public class OSManager {
 						} else if (armVersion.equals("v7")) {
 							osArch = osArch + "v7";
 						} else {
-                            log.error("Unknown ARM version...(" + armVersion + ")");
-                            osArch = "UNKNOWN";
-                        }
+							log.error("Unknown ARM version...(" + armVersion + ")");
+							osArch = "UNKNOWN";
+						}
 
-                        if (!osArch.equals("UNKNOWN"))  {
-                            full_path = path + OHNET_LIB_DIR + "/" + osPathName + "/" + osArch;
-                        }
+						if (!osArch.equals("UNKNOWN")) {
+							full_path = path + OHNET_LIB_DIR + "/" + osPathName + "/" + osArch;
+						}
 					} catch (Exception e) {
 						log.debug("Error Determining ARM OS Type: ", e);
 					}
@@ -170,20 +172,26 @@ public class OSManager {
 	}
 
 	/***
-	 * Get the Path of this ClassFile and/or the path of the current JAR, which should be basically the same! No?
-	 * Returned to the old method because the new method did not work when a plugin requested the path.
-	 * Getting LCD.xml from Directory: /C:/Keep/git/repository/MediaPlayer/com.upnp.mediaplayer/bin
-	 * Instead of
-	 * /C:/Keep/git/repository/MediaPlayer/com.upnp.mediaplayer/bin/org/rpi/plugin/lcddisplay/
+	 * Get the Path of this ClassFile and/or the path of the current JAR, which
+	 * should be basically the same! No? Returned to the old method because the
+	 * new method did not work when a plugin requested the path. Getting LCD.xml
+	 * from Directory:
+	 * /C:/Keep/git/repository/MediaPlayer/com.upnp.mediaplayer/bin Instead of
+	 * /C:/Keep/git/repository/MediaPlayer/com.upnp.mediaplayer/bin/org/rpi/
+	 * plugin/lcddisplay/
+	 * 
 	 * @return
 	 */
-//	public synchronized String getFilePath(Class mClass, boolean bUseFullNamePath) {
-//        String path = mClass.getProtectionDomain().getCodeSource().getLocation().getPath();
-//        String retValue = path.substring(0, path.lastIndexOf("/"));
-//        log.debug("Returning Path of Class: " + mClass.getName() + " " + retValue);
-//        return retValue;
-//	}
-	
+	// public synchronized String getFilePath(Class mClass, boolean
+	// bUseFullNamePath) {
+	// String path =
+	// mClass.getProtectionDomain().getCodeSource().getLocation().getPath();
+	// String retValue = path.substring(0, path.lastIndexOf("/"));
+	// log.debug("Returning Path of Class: " + mClass.getName() + " " +
+	// retValue);
+	// return retValue;
+	// }
+
 	public synchronized String getFilePath(Class mClass, boolean bUseFullNamePath) {
 		String className = mClass.getName();
 		if (!className.startsWith("/")) {
@@ -259,6 +267,20 @@ public class OSManager {
 		}
 	}
 
+	/**
+	 * Test to see what happens if we don't have the Plugin loaded
+	 * 
+	 * @return
+	 */
+	public AlarmClockInterface getPlugin() {
+		try {
+			return pm.getPlugin(AlarmClockInterface.class);
+		} catch (Exception e) {
+			log.error("Could not get AlarmClock Plugin");
+		}
+		return null;
+	}
+
 	/***
 	 * List all the files in this directory and sub directories.
 	 * 
@@ -294,7 +316,7 @@ public class OSManager {
 		this.bRaspi = bRaspi;
 	}
 
-    /**
+	/**
 	 * Is this a SoftFloat Raspberry Pi
 	 * 
 	 * @return
@@ -327,108 +349,106 @@ public class OSManager {
 		return Pi4JManager.getInstance().getGpio();
 	}
 
-// the following is taken fully from pi4j (https://github.com/Pi4J/pi4j/blob/master/pi4j-core/src/main/java/com/pi4j/system/SystemInfo.java)
-// we should get rid of this dependency, but right now it does work nicely
+	// the following is taken fully from pi4j
+	// (https://github.com/Pi4J/pi4j/blob/master/pi4j-core/src/main/java/com/pi4j/system/SystemInfo.java)
+	// we should get rid of this dependency, but right now it does work nicely
 
-    /*
-     * this method was partially derived from :: (project) jogamp / (developer) sgothel
-     * https://github.com/sgothel/gluegen/blob/master/src/java/jogamp/common/os/PlatformPropsImpl.java#L160
-     * https://github.com/sgothel/gluegen/blob/master/LICENSE.txt
-     *
-     */
-    public  boolean isHardFloat() {
+	/*
+	 * this method was partially derived from :: (project) jogamp / (developer)
+	 * sgothel
+	 * https://github.com/sgothel/gluegen/blob/master/src/java/jogamp/common
+	 * /os/PlatformPropsImpl.java#L160
+	 * https://github.com/sgothel/gluegen/blob/master/LICENSE.txt
+	 */
+	public boolean isHardFloat() {
 
-        return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
-            ArrayList<String> gnueabihf = new ArrayList<String>();
-           public Boolean run() {
-           	gnueabihf.add("gnueabihf");
-           	gnueabihf.add("armhf");
-               if (Utils.containsString(System.getProperty("sun.boot.library.path"), gnueabihf) ||
-               		Utils.containsString(System.getProperty("java.library.path"), gnueabihf) ||
-               		Utils.containsString(System.getProperty("java.home"), gnueabihf) ||
-                       getBashVersionInfo().contains("gnueabihf") ||
-                       hasReadElfTag("Tag_ABI_HardFP_use")) {
-            	   log.debug("This is a HardFloat");
-                   return true; //
-               }
-               log.debug("This is a HardFloat");
-               return false;
-           }
-       });
-    }
-    
+		return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+			ArrayList<String> gnueabihf = new ArrayList<String>();
 
+			public Boolean run() {
+				gnueabihf.add("gnueabihf");
+				gnueabihf.add("armhf");
+				if (Utils.containsString(System.getProperty("sun.boot.library.path"), gnueabihf) || Utils.containsString(System.getProperty("java.library.path"), gnueabihf) || Utils.containsString(System.getProperty("java.home"), gnueabihf) || getBashVersionInfo().contains("gnueabihf") || hasReadElfTag("Tag_ABI_HardFP_use")) {
+					log.debug("This is a HardFloat");
+					return true; //
+				}
+				log.debug("This is a HardFloat");
+				return false;
+			}
+		});
+	}
 
-    /*
-     * taken from https://github.com/Pi4J/pi4j/blob/master/pi4j-core/src/main/java/com/pi4j/system/SystemInfo.java
-     *
-     * this method will to obtain the version info string from the 'bash' program
-     * (this method is used to help determine the HARD-FLOAT / SOFT-FLOAT ABI of the system)
-     */
-    private static String getBashVersionInfo() {
-        String versionInfo = "";
-        try {
-            String result[] = Utils.execute("bash --version");
-            for(String line : result) {
-                if(!line.isEmpty()) {
-                    versionInfo = line; // return only first output line of version info
-                    break;
-                }
-            }
-        }
-        catch(Exception e)
-        {
-        	log.error("Error Executing bash --version", e);
-        }
-        //catch (IOException ioe) { ioe.printStackTrace(); }
-        //catch (InterruptedException ie) { ie.printStackTrace(); }
-        return versionInfo;
-    }
+	/*
+	 * taken from
+	 * https://github.com/Pi4J/pi4j/blob/master/pi4j-core/src/main/java
+	 * /com/pi4j/system/SystemInfo.java
+	 * 
+	 * this method will to obtain the version info string from the 'bash'
+	 * program (this method is used to help determine the HARD-FLOAT /
+	 * SOFT-FLOAT ABI of the system)
+	 */
+	private static String getBashVersionInfo() {
+		String versionInfo = "";
+		try {
+			String result[] = Utils.execute("bash --version");
+			for (String line : result) {
+				if (!line.isEmpty()) {
+					versionInfo = line; // return only first output line of
+										// version info
+					break;
+				}
+			}
+		} catch (Exception e) {
+			log.error("Error Executing bash --version", e);
+		}
+		// catch (IOException ioe) { ioe.printStackTrace(); }
+		// catch (InterruptedException ie) { ie.printStackTrace(); }
+		return versionInfo;
+	}
 
-    /*
-     * this method will determine if a specified tag exists from the elf info in the '/proc/self/exe' program
-     * (this method is used to help determine the HARD-FLOAT / SOFT-FLOAT ABI of the system)
-     */
-    private static boolean hasReadElfTag(String tag) {
-        String tagValue = getReadElfTag(tag);
-        if(tagValue != null && !tagValue.isEmpty())
-            return true;
-        return false;
-    }
+	/*
+	 * this method will determine if a specified tag exists from the elf info in
+	 * the '/proc/self/exe' program (this method is used to help determine the
+	 * HARD-FLOAT / SOFT-FLOAT ABI of the system)
+	 */
+	private static boolean hasReadElfTag(String tag) {
+		String tagValue = getReadElfTag(tag);
+		if (tagValue != null && !tagValue.isEmpty())
+			return true;
+		return false;
+	}
 
-    /*
-     * this method will obtain a specified tag value from the elf info in the '/proc/self/exe' program
-     * (this method is used to help determine the HARD-FLOAT / SOFT-FLOAT ABI of the system)
-     */
-    private static String getReadElfTag(String tag) {
-        String tagValue = null;
-        try {
-            String result[] = Utils.execute("/usr/bin/readelf -A /proc/self/exe");
-            if(result != null){
-                for(String line : result) {
-                    line = line.trim();
-                    if (line.startsWith(tag) && line.contains(":")) {
-                        String lineParts[] = line.split(":", 2);
-                        if(lineParts.length > 1)
-                            tagValue = lineParts[1].trim();
-                        break;
-                    }
-                }
-            }
-        }
-        catch(Exception e)
-        {
-        	log.error("IOException during readelf operation", e);
-        }
-        //catch (IOException ioe) {
-        //    log.error("IOException during readelf operation", ioe);
-        //}
-        //catch (InterruptedException ie) {
-        //    log.error("InterruptedEx during readelf operation", ie);
+	/*
+	 * this method will obtain a specified tag value from the elf info in the
+	 * '/proc/self/exe' program (this method is used to help determine the
+	 * HARD-FLOAT / SOFT-FLOAT ABI of the system)
+	 */
+	private static String getReadElfTag(String tag) {
+		String tagValue = null;
+		try {
+			String result[] = Utils.execute("/usr/bin/readelf -A /proc/self/exe");
+			if (result != null) {
+				for (String line : result) {
+					line = line.trim();
+					if (line.startsWith(tag) && line.contains(":")) {
+						String lineParts[] = line.split(":", 2);
+						if (lineParts.length > 1)
+							tagValue = lineParts[1].trim();
+						break;
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.error("IOException during readelf operation", e);
+		}
+		// catch (IOException ioe) {
+		// log.error("IOException during readelf operation", ioe);
+		// }
+		// catch (InterruptedException ie) {
+		// log.error("InterruptedEx during readelf operation", ie);
 
-        //}
-        return tagValue;
-    }
-
+		// }
+		return tagValue;
+	}
 
 }

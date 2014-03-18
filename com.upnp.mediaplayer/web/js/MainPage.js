@@ -2,6 +2,12 @@
 //Could be a messy..
 //http://stackoverflow.com/questions/15800121/why-i-have-to-put-all-the-script-to-index-html-in-jquery-mobile/15806954#15806954
 var interval;
+
+$.ajaxSetup ({
+    // Disable caching of AJAX responses */
+    cache: false
+});
+
 $(document)
 		.on(
 				'pageshow',
@@ -49,6 +55,7 @@ $(document)
 
 $(document).on('pageshow', '#status', function() {
 	// alert("StatusPage Ready");
+	clearInterval(interval);
 	checkStatus();
 
 	interval = setInterval(checkStatus, 1000);	
@@ -72,6 +79,48 @@ $(document).on('pageshow', '#status', function() {
 });
 
 $(document).on('pageshow', '#alarm', function() {
+	
+	clearInterval(interval);
+	setInterval(checkSleepStatus, 1000);	
+	$("#alSleepSet").click(function() {
+		$.ajax({
+
+			dataType : 'text',
+			headers : {
+				Accept : "text/plain",
+				"Access-Control-Allow-Origin" : "*"
+			},
+			type : 'GET',
+			url : '/myapp/config/setSleepTimer',
+			success : function(data) {
+				//alert(data);				
+			},
+			error : function(result) {
+				alert("Error " + result.message);
+			}
+
+		});
+	});
+	
+	$("#alSleepCancel").click(function() {
+		$.ajax({
+
+			dataType : 'text',
+			headers : {
+				Accept : "text/html",
+				"Access-Control-Allow-Origin" : "*"
+			},
+			type : 'GET',
+			url : '/myapp/config/cancelSleepTimer',
+			success : function(data) {
+				//alert(data);				
+			},
+			error : function(result) {
+				alert("Error " + result.message);
+			}
+
+		});
+	});
 
 	// alert("AlarmPage Ready");
 	clearInterval(interval);
@@ -204,6 +253,32 @@ function checkStatus() {
 							+ '</a></td> </tr>');
 			
 			
+		},
+		error : function(result) {
+			alert("Error " + result);
+		}
+
+	});
+}
+
+
+/**
+ * Call restful web service
+ * 
+ */
+function checkSleepStatus() {
+	$.ajax({
+
+		dataType : 'text',
+		headers : {
+			Accept : "text/plain",
+			"Access-Control-Allow-Origin" : "*"
+		},
+		type : 'GET',
+		url : '/myapp/config/getSleepTimer',
+		success : function(data) {
+			//alert(data);
+			$("#alSleepStatus").val(data);
 		},
 		error : function(result) {
 			alert("Error " + result);

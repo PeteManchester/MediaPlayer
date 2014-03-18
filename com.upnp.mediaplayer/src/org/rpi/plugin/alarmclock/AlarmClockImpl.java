@@ -2,6 +2,7 @@ package org.rpi.plugin.alarmclock;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
@@ -20,12 +21,14 @@ import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
+import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
 import org.rpi.os.OSManager;
 import org.rpi.player.PlayManager;
+import org.rpi.plug.interfaces.AlarmClockInterface;
 import org.rpi.utils.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -90,6 +93,91 @@ public class AlarmClockImpl implements AlarmClockInterface {
 		} catch (Exception e) {
 			log.error("Error Creating Job: ", e);
 		}
+	}
+
+	public String createSleepTimer() {
+		String name = "Sleep";
+		String volume = "";
+		String type = "OFF";
+		String channel = "";
+		String shuffle = "";
+		Calendar cal = Calendar.getInstance();
+		try {
+			cal.set(Calendar.SECOND,0);
+			TriggerKey tr_key = new TriggerKey(name, "sleepTimer");
+
+			if (scheduler.checkExists(tr_key)) {
+
+				Trigger sleepTrigger = scheduler.getTrigger(tr_key);
+				cal = Calendar.getInstance();
+				cal.setTime(sleepTrigger.getNextFireTime());
+				log.info("Sleep Already Scheduled : " + cal.toString());
+			}
+
+			JobDetail job = JobBuilder.newJob(AlarmClockJob.class).withIdentity(name, "group1").build();
+			Map dataMap = job.getJobDataMap();
+			dataMap.put("id", name);
+			dataMap.put("Volume", volume);
+			dataMap.put("Shuffle", shuffle);
+			dataMap.put("type", type);
+			dataMap.put("channel", channel);
+			cal.add(Calendar.MINUTE, 15);
+			Trigger trigger = TriggerBuilder.newTrigger().withIdentity(tr_key).startAt(cal.getTime()).forJob(job).build();
+			if (scheduler.checkExists(tr_key)) {
+				Date next_time = scheduler.rescheduleJob(tr_key, trigger);
+				log.info("Schedule has been changed, next execution time : " + next_time.toString() + " -- Job: " + name);
+				return next_time.toString();
+			} else {
+				Date next_time = scheduler.scheduleJob(job, trigger);
+				log.info("Job has been scheduled, next execution time : " + next_time.toString() + " -- Job: " + name);
+				return next_time.toString();
+			}
+		} catch (Exception e) {
+			log.error("Error Creating Job: ", e);
+			return e.getMessage();
+		}
+	}
+
+	@Override
+	public String cancelSleepTimer() {
+		String name = "Sleep";
+		try {
+			TriggerKey tr_key = new TriggerKey(name, "sleepTimer");
+			if (scheduler.checkExists(tr_key)) {
+				if(scheduler.unscheduleJob(tr_key))
+				{
+					log.debug("Sleep Timer Cancelled");
+				}				
+			}
+		} catch (Exception e) {
+			log.error("Error Cancelling Sleep Timer");
+		}
+		return "OK";
+	}
+
+	@Override
+	public String getSleepTimer() {
+		String name = "Sleep";
+		Calendar cal = Calendar.getInstance();
+		try {
+
+			TriggerKey tr_key = new TriggerKey(name, "sleepTimer");
+
+			if (scheduler.checkExists(tr_key)) {
+
+				Trigger sleepTrigger = scheduler.getTrigger(tr_key);
+				cal = Calendar.getInstance();
+				cal.setTime(sleepTrigger.getNextFireTime());
+				return cal.getTime().toString();
+			}
+			
+		}
+		catch(Exception e)
+		{
+			log.error("Error Getting SleepTimer",e);
+			return "Error: " + e.getMessage();
+		}
+		return "";
 	}
 
 	/***

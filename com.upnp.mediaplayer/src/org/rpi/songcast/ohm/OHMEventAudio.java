@@ -62,6 +62,18 @@ public class OHMEventAudio extends SongcastMessage {
 				log.error("Error getting HeaderLength",e);
 			}
 			
+			
+			try
+			{
+				byte[] bytes = getBytes(0, 120);
+				String s = byteToHexString(bytes);
+				log.debug("HeaderBytes: " + s);
+			}
+			catch(Exception e)
+			{
+				log.error("Error Getting HeaderBytes",e);
+			}
+			
 			try {
 				sampleCount = new BigInteger(getBytes(10, 11)).intValue();
 				log.debug("SampleCount: " + sampleCount);
