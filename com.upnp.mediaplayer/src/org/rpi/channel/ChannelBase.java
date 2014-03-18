@@ -14,6 +14,10 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
+import org.rpi.utils.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -45,12 +49,14 @@ public class ChannelBase {
     private String date = "";
     private boolean icy_reverse = false;
     private String albumArtUri = "";
+    private String genre = "";
 
     private String metadata;
 
     private int id;
     private String metatext = "";
     private long time = -99;
+    private Long duration = new Long(0);
     private String full_details;
 
     public ChannelBase(String uri, String metadata, int id) {
@@ -160,6 +166,12 @@ public class ChannelBase {
                     remove = false;
                 }
                 else if (n.getNodeName() == "upnp:albumArtURI") {
+                    remove = false;
+                }
+                else if ("upnp:genre".equals(n.getNodeName())) {
+                    remove = false;
+                }
+                else if ("res".equals(n.getNodeName())) {
                     remove = false;
                 }
 
@@ -346,6 +358,14 @@ public class ChannelBase {
                 else if ("upnp:albumArtURI".equals(n.getNodeName())) {
                     setAlbumArtUri(n.getTextContent());
                 }
+                else if ("upnp:genre".equals(n.getNodeName())) {
+                    setGenre(n.getTextContent());
+                }
+                else if ("res".equals(n.getNodeName())) {
+                    String duration = n.getAttributes().getNamedItem("duration").getTextContent();
+                    Long period = Utils.parseDurationString(duration);
+                    setDuration(period);
+                }
             }
         } catch (Exception e) {
             log.error("Error GetTrackDetails", e);
@@ -498,4 +518,19 @@ public class ChannelBase {
         this.albumArtUri = albumArtUri;
     }
 
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    public Long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Long duration) {
+        this.duration = duration;
+    }
 }

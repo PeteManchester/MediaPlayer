@@ -18,8 +18,6 @@ import org.apache.log4j.Logger;
 import org.rpi.config.Config;
 import org.rpi.plugingateway.PluginGateWay;
 
-import com.sun.xml.internal.bind.v2.runtime.output.Encoded;
-
 /**
  * Root resource (exposed at "myresource" path)
  * http://localhost:8090/myapp/myresource
@@ -27,58 +25,59 @@ import com.sun.xml.internal.bind.v2.runtime.output.Encoded;
 @Path("config")
 public class ConfigRest {
 
-	private Logger log = Logger.getLogger(this.getClass());
+    private Logger log = Logger.getLogger(this.getClass());
 
-	/**
-	 * Method handling HTTP GET requests. The returned object will be sent to
-	 * the client as "text/plain" media type.
-	 * 
-	 * @return String that will be returned as a text/plain response.
-	 */
-	@Path("getConfig")
-	@GET
-	@Produces("text/html; charset=utf-8")
-	public String getConfig() {
-		StringBuilder sb = new StringBuilder();
-		try {
-			Properties pr = new Properties();
-			pr.load(new FileInputStream("app.properties"));
+    /**
+     * Method handling HTTP GET requests. The returned object will be sent to
+     * the client as "text/plain" media type.
+     * 
+     * @return String that will be returned as a text/plain response.
+     */
+    @Path("getConfig")
+    @GET
+    @Produces("text/html; charset=utf-8")
+    public String getIt() {
+        StringBuilder sb = new StringBuilder();
+        try {
+            Properties pr = new Properties();
+            pr.load(new FileInputStream("app.properties"));
 
-			sb.append("{");
-			String q = "\"";
-			String colon = ":";
-			String space = " ";
-			String comma = "";
-			Enumeration<?> e = pr.propertyNames();
-			while (e.hasMoreElements()) {
-				String key = (String) e.nextElement();
-				String value = pr.getProperty(key);
-				sb.append(comma + q + convertKey(key) + q + colon + space + q + converValues(value) + q);
-				comma = ",";
-			}
+            sb.append("{");
+            String q = "\"";
+            String colon = ":";
+            String space = " ";
+            String comma = "";
+            Enumeration<?> e = pr.propertyNames();
+            while (e.hasMoreElements()) {
+                String key = (String) e.nextElement();
+                String value = pr.getProperty(key);
+                sb.append(comma + q + convertKey(key) + q + colon + space + q + converValues(value) + q);
+                comma = ",";
+            }
 
-			sb.append("}");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return sb.toString();
-	}
+            sb.append("}");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sb.toString();
+    }
 
-	private String convertKey(String key) {
-		key = key.replaceAll("\\.", "_");
-		return key;
+    private String convertKey(String key) {
+        key = key.replaceAll("\\.", "_");
+        return key;
 
-	}
+    }
 
-	private String converValues(String value) {
-		try {
-			//value = value.replace('\\', '/');
-			value = URLEncoder.encode(value, "UTF-8");
-		} catch (Exception e) {
-			log.error("Error creating Encoding JSON",e);
-		}
-		return value;
-	}
+    private String converValues(String value) {
+        try {
+            //value = value.replace('\\', '/');
+            value = URLEncoder.encode(value, "UTF-8");
+        } catch (Exception e) {
+            log.error("Error creating Encoding JSON",e);
+        }
+        return value;
+    }
+
 
 	@Path("getStatus")
 	@GET

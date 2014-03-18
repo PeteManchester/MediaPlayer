@@ -25,9 +25,11 @@ public class TrackModel {
 
     private String imageURI;
 
-    private String playingTime;
+    private Long playTime;
 
     private Long trackDuration;
+
+    private String genre;
 
     public String getTrackTitle() {
         return trackTitle;
@@ -77,5 +79,25 @@ public class TrackModel {
         Long oldValue = this.trackDuration;
         this.trackDuration = trackDuration;
         this.pcs.firePropertyChange("trackDuration", oldValue, trackDuration);
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        String oldValue = this.genre;
+        this.genre = genre;
+        this.pcs.firePropertyChange("genre", oldValue, genre);
+    }
+
+    public Long getPlayTime() {
+        return playTime;
+    }
+
+    public void setPlayTime(Long playTime) {
+        Long oldValue = this.playTime;
+        this.playTime = playTime;
+         this.pcs.firePropertyChange("playTime", oldValue, playTime);
     }
 }
