@@ -15,7 +15,7 @@ public class Utils {
 
     private static Logger log = Logger.getLogger(Utils.class);
 
-    private static PeriodFormatter pf = new PeriodFormatterBuilder()
+    private static PeriodFormatter pfWithSeconds = new PeriodFormatterBuilder()
             .printZeroAlways()
             .maximumParsedDigits(2)
             .minimumPrintedDigits(2)
@@ -129,7 +129,7 @@ public class Utils {
      * @return
      */
     public static Long parseDurationString(String duration) {
-        Period result = Period.parse(duration, pf);
+        Period result = Period.parse(duration, pfWithSeconds);
         return result.toStandardDuration().getMillis();
     }
 
@@ -141,7 +141,7 @@ public class Utils {
      */
     public static String printTimeString(Long time) {
         Duration duration = new Duration(time.longValue());
-        return pf.print(duration.toPeriod());
+        return pfWithSeconds.print(duration.toPeriod());
     }
 
 }

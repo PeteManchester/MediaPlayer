@@ -2,10 +2,13 @@ package org.rpi.plugin.fullscreen;
 
 import org.apache.log4j.Logger;
 import org.imgscalr.Scalr;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 import org.rpi.utils.Utils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -24,12 +27,38 @@ public class FullscreenDisplayView extends JFrame {
     private MarqueePanel albumPanel;
     private MarqueePanel artistPanel;
     private MarqueePanel genrePanel;
+    private MarqueePanel notYetUsedPanel;
+    private MarqueePanel notYetUsedPanel2;
 
     private JLabel imageLabel;
     private JLabel playTimeLabel;
     private JLabel trackDurationLabel;
 
-    public FullscreenDisplayView() throws HeadlessException {
+    private JLabel currentDateLabel;
+    private JLabel currentTimeLabel;
+    private JLabel infoLabel;
+
+    private Boolean debug = Boolean.FALSE;
+    private Border border;
+
+    public FullscreenDisplayView(String friendlyName) throws HeadlessException {
+
+        // initial alignment
+        int x = 10;
+        int y = 10;
+
+        int xHalf = 275;
+        int fullWidth = 636;
+        int halfWidth = 371;
+        int lineHeight = 50;
+        int separator = 0;
+
+        border = BorderFactory.createEmptyBorder();
+        if (debug) {
+            border = BorderFactory.createLineBorder(Color.GREEN, 2);
+        }
+
+        Font timeFont = new Font(Font.SANS_SERIF, Font.PLAIN, 20);
 
         this.setLayout(new BorderLayout());
         this.setSize(656, 416);
@@ -40,16 +69,49 @@ public class FullscreenDisplayView extends JFrame {
         d_pane = new JDesktopPane();
         d_pane.setBackground(Color.BLACK); // prevent unexpected LaF settings
 
+        // label with current date
+        currentDateLabel = new JLabel(LocalDate.now().toString("dd.MM.yyyy"));
+        currentDateLabel.setForeground(Color.YELLOW);
+        currentDateLabel.setBackground(Color.BLACK);
+        currentDateLabel.setFont(timeFont);
+        currentDateLabel.setBounds(x, y, 130, 30);
+        currentDateLabel.setBorder(border);
+        d_pane.add(currentDateLabel);
+
+        // label with current date
+        currentTimeLabel = new JLabel(LocalTime.now().toString("HH:mm"));
+        currentTimeLabel.setForeground(Color.YELLOW);
+        currentTimeLabel.setBackground(Color.BLACK);
+        currentTimeLabel.setFont(timeFont);
+        currentTimeLabel.setBounds(140, y, 80, 30);
+        currentTimeLabel.setBorder(border);
+        d_pane.add(currentTimeLabel);
+
+        // label with mediaplayer info
+        infoLabel = new JLabel(friendlyName);
+        infoLabel.setForeground(Color.YELLOW);
+        infoLabel.setBackground(Color.BLACK);
+        infoLabel.setFont(timeFont);
+        infoLabel.setBounds(220, y, 426, 30);
+        infoLabel.setBorder(border);
+        d_pane.add(infoLabel);
+
+        y = y + 30;
+
         // track text
         String trackText = "TrackTitle";
-        trackPanel = this.addTextToPane(trackText, null, 10, 10, 636, 45);
+        trackPanel = this.addTextToPane(trackText, null, x, y, fullWidth, lineHeight);
         d_pane.add(trackPanel);
+
+        y = y + lineHeight + separator;
 
         // Image Panel
         try {
-            ImageIcon icon = this.calculateImageLabel(getClass().getResource("/mediaplayer-original.png"));
+            ImageIcon icon = this.calculateImageLabel(getClass().getResource("/org/rpi/image/mediaplayer240.png"));
             imageLabel = new JLabel(icon);
-            imageLabel.setBounds(new Rectangle(new Point(10, 65), imageLabel.getPreferredSize()));
+            imageLabel.setBorder(border);
+            System.out.println("y=" + y);
+            imageLabel.setBounds(new Rectangle(new Point(x, y), imageLabel.getPreferredSize()));
 
             d_pane.add(imageLabel);
         } catch (IOException e) {
@@ -58,31 +120,48 @@ public class FullscreenDisplayView extends JFrame {
 
         // artist text
         String artistText = "Artist";
-        artistPanel = this.addTextToPane(artistText, null, 320, 65, 326, 45);
+        artistPanel = this.addTextToPane(artistText, null, xHalf, y, halfWidth, lineHeight);
         d_pane.add(artistPanel);
 
 
         Font smallFont = new Font(Font.SANS_SERIF, Font.PLAIN, 30);
 
         // album text
+        y = y + lineHeight + separator;
         String albumText = "Album";
-        albumPanel = this.addTextToPane(albumText, smallFont, 320, 115, 326, 45);
+        albumPanel = this.addTextToPane(albumText, smallFont, xHalf, y, halfWidth, lineHeight);
         d_pane.add(albumPanel);
 
         // album text
+        y = y + lineHeight + separator;
         String genreText = "Genre";
-        genrePanel = this.addTextToPane(genreText, smallFont, 320, 165, 326, 45);
+        genrePanel = this.addTextToPane(genreText, smallFont, xHalf, y, halfWidth, lineHeight);
         d_pane.add(genrePanel);
 
-        Font timeFont = new Font(Font.SANS_SERIF, Font.PLAIN, 20);
+        // not yet used text
+        y = y + lineHeight + separator;
+        String nyuText = "";
+        notYetUsedPanel = this.addTextToPane(nyuText, smallFont, xHalf, y, halfWidth, lineHeight);
+        d_pane.add(notYetUsedPanel);
+
+        // not yet used text 2
+        y = y + lineHeight + separator;
+        String nyuText2 = "";
+        notYetUsedPanel2 = this.addTextToPane(nyuText2, smallFont, xHalf, y, halfWidth, lineHeight);
+        d_pane.add(notYetUsedPanel2);
+
         String initialTime = "00:00:00";
+
+        // set y to the bottom of the panel
+        y = 350;
 
         // label with playing time
         playTimeLabel = new JLabel(initialTime);
         playTimeLabel.setForeground(Color.YELLOW);
         playTimeLabel.setBackground(Color.BLACK);
         playTimeLabel.setFont(timeFont);
-        playTimeLabel.setBounds(10, 350, 140, 45);
+        playTimeLabel.setBounds(x, y, 100, lineHeight);
+        playTimeLabel.setBorder(border);
         d_pane.add(playTimeLabel);
 
         // label with track time
@@ -90,7 +169,9 @@ public class FullscreenDisplayView extends JFrame {
         trackDurationLabel.setForeground(Color.YELLOW);
         trackDurationLabel.setBackground(Color.BLACK);
         trackDurationLabel.setFont(timeFont);
-        trackDurationLabel.setBounds(220, 350, 140, 45);
+        trackDurationLabel.setBounds(170, y, 100, lineHeight);
+        trackDurationLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        trackDurationLabel.setBorder(border);
         d_pane.add(trackDurationLabel);
 
         this.add(d_pane);
@@ -102,7 +183,7 @@ public class FullscreenDisplayView extends JFrame {
         mp.setBackground(Color.BLACK);
         mp.setForeground(Color.BLACK);
         mp.setWrap(true);
-        mp.setBorder(BorderFactory.createEmptyBorder());
+        mp.setBorder(border);
 
         if (font != null) {
             mp.getLabel().setFont(font);
@@ -135,13 +216,17 @@ public class FullscreenDisplayView extends JFrame {
         return trackDurationLabel;
     }
 
+    public JLabel getCurrentTimeLabel() {
+        return currentTimeLabel;
+    }
+
     public MarqueePanel getGenrePanel() {
         return genrePanel;
     }
 
     public ImageIcon calculateImageLabel(URL url) throws IOException {
         BufferedImage image = ImageIO.read(url);
-        image = Scalr.resize(image, Scalr.Method.QUALITY, Scalr.Mode.FIT_TO_WIDTH, 300, Scalr.OP_ANTIALIAS);
+        image = Scalr.resize(image, Scalr.Method.QUALITY, 260, Scalr.OP_ANTIALIAS);
         ImageIcon icon = new ImageIcon(image);
 
         return icon;

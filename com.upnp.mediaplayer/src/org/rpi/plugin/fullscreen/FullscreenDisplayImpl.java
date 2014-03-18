@@ -8,6 +8,7 @@ import java.util.Observer;
 
 import org.apache.log4j.Logger;
 import org.rpi.channel.ChannelBase;
+import org.rpi.config.Config;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventTimeUpdate;
@@ -27,7 +28,7 @@ public class FullscreenDisplayImpl implements FullscreenDisplayInterface, Observ
     private TrackModel model;
 
     public FullscreenDisplayImpl() {
-        LOGGER.info("Init LastFmPluginImpl");
+        LOGGER.info("Init FullscreenDisplay");
 //        getConfig();
 //        init();
 
@@ -51,7 +52,9 @@ public class FullscreenDisplayImpl implements FullscreenDisplayInterface, Observ
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) { e.printStackTrace(); }
 
-        FullscreenDisplayView fd = new FullscreenDisplayView();
+        String friendlyName = Config.friendly_name;
+
+        FullscreenDisplayView fd = new FullscreenDisplayView(friendlyName);
         model = new TrackModel();
         FullscreenDisplayController controller = new FullscreenDisplayController(fd, model);
         fd.setVisible(true);
