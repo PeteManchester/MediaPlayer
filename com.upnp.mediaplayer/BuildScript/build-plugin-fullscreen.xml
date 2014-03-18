@@ -12,10 +12,13 @@
             </manifest>
             <fileset dir="${classes_dir}">
                 <include name="**/plugin/fullscreen/**" />
+                <exclude name="**/plugin/fullscreen/fullscreen.properties"/>
             </fileset>
 
             <zipfileset excludes="META-INF/*.SF" src="${lib_dir}/plugins/imgscalr-lib-4.2.jar"/>
         </jar>
+
+        <copy file="${src_dir}/org/rpi/plugin/fullscreen/fullscreen.properties" todir="${plugin_target_dir}/Fullscreen"/>
     </target>
 
 </project>

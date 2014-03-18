@@ -41,7 +41,7 @@ public class FullscreenDisplayView extends JFrame {
     private Boolean debug = Boolean.FALSE;
     private Border border;
 
-    public FullscreenDisplayView(String friendlyName) throws HeadlessException {
+    public FullscreenDisplayView(String friendlyName, Boolean debug) throws HeadlessException {
 
         // initial alignment
         int x = 10;
@@ -53,8 +53,10 @@ public class FullscreenDisplayView extends JFrame {
         int lineHeight = 50;
         int separator = 0;
 
+        this.debug = debug;
+
         border = BorderFactory.createEmptyBorder();
-        if (debug) {
+        if (this.debug) {
             border = BorderFactory.createLineBorder(Color.GREEN, 2);
         }
 
@@ -110,7 +112,6 @@ public class FullscreenDisplayView extends JFrame {
             ImageIcon icon = this.calculateImageLabel(getClass().getResource("/org/rpi/image/mediaplayer240.png"));
             imageLabel = new JLabel(icon);
             imageLabel.setBorder(border);
-            System.out.println("y=" + y);
             imageLabel.setBounds(new Rectangle(new Point(x, y), imageLabel.getPreferredSize()));
 
             d_pane.add(imageLabel);
@@ -122,7 +123,6 @@ public class FullscreenDisplayView extends JFrame {
         String artistText = "Artist";
         artistPanel = this.addTextToPane(artistText, null, xHalf, y, halfWidth, lineHeight);
         d_pane.add(artistPanel);
-
 
         Font smallFont = new Font(Font.SANS_SERIF, Font.PLAIN, 30);
 
