@@ -136,6 +136,7 @@ public class ConfigRest {
 	        reader.close();
 	        log.debug("Name: " + configObject.getString("friendly_name"));
 	        Config.friendly_name = configObject.getString("friendly_name");
+	        
 
 		} catch (Exception e) {
 			log.error("Error creating Status JSON",e);
