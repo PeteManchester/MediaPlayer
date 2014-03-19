@@ -103,14 +103,14 @@ public class PluginGateWay extends Observable {
 	}
 	
 	
-	public String setSleepTimer()
+	public String setSleepTimer(String value)
 	{
 		try
 		{
 			AlarmClockInterface alarm = OSManager.getInstance().getPlugin();
 			if(alarm !=null)
 			{
-				 return alarm.createSleepTimer();
+				 return alarm.createSleepTimer(value);
 			}
 		}
 		 catch(Exception e)

@@ -2,6 +2,7 @@
 //Could be a messy..
 //http://stackoverflow.com/questions/15800121/why-i-have-to-put-all-the-script-to-index-html-in-jquery-mobile/15806954#15806954
 var interval;
+var config_json = null;
 
 $.ajaxSetup ({
     // Disable caching of AJAX responses */
@@ -47,7 +48,8 @@ $(document)
 					
 					//Submit Button
 					$("#mpSubmit").click(function() {
-						alert('Submit');
+						//alert('Submit');
+						updateConfig();
 					});
 					
 					
@@ -81,17 +83,18 @@ $(document).on('pageshow', '#status', function() {
 $(document).on('pageshow', '#alarm', function() {
 	
 	clearInterval(interval);
-	setInterval(checkSleepStatus, 1000);	
+	setInterval(checkSleepStatus, 1000);
+	
 	$("#alSleepSet").click(function() {
+		var value = $("#slider-time").val();
 		$.ajax({
-
 			dataType : 'text',
 			headers : {
 				Accept : "text/plain",
 				"Access-Control-Allow-Origin" : "*"
 			},
 			type : 'GET',
-			url : '/myapp/config/setSleepTimer',
+			url : '/myapp/config/setSleepTimer?value=' + value,
 			success : function(data) {
 				//alert(data);				
 			},
@@ -166,6 +169,7 @@ function checkStatusConfig() {
 				success : function(text) {
 
 					var data = JSON.parse(text);
+					config_json = data;
 					$("#friendlyName").val(
 							decodeURIComponent(data.friendly_name));
 
@@ -205,6 +209,34 @@ function checkStatusConfig() {
 					$("#mpdHost").val(decodeURIComponent(data.mpd_host));
 
 					$("#mpdPort").val(decodeURIComponent(data.mpd_port));
+					
+					
+					$("#log_file_level").val(
+							decodeURIComponent(data.log_file_level));
+					$("#log_file_level").selectmenu("refresh");
+					
+					$("#log_console_level").val(
+							decodeURIComponent(data.log_console_level));
+					$("#log_console_level").selectmenu("refresh");
+					
+					$("#log_openhome_level").val(
+							decodeURIComponent(data.openhome_debug_level));
+					$("#log_openhome_level").selectmenu("refresh");
+					
+					$("#openhome_port").val(decodeURIComponent(data.openhome_port));
+					
+					$("#songcast_sound_name").val(decodeURIComponent(data.songcast_soundcard_name));
+					
+					$("#songcast_latency").val(
+							decodeURIComponent(data.songcast_latency_enabled));
+					$("#songcast_latency").slider("refresh");
+					
+					$("#http_web_port").val(decodeURIComponent(data.web_http_port));
+										
+					$("#tunein_username").val(decodeURIComponent(data.radio_tunein_username));
+					
+					
+					
 
 				},
 				error : function(result) {
@@ -212,6 +244,28 @@ function checkStatusConfig() {
 				}
 
 			});
+}
+
+function updateConfig()
+{
+	//alert('Here');
+	if(config_json !=null)
+		{
+			
+			config_json.save_local_playlist = false;
+			config_json.friendly_name=$("#friendlyName").val();
+			$.ajax({
+			    type: 'POST',
+			    url: '/myapp/config/setConfig',
+			    contentType: "application/json; charset=utf-8",
+			    dataType: 'json',
+			    data: {'': JSON.stringify(config_json)},
+			    success: function(msg) {
+			      alert(msg);
+			    }
+			  });
+
+		}
 }
 
 /**

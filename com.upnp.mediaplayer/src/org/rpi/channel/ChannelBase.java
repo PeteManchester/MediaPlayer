@@ -14,9 +14,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.log4j.Logger;
-import org.joda.time.Period;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
 import org.rpi.utils.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

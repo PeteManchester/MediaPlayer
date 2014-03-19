@@ -1,22 +1,34 @@
 package org.rpi.web.rest;
 
 import java.io.FileInputStream;
+import java.io.StringReader;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
 import org.rpi.plugingateway.PluginGateWay;
+
+import sun.org.mozilla.javascript.internal.json.JsonParser;
 
 /**
  * Root resource (exposed at "myresource" path)
@@ -108,14 +120,38 @@ public class ConfigRest {
 		return sb.toString();
 	}
 	
+	@Path("setConfig")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response setConfig(String msg) {
+		try {
+			msg = URLDecoder.decode(msg, "UTF-8");
+			if(msg.startsWith("="))
+			{
+				msg=msg.substring(1);
+			}
+			log.debug("setConfig: " + msg);
+			JsonReader reader = Json.createReader(new StringReader(msg));
+			JsonObject configObject = reader.readObject();
+	        reader.close();
+	        log.debug("Name: " + configObject.getString("friendly_name"));
+	        Config.friendly_name = configObject.getString("friendly_name");
+
+		} catch (Exception e) {
+			log.error("Error creating Status JSON",e);
+		}
+		return Response.status(200).entity("HELLO").build();
+	}
+	
 	
 	@Path("setSleepTimer")
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
-	public String setSleepTimer() {
+	public String setSleepTimer(@QueryParam("value") String value)
+	{
 		StringBuilder sb = new StringBuilder();
 		try {
-			sb.append(PluginGateWay.getInstance().setSleepTimer());
+			sb.append(PluginGateWay.getInstance().setSleepTimer(value));
 		} catch (Exception e) {
 			log.error("Error creating Status JSON",e);
 		}

@@ -95,7 +95,7 @@ public class AlarmClockImpl implements AlarmClockInterface {
 		}
 	}
 
-	public String createSleepTimer() {
+	public String createSleepTimer(String value) {
 		String name = "Sleep";
 		String volume = "";
 		String type = "OFF";
@@ -103,6 +103,11 @@ public class AlarmClockImpl implements AlarmClockInterface {
 		String shuffle = "";
 		Calendar cal = Calendar.getInstance();
 		try {
+			int iTime = Integer.parseInt(value);
+			if(iTime==0)
+			{
+				return "Not Scheduled";
+			}
 			cal.set(Calendar.SECOND,0);
 			TriggerKey tr_key = new TriggerKey(name, "sleepTimer");
 
@@ -121,7 +126,7 @@ public class AlarmClockImpl implements AlarmClockInterface {
 			dataMap.put("Shuffle", shuffle);
 			dataMap.put("type", type);
 			dataMap.put("channel", channel);
-			cal.add(Calendar.MINUTE, 15);
+			cal.add(Calendar.MINUTE, iTime);
 			Trigger trigger = TriggerBuilder.newTrigger().withIdentity(tr_key).startAt(cal.getTime()).forJob(job).build();
 			if (scheduler.checkExists(tr_key)) {
 				Date next_time = scheduler.rescheduleJob(tr_key, trigger);
@@ -164,17 +169,18 @@ public class AlarmClockImpl implements AlarmClockInterface {
 			TriggerKey tr_key = new TriggerKey(name, "sleepTimer");
 
 			if (scheduler.checkExists(tr_key)) {
-
 				Trigger sleepTrigger = scheduler.getTrigger(tr_key);
+				if(sleepTrigger !=null)
+				{
 				cal = Calendar.getInstance();
 				cal.setTime(sleepTrigger.getNextFireTime());
 				return cal.getTime().toString();
-			}
-			
+				}				
+			}			
 		}
 		catch(Exception e)
 		{
-			log.error("Error Getting SleepTimer",e);
+			log.error("Error Getting SleepTimer: " + e.getMessage());
 			return "Error: " + e.getMessage();
 		}
 		return "";
