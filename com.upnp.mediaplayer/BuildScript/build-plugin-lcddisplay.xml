@@ -1,24 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="build_plugin" name="LCD Display">
 
-    <target name="clean_plugin">
-        <delete dir="${plugin_target_dir}/LCDDisplay"/>
-    </target>
+    <property name="mp.home.dir" value=".."/>
+    <property name="plugin.name" value="LCDDisplay"/>
+    <property name="plugin.package" value="lcddisplay"/>
 
-    <target name="build_plugin" depends="clean_plugin">
+    <import file="../ant-common.xml"/>
 
-        <jar destfile="${plugin_target_dir}/LCDDisplay/LCDDisplay.jar" filesetmanifest="mergewithoutmain">
-            <manifest>
-                <attribute name="Class-Path" value="."/>
-            </manifest>
-            <fileset dir="${classes_dir}">
-                <include name="**/plugin/lcddisplay/**" />
-            </fileset>
+    <fileset id="extern_libs" dir="${lib_dir}">
+        <include name="core/pi4j-core-0.0.5.jar"/>
+    </fileset>
 
-            <zipfileset excludes="META-INF/*.SF" src="${lib_dir}/core/pi4j-core-0.0.5.jar"/>
-        </jar>
-
-        <copy file="${src_dir}/org/rpi/plugin/lcddisplay/LCD.xml" todir="${plugin_target_dir}/LCDDisplay"/>
+    <target name="post_build_plugin">
+        <copy file="${src_dir}/org/rpi/plugin/${plugin.package}/LCD.xml" todir="${plugin_target_dir}"/>
     </target>
 
 </project>

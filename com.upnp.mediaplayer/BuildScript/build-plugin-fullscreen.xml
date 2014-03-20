@@ -1,24 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="build_plugin" name="Fullscreen Plugin">
 
-    <target name="clean_plugin">
-        <delete dir="${plugin_target_dir}/Fullscreen"/>
-    </target>
+    <property name="mp.home.dir" value=".."/>
+    <property name="plugin.name" value="Fullscreen"/>
+    <property name="plugin.package" value="fullscreen"/>
 
-    <target name="build_plugin">
-        <jar destfile="${plugin_target_dir}/Fullscreen/Fullscreen.jar" filesetmanifest="mergewithoutmain">
-            <manifest>
-                <attribute name="Class-Path" value="."/>
-            </manifest>
-            <fileset dir="${classes_dir}">
-                <include name="**/plugin/fullscreen/**" />
-                <exclude name="**/plugin/fullscreen/fullscreen.properties"/>
-            </fileset>
+    <import file="../ant-common.xml"/>
 
-            <zipfileset excludes="META-INF/*.SF" src="${lib_dir}/plugins/imgscalr-lib-4.2.jar"/>
-        </jar>
+    <fileset id="extern_libs" dir="${lib_dir}">
+        <include name="plugins/imgscalr-lib-4.2.jar"/>
+    </fileset>
 
-        <copy file="${src_dir}/org/rpi/plugin/fullscreen/fullscreen.properties" todir="${plugin_target_dir}/Fullscreen"/>
+    <target name="post_build_plugin">
+        <copy file="${src_dir}/org/rpi/plugin/${plugin.package}/${plugin.package}.properties" todir="${plugin_target_dir}"/>
     </target>
 
 </project>

@@ -1,23 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project default="build_plugin" name="LastFM Plugin">
 
-    <target name="clean_plugin">
-        <delete dir="${plugin_target_dir}/LastFM"/>
-    </target>
+    <property name="mp.home.dir" value=".."/>
+    <property name="plugin.name" value="LastFM"/>
+    <property name="plugin.package" value="lastfm"/>
 
-    <target name="build_plugin" depends="clean_plugin">
-        <jar destfile="${plugin_target_dir}/LastFM/LastFM.jar" filesetmanifest="mergewithoutmain">
-            <manifest>
-                <attribute name="Class-Path" value="."/>
-            </manifest>
-            <fileset dir="${classes_dir}">
-                <include name="**/plugin/lastfm/**" />
-            </fileset>
+    <import file="../ant-common.xml"/>
 
-            <zipfileset excludes="META-INF/*.SF" src="${lib_dir}/plugins/lastfm-java-0.1.2.jar"/>
-        </jar>
+    <fileset id="extern_libs" dir="${lib_dir}">
+        <include name="plugins/lastfm-java-0.1.2.jar"/>
+    </fileset>
 
-        <copy file="${src_dir}/org/rpi/plugin/lastfm/LastFM.xml" todir="${plugin_target_dir}/LastFM"/>
+    <target name="post_build_plugin">
+        <copy file="${src_dir}/org/rpi/plugin/${plugin.package}/${plugin.name}.xml" todir="${plugin_target_dir}"/>
     </target>
 
 </project>
