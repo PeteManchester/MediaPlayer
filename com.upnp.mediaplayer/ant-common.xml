@@ -33,11 +33,26 @@
             <zipgroupfileset refid="extern_libs"/>
         </jar>
 
-
         <antcall target="post_build_plugin"/>
     </target>
 
     <target name="post_build_plugin">
         <echo message="You can provide your own target here (post_build_plugin) and do some necessary stuff in there."/>
     </target>
+
+<!-- not yet working, some variables need to get defined (via properties files) -->
+    <target name="deploy_plugin">
+        <echo>Sending to ${server_name}</echo>
+        <echo>Stopping mediaplayer service</echo>
+        <sshexec host="${server_name}" username="${user.name}" password="${user.password}" command="service mediaplayer stop" trust="true" />
+        <echo>Copying files</echo>
+        <scp remoteTodir="${user.name}:${user.password}@${server_name}:${service.home}/plugins/${plugin.name}" trust="yes" sftp="true">
+            <fileset dir="${plugin_target_dir}">
+                <include name="*.jar" />
+            </fileset>
+        </scp>
+        <echo>Starting mediaplayer</echo>
+        <sshexec host="${server_name}" username="${user.name}" password="${user.password}" command="service mediaplayer start" trust="true" />
+    </target>
+
 </project>
