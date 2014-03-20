@@ -28,8 +28,6 @@ import org.apache.log4j.Logger;
 import org.rpi.config.Config;
 import org.rpi.plugingateway.PluginGateWay;
 
-import sun.org.mozilla.javascript.internal.json.JsonParser;
-
 /**
  * Root resource (exposed at "myresource" path)
  * http://localhost:8090/myapp/myresource
