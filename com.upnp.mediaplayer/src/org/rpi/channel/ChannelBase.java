@@ -359,9 +359,16 @@ public class ChannelBase {
                     setGenre(n.getTextContent());
                 }
                 else if ("res".equals(n.getNodeName())) {
-                    String duration = n.getAttributes().getNamedItem("duration").getTextContent();
-                    Long period = Utils.parseDurationString(duration);
-                    setDuration(period);
+                	Node node_duration = n.getAttributes().getNamedItem("duration");
+                	if(node_duration !=null)
+                	{
+	                    String duration = node_duration.getTextContent();
+	                    if(duration!=null)
+	                    {
+		                    Long period = Utils.parseDurationString(duration);
+		                    setDuration(period);
+	                    }
+                	}
                 }
             }
         } catch (Exception e) {
