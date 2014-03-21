@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="publish_zip_beta" name="MediaPlayer">
 
-<!-- target dir -->
-    <property name="builddir" value="${basedir}/build" />
-
-<!-- lib dir -->
-    <property name="lib_dir" value="${basedir}/lib"/>
+    <property name="mp.home.dir" value="${basedir}"/>
+    <import file="ant-common.xml"/>
 
     <path id="classpath_core">
         <fileset dir="${lib_dir}/core">
@@ -38,11 +35,6 @@
     </path>
 
 <!-- compile -->
-    <property name="target_dir" value="${basedir}/build"/>
-    <property name="plugin_target_dir" value="${basedir}/plugins"/>
-    <property name="classes_dir" value="${target_dir}/classes"/>
-    <property name="test_classes_dir" value="${target_dir}/test-classes"/>
-
     <property name="release_root_dir" value="${target_dir}/beta"/>
     <property name="release_dir" value="${release_root_dir}/mediaplayer"/>
 
@@ -188,10 +180,6 @@
 
     <target name="build_plugins" description="builds the plugins">
         <subant target="build_plugin">
-            <property name="classes_dir" value="${classes_dir}"/>
-            <property name="lib_dir" value="${lib_dir}"/>
-            <property name="plugin_target_dir" value="${plugin_target_dir}"/>
-            <property name="src_dir" value="${basedir}/src"/>
             <fileset dir="BuildScript" includes="build-plugin-*.xml"/>
         </subant>
     </target>

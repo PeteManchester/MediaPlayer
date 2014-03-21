@@ -1,26 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="build_plugin" name="AlarmClock Plugin">
 
-    <target name="clean_plugin">
-        <delete dir="${plugin_target_dir}/AlarmClock"/>
-    </target>
+    <property name="mp.home.dir" value=".."/>
+    <property name="plugin.name" value="AlarmClock"/>
+    <property name="plugin.package" value="alarmclock"/>
 
-    <target name="build_plugin" depends="clean_plugin">
+    <import file="../ant-common.xml"/>
 
-        <jar destfile="${plugin_target_dir}/AlarmClock/AlarmClock.jar" filesetmanifest="mergewithoutmain">
-            <manifest>
-                <attribute name="Class-Path" value="."/>
-            </manifest>
-            <fileset dir="${classes_dir}">
-                <include name="**/plugin/alarmclock/**" />
-            </fileset>
+    <fileset id="extern_libs" dir="${lib_dir}">
+        <include name="plugins/quartz-2.2.1.jar"/>
+        <include name="plugins/slf4j-api-1.6.1.jar"/>
+        <include name="plugins/slf4j-log4j12-1.6.1.jar"/>
+        <include name="core/pi4j-core-0.0.5.jar"/>
+    </fileset>
 
-            <zipfileset excludes="META-INF/*.SF" src="${lib_dir}/plugins/quartz-2.2.1.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${lib_dir}/plugins/slf4j-api-1.6.1.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${lib_dir}/plugins/slf4j-log4j12-1.6.1.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="${lib_dir}/core/pi4j-core-0.0.5.jar"/>
-        </jar>
-
-        <copy file="${src_dir}/org/rpi/plugin/alarmclock/AlarmClock.xml" todir="${plugin_target_dir}/AlarmClock"/>
+    <target name="post_build_plugin">
+        <copy file="${src_dir}/org/rpi/plugin/${plugin.package}/${plugin.name}.xml" todir="${plugin_target_dir}"/>
     </target>
 </project>

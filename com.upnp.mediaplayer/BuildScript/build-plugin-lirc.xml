@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="build_plugin" name="LIRC Plugin">
 
-    <target name="clean_plugin">
-        <delete dir="${plugin_target_dir}/LIRC"/>
+    <property name="mp.home.dir" value=".."/>
+    <property name="plugin.name" value="LIRC"/>
+    <property name="plugin.package" value="lirc"/>
+    <property name="plugin.jar.name" value="LIRCIntegration"/>
+
+    <import file="../ant-common.xml"/>
+
+    <fileset id="extern_libs" dir="${lib_dir}">
+        <exclude name="**/*"/>
+    </fileset>
+
+    <target name="post_build_plugin">
+        <copy file="${src_dir}/org/rpi/plugin/${plugin.package}/LIRCConfig.xml" todir="${plugin_target_dir}"/>
     </target>
 
-    <target name="build_plugin" depends="clean_plugin">
-        <jar destfile="${plugin_target_dir}/LIRC/LIRCIntegration.jar" filesetmanifest="mergewithoutmain">
-            <manifest>
-                <attribute name="Class-Path" value="."/>
-            </manifest>
-            <fileset dir="${classes_dir}">
-                <include name="**/plugin/lirc/**" />
-            </fileset>
-        </jar>
-
-        <copy file="${src_dir}/org/rpi/plugin/lirc/LIRCConfig.xml" todir="${plugin_target_dir}/LIRC"/>
-    </target>
 </project>

@@ -10,7 +10,6 @@ import org.rpi.os.OSManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventSourceChanged;
 import org.rpi.plug.interfaces.AlarmClockInterface;
-import org.rpi.plugin.alarmclock.AlarmClockImpl;
 import org.rpi.sources.Source;
 
 public class PluginGateWay extends Observable {
