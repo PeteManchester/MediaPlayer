@@ -11,9 +11,12 @@ import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventRadioPlayName;
 import org.rpi.player.events.EventRadioPlayingTrackID;
 import org.rpi.player.events.EventRadioStatusChanged;
+import org.rpi.radio.ChannelReaderJSON;
+import org.rpi.radio.parsers.ASHXParser;
 import org.rpi.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -24,11 +27,14 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 
 	private byte[] array = new byte[100];
 
+	int counter_id = 0;
+
 	private List<ChannelRadio> channels = new ArrayList<ChannelRadio>();
 	private int current_channel = -99;
 
 	// "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='6000' nrAudioChannels='2' protocolInfo='http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01'>http://cast.secureradiocast.co.uk:8004/;stream.mp3</res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>http://www.mediauk.com/logos/100/226.png</upnp:albumArtURI></item></DIDL-Lite>";
-	//private String metaData = "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='' nrAudioChannels='' protocolInfo=''></res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:albumArtURI></item></DIDL-Lite>";
+	// private String metaData =
+	// "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='' nrAudioChannels='' protocolInfo=''></res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:albumArtURI></item></DIDL-Lite>";
 
 	public PrvRadio(DvDevice iDevice) {
 		super(iDevice);
@@ -85,7 +91,6 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 		log.debug("Added Channels: " + channels.size());
 	}
 
-
 	protected Channel channel(IDvInvocation paramIDvInvocation) {
 		log.debug("Channel" + Utils.getLogText(paramIDvInvocation));
 		ChannelRadio c = channels.get(0);
@@ -120,15 +125,13 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 		if (current_channel >= 0) {
 			log.debug("Play Channel Set: " + current_channel);
 			getChannelById();
-		}
-		else
-		{
+		} else {
 			log.debug("Current Channel " + current_channel + " Not Playing..");
 		}
 	};
 
 	protected String protocolInfo(IDvInvocation paramIDvInvocation) {
-		log.debug("protocolInfo"  + Utils.getLogText(paramIDvInvocation));
+		log.debug("protocolInfo" + Utils.getLogText(paramIDvInvocation));
 		return Config.getProtocolInfo();
 	};
 
@@ -142,16 +145,16 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 
 	@Override
 	protected void setChannel(IDvInvocation paramIDvInvocation, String uri, String metadata) {
-		log.debug("SetChannel"  + Utils.getLogText(paramIDvInvocation));
-		ChannelRadio channel = new ChannelRadio(uri, metadata, 2,"");
+		log.debug("SetChannel" + Utils.getLogText(paramIDvInvocation));
+		ChannelRadio channel = new ChannelRadio(uri, metadata, 2, "");
 		channels.add(channel);
 		UpdateIdArray();
 	}
-	
 
 	@Override
 	protected String readList(IDvInvocation paramIDvInvocation, String arg1) {
 		log.debug("ReadList: " + arg1 + Utils.getLogText(paramIDvInvocation));
+		getChannels();
 		int i = 0;
 		log.debug("ReadList");
 		StringBuilder sb = new StringBuilder();
@@ -167,7 +170,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 
 	@Override
 	protected String read(IDvInvocation paramIDvInvocation, long id) {
-		log.debug("Read: " + id  + Utils.getLogText(paramIDvInvocation));
+		log.debug("Read: " + id + Utils.getLogText(paramIDvInvocation));
 		ChannelRadio c = channels.get((int) id);
 		return c.getMetadata();
 	}
@@ -187,13 +190,13 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	@Override
 	protected void seekSecondAbsolute(IDvInvocation paramIDvInvocation, long paramLong) {
 		log.debug("Seek Absolute" + Utils.getLogText(paramIDvInvocation));
-		//super.seekSecondAbsolute(paramIDvInvocation, paramLong);
+		// super.seekSecondAbsolute(paramIDvInvocation, paramLong);
 	}
 
 	@Override
 	protected void seekSecondRelative(IDvInvocation paramIDvInvocation, int paramInt) {
 		log.debug("Seek Relative" + Utils.getLogText(paramIDvInvocation));
-		//super.seekSecondRelative(paramIDvInvocation, paramInt);
+		// super.seekSecondRelative(paramIDvInvocation, paramInt);
 	}
 
 	@Override
@@ -216,31 +219,36 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 			}
 		}
 	}
-	
-	
+
 	/**
 	 * Find the Channel by Name
+	 * 
 	 * @param name
 	 */
 	private synchronized void getChannelByName(String name) {
-		for (ChannelRadio c :channels)
-		{
-			if(c.getName().equalsIgnoreCase(name))
-			{
+		for (ChannelRadio c : channels) {
+			if (c.getName().equalsIgnoreCase(name)) {
 				playChannel(c);
-				break ;
+				break;
 			}
 		}
 	}
-	
+
 	/**
 	 * Play the Channel
+	 * 
 	 * @param c
 	 */
-	private void playChannel(ChannelRadio c)
-	{
+	private void playChannel(ChannelRadio c) {
 		current_channel = c.getId();
 		log.debug("Play Found the Channel: " + current_channel);
+		ASHXParser parser = new ASHXParser();
+		if (c.getUri().toLowerCase().contains("opml.radiotime.com")) {
+			LinkedList<String> ashxURLs = parser.getStreamingUrl(c.getUri());
+			if (ashxURLs.size() > 0) {
+				c.setUri(ashxURLs.get(0));
+			}
+		}
 		PlayManager.getInstance().playRadio(c);
 	}
 
@@ -256,7 +264,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 		int intValue = 1;
 		for (ChannelRadio c : channels) {
 			try {
-				String binValue = Integer.toBinaryString(intValue);
+				String binValue = Integer.toBinaryString(c.getId());
 				binValue = padLeft(binValue, 32, '0');
 				sb.append(binValue);
 			} catch (Exception e) {
@@ -278,7 +286,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 			bytes[i] = sens;
 		}
 		array = bytes;
-		setPropertyIdArray(bytes);
+		// setPropertyIdArray(bytes);
 	}
 
 	private String padLeft(String str, int length, char padChar) {
@@ -302,28 +310,31 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 
 	@Override
 	public void update(Observable o, Object arg) {
-		EventBase e = (EventBase)arg;
-		switch(e.getType())
-		{
+		EventBase e = (EventBase) arg;
+		switch (e.getType()) {
 		case EVENTRADIOSTATUSCHANGED:
-			EventRadioStatusChanged ers = (EventRadioStatusChanged)e;
+			EventRadioStatusChanged ers = (EventRadioStatusChanged) e;
 			setStatus(ers.getStatus());
 			break;
-		
+
 		case EVENTRADIOPLAYINGTRACKID:
-			EventRadioPlayingTrackID eri = (EventRadioPlayingTrackID)e;
+			EventRadioPlayingTrackID eri = (EventRadioPlayingTrackID) e;
 			playingTrack(eri.getId());
 			break;
 		case EVENTRADIOPLAYNAME:
-			EventRadioPlayName ern = (EventRadioPlayName)e;
+			EventRadioPlayName ern = (EventRadioPlayName) e;
 			getChannelByName(ern.getName());
 		}
 	}
 
-    @Override
-    public String getName() {
-        return "Radio";
-    }
+	@Override
+	public String getName() {
+		return "Radio";
+	}
 
+	public void getChannels() {
+		ChannelReaderJSON cr = new ChannelReaderJSON();
+		addChannels(cr.getChannels());
+	}
 
 }

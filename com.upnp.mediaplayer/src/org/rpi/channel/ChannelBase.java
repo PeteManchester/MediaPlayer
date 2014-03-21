@@ -99,7 +99,7 @@ public class ChannelBase {
         return uri;
     }
 
-    private void setUri(String uri) {
+    public void setUri(String uri) {
         this.uri = uri;
     }
 

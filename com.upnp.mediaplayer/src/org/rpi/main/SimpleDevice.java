@@ -1,31 +1,5 @@
 package org.rpi.main;
 
-import org.apache.log4j.Logger;
-import org.openhome.net.core.*;
-import org.openhome.net.device.*;
-import org.quartz.utils.UpdateChecker;
-import org.rpi.config.Config;
-import org.rpi.http.HttpServerGrizzly;
-import org.rpi.os.OSManager;
-import org.rpi.player.PlayManager;
-import org.rpi.player.events.EventBase;
-import org.rpi.player.events.EventSourceChanged;
-import org.rpi.plugingateway.PluginGateWay;
-import org.rpi.providers.*;
-import org.rpi.radio.ChannelReader;
-import org.rpi.sources.Source;
-import org.rpi.sources.SourceReader;
-import org.rpi.utils.NetworkUtils;
-
-
-
-
-
-
-
-
-import javax.imageio.ImageIO;
-
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -36,6 +10,42 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.imageio.ImageIO;
+
+import org.apache.log4j.Logger;
+import org.openhome.net.core.DebugLevel;
+import org.openhome.net.core.DeviceStack;
+import org.openhome.net.core.IMessageListener;
+import org.openhome.net.core.InitParams;
+import org.openhome.net.core.Library;
+import org.openhome.net.device.DvDevice;
+import org.openhome.net.device.DvDeviceFactory;
+import org.openhome.net.device.IDvDeviceListener;
+import org.openhome.net.device.IResourceManager;
+import org.openhome.net.device.IResourceWriter;
+import org.rpi.config.Config;
+import org.rpi.http.HttpServerGrizzly;
+import org.rpi.os.OSManager;
+import org.rpi.player.PlayManager;
+import org.rpi.player.events.EventBase;
+import org.rpi.player.events.EventSourceChanged;
+import org.rpi.plugingateway.PluginGateWay;
+import org.rpi.providers.IDisposableDevice;
+import org.rpi.providers.PrvAVTransport;
+import org.rpi.providers.PrvConnectionManager;
+import org.rpi.providers.PrvInfo;
+import org.rpi.providers.PrvPlayList;
+import org.rpi.providers.PrvProduct;
+import org.rpi.providers.PrvRadio;
+import org.rpi.providers.PrvReceiver;
+import org.rpi.providers.PrvRenderingControl;
+import org.rpi.providers.PrvTime;
+import org.rpi.providers.PrvVolume;
+import org.rpi.radio.ChannelReaderJSON;
+import org.rpi.sources.Source;
+import org.rpi.sources.SourceReader;
+import org.rpi.utils.NetworkUtils;
 
 public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessageListener,Observer {
 
@@ -404,7 +414,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	private void updateRadioList()
 	{
 		try {
-			ChannelReader cr = new ChannelReader();
+			ChannelReaderJSON cr = new ChannelReaderJSON();
 			iRadio.addChannels(cr.getChannels());
 			//iCount  = cr.getCount();
 		} catch (Exception e) {
@@ -420,7 +430,11 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			EventSourceChanged ev = (EventSourceChanged)event;
 			if(ev.getSourceType().equalsIgnoreCase("RADIO"))
 			{
-				//updateRadioList();
+				updateRadioList();
+			}
+			else
+			{
+				
 			}
 			break;
 		}
