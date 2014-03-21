@@ -66,7 +66,7 @@ public class UnicastReceiver extends Observable implements Runnable, Observer {
 		log.debug("UDPReciever receiver set up ");
 		while (bRunning) {
 			try {
-				byte[] buf = new byte[16000];
+				byte[] buf = new byte[8000];
 				//byte[] buf = new byte[1828];
 				packet = new DatagramPacket(buf, buf.length);
 				mSocket.receive(packet);

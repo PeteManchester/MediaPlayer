@@ -1,11 +1,8 @@
 package org.rpi.songcast.core;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Observable;
 
 import org.apache.log4j.Logger;
-import org.rpi.player.events.EventBase;
-import org.rpi.songcast.events.EventSongCastBase;
 
 public class SongcastMessage {
 

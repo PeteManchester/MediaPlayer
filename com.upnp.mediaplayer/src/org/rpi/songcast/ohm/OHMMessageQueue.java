@@ -33,6 +33,7 @@ public class OHMMessageQueue extends Observable implements Runnable {
 	private ISongcastPlayer player = null;
 	private Thread threadPlayer = null;
 	private AudioInformation audioInformation = null;
+	private boolean bCheckAudioFormat = true;
 
 	public OHMMessageQueue() {
 		log.debug("Opening OHM Message Queue");
@@ -80,6 +81,7 @@ public class OHMMessageQueue extends Observable implements Runnable {
 
 	public synchronized void clear() {
 		try {
+			audioInformation = null;
 			log.info("Clearing Work Queue. Number of Items: " + mWorkQueue.size());
 			mWorkQueue.clear();
 			log.info("WorkQueue Cleared");
@@ -128,23 +130,26 @@ public class OHMMessageQueue extends Observable implements Runnable {
 			audio.data = data;
 			forwardToSlaves(data);
 			audio.checkMessageType();
-			AudioInformation ai = audio.getAudioInfo();
-			if(ai!=null && !ai.compare(audioInformation))
+			if(bCheckAudioFormat)
 			{
-				log.debug("AudioFormat has changed: " + ai.toString());
-				player.createSoundLine(ai);
-				audioInformation = ai;
-				TrackInfo info = new TrackInfo();
-				info.setBitDepth(ai.getBitDepth());
-				info.setCodec(ai.getCodec());
-				info.setBitrate(ai.getBitRate());
-				info.setSampleRate((long)ai.getSampleRate());
-				info.setDuration(0);
-				EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
-				ev.setTrackInfo(info);
-				PlayManager.getInstance().updateTrackInfo(ev);
+				AudioInformation ai = audio.getAudioInfo();
+				if(ai!=null && !ai.compare(audioInformation))
+				{
+					log.debug("AudioFormat has changed: " + ai.toString());
+					player.createSoundLine(ai);
+					audioInformation = ai;
+					TrackInfo info = new TrackInfo();
+					info.setBitDepth(ai.getBitDepth());
+					info.setCodec(ai.getCodec());
+					info.setBitrate(ai.getBitRate());
+					info.setSampleRate((long)ai.getSampleRate());
+					info.setDuration(0);
+					EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
+					ev.setTrackInfo(info);
+					PlayManager.getInstance().updateTrackInfo(ev);
+					bCheckAudioFormat = false;
+				}
 			}
-			audio.checkMessageType();
 			player.put(audio);
 			break;
 		case 4:// TRACK INFO
@@ -157,6 +162,7 @@ public class OHMMessageQueue extends Observable implements Runnable {
 			// Do Something..
 			break;
 		case 5:// MetaText INFO
+			bCheckAudioFormat = true;
 			startListen();
 			log.debug("OHM MetaInfo");
 			OHMEventMetaData evm = new OHMEventMetaData();

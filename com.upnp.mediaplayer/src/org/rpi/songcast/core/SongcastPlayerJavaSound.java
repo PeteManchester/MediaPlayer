@@ -33,9 +33,12 @@ public class SongcastPlayerJavaSound implements ISongcastPlayer, Runnable {
 
 	public void createSoundLine(AudioInformation audioInf) {
 		try {
-			log.info("Creating Audio Format: " + audioInf.toString());
+			bWrite = false;// Stop trying to write to the SoundLine
+			if (soundLine != null) {
+				close();
+			}
+			log.debug("Creating Audio Format: " + audioInf.toString());
 			audioFormat = new AudioFormat(audioInf.getSampleRate(), audioInf.getBitDepth(), audioInf.getChannels(), audioInf.isSigned(), audioInf.isBigEndian());
-			log.debug("AudioFormat: " + audioFormat.toString());
 			info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
 			if (soundLine == null) {
 				soundLine = (SourceDataLine) AudioSystem.getLine(info);
@@ -51,9 +54,9 @@ public class SongcastPlayerJavaSound implements ISongcastPlayer, Runnable {
 	private void close() {
 		try {
 			if (soundLine != null) {
-				soundLine.close();
-				soundLine = null;
 				bWrite = false;
+				soundLine.close();
+				soundLine = null;				
 			}
 		} catch (Exception e) {
 			log.error("Error Closing Stream", e);

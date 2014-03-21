@@ -176,7 +176,7 @@ public class SongcastSocket implements Runnable {
 		public void run() {
 			while (run) {
 				try {
-					byte b[] = new byte[1828];
+					byte b[] = new byte[8000];
 					DatagramPacket packet = new DatagramPacket(b, b.length);
 					mSocket.receive(packet);
 					byte[] data = packet.getData();
