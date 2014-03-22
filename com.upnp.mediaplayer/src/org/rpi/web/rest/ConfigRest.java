@@ -148,6 +148,7 @@ public class ConfigRest {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String setSleepTimer(@QueryParam("value") String value)
 	{
+		log.debug("Setting SleepTimer: " + value);
 		StringBuilder sb = new StringBuilder();
 		try {
 			sb.append(PluginGateWay.getInstance().setSleepTimer(value));
