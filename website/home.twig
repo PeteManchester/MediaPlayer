@@ -1,0 +1,16 @@
+{% extends "page.twig" %}
+
+{% block content %}
+    <div class="container">
+        <header class="span12 hero-unit">
+            <img src="{{ baseUrl }}/images/mediaplayer240.png" class="pull-left">
+            <h1>MediaPlayer</h1>
+            <p>The Open Home Java Renderer!</p>
+        </header>
+    </div>
+
+    <div class="container">
+        {{ content|raw }}
+    </div>
+
+{% endblock %}

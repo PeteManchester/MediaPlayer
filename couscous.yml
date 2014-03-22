@@ -1,1 +1,7 @@
 baseUrl: http://petemanchester.github.io/MediaPlayer
+
+directory: website
+
+exclude:
+  - com.upnp.mediaplayer
+
