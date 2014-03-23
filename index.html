@@ -45,9 +45,35 @@
     </div>
 
     <div class="container">
-        <h1>MediaPlayer - Open Home Java Renderer</h1>
-<p>A java project that uses the OpenHome API (<a href="http://www.openhome.org/wiki/Oh:Overview">http://www.openhome.org/wiki/Oh:Overview</a>) to implement a UPNP Renderer.</p>
-<h2>Support</h2>
+        <h1>MediaPlayer - Java Based Open Home UPnP Media Renderer</h1>
+<p>A full open-source java project that uses the <a href="http://www.openhome.org/wiki/Oh:Overview">OpenHome API</a> to
+implement a UPNP Media Renderer.</p>
+<h2>Features</h2>
+<p>MediaPlayer does provide a large support for OpenHome specific devices as well as
+standard UPnP devices.</p>
+<p>To playback Media files, <a href="http://www.mplayerhq.hu/">mplayer</a>
+as well as <a href="http://www.musicpd.org/">mpd</a> is used (based on your choice, this is
+<a href="https://github.com/PeteManchester/MediaPlayer/wiki/MediaPlayer-Options">configurable</a>).</p>
+<p>The combination of OpenHome as well as mpd does allow MediaPlayer to provide gapless
+playback (yes, gapless, for beneath 0€ ;-)).</p>
+<p>We do support the following UPnP and OpenHome Devices:</p>
+<ul>
+<li><a href="http://www.openhome.org/wiki/Av:Developer:PlaylistService">PlayLists</a></li>
+<li><a href="http://www.openhome.org/wiki/Av:Developer:RadioService">Radio</a></li>
+<li><a href="http://www.linn.co.uk/software#songcast">SongCast</a></li>
+</ul>
+<p>We are currently implementing a http-daemon to make it possible to configure and
+control the whole application via a web-interface.</p>
+<p>The MediaPlayer is easily extensible via <a href="https://github.com/PeteManchester/MediaPlayer/wiki">Plugins</a>.
+Right now, we do offer the following Plugins:</p>
+<ul>
+<li><a href="https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-AlarmClock">AlarmClock</a></li>
+<li><a href="https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-LastFM">LastFM</a></li>
+<li><a href="https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-Display">LCDDisplay</a></li>
+<li><a href="https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-Fullscreen">Fullscreen</a></li>
+<li><a href="https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-LIRCIntegration">LIRCIntegration</a></li>
+</ul>
+<h2>UPnP Support</h2>
 <p>MediaPlayer does support the following UPNP devices:</p>
 <h3>Media Servers</h3>
 <ul>
@@ -89,6 +115,8 @@
     </tbody>
   </table>
 </div>
+<p>If you are interested, please fork the project and apply your changes. Every Pull
+Request is greatly welcome.</p>
     </div>
 
 
