@@ -28,25 +28,27 @@ MediaPlayer does support the following UPNP devices:
 
 MediaPlayer is made possible due to the support of the following great human beings.
 
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th align="center">Contribution</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Pete Hoyle</td>
-      <td align="center">Original Source Code</td>
-    </tr>
-    <tr>
-      <td>Ian Grant</td>
-      <td align="center">Service Scripts</td>
-    </tr>
-    <tr>
-      <td>Markus M May</td>
-      <td align="center">OSManager, LastFM Plugin</td>
-    </tr>
-  </tbody>
-</table>
+<div class="table-responsive">
+  <table class="table table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Contribution</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Pete Hoyle</td>
+        <td>Original Source Code</td>
+      </tr>
+      <tr>
+        <td>Ian Grant</td>
+        <td>Service Scripts</td>
+      </tr>
+      <tr>
+        <td>Markus M May</td>
+        <td>OSManager, LastFM Plugin, Fullscreen Plugin, this webpage</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

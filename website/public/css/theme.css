@@ -40,8 +40,8 @@ pre.prettyprint {
     line-height: 20px;
 }
 
-.jumbotron {
-    margin-top: 40px;
+.pull-left {
+    margin-right: 10px;
 }
 
 .navbar-default {
