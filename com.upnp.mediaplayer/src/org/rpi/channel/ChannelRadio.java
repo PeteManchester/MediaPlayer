@@ -129,5 +129,4 @@ public class ChannelRadio extends ChannelBase {
 	private void setName(String name) {
 		this.name = name;
 	}
-
 }
