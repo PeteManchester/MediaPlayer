@@ -15,3 +15,6 @@
 * [Plugins AlarmClock](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-AlarmClock)
 * [Plugins Input Selector](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins---Input-Selector)
 * [Plugins LIRCIntegration](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-LIRCIntegration)
+* [Plugins Fullscreen](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-Fullscreen)
+* [Plugins LastFM](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-LastFM)
+
