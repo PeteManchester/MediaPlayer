@@ -8,7 +8,7 @@ A java project that uses the OpenHome API (http://www.openhome.org/wiki/Oh:Overv
 
 ## Support
 
-MediaPlayer does support the following UPNP devices:
+MediaPlayer supports the following UPNP devices:
 
 ### Media Servers
 
