@@ -77,20 +77,36 @@ public class SongcastMessage {
 	 * 
 	 * Get a portion of the bytes in the array.
 	 */
-	public byte[] getBytes(int start, int end) {
-		try {
-			int size = (end - start) + 1;
-			int count = 0;
-			byte[] res = new byte[size];
-			for (int i = start; i <= end; i++) {
-				res[count] = data[i];
-				count++;
-			}
-			return res;
-		} catch (Exception e) {
-			log.error("Error Getting Bytes: " + e);
-		}
-		return new byte[]{};
+//	public byte[] getBytes(int start, int end) {
+//		try {
+//			int size = (end - start) + 1;
+//			int count = 0;
+//			byte[] res = new byte[size];
+//			for (int i = start; i <= end; i++) {
+//				res[count] = data[i];
+//				count++;
+//			}
+//			return res;
+//		} catch (Exception e) {
+//			log.error("Error Getting Bytes: " + e);
+//		}
+//		return new byte[]{};
+//	}
+	/**
+	 * New getBytes method using SystenArrayCopy which is supposed to be quicker
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public byte[] getBytes(int start ,int end)
+	{
+		//long startTime = System.currentTimeMillis();
+		int size = (end - start) + 1;
+		byte[] res = new byte[size];
+		System.arraycopy(data, start, res, 0, size);
+		//long endTime = System.currentTimeMillis();
+		//long time = endTime - startTime;
+		return res;
 	}
 
 	public byte[] shortToByteArray(short data) {

@@ -23,6 +23,8 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
 import org.rpi.channel.ChannelRadio;
+import org.rpi.config.Config;
+import org.rpi.utils.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -39,12 +41,25 @@ public class ChannelReaderJSON {
 
 	public List<ChannelRadio> getChannels() {
 
+		getAllChannels();
+		return channels;
+	}
+
+	private void getAllChannels() {
 		try {
 			getJSONFromFile();
+			String partnerId = "";
+			if (Utils.isEmpty(partnerId)) {
+				log.debug("TuneIn PartnerId not configured, do not attempt to load TuneIn stations");
+
+			} else {
+				String url = "http://opml.radiotime.com/Browse.ashx?c=presets&partnerid=" + partnerId + "&username=" + Config.radio_tunein_username + "&render=json";
+				getJsonFromURL(url);
+			}
+
 		} catch (Exception e) {
 			log.error("Error Getting Channels", e);
 		}
-		return channels;
 	}
 
 	/**
@@ -140,8 +155,9 @@ public class ChannelReaderJSON {
 						String image = getString(object, "image");
 						String preset_id = getString(object, "preset_id");
 						preset_id = preset_id.replaceAll("[^0-9]+", "");
+						String item = getString(object, "item");
 						boolean icy_reverse = getBoolean(object, "icy_reverse", false);
-						addChannel(text, url, image, icy_reverse, preset_id);
+						addChannel(text, url, image, icy_reverse, preset_id, item);
 					}
 				}
 			}
@@ -163,7 +179,7 @@ public class ChannelReaderJSON {
 				if (!(key.toLowerCase().startsWith("partnerid=") || key.toLowerCase().startsWith("username="))) {
 					sb.append(sep);
 					sb.append(key);
-					sep="&";
+					sep = "&";
 				}
 			}
 		}
@@ -209,7 +225,8 @@ public class ChannelReaderJSON {
 	 * @param image
 	 * @param id
 	 */
-	private void addChannel(String name, String url, String image, boolean icy_reverse, String preset_id) {
+	private void addChannel(String name, String url, String image, boolean icy_reverse, String preset_id, String item) {
+
 		String m = createMetaData(name, url, image);
 		int id = channels.size() + 1;
 		try {
@@ -218,12 +235,32 @@ public class ChannelReaderJSON {
 			log.debug("Cound Not Parse ChaneelID: " + preset_id);
 		}
 
-		ChannelRadio channel = new ChannelRadio(url, m, id, name);
-		channel.setICYReverse(icy_reverse);
+		ChannelRadio channel = null;
+        ChannelRadio oldChannel = null;
+		for (ChannelRadio ch : channels) {
+			if (name.equalsIgnoreCase(ch.getName()) && item.equalsIgnoreCase("station")) {
+				channel = new ChannelRadio(url, m, id, name);
+				channel.setICYReverse(ch.isICYReverse());
+				oldChannel = ch;
+				log.debug("Updated Channel: " + channel.getId() + " - " + channel.getUri() + " " + channel.getFullDetails());
+				break;
+			}
+		}
+
+		if(oldChannel !=null)
+		{
+			channels.remove(oldChannel);
+		}
+		
+		if(channel ==null)
+		{
+			channel = new ChannelRadio(url, m, id, name);
+			channel.setICYReverse(icy_reverse);
+		}		
+		
 		channels.add(channel);
-		// iCount++ ;
-		// log.debug("iCount: " + iCount);
 		log.debug("Added Channel: " + channel.getId() + " - " + channel.getUri() + " " + channel.getFullDetails());
+		
 	}
 
 	/***

@@ -26,7 +26,6 @@ public class OHMMessageQueue extends Observable implements Runnable {
 	// private Thread timerThread = null;
 	private Vector mWorkQueue = new Vector();
 	private boolean run = true;
-	private boolean started = false;
 
 	private ConcurrentHashMap<String, SlaveEndpoint> endpoints = new ConcurrentHashMap<String, SlaveEndpoint>();
 	
@@ -125,7 +124,8 @@ public class OHMMessageQueue extends Observable implements Runnable {
 		int iType = new BigInteger(type).intValue();
 		switch (iType) {
 		case 3:// AUDIO
-			startListen();
+			//startListen();
+			//bCheckAudioFormat = true;
 			OHMEventAudio audio = new OHMEventAudio();
 			audio.data = data;
 			forwardToSlaves(data);
@@ -135,6 +135,7 @@ public class OHMMessageQueue extends Observable implements Runnable {
 				AudioInformation ai = audio.getAudioInfo();
 				if(ai!=null && !ai.compare(audioInformation))
 				{
+					startListen();
 					log.debug("AudioFormat has changed: " + ai.toString());
 					player.createSoundLine(ai);
 					audioInformation = ai;
@@ -181,18 +182,25 @@ public class OHMMessageQueue extends Observable implements Runnable {
 		}
 	}
 
+	/**
+	 * Forward out byte array to all the registered Slaves
+	 * @param bytes
+	 */
 	private void forwardToSlaves(byte[] bytes) {
-		for (SlaveEndpoint endpoint : endpoints.values()) {
-			endpoint.sendData(bytes);
+		if(endpoints.size()>0)
+		{
+			int size = new BigInteger(getBytes(6, 7,bytes)).intValue();
+			byte[] send = getBytes(0, size-1, bytes);
+			for (SlaveEndpoint endpoint : endpoints.values()) {
+				endpoint.sendData(send);
+			}
 		}
+		
 	}
 
 	private void startListen() {
-		if (!started) {
 			EventOHMAudioStarted ev = new EventOHMAudioStarted();
 			fireEvent(ev);
-			started = true;
-		}
 	}
 
 	public void stop() {
@@ -213,12 +221,8 @@ public class OHMMessageQueue extends Observable implements Runnable {
 	 */
 	public byte[] getBytes(int start, int end, byte[] data) {
 		int size = (end - start) + 1;
-		int count = 0;
 		byte[] res = new byte[size];
-		for (int i = start; i <= end; i++) {
-			res[count] = data[i];
-			count++;
-		}
+		System.arraycopy(data, start, res, 0, size);
 		return res;
 	}
 
