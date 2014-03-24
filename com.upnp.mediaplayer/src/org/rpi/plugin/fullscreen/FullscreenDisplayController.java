@@ -40,7 +40,6 @@ public class FullscreenDisplayController implements PropertyChangeListener {
         String propertyName = e.getPropertyName();
         Object newValue = (Object)e.getNewValue();
 
-        System.out.println("PropertyName: " + propertyName);
         if (propertyName.equals("albumTitle")) {
             view.getAlbumPanel().setText(newValue.toString());
         }
@@ -56,7 +55,7 @@ public class FullscreenDisplayController implements PropertyChangeListener {
         else if (propertyName.equals("trackDuration")) {
             // duration has to be a Long value ;-)
             String value = Utils.printTimeString((Long) newValue);
-            LOGGER.info("duration: " + value);
+            LOGGER.debug("duration: " + value);
             view.getTrackDurationLabel().setText(value);
         }
         else if (propertyName.equals("playTime")) {
@@ -64,15 +63,11 @@ public class FullscreenDisplayController implements PropertyChangeListener {
             Long time = (Long)newValue;
             time = time * 1000;
             String value = Utils.printTimeString(time);
-            LOGGER.info("playTime: " + value);
+            LOGGER.debug("playTime: " + value);
             view.getPlayTimeLabel().setText(value);
         }
         else if (propertyName.equals("imageURI")) {
-            try {
-                view.setImage(newValue.toString());
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            view.setImage(newValue.toString());
         }
     }
 

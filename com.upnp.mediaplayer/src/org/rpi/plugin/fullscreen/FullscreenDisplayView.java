@@ -12,6 +12,8 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 
 /**
@@ -20,6 +22,7 @@ import java.net.URL;
 public class FullscreenDisplayView extends JFrame {
 
     private static final Logger LOGGER = Logger.getLogger(FullscreenDisplayView.class);
+    private static final URL defaultImageURL = FullscreenDisplayView.class.getResource("/org/rpi/image/mediaplayer240.png");
 
     private JDesktopPane d_pane;
 
@@ -109,7 +112,7 @@ public class FullscreenDisplayView extends JFrame {
 
         // Image Panel
         try {
-            ImageIcon icon = this.calculateImageLabel(getClass().getResource("/org/rpi/image/mediaplayer240.png"));
+            ImageIcon icon = this.calculateImageLabel(defaultImageURL);
             imageLabel = new JLabel(icon);
             imageLabel.setBorder(border);
             imageLabel.setBounds(new Rectangle(new Point(x, y), imageLabel.getPreferredSize()));
@@ -232,10 +235,26 @@ public class FullscreenDisplayView extends JFrame {
         return icon;
     }
 
-    public void setImage(String urlString) throws IOException {
-        URL url = new URL(urlString);
+    public void setImage(String urlString) {
 
-        ImageIcon icon = this.calculateImageLabel(url);
+        URL url = null;
+        ImageIcon icon = null;
+
+        try {
+            if (Utils.isEmpty(urlString)) {
+                url = defaultImageURL;
+            } else {
+                url = new URL(urlString);
+            }
+
+            icon = this.calculateImageLabel(url);
+        } catch (MalformedURLException e) {
+            LOGGER.debug("Wrong URL format", e);
+        } catch (IOException e) {
+            LOGGER.debug("Cannot calculate Image...", e);
+        }
+
+
         this.imageLabel.setIcon(icon);
     }
 }

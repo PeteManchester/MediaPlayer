@@ -282,8 +282,6 @@ public class MarqueePanel extends JPanel
 
         LOGGER.debug("Width of Panel: " + localWidth);
         LOGGER.debug("Width of JLabel: " + childWidth);
-        System.out.println("Width of Panel: " + localWidth);
-        System.out.println("Width of JLabel: " + childWidth);
 
         if (childWidth < localWidth) {
             this.scrollNeeded = false;
