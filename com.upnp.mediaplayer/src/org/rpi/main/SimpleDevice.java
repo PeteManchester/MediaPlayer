@@ -164,7 +164,12 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		iDevice.setEnabled();
 		log.debug("Device Enabled UDN: " + iDevice.getUdn());
 		iProduct.setSourceByname("PlayList");
-		httpServer = new HttpServerGrizzly(Config.webHttpPort);
+
+        if (Config.startHttpDaemon) {
+		    httpServer = new HttpServerGrizzly(Config.webHttpPort);
+        } else {
+            log.warn("HTTP Daemon is set to false, not starting");
+        }
 		OSManager.getInstance().loadPlugins();
 	}
 

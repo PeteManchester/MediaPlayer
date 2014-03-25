@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Level;
+import org.rpi.utils.Utils;
 
 public class Config {
 	
@@ -15,6 +16,7 @@ public class Config {
 	public static String debug = "None";
 	public static String mplayer_path= "/usr/bin/mplayer";
 	public static boolean save_local_playlist = false;
+    public static boolean startHttpDaemon = true;
 	public static String version = "0.0.0.8";
 	public static String logfile = "mediaplayer.log";
 	public static int port = -99;
@@ -96,8 +98,12 @@ public class Config {
 		if(property.equalsIgnoreCase("TRUE"))
 			save_local_playlist = true;
 	}
+
+    public static void setStartHttpDaemon(String property) {
+        startHttpDaemon = convertStringToBoolean(property, true);
+    }
 	
-	public static int converStringToInt(String s)
+	public static int convertStringToInt(String s)
 	{
 		try
 		{
@@ -110,7 +116,7 @@ public class Config {
 		return -99;
 	}
 
-	public static int converStringToInt(String s, int iDefault) {
+	public static int convertStringToInt(String s, int iDefault) {
 		try
 		{
 			return Integer.parseInt(s);

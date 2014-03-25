@@ -175,13 +175,13 @@ public class StartMe {
 			Config.logconsole = pr.getProperty("log.console.level");
 			Config.mplayer_path = pr.getProperty("mplayer.path");
 			Config.setSaveLocalPlayList(pr.getProperty("save.local.playlist"));
-			Config.port = Config.converStringToInt(pr.getProperty("openhome.port"));
-			Config.mplayer_cache = Config.converStringToInt(pr.getProperty("mplayer.cache"));
-			Config.mplayer_cache_min = Config.converStringToInt(pr.getProperty("mplayer.cache_min"));
-			Config.playlist_max = Config.converStringToInt(pr.getProperty("playlist.max"), 1000);
+			Config.port = Config.convertStringToInt(pr.getProperty("openhome.port"));
+			Config.mplayer_cache = Config.convertStringToInt(pr.getProperty("mplayer.cache"));
+			Config.mplayer_cache_min = Config.convertStringToInt(pr.getProperty("mplayer.cache_min"));
+			Config.playlist_max = Config.convertStringToInt(pr.getProperty("playlist.max"), 1000);
 			Config.mpd_host = pr.getProperty("mpd.host");
-			Config.mpd_port = Config.converStringToInt(pr.getProperty("mpd.port"), 6600);
-			Config.mpd_preload_timer = Config.converStringToInt(pr.getProperty("mpd.preload.timer"), 10);
+			Config.mpd_port = Config.convertStringToInt(pr.getProperty("mpd.port"), 6600);
+			Config.mpd_preload_timer = Config.convertStringToInt(pr.getProperty("mpd.preload.timer"), 10);
 			Config.player = pr.getProperty("player");
 			Config.enableAVTransport = Config.convertStringToBoolean(pr.getProperty("enableAVTransport"), true);
 			Config.enableReceiver = Config.convertStringToBoolean(pr.getProperty("enableReceiver"), true);
@@ -190,7 +190,8 @@ public class StartMe {
 			Config.songcastLatencyEnabled = Config.convertStringToBoolean(pr.getProperty("songcast.latency.enabled"),true);
 			Config.webHttpPort=pr.getProperty("web.http.port");
 			Config.radio_tunein_username = pr.getProperty("radio.tunein.username");
-			
+			Config.setStartHttpDaemon(pr.getProperty("start.http.daemon"));
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
