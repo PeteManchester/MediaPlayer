@@ -61,6 +61,7 @@ We are going to use the latest beta version in this install. If you would like t
 use a "stable" version, please replace "beta" with "release".
 
 ```
+[root@alarmpi]# pacman -S binutils
 [root@alarmpi]# pacman -S unzip
 [root@alarmpi]# wget -O mediaplayer.zip https://github.com/PeteManchester/MediaPlayer/blob/master/com.upnp.mediaplayer/download/beta/mediaplayer.zip?raw=true
 [root@alarmpi]# unzip mediaplayer.zip
@@ -107,7 +108,6 @@ The above configuration uses MPD as the media playing device.
 ### Enable MediaPlayer on Boot
 
 ```
-[root@alarmpi]# pacman -S binutils
 [root@alarmpi]# cd /opt/mediaplayer/scripts/systemd
 [root@alarmpi]# cp mediaplayer.service /etc/systemd/system/
 [root@alarmpi]# cp run_systemd.sh /opt/mediaplayer
