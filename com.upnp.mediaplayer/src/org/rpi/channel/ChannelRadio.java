@@ -1,47 +1,34 @@
 package org.rpi.channel;
 
-import org.apache.log4j.Logger;
-
 public class ChannelRadio extends ChannelBase {
 
-	private static Logger log = Logger.getLogger(ChannelRadio.class);
-
-	public ChannelRadio(String uri, String metadata, int id,String name) {
-		super(uri, metadata, id);
-		setName(name);
-		setFull_text(GetFullString());
-	}
-
-	private String entryStart = "<Entry>";
-	private String entryEnd = "</Entry>";
-	private String idStart = "<Id>";
-	private String idEnd = "</Id>";
-	private String uriStart = "<Uri>";
-	private String uriEnd = "</Uri>";
-	private String metaStart = "<Metadata>";
-	private String metaEnd = "</Metadata>";
-	private String title = "";
 	private String full_text = "";
 	private String name = "";
 
-	public String getUniqueId()
+    public ChannelRadio(String uri, String metadata, int id,String name) {
+        super(uri, metadata, id);
+        setName(name);
+        setFull_text(GetFullString());
+    }
+
+    public String getUniqueId()
 	{
 		return "Radio:" + super.getId();
 	}
 
 	private String GetFullString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(entryStart);
-		sb.append(idStart);
+		sb.append(ENTRY_START);
+		sb.append(ID_START);
 		sb.append(getId());
-		sb.append(idEnd);
-		sb.append(uriStart);
+		sb.append(ID_END);
+		sb.append(URI_START);
 		sb.append(protectSpecialCharacters(getUri()));
-		sb.append(uriEnd);
-		sb.append(metaStart);
+		sb.append(URI_END);
+		sb.append(META_START);
 		sb.append(protectSpecialCharacters(getMetadata()));
-		sb.append(metaEnd);
-		sb.append(entryEnd);
+		sb.append(META_END);
+		sb.append(ENTRY_END);
 		return sb.toString();
 	}
 
