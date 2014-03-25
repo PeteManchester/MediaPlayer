@@ -7,4 +7,11 @@ SCRIPTPATH=$(dirname "$SCRIPT")
 cd "${SCRIPTPATH}"
 echo ${SCRIPTPATH}
 
+# if the fullscreen plugin is used, please uncomment the following
+# lines
+#export DISPLAY=:0
+#xset s off
+#xset -dpms
+
+
 java -jar "${SCRIPTPATH}"/mediaplayer.jar > /dev/null &
