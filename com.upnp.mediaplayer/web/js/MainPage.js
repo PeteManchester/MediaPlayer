@@ -4,9 +4,9 @@
 var interval;
 var config_json = null;
 
-$.ajaxSetup ({
-    // Disable caching of AJAX responses */
-    cache: false
+$.ajaxSetup({
+	// Disable caching of AJAX responses */
+	cache : false
 });
 
 $(document)
@@ -40,19 +40,18 @@ $(document)
 					$("#Shutdown").click(function() {
 						shutdownOS();
 					});
-					
-					//CancelButton
+
+					// CancelButton
 					$("#mpCancel").click(function() {
 						checkStatusConfig();
 					});
-					
-					//Submit Button
+
+					// Submit Button
 					$("#mpSubmit").click(function() {
-						//alert('Submit');
+						// alert('Submit');
 						updateConfig();
 					});
-					
-					
+
 				});
 
 $(document).on('pageshow', '#status', function() {
@@ -60,7 +59,7 @@ $(document).on('pageshow', '#status', function() {
 	clearInterval(interval);
 	checkStatus();
 
-	interval = setInterval(checkStatus, 1000);	
+	interval = setInterval(checkStatus, 1000);
 
 	$("#Stops").click(function() {
 		stopMediaPlayer();
@@ -81,10 +80,10 @@ $(document).on('pageshow', '#status', function() {
 });
 
 $(document).on('pageshow', '#alarm', function() {
-	
+
 	clearInterval(interval);
 	setInterval(checkSleepStatus, 1000);
-	
+
 	$("#alSleepSet").click(function() {
 		var value = $("#slider-time").val();
 		$.ajax({
@@ -96,7 +95,7 @@ $(document).on('pageshow', '#alarm', function() {
 			type : 'GET',
 			url : '/myapp/config/setSleepTimer?value=' + value,
 			success : function(data) {
-				//alert(data);				
+				// alert(data);
 			},
 			error : function(result) {
 				alert("Error " + result.message);
@@ -104,7 +103,7 @@ $(document).on('pageshow', '#alarm', function() {
 
 		});
 	});
-	
+
 	$("#alSleepCancel").click(function() {
 		$.ajax({
 
@@ -116,7 +115,7 @@ $(document).on('pageshow', '#alarm', function() {
 			type : 'GET',
 			url : '/myapp/config/cancelSleepTimer',
 			success : function(data) {
-				//alert(data);				
+				// alert(data);
 			},
 			error : function(result) {
 				alert("Error " + result.message);
@@ -170,73 +169,59 @@ function checkStatusConfig() {
 
 					var data = JSON.parse(text);
 					config_json = data;
-					$("#friendlyName").val(
-							decodeURIComponent(data.friendly_name));
+					$("#friendlyName").val(decode(data.friendly_name));
 
-					$("#select-choice-player").val(
-							decodeURIComponent(data.player));
+					$("#select-choice-player").val(decode(data.player));
 					$("#select-choice-player").selectmenu("refresh");
 
-					$("#playlistMax")
-							.val(decodeURIComponent(data.playlist_max));
+					$("#playlistMax").val(decode(data.playlist_max));
 
-					$("#logFileName").val(decodeURIComponent(data.log_file));
+					$("#logFileName").val(decode(data.log_file));
 
-					$("#savePlayList").val(
-							decodeURIComponent(data.save_local_playlist));
+					$("#savePlayList").val(decode(data.save_local_playlist));
 					$("#savePlayList").slider("refresh");
 
-					$("#AVTransport").val(
-							decodeURIComponent(data.enableAVTransport));
+					$("#AVTransport").val(decode(data.enableAVTransport));
 					$("#AVTransport").slider("refresh");
 
-					$("#songcastReceiver").val(
-							decodeURIComponent(data.enableReceiver));
+					$("#songcastReceiver").val(decode(data.enableReceiver));
 					$("#songcastReceiver").slider("refresh");
 
-					$("#mplayerPlayList")
-							.val(decodeURIComponent(data.log_file));
+					$("#mplayerPlayList").val(decode(data.log_file));
 
-					$("#mplayerPath")
-							.val(decodeURIComponent(data.mplayer_path));
+					$("#mplayerPath").val(decode(data.mplayer_path));
 
-					$("#mplayerCache").val(
-							decodeURIComponent(data.mplayer_cache));
+					$("#mplayerCache").val(decode(data.mplayer_cache));
 
-					$("#mplayerCacheMin").val(
-							decodeURIComponent(data.mplayer_cache_min));
+					$("#mplayerCacheMin").val(decode(data.mplayer_cache_min));
 
-					$("#mpdHost").val(decodeURIComponent(data.mpd_host));
+					$("#mpdHost").val(decode(data.mpd_host));
 
-					$("#mpdPort").val(decodeURIComponent(data.mpd_port));
-					
-					
-					$("#log_file_level").val(
-							decodeURIComponent(data.log_file_level));
+					$("#mpdPort").val(decode(data.mpd_port));
+
+					$("#log_file_level").val(decode(data.log_file_level));
 					$("#log_file_level").selectmenu("refresh");
-					
-					$("#log_console_level").val(
-							decodeURIComponent(data.log_console_level));
+
+					$("#log_console_level").val(decode(data.log_console_level));
 					$("#log_console_level").selectmenu("refresh");
-					
+
 					$("#log_openhome_level").val(
-							decodeURIComponent(data.openhome_debug_level));
+							decode(data.openhome_debug_level));
 					$("#log_openhome_level").selectmenu("refresh");
-					
-					$("#openhome_port").val(decodeURIComponent(data.openhome_port));
-					
-					$("#songcast_sound_name").val(decodeURIComponent(data.songcast_soundcard_name));
-					
+
+					$("#openhome_port").val(decode(data.openhome_port));
+
+					$("#songcast_sound_name").val(
+							decode(data.songcast_soundcard_name));
+
 					$("#songcast_latency").val(
-							decodeURIComponent(data.songcast_latency_enabled));
+							decode(data.songcast_latency_enabled));
 					$("#songcast_latency").slider("refresh");
-					
-					$("#http_web_port").val(decodeURIComponent(data.web_http_port));
-										
-					$("#tunein_username").val(decodeURIComponent(data.radio_tunein_username));
-					
-					
-					
+
+					$("#http_web_port").val(decode(data.web_http_port));
+
+					$("#tunein_username").val(
+							decode(data.radio_tunein_username));
 
 				},
 				error : function(result) {
@@ -246,26 +231,26 @@ function checkStatusConfig() {
 			});
 }
 
-function updateConfig()
-{
-	//alert('Here');
-	if(config_json !=null)
-		{
-			
-			config_json.save_local_playlist = false;
-			config_json.friendly_name=$("#friendlyName").val();
-			$.ajax({
-			    type: 'POST',
-			    url: '/myapp/config/setConfig',
-			    contentType: "application/json; charset=utf-8",
-			    dataType: 'json',
-			    data: {'': JSON.stringify(config_json)},
-			    success: function(msg) {
-			      alert(msg);
-			    }
-			  });
+function updateConfig() {
+	// alert('Here');
+	if (config_json != null) {
 
-		}
+		config_json.save_local_playlist = false;
+		config_json.friendly_name = $("#friendlyName").val();
+		$.ajax({
+			type : 'POST',
+			url : '/myapp/config/setConfig',
+			contentType : "application/json; charset=utf-8",
+			dataType : 'json',
+			data : {
+				'' : JSON.stringify(config_json)
+			},
+			success : function(msg) {
+				alert(msg);
+			}
+		});
+
+	}
 }
 
 /**
@@ -305,8 +290,7 @@ function checkStatus() {
 			$('#status-table > tbody:last').append(
 					'<tr> <th>CPU Time</th> <td class="title">' + data.cpu_time
 							+ '</a></td> </tr>');
-			
-			
+
 		},
 		error : function(result) {
 			alert("Error " + result);
@@ -314,7 +298,6 @@ function checkStatus() {
 
 	});
 }
-
 
 /**
  * Call restful web service
@@ -331,7 +314,7 @@ function checkSleepStatus() {
 		type : 'GET',
 		url : '/myapp/config/getSleepTimer',
 		success : function(data) {
-			//alert(data);
+			// alert(data);
 			$("#alSleepStatus").val(data);
 		},
 		error : function(result) {
@@ -339,4 +322,8 @@ function checkSleepStatus() {
 		}
 
 	});
+}
+
+function decode(encoded) {
+	return decodeURIComponent(encoded.replace(/\+/g, " "));
 }

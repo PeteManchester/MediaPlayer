@@ -77,23 +77,47 @@
 					
 					<li class="ui-field-contain"><label for="log_file_level"	class="select">Log File Level</label> 
 					<select	name="log_file_level" id="log_file_level">
+							<option value="off">Off</option>
 							<option value="debug">Debug</option>
-							<option value="info">Info</option>
+							<option value="info">Info</option>							
+							<option value="warn">Warn</option>
+							<option value="error">Error</option>
+							<option value="fatal">Fatal</option>	
 					</select></li>
 					
 					<li class="ui-field-contain"><label for="log_console_level"	class="select">Log Console Level</label> 
 					<select	name="log_console_level" id="log_console_level">
 							<option value="off">Off</option>
 							<option value="debug">Debug</option>
-							<option value="info">Info</option>
+							<option value="info">Info</option>							
+							<option value="warn">Warn</option>
+							<option value="error">Error</option>
+							<option value="fatal">Fatal</option>							
 					</select></li>
 					
 					<li class="ui-field-contain"><label for="log_openhome_level"	class="select">OpenHome Log Level</label> 
 					<select	name="log_openhome_level" id="log_openhome_level">
-							<option value="off">Off</option>
-							<option value="error">Error</option>
-							<option value="debug">Debug</option>
-							<option value="info">Info</option>
+							<option value="None">None</option>
+							<option value="None">None</option>
+							<option value="Thread">Thread</option>
+							<option value="Network">Network</option>							
+							<option value="Timer">Timer</option>
+							<option value="SsdpMulticast">SsdpMulticast</option>
+							<option value="SsdpUnicast">SsdpUnicast</option>
+							<option value="Http">Http</option>							
+							<option value="Device">Device</option>
+							<option value="XmlFetch">XmlFetch</option>
+							<option value="Service">Service</option>
+							<option value="network">Event</option>							
+							<option value="Event">Topology</option>
+							<option value="DvInvocation">DvInvocation</option>
+							<option value="DvEvent">DvEvent</option>
+							<option value="DvWebSocket">DvWebSocket</option>							
+							<option value="Bonjour">Bonjour</option>							
+							<option value="DvDevice">DvDevice</option>
+							<option value="Error">Error</option>
+							<option value="All">All</option>
+							<option value="Verbose">Verbose</option>
 					</select></li>
 					
 					<li class="ui-field-contain"><label for="openhome_port">OpenHome Port:</label> <input type="number" name="openhome_port" id="openhome_port" value="" data-clear-btn="true"></li>
@@ -115,7 +139,7 @@
 								<button type="button" id="mpCancel" class="ui-btn ui-corner-all ui-btn-a">Cancel</button>
 							</div>
 							<div class="ui-block-b">
-								<button type="button" id="mpSubmit" class="ui-btn ui-corner-all ui-btn-a">Submit</button>
+								<button type="button" id="mpSubmit" class="ui-btn ui-corner-all ui-btn-a">Save</button>
 							</div>
 						</fieldset>
 					</li>

@@ -28,7 +28,7 @@ public class OHMMessageQueue extends Observable implements Runnable {
 	private boolean run = true;
 
 	private ConcurrentHashMap<String, SlaveEndpoint> endpoints = new ConcurrentHashMap<String, SlaveEndpoint>();
-	
+
 	private ISongcastPlayer player = null;
 	private Thread threadPlayer = null;
 	private AudioInformation audioInformation = null;
@@ -90,19 +90,16 @@ public class OHMMessageQueue extends Observable implements Runnable {
 	}
 
 	public void run() {
-		if(Config.songcastLatencyEnabled)
-		{
-			//With Latency
+		if (Config.songcastLatencyEnabled) {
+			// With Latency
 			player = new SongcastPlayerJSLatency();
-			threadPlayer = new Thread(player,"SongcastPlayerJavaSoundLatency");
-			
-		}
-		else
-		{
+			threadPlayer = new Thread(player, "SongcastPlayerJavaSoundLatency");
+
+		} else {
 			player = new SongcastPlayerJavaSound();
-			threadPlayer = new Thread(player,"SongcastPlayerJavaSound");
-		}		
-		
+			threadPlayer = new Thread(player, "SongcastPlayerJavaSound");
+		}
+
 		threadPlayer.start();
 		while (run) {
 			if (!isEmpty()) {
@@ -124,17 +121,15 @@ public class OHMMessageQueue extends Observable implements Runnable {
 		int iType = new BigInteger(type).intValue();
 		switch (iType) {
 		case 3:// AUDIO
-			//startListen();
-			//bCheckAudioFormat = true;
+				// startListen();
+				// bCheckAudioFormat = true;
 			OHMEventAudio audio = new OHMEventAudio();
 			audio.data = data;
 			forwardToSlaves(data);
 			audio.checkMessageType();
-			if(bCheckAudioFormat)
-			{
+			if (bCheckAudioFormat) {
 				AudioInformation ai = audio.getAudioInfo();
-				if(ai!=null && !ai.compare(audioInformation))
-				{
+				if (ai != null && !ai.compare(audioInformation)) {
 					startListen();
 					log.debug("AudioFormat has changed: " + ai.toString());
 					player.createSoundLine(ai);
@@ -143,7 +138,7 @@ public class OHMMessageQueue extends Observable implements Runnable {
 					info.setBitDepth(ai.getBitDepth());
 					info.setCodec(ai.getCodec());
 					info.setBitrate(ai.getBitRate());
-					info.setSampleRate((long)ai.getSampleRate());
+					info.setSampleRate((long) ai.getSampleRate());
 					info.setDuration(0);
 					EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
 					ev.setTrackInfo(info);
@@ -172,10 +167,15 @@ public class OHMMessageQueue extends Observable implements Runnable {
 			break;
 		case 6:
 			log.debug("OHU Slave Info");
-			OHMEventSlave evs = new OHMEventSlave();
-			evs.data = data;
-			evs.checkMessageType(this);
+			try {
+				OHMEventSlave evs = new OHMEventSlave();
+				evs.data = data;
+				evs.checkMessageType(this);
+			} catch (Exception e) {
+				log.error("Erorr SlaveInfo", e);
+			}
 			break;
+
 		default:
 			log.debug("OHM Message: " + iType);
 			break;
@@ -184,37 +184,34 @@ public class OHMMessageQueue extends Observable implements Runnable {
 
 	/**
 	 * Forward out byte array to all the registered Slaves
+	 * 
 	 * @param bytes
 	 */
 	private void forwardToSlaves(byte[] bytes) {
-		if(endpoints.size()>0)
-		{
-			int size = new BigInteger(getBytes(6, 7,bytes)).intValue();
-			byte[] send = getBytes(0, size-1, bytes);
+		if (endpoints.size() > 0) {
+			int size = new BigInteger(getBytes(6, 7, bytes)).intValue();
+			byte[] send = getBytes(0, size - 1, bytes);
 			for (SlaveEndpoint endpoint : endpoints.values()) {
 				endpoint.sendData(send);
 			}
 		}
-		
+
 	}
 
 	private void startListen() {
-			EventOHMAudioStarted ev = new EventOHMAudioStarted();
-			fireEvent(ev);
+		EventOHMAudioStarted ev = new EventOHMAudioStarted();
+		fireEvent(ev);
 	}
 
 	public void stop() {
 		run = false;
 		clear();
 		player.stop();
-		if(threadPlayer !=null)
-		{
-			threadPlayer =null;
+		if (threadPlayer != null) {
+			threadPlayer = null;
 		}
 		removeAllEndpoints();
 	}
-	
-	
 
 	/*
 	 * DUPLICATE refactor later.. Get a portion of the bytes in the array.
@@ -243,46 +240,40 @@ public class OHMMessageQueue extends Observable implements Runnable {
 	public synchronized void setEndpoints(ConcurrentHashMap<String, SlaveEndpoint> endpoints) {
 		this.endpoints = endpoints;
 	}
-	
-	public synchronized ConcurrentHashMap<String, SlaveEndpoint> getEndpoints()
-	{
+
+	public synchronized ConcurrentHashMap<String, SlaveEndpoint> getEndpoints() {
 		return endpoints;
 	}
-	
+
 	/**
 	 * Add an Endpoint
+	 * 
 	 * @param slave
 	 */
-	public synchronized void addEndpoint(SlaveEndpoint slave)
-	{
-		if(!getEndpoints().containsKey(slave.getName()))
-		{
+	public synchronized void addEndpoint(SlaveEndpoint slave) {
+		if (!getEndpoints().containsKey(slave.getName())) {
 			slave.createSocket();
 			getEndpoints().put(slave.getName(), slave);
 		}
 
 	}
-	
+
 	/**
 	 * Dispose and Remove the Endpoint
+	 * 
 	 * @param list
 	 */
-	public synchronized void removeEndpoint(List<String> list)
-	{
-		for(String s : list)
-		{
-			if(getEndpoints().containsKey(s))
-			{
+	public synchronized void removeEndpoint(List<String> list) {
+		for (String s : list) {
+			if (getEndpoints().containsKey(s)) {
 				getEndpoints().get(s).dispose();
 				getEndpoints().remove(s);
 			}
 		}
 	}
-	
-	private synchronized void removeAllEndpoints()
-	{
-		for(SlaveEndpoint slave : getEndpoints().values())
-		{
+
+	private synchronized void removeAllEndpoints() {
+		for (SlaveEndpoint slave : getEndpoints().values()) {
 			slave.dispose();
 		}
 		getEndpoints().clear();
