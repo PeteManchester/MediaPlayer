@@ -30,7 +30,7 @@ public class FullscreenDisplayView extends JFrame {
     private MarqueePanel albumPanel;
     private MarqueePanel artistPanel;
     private MarqueePanel genrePanel;
-    private MarqueePanel notYetUsedPanel;
+    private MarqueePanel albumArtistPanel;
     private MarqueePanel notYetUsedPanel2;
 
     private JLabel imageLabel;
@@ -73,6 +73,12 @@ public class FullscreenDisplayView extends JFrame {
 
         d_pane = new JDesktopPane();
         d_pane.setBackground(Color.BLACK); // prevent unexpected LaF settings
+
+        // add transparent cursor, because we do not need a cursor anyway ;-)
+        BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+        Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+                cursorImg, new Point(0, 0), "blank cursor");
+        d_pane.setCursor(blankCursor);
 
         // label with current date
         currentDateLabel = new JLabel(LocalDate.now().toString("dd.MM.yyyy"));
@@ -135,17 +141,17 @@ public class FullscreenDisplayView extends JFrame {
         albumPanel = this.addTextToPane(albumText, smallFont, xHalf, y, halfWidth, lineHeight);
         d_pane.add(albumPanel);
 
-        // album text
+        // albumArtist text
+        y = y + lineHeight + separator;
+        String albumArtistText = "AlbumArtist";
+        albumArtistPanel = this.addTextToPane(albumArtistText, smallFont, xHalf, y, halfWidth, lineHeight);
+        d_pane.add(albumArtistPanel);
+
+        // genre text
         y = y + lineHeight + separator;
         String genreText = "Genre";
         genrePanel = this.addTextToPane(genreText, smallFont, xHalf, y, halfWidth, lineHeight);
         d_pane.add(genrePanel);
-
-        // not yet used text
-        y = y + lineHeight + separator;
-        String nyuText = "";
-        notYetUsedPanel = this.addTextToPane(nyuText, smallFont, xHalf, y, halfWidth, lineHeight);
-        d_pane.add(notYetUsedPanel);
 
         // not yet used text 2
         y = y + lineHeight + separator;
@@ -205,6 +211,10 @@ public class FullscreenDisplayView extends JFrame {
 
     public MarqueePanel getAlbumPanel() {
         return albumPanel;
+    }
+
+    public MarqueePanel getAlbumArtistPanel() {
+        return albumArtistPanel;
     }
 
     public MarqueePanel getArtistPanel() {

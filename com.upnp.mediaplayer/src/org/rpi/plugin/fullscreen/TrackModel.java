@@ -23,6 +23,8 @@ public class TrackModel {
 
     private String artist;
 
+    private String albumArtist;
+
     private String imageURI;
 
     private Long playTime;
@@ -59,6 +61,16 @@ public class TrackModel {
         String oldValue = this.artist;
         this.artist = artist;
         this.pcs.firePropertyChange("artist", oldValue, artist);
+    }
+
+    public String getAlbumArtist() {
+        return albumArtist;
+    }
+
+    public void setAlbumArtist(String albumArtist) {
+        String oldValue = this.albumArtist;
+        this.albumArtist = albumArtist;
+        this.pcs.firePropertyChange("albumArtist", oldValue, albumArtist);
     }
 
     public String getImageURI() {

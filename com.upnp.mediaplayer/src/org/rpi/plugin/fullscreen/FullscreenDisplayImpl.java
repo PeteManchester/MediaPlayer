@@ -99,6 +99,7 @@ public class FullscreenDisplayImpl implements FullscreenDisplayInterface, Observ
                 if (track != null) {
                     model.setAlbumTitle(track.getAlbum());
                     model.setArtist(track.getArtist());
+                    model.setAlbumArtist(track.getAlbumArtist());
                     model.setTrackTitle(track.getTitle());
                     model.setImageURI(track.getAlbumArtUri());
                     model.setTrackDuration(track.getDuration());

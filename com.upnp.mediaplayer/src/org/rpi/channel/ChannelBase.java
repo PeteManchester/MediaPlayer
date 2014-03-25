@@ -33,15 +33,19 @@ public class ChannelBase {
     private static final String META_START = "<Metadata>";
     private static final String META_END = "</Metadata>";
 
+    private static final String personSeparator = ",";
+
     private String uri = "";
 
     private String title = "";
     private String album = "";
-    private StringBuffer artist = new StringBuffer();
-    private StringBuffer performer = new StringBuffer();
-    private StringBuffer composer = new StringBuffer();
-    private StringBuffer conductor = new StringBuffer();
+    private String artist = "";
+    private String albumArtist = "";
+    private String performer = "";
+    private String composer = "";
+    private String conductor = "";
     private String disc_number = "";
+    private String trackNumber = "";
     private String full_text = "";
     private String date = "";
     private boolean icy_reverse = false;
@@ -148,16 +152,7 @@ public class ChannelBase {
                     remove = false;
                 }
                 else if (n.getNodeName() == "upnp:artist") {
-                    NamedNodeMap map = n.getAttributes();
-                    Node role = map.getNamedItem("role");
-                    String role_type = role.getTextContent();
-                    if (role.getTextContent().equalsIgnoreCase("AlbumArtist")) {
-                        remove = false;
-                    }
-                    if (role.getTextContent().equalsIgnoreCase("Performer")) {
-                        // remove =false;
-                    }
-
+                    remove = false;
                 }
                 else if (n.getNodeName() == "upnp:class") {
                     remove = false;
@@ -166,6 +161,12 @@ public class ChannelBase {
                     remove = false;
                 }
                 else if ("upnp:genre".equals(n.getNodeName())) {
+                    remove = false;
+                }
+                else if ("upnp:originalTrackNumber".equals(n.getNodeName())) {
+                    remove = false;
+                }
+                else if ("upnp:originalDiscNumber".equals(n.getNodeName())) {
                     remove = false;
                 }
                 else if ("res".equals(n.getNodeName())) {
@@ -330,7 +331,7 @@ public class ChannelBase {
                     if (role != null) {
                         String role_type = role.getTextContent();
                         if (role_type.equalsIgnoreCase("AlbumArtist")) {
-                            setArtist(n.getTextContent());
+                            setAlbumArtist(n.getTextContent());
                         }
                         else if (role_type.equalsIgnoreCase("Performer")) {
                             setPerformer(n.getTextContent());
@@ -350,7 +351,10 @@ public class ChannelBase {
                     setDate(n.getTextContent());
                 }
                 else if ("upnp:originalDiscNumber".equals(n.getNodeName())) {
-                    disc_number = n.getTextContent();
+                    this.setDiscNumber(n.getTextContent());
+                }
+                else if ("upnp:originalTrackNumber".equals(n.getNodeName())) {
+                    this.setTrackNumber(n.getTextContent());
                 }
                 else if ("upnp:albumArtURI".equals(n.getNodeName())) {
                     setAlbumArtUri(n.getTextContent());
@@ -383,18 +387,6 @@ public class ChannelBase {
     public String getDate()
     {
         return date;
-    }
-
-    private void setComposer(String composer) {
-        this.composer.append(composer);
-        this.composer.append(",");
-    }
-
-    public String getComposer(){
-        String text = composer.toString();
-        if(text.endsWith(","))
-            text = text.substring(0,text.length()-1);
-        return text;
     }
 
     public void setMetaText(String metatext) {
@@ -446,40 +438,70 @@ public class ChannelBase {
     }
 
     public String getArtist() {
-        return getPerformer();
+        return this.cleanArtistString(this.artist);
     }
 
     public void setArtist(String artist) {
-        this.artist.append(artist.trim());
-        this.artist.append(",");
+        this.artist = this.addString(this.artist, artist);
+    }
+
+    public String getComposer(){
+        return this.cleanArtistString(this.composer);
+    }
+
+    private void setComposer(String composer) {
+        this.composer = this.addString(this.composer, composer);
     }
 
     public String getPerformer() {
-        String text = performer.toString();
-        if(text.equalsIgnoreCase(""))
-        {
-            text = artist.toString();
-        }
-        if(text.endsWith(","))
-            text = text.substring(0,text.length()-1);
-        return text;
+        return this.cleanArtistString(this.performer);
     }
 
     public void setPerformer(String performer) {
-        this.performer.append(performer.trim());
-        this.performer.append(",");
+        this.performer = this.addString(this.performer, performer);
     }
 
     public String getConductor() {
-        String text = conductor.toString();
-        if(text.endsWith(","))
-            text = text.substring(0,text.length()-1);
-        return text;
+        return this.cleanArtistString(this.conductor);
     }
 
     private void setConductor(String conductor) {
-        this.conductor.append(conductor);
-        this.conductor.append(",");
+        this.conductor = this.addString(this.conductor, conductor);
+    }
+
+    public String getAlbumArtist() {
+        return this.cleanArtistString(this.albumArtist);
+    }
+
+    public void setAlbumArtist(String albumArtist) {
+        this.albumArtist = this.addString(this.albumArtist, albumArtist);
+    }
+
+    private String cleanArtistString(String person) {
+        String text = person;
+        if(text.endsWith(personSeparator))
+            text = text.substring(0, text.length() - personSeparator.length());
+        return text;
+    }
+
+    private String addString(String original, String addString) {
+        return original + addString.trim() + personSeparator;
+    }
+
+    public String getDiscNumber() {
+        return disc_number;
+    }
+
+    public void setDiscNumber(String disc_number) {
+        this.disc_number = disc_number;
+    }
+
+    public String getTrackNumber() {
+        return trackNumber;
+    }
+
+    public void setTrackNumber(String trackNumber) {
+        this.trackNumber = trackNumber;
     }
 
     private void setFullDetails() {
@@ -537,4 +559,5 @@ public class ChannelBase {
     public void setDuration(Long duration) {
         this.duration = duration;
     }
+
 }
