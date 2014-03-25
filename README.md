@@ -37,6 +37,12 @@ Right now, we do offer the following Plugins:
 * [Fullscreen](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-Fullscreen)
 * [LIRCIntegration](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-LIRCIntegration)
 
+## Installation Instructions
+
+* [Raspberry Pi / Debian](https://github.com/PeteManchester/MediaPlayer/wiki/Install-Raspberry-Pi)
+* [Raspberry Pi / ArchLinux](/docs/archlinux-setup.html)
+* [Fullscreen Plugin / ArchLinux](/docs/fullscreen-setup.html)
+
 ## UPnP Support
 
 MediaPlayer supports the following UPNP devices:
