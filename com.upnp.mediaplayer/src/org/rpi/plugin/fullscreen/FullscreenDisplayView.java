@@ -74,6 +74,12 @@ public class FullscreenDisplayView extends JFrame {
         d_pane = new JDesktopPane();
         d_pane.setBackground(Color.BLACK); // prevent unexpected LaF settings
 
+        // add transparent cursor, because we do not need a cursor anyway ;-)
+        BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+        Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+                cursorImg, new Point(0, 0), "blank cursor");
+        d_pane.setCursor(blankCursor);
+
         // label with current date
         currentDateLabel = new JLabel(LocalDate.now().toString("dd.MM.yyyy"));
         currentDateLabel.setForeground(Color.YELLOW);
