@@ -46,6 +46,10 @@ public class FullscreenDisplayController implements PropertyChangeListener {
         else if (propertyName.equals("artist")) {
             view.getArtistPanel().setText(newValue.toString());
         }
+        else if (propertyName.equals("albumArtist")) {
+            LOGGER.debug("fetched AlbumArtist event...: " + newValue.toString());
+            view.getAlbumArtistPanel().setText(newValue.toString());
+        }
         else if (propertyName.equals("trackTitle")) {
             view.getTrackPanel().setText(newValue.toString());
         }
