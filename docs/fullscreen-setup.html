@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediaPlayer - OpenHome UPnP Media Renderer</title>
+    <meta name="description" content="Website generator">
+
+    <link href="http://petemanchester.github.io/MediaPlayer/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://petemanchester.github.io/MediaPlayer/google-code-prettify/prettify.css" rel="stylesheet">
+    <link href="http://petemanchester.github.io/MediaPlayer/css/theme.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="http://petemanchester.github.io/MediaPlayer/" class="navbar-brand">MediaPlayer</a>
+                <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="http://petemanchester.github.io/MediaPlayer/">Home</a></li>
+                    <li><a href="http://petemanchester.github.io/MediaPlayer/docs/">Documentation</a></li>
+                    <li><a href="https://github.com/PeteManchester/MediaPlayer">GitHub</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    
+        <div class="container">
+            <section>
+                <h1>Fullscreen Plugin</h1>
+<p>To use the Fullscreen plugin, some additional steps to the already described
+<a href="/docs/archlinux-setup.html">installation instructions</a> are required.</p>
+<p>Since I am using ArchLinux this installation instruction covers this distribution.</p>
+<h2>Setup X11</h2>
+<pre><code>[root@alarmpi]# pacman -Syu
+[root@alarmpi]# pacman -S packer
+[root@alarmpi]# pacman -S xorg-server xorg-xinit xorg-utils xorg-server-utils
+[root@alarmpi]# pacman -S xf86-video-fbdev xterm
+[root@alarmpi]# pacman -S gtk2
+[root@alarmpi]# packer -S ttf-ms-fonts</code></pre>
+<h2>Setup Auto-Login</h2>
+<p>follow <a href="https://wiki.archlinux.org/index.php/Systemd/User#D-Bus">https://wiki.archlinux.org/index.php/Systemd/User#D-Bus</a></p>
+<p>For the next steps, you need to install some additional packages:</p>
+<pre><code>[root@alarmpi]# pacman -S make
+[root@alarmpi]# packer -S xlogin-git</code></pre>
+<p>follow <a href="https://wiki.archlinux.org/index.php/Systemd/User#Automatic_login_into_Xorg_without_display_manager">https://wiki.archlinux.org/index.php/Systemd/User#Automatic_login_into_Xorg_without_display_manager</a></p>
+<p>The .xinitrc-file has to be created in the /root-folder and should look something
+like the following:</p>
+<pre><code>#!/bin/sh
+#
+# ~/.xinitrc
+#
+# Executed by startx (run your window manager from here)
+
+if [ -d /etc/X11/xinit/xinitrc.d ]; then
+  for f in /etc/X11/xinit/xinitrc.d/*; do
+    [ -x "$f" ] &amp;&amp; . "$f"
+  done
+  unset f
+fi
+
+exec xterm</code></pre>
+<p>You could run 'startx' to check, if everything up until now is working.</p>
+<p>Adopt, like described in the mentioned wiki-entry, your .bashrc inside the /root-folder
+and enable the systemctl service with</p>
+<pre><code>systemctl enable xlogin@root</code></pre>
+<p>Do not forget to enable the lingering:</p>
+<pre><code>loginctl enable-linger root</code></pre>
+<p>After a reboot, X should be loaded and the XTerm Window should be shown on the screen.</p>
+<h2>Enable Fullscreen Plugin</h2>
+<pre><code>[root@alarmpi]# cd /opt/mediaplayer
+[root@alarmpi]# mkdir -p plugins/Fullscreen
+[root@alarmpi]# cd plugins/Fullscreen
+[root@alarmpi]# wget -O Fullscreen.jar https://github.com/PeteManchester/MediaPlayer/raw/master/com.upnp.mediaplayer/plugins/Fullscreen/Fullscreen.jar
+[root@alarmpi]# wget -O fullscreen.properties https://github.com/PeteManchester/MediaPlayer/raw/master/com.upnp.mediaplayer/plugins/Fullscreen/fullscreen.properties</code></pre>
+<p>Some minor adoptions on the run_systemd.sh-file is required:</p>
+<pre><code>#! /bin/sh
+# Absolute path to this script, e.g. /home/pi/mediaplayer/run.sh
+SCRIPT=$(readlink -f "$0")
+# Absolute path this script is in, thus /home/pi/mediaplayer
+SCRIPTPATH=$(dirname "$SCRIPT")
+
+cd "${SCRIPTPATH}"
+echo ${SCRIPTPATH}
+
+# if the fullscreen plugin is used, please uncomment the following
+# lines
+export DISPLAY=:0.0
+xset s off
+xset -dpms
+
+java -jar "${SCRIPTPATH}"/mediaplayer.jar &gt; /dev/null &amp;</code></pre>
+            </section>
+        </div>
+
+    
+    <footer>
+        <div class="container">
+            <p class="text-muted">This website was generated using <a href="http://mnapoli.fr/Couscous/">Couscous</a>.</p>
+        </div>
+    </footer>
+
+    <script src="http://petemanchester.github.io/MediaPlayer/js/jquery-1.10.2.min.js"></script>
+    <script src="http://petemanchester.github.io/MediaPlayer/js/bootstrap.min.js"></script>
+    <script src="http://petemanchester.github.io/MediaPlayer/google-code-prettify/prettify.js"></script>
+
+    <script>
+        $(function() {
+            $("section h1").wrap('<div class="page-header" />');
+            $("section p:first-child").addClass('lead');
+            $("pre").addClass('prettyprint');
+            prettyPrint();
+        });
+    </script>
+
+</body>
+</html>
