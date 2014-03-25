@@ -128,7 +128,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			iRenderingControl = new PrvRenderingControl(iDevice);
 		}
 
-		updateRadioList();
+		//updateRadioList();
 		
 		try{
 			SourceReader sr = new SourceReader();

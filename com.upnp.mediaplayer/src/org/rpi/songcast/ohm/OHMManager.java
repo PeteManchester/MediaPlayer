@@ -114,6 +114,7 @@ public class OHMManager implements Observer, SongcastManager {
 		switch (e.getType()) {
 		case EVENT_OHM_AUDIO_STARTED:
 			if (ohuRequester == null) {
+				log.debug("Audio Started");
 				ohuRequester = new OHUThreadRequester(songcastSocket);
 				ohuThread = new Thread(ohuRequester, "ohuRequester");
 				ohuThread.start();

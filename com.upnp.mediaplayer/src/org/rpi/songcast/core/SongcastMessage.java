@@ -27,7 +27,7 @@ public class SongcastMessage {
 
 			temp.append(decimal);
 		}
-		System.out.println("Decimal : " + temp.toString());
+		//System.out.println("Decimal : " + temp.toString());
 
 		return sb.toString();
 	}
@@ -73,67 +73,32 @@ public class SongcastMessage {
 		return buf.toString();
 	}
 
-	/*
-	 * 
-	 * Get a portion of the bytes in the array.
+
+	/**
+	 * New getBytes method using SystenArrayCopy which is supposed to be quicker
+	 * @param start
+	 * @param end
+	 * @return
 	 */
-	public byte[] getBytes(int start, int end) {
-		try {
-			int size = (end - start) + 1;
-			int count = 0;
-			byte[] res = new byte[size];
-			for (int i = start; i <= end; i++) {
-				res[count] = data[i];
-				count++;
-			}
-			return res;
-		} catch (Exception e) {
-			log.error("Error Getting Bytes: " + e);
-		}
-		return new byte[]{};
+	public byte[] getBytes(int start ,int end)
+	{
+
+		int size = (end - start) + 1;
+		byte[] res = new byte[size];
+		System.arraycopy(data, start, res, 0, size);
+		return res;
 	}
 
 	public byte[] shortToByteArray(short data) {
 		return new byte[] { (byte) (data & 0xff), (byte) ((data >>> 8) & 0xff) };
 	}
 
-	// public int byteArrayShortToInt(byte[] b)
-	// {
-	//
-	// int value = 0;
-	// for (int i = 0; i < 2; i++) {
-	// int shift = (2 - 1 - i) * 8;
-	// value += (b[i] & 0x000000FF) << shift;
-	// }
-	// return value;
-	// }
 
 	public int byteArrayToInt(byte[] b) {
 		return byteArrayToInt(b, 4);
 	}
 
 	public int byteArrayToInt(byte[] b, int size) {
-		// if(b.length<4)
-		// {
-		// byte[] temp = new byte[4];
-		// int size = b.length ;
-		// int iCount = 4-size;
-		// int iArray = 0;
-		// for(int add = iCount;add < 4;add++)
-		// {
-		// if(iCount>add)
-		// {
-		// temp[add] = 0x00;
-		// }
-		// else
-		// {
-		// temp[add ] = b[ iArray];
-		// iArray++;
-		// }
-		// }
-		// b = temp;
-		// }
-
 		int value = 0;
 		for (int i = 0; i < size; i++) {
 			int shift = (size - 1 - i) * 8;
@@ -146,7 +111,6 @@ public class SongcastMessage {
 		StringBuilder sb = new StringBuilder();
 		for (byte b : bytes) {
 			sb.append(String.format("%02X ", b));
-			//sb.append(" ");
 		}
 		return sb.toString();
 	}
@@ -160,10 +124,5 @@ public class SongcastMessage {
 		}
 		return s;
 	}
-
-	// public void fireEvent(EventSongCastBase ev) {
-	// setChanged();
-	// notifyObservers(ev);
-	// }
 
 }

@@ -39,7 +39,7 @@ Right now, we do offer the following Plugins:
 
 ## UPnP Support
 
-MediaPlayer does support the following UPNP devices:
+MediaPlayer supports the following UPNP devices:
 
 ### Media Servers
 

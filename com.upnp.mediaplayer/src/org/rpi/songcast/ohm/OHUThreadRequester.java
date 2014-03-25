@@ -14,6 +14,7 @@ public class OHUThreadRequester implements Runnable {
 	
 	public OHUThreadRequester(SongcastSocket udpSender)
 	{
+		log.debug("Creating OHURequest to send keep alive messages");
 		this.udpSender = udpSender;
 	}
 
@@ -23,15 +24,14 @@ public class OHUThreadRequester implements Runnable {
 		{
 			if(udpSender !=null)
 			{
-				//TODO sort out ZoneID, not really needed
+
 				OHMRequestListen req = new OHMRequestListen("");
 				udpSender.put(req);
 			}
 			try {
 				Thread.sleep(900);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error("Error",e);
 			}
 			
 		}		
