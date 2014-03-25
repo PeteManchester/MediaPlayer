@@ -308,9 +308,13 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 			// createEvent();
 			break;
 		case EVENTUPDATETRACKINFO:
-			EventUpdateTrackInfo eti = (EventUpdateTrackInfo) e;
-			track_duration = ConvertTime(eti.getTrackInfo().getDuration());
-			createEvent();
+			try {
+				EventUpdateTrackInfo eti = (EventUpdateTrackInfo) e;
+				track_duration = ConvertTime(eti.getTrackInfo().getDuration());
+				createEvent();
+			} catch (Exception ex) {
+				log.error("Error EventUpdateTrackInfo", ex);
+			}
 			break;
 		// case EVENTPLAYLISTSTATUSCHANGED:
 		// EventPlayListStatusChanged eps = (EventPlayListStatusChanged) e;
@@ -428,9 +432,9 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 		return sb.toString();
 	}
 
-    @Override
-    public String getName() {
-        return "AVTransport";
-    }
+	@Override
+	public String getName() {
+		return "AVTransport";
+	}
 
 }

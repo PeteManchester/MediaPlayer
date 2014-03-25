@@ -959,7 +959,11 @@ public class PlayManager implements Observer {
 						}
 						String metatext = current_track.updateTrack(etm.getTitle(), etm.getArtist());
 						etm.setMetaText(metatext);
-						obsvInfo.notifyChange(etm);
+						try {
+							obsvInfo.notifyChange(etm);
+						} catch (Exception ex) {
+							log.error("Error obsvInfo.notifyChange", ex);
+						}
 					}
 				}
 			} catch (Exception etm) {
@@ -1080,7 +1084,11 @@ public class PlayManager implements Observer {
 	 * @param e
 	 */
 	public void updateTrackInfo(EventBase e) {
-		obsvInfo.notifyChange(e);
+		try {
+			obsvInfo.notifyChange(e);
+		} catch (Exception ex) {
+			log.error("Error obsvInfo.notifyChange", ex);
+		}
 	}
 
 	public synchronized boolean isUseExternalVolume() {

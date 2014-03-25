@@ -142,7 +142,9 @@ public class OHMMessageQueue extends Observable implements Runnable {
 					info.setDuration(0);
 					EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
 					ev.setTrackInfo(info);
-					PlayManager.getInstance().updateTrackInfo(ev);
+					if (ev != null) {
+						PlayManager.getInstance().updateTrackInfo(ev);
+					}
 					bCheckAudioFormat = false;
 				}
 			}

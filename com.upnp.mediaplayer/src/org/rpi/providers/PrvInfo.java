@@ -180,9 +180,13 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer, I
 		switch(e.getType())
 		{
 		case EVENTUPDATETRACKINFO:
-			EventUpdateTrackInfo euti = (EventUpdateTrackInfo)e;
-			TrackInfo i = (TrackInfo) euti.getTrackInfo();
-			setDetails(i.getDuration(), i.getBitrate(), i.getBitDepth(), i.getSampleRate(), false, i.getCodec());
+			try {
+				EventUpdateTrackInfo euti = (EventUpdateTrackInfo)e;
+				TrackInfo i = (TrackInfo) euti.getTrackInfo();
+				setDetails(i.getDuration(), i.getBitrate(), i.getBitDepth(), i.getSampleRate(), false, i.getCodec());
+			} catch (Exception ex) {
+				log.error("Error EventUpdateTrackInfo", ex);
+			}			
 			break;	
 
 		case EVENTUPDATETRACKMETATEXT:

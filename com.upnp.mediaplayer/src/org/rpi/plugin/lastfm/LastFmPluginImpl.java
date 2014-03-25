@@ -103,8 +103,8 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
                 EventTrackChanged etc = (EventTrackChanged) e;
                 ChannelBase track = etc.getTrack();
                 if (track != null) {
-                    log.debug("scrobble with artist: " + track.getArtist());
-                    scrobble(track.getTitle(), track.getArtist(), track.getAlbum());
+                    log.debug("scrobble track with performer: " + track.getPerformer());
+                    scrobble(track.getTitle(), track.getPerformer(), track.getAlbum());
                 } else {
                     log.debug("Track was NULL");
                 }
@@ -114,7 +114,7 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
                 EventUpdateTrackMetaText et = (EventUpdateTrackMetaText) e;
 
                 if (et != null) {
-                    log.debug("scrobble2 with artist: " + et.getArtist());
+                    log.debug("scrobble metatext with artist: " + et.getArtist());
                     scrobble(et.getTitle(), et.getArtist());
                 }
                 break;

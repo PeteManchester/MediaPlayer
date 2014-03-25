@@ -2,11 +2,13 @@ package org.rpi.mplayer;
 
 import java.util.Observable;
 
-import org.rpi.player.IPlayer;
+import org.apache.log4j.Logger;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventUpdateTrackInfo;
 
 public class TrackInfo extends Observable {
+	
+	private Logger log = Logger.getLogger(this.getClass());
 
 	private boolean bSentUpdate = false;
 
@@ -117,8 +119,15 @@ public class TrackInfo extends Observable {
 	}
 
 	private void fireEvent(EventBase ev) {
+		try
+		{
 		setChanged();
 		notifyObservers(ev);
+		}
+		catch(Exception e)
+		{
+			log.error("Error notifyObservers",e);
+		}
 	}
 
 }
