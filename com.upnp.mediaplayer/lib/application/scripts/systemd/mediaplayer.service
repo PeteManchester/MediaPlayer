@@ -1,8 +1,11 @@
 [Unit]
 Description=MediaPlayer
+Requires=mpd.service
+After=mpd.service
 
 [Service]
-ExecStart=/home/pi/mediaplayer/run_systemd.sh
+Type=forking
+ExecStart=/opt/mediaplayer/run_systemd.sh
 
 [Install]
 WantedBy=multi-user.target
