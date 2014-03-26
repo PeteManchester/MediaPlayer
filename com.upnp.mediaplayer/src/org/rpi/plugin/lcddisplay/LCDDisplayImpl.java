@@ -70,7 +70,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 			} catch (Exception e) {
 				log.error("Error Init Pi4J: " + e);
 			}
-			scroller = new LCDScroller(LCD_ROWS, LCD_COLUMNS, row_definition,standby_definition);
+			scroller = new LCDScroller(LCD_ROWS, LCD_COLUMNS, row_definition, standby_definition);
 			scroller.setStandBy(PlayManager.getInstance().isStandby());
 			scroller.setReset();
 			if (lcdHandle != -1) {
@@ -126,74 +126,99 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 		EventBase base = (EventBase) e;
 		switch (base.getType()) {
 		case EVENTTRACKCHANGED:
-			EventTrackChanged etc = (EventTrackChanged) e;
-			ChannelBase track = etc.getTrack();
-			if (track != null) {
-				String s = track.getFullDetails();
-				log.debug("TrackChanged: " + s);
-				// UpdateScroller(s, 0);
-				scroller.updateValues("[FULL_DETAILS]", s);
-				scroller.updateValues("[ARTIST]", track.getArtist());
-				scroller.updateValues("[TITLE]", track.getTitle());
-				scroller.updateValues("[ALBUM]", track.getAlbum());
-				scroller.updateValues("[PERFORMER]", track.getPerformer());
-				scroller.updateValues("[COMPOSER]", track.getComposer());
-				scroller.updateValues("[CONDUCTOR]", track.getConductor());
-				scroller.updateValues("[DATE]", track.getDate());
-				scroller.updateValues("[STANDBY]", "");
-			} else {
-				log.debug("Track was NULL");
+			try {
+				EventTrackChanged etc = (EventTrackChanged) e;
+				ChannelBase track = etc.getTrack();
+				if (track != null) {
+					String s = track.getFullDetails();
+					log.debug("TrackChanged: " + s);
+					// UpdateScroller(s, 0);
+					scroller.updateValues("[FULL_DETAILS]", s);
+					scroller.updateValues("[ARTIST]", track.getArtist());
+					scroller.updateValues("[TITLE]", track.getTitle());
+					scroller.updateValues("[ALBUM]", track.getAlbum());
+					scroller.updateValues("[PERFORMER]", track.getPerformer());
+					scroller.updateValues("[COMPOSER]", track.getComposer());
+					scroller.updateValues("[CONDUCTOR]", track.getConductor());
+					scroller.updateValues("[DATE]", track.getDate());
+					scroller.updateValues("[STANDBY]", "");
+				} else {
+					log.debug("Track was NULL");
+				}
+			} catch (Exception ex) {
+				log.error("TrackChanged", ex);
 			}
 
 			break;
 		case EVENTUPDATETRACKMETATEXT:
 			EventUpdateTrackMetaText et = (EventUpdateTrackMetaText) e;
-			log.debug("Track Changed: " + et.getTitle() + " : " + et.getArtist());
-			if (scroller != null) {
-				// UpdateScroller(et.getTitle() + " - " + et.getArtist(), 0);
-				scroller.updateValues("[TITLE]", et.getTitle());
-				scroller.updateValues("[ARTIST]", et.getArtist());
+			try {
+				log.debug("Track Changed: " + et.getTitle() + " : " + et.getArtist());
+				if (scroller != null) {
+					// UpdateScroller(et.getTitle() + " - " + et.getArtist(),
+					// 0);
+					scroller.updateValues("[TITLE]", et.getTitle());
+					scroller.updateValues("[ARTIST]", et.getArtist());
+				}
+			} catch (Exception ex) {
+				log.error("UpdateMetaData", ex);
 			}
 			break;
 		case EVENTVOLUMECHANGED:
-			EventVolumeChanged ev = (EventVolumeChanged) e;
-			mVolume = ev.getVolume();
-			// updateVolume();
-			scroller.updateValues("[VOLUME]", "" + mVolume);
+			try {
+				EventVolumeChanged ev = (EventVolumeChanged) e;
+				mVolume = ev.getVolume();
+				// updateVolume();
+				scroller.updateValues("[VOLUME]", "" + mVolume);
+			} catch (Exception ex) {
+				log.error("VolumeChanged", ex);
+			}
 			break;
 		case EVENTMUTECHANGED:
 			if (o instanceof ObservableVolume) {
-				EventMuteChanged em = (EventMuteChanged) e;
-				log.debug("MuteStateChanged: " + em.isMute());
-				isMute = em.isMute();
-				if (em.isMute()) {
-					scroller.updateValues("[VOLUME]", "Mute");
-				} else {
-					scroller.updateValues("[VOLUME]", "" + mVolume);
+				try {
+					EventMuteChanged em = (EventMuteChanged) e;
+					log.debug("MuteStateChanged: " + em.isMute());
+					isMute = em.isMute();
+					if (em.isMute()) {
+						scroller.updateValues("[VOLUME]", "Mute");
+					} else {
+						scroller.updateValues("[VOLUME]", "" + mVolume);
+					}
+				} catch (Exception ex) {
+					log.error("MuteChanged", ex);
 				}
 			}
 			break;
 		case EVENTSTANDBYCHANGED:
-			EventStandbyChanged es = (EventStandbyChanged) e;
-			scroller.setReset();
-			String sStandby = "false";
-			if (es.isStandby()) {
-				scroller.setStandBy(true);
-				sStandby = "true";
-			} else {
-				scroller.setStandBy(false);
-				try {
-				} catch (Exception ex) {
+			try {
+				EventStandbyChanged es = (EventStandbyChanged) e;
+				scroller.setReset();
+				String sStandby = "false";
+				if (es.isStandby()) {
+					scroller.setStandBy(true);
+					sStandby = "true";
+				} else {
+					scroller.setStandBy(false);
+					try {
+					} catch (Exception ex) {
 
+					}
 				}
+				scroller.updateValues("[STANDBY", sStandby);
+			} catch (Exception ex) {
+				log.error("StandbyChanged", ex);
 			}
-			scroller.updateValues("[STANDBY", sStandby);
 			break;
 		case EVENTTIMEUPDATED:
-			EventTimeUpdate etime = (EventTimeUpdate) e;
-			mTime = ConvertTime(etime.getTime());
-			// updateVolume();
-			scroller.updateValues("[TIME]", mTime);
+			try {
+				EventTimeUpdate etime = (EventTimeUpdate) e;
+				mTime = ConvertTime(etime.getTime());
+				// updateVolume();
+				scroller.updateValues("[TIME]", mTime);
+			} catch (Exception ex) {
+				log.error("TimeUpdated", ex);
+			}
 			break;
 
 		}
