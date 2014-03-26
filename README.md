@@ -19,7 +19,7 @@ as well as [mpd](http://www.musicpd.org/) is used (based on your choice, this is
 The combination of OpenHome as well as mpd does allow MediaPlayer to provide gapless
 playback (yes, gapless, for beneath 0€ ;-)).
 
-We support the following UPnP and OpenHome Funcionality:
+We support the following UPnP and OpenHome Functionality:
 
 * [PlayLists](http://www.openhome.org/wiki/Av:Developer:PlaylistService)
 * [Radio](http://www.openhome.org/wiki/Av:Developer:RadioService)
