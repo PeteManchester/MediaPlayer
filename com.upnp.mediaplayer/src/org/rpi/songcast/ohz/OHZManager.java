@@ -66,7 +66,7 @@ public class OHZManager implements SongcastManager {
 			// }
 		}
 		log.debug("Not Connected to Zone, attempt to connect: " + zone);
-		PlayManager.getInstance().setStatus("Buffering");
+		PlayManager.getInstance().setStatus("Buffering","SONGCAST");
 		ohm = new OHMManager(uri, zone, nic);
 		ohm.start();
 	}
@@ -75,7 +75,7 @@ public class OHZManager implements SongcastManager {
 		if (ohm == null)
 			return;
 		try {
-			PlayManager.getInstance().setStatus("Stopped");
+			PlayManager.getInstance().setStatus("Stopped","SONGCAST");
 			ohm.dispose();
 			ohm = null;
 		} catch (Exception e) {

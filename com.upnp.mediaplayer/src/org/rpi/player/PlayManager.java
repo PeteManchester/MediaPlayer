@@ -23,6 +23,7 @@ import org.rpi.player.events.EventPlayListUpdateShuffle;
 import org.rpi.player.events.EventRadioPlayName;
 import org.rpi.player.events.EventRadioPlayingTrackID;
 import org.rpi.player.events.EventRadioStatusChanged;
+import org.rpi.player.events.EventReceiverStatusChanged;
 import org.rpi.player.events.EventRequestVolumeDec;
 import org.rpi.player.events.EventRequestVolumeInc;
 import org.rpi.player.events.EventStandbyChanged;
@@ -437,7 +438,7 @@ public class PlayManager implements Observer {
 		if (mPlayer.isPlaying()) {
 			mPlayer.pause(bPause);
 			setPaused(bPause);
-			setStatus("Paused");
+			setStatus("Paused", "PLAYER");
 		}
 	}
 
@@ -506,7 +507,7 @@ public class PlayManager implements Observer {
 			if (mPlayer.isPlaying()) {
 				mPlayer.resume();
 			}
-			setStatus("Playing");
+			setStatus("Playing", "PLAYER");
 			setPaused(false);
 		} else {
 			// if (!(status.equalsIgnoreCase("PLAYING") ||
@@ -545,8 +546,8 @@ public class PlayManager implements Observer {
 	 */
 	public void playSongcast(ChannelSongcast track) {
 		log.debug("Playing Songcast Channel. Stop Playing current Track");
-		setCurrentTrack(track);
 		stop();
+		setCurrentTrack(track);
 	}
 
 	public synchronized void playAV(ChannelPlayList c) {
@@ -789,7 +790,7 @@ public class PlayManager implements Observer {
 	 * 
 	 * @param status
 	 */
-	public synchronized void setStatus(String status) {
+	public synchronized void setStatus(String status, String source) {
 		log.debug("SetStatus: " + status);
 		this.status = status;
 		EventTrackChanged ev = new EventTrackChanged();
@@ -811,11 +812,11 @@ public class PlayManager implements Observer {
 			evr.setStatus(status);
 			obsvRadio.notifyChange(evr);
 		} else if (current_track instanceof ChannelSongcast) {
-			// TODO borrowed EventPlayListChanged, may need to create one for
-			// Songcast.
-			EventPlayListStatusChanged evr = new EventPlayListStatusChanged();
-			evr.setStatus(status);
-			obsvSongcast.notifyChange(evr);
+			if (source.equalsIgnoreCase("SONGCAST")) {
+				EventReceiverStatusChanged evr = new EventReceiverStatusChanged();
+				evr.setStatus(status);
+				obsvSongcast.notifyChange(evr);
+			}
 		} else if (current_track instanceof ChannelPlayList) {
 			EventPlayListStatusChanged evr = new EventPlayListStatusChanged();
 			evr.setStatus(status);
@@ -926,7 +927,7 @@ public class PlayManager implements Observer {
 			try {
 				EventStatusChanged es = (EventStatusChanged) e;
 				log.debug("EventStatusChanged: " + es.getStatus());
-				setStatus(es.getStatus());
+				setStatus(es.getStatus(), "PLAYER");
 				obsvAVTransport.notifyChange(es);
 			} catch (Exception esc) {
 				log.error("Error EVENTSTATUSCHANGED", esc);

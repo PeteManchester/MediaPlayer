@@ -16,6 +16,7 @@ import org.rpi.config.Config;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventPlayListStatusChanged;
+import org.rpi.player.events.EventReceiverStatusChanged;
 import org.rpi.songcast.ohz.OHZManager;
 import org.rpi.utils.Utils;
 
@@ -137,7 +138,7 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 	private void stop() {
 		manager.stop(zoneID);
 		manager = null;
-		PlayManager.getInstance().setStatus("Stopped");
+		PlayManager.getInstance().setStatus("Stopped","SONGCAST");
 	}
 
 	@Override
@@ -155,13 +156,9 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 	public void update(Observable arg0, Object ev) {
 		EventBase e = (EventBase) ev;
 		switch (e.getType()) {
-		case EVENTPLAYLISTSTATUSCHANGED:
-			EventPlayListStatusChanged ers = (EventPlayListStatusChanged) e;
-			//if(!ers.getStatus().equalsIgnoreCase("Stopped"))
-			//{
-				setStatus(ers.getStatus());
-			//}
-			//
+		case EVENTRECEIVERSTATUSCHANGED:
+			EventReceiverStatusChanged ers = (EventReceiverStatusChanged) e;
+			setStatus(ers.getStatus());
 			break;
 		case EVENTSTOPSONGCAST:
 			stop();

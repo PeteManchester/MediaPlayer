@@ -68,9 +68,8 @@ public class OHMManager implements Observer, SongcastManager {
 		songcastSocket.put(join);
 		OHMRequestListen listen = new OHMRequestListen(zoneID);
 		songcastSocket.put(listen);
-		// TODO maybe move this Playing status....
-		PlayManager.getInstance().setStatus("Playing");
 		startTimer();
+		PlayManager.getInstance().setStatus("Playing","SONGCAST");
 	}
 
 	public void dispose() {
