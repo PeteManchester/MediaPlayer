@@ -1,9 +1,7 @@
 package org.rpi.radio;
 
-import java.io.FileReader;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,33 +64,45 @@ public class ChannelReaderJSON {
 	 * Get a JSON Object from a File
 	 */
 	private void getJSONFromFile() {
-		try {
+        Reader reader = null;
+        try {
+            reader = new FileReader("RadioList.json");
+        } catch (FileNotFoundException e) {
+            log.error("Cannot find RadioList.json", e);
+        }
 
-			JsonReader reader = Json.createReader(new FileReader("RadioList.json"));
-			JsonObject array = reader.readObject();
-			reader.close();
-			getBody(array);
-
-		} catch (Exception e) {
-			log.error("Error Getting RadioList.json", e);
-		}
-
+        this.getJsonFromReader(reader);
 	}
 
 	/*
 	 * Get a JSON Object from a URL
 	 */
 	private void getJsonFromURL(String url) {
-		try {
-			URL mUrl = new URL(url);
-			JsonReader reader = Json.createReader(new InputStreamReader(mUrl.openStream()));
-			JsonObject array = reader.readObject();
-			reader.close();
-			getBody(array);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+        URL mUrl = null;
+        Reader reader = null;
+
+        try {
+            mUrl = new URL(url);
+            reader = new InputStreamReader(mUrl.openStream());
+        } catch (MalformedURLException e) {
+            log.error("Invalid URL given", e);
+        } catch (IOException e) {
+            log.error("Cannot open stream", e);
+        }
+
+        this.getJsonFromReader(reader);
 	}
+
+    private void getJsonFromReader(Reader reader) {
+        try {
+            JsonReader jsonReader = Json.createReader(reader);
+            JsonObject array = jsonReader.readObject();
+            jsonReader.close();
+            getBody(array);
+        } catch (Exception e) {
+            log.error("Error Reading RadioList.json from given reader", e);
+        }
+    }
 
 	private void getBody(JsonObject array) {
 		if (array == null)
@@ -217,14 +227,16 @@ public class ChannelReaderJSON {
 		return res;
 	}
 
-	/***
-	 * Create a Channel and add it to the List
-	 * 
-	 * @param name
-	 * @param url
-	 * @param image
-	 * @param id
-	 */
+    /**
+     * Create a Channel and add it to the List
+     *
+     * @param name
+     * @param url
+     * @param image
+     * @param icy_reverse
+     * @param preset_id
+     * @param item
+     */
 	private void addChannel(String name, String url, String image, boolean icy_reverse, String preset_id, String item) {
 
 		String m = createMetaData(name, url, image);
@@ -232,7 +244,7 @@ public class ChannelReaderJSON {
 		try {
 			id = Integer.parseInt(preset_id);
 		} catch (Exception e) {
-			log.debug("Cound Not Parse ChaneelID: " + preset_id);
+			log.debug("Could Not Parse ChannelID: " + preset_id);
 		}
 
 		ChannelRadio channel = null;
