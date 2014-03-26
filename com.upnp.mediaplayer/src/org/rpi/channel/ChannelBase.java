@@ -279,7 +279,7 @@ public class ChannelBase {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            InputSource insrc = new InputSource(new StringReader(metadata));
+            InputSource insrc = new InputSource(new StringReader(metadata.trim()));
             return builder.parse(insrc);
         } catch (Exception e) {
 
@@ -313,7 +313,7 @@ public class ChannelBase {
 
     public void getTrackDetails() {
         try {
-            Document doc = getDocument();
+            Document doc = getDocument();//
             Node node = doc.getFirstChild();
             Node item = node.getFirstChild();
             NodeList childs = item.getChildNodes();

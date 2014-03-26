@@ -3,6 +3,7 @@ package org.rpi.songcast.ohm;
 import java.math.BigInteger;
 
 import org.apache.log4j.Logger;
+import org.rpi.channel.ChannelSongcast;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventMuteChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
@@ -43,10 +44,13 @@ public class OHMEventTrack extends SongcastMessage {
 		}
 		if (meta_length > 0) {
 			byte[] bMetaLength = getBytes(20 + uri_length, data.length - 1);
-			metaData = byteToString(bMetaLength);
+			metaData = byteToString(bMetaLength).trim();
 			log.debug("MetaData: " + metaData);
 			EventUpdateTrackMetaText ev = new EventUpdateTrackMetaText();
+			ChannelSongcast cs = new ChannelSongcast("", metaData, 1);
 			ev.setMetaText(metaData);
+			ev.setTitle(cs.getTitle()) ;
+			ev.setArtist(cs.getArtist());
 			if (ev != null) {
 				PlayManager.getInstance().updateTrackInfo(ev);
 			}

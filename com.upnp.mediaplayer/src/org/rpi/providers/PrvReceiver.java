@@ -157,7 +157,11 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 		switch (e.getType()) {
 		case EVENTPLAYLISTSTATUSCHANGED:
 			EventPlayListStatusChanged ers = (EventPlayListStatusChanged) e;
-			setStatus(ers.getStatus());
+			//if(!ers.getStatus().equalsIgnoreCase("Stopped"))
+			//{
+				setStatus(ers.getStatus());
+			//}
+			//
 			break;
 		case EVENTSTOPSONGCAST:
 			stop();

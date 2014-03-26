@@ -182,7 +182,7 @@ public class Utils {
     /**
      * Parses the given duration String and returns the milliseconds value.
      *
-     * This method uses the statically initialized Formatter pf.
+     * 
      *
      * @param duration
      * @return

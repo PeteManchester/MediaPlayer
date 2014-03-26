@@ -153,7 +153,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 		case EVENTUPDATETRACKMETATEXT:
 			EventUpdateTrackMetaText et = (EventUpdateTrackMetaText) e;
 			try {
-				log.debug("Track Changed: " + et.getTitle() + " : " + et.getArtist());
+				log.debug("TrackMetaText Changed: " + et.getTitle() + " : " + et.getArtist());
 				if (scroller != null) {
 					// UpdateScroller(et.getTitle() + " - " + et.getArtist(),
 					// 0);

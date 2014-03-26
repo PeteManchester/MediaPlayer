@@ -67,7 +67,7 @@ public class FullscreenDisplayController implements PropertyChangeListener {
             Long time = (Long)newValue;
             time = time * 1000;
             String value = Utils.printTimeString(time);
-            LOGGER.debug("playTime: " + value);
+            //LOGGER.debug("playTime: " + value);
             view.getPlayTimeLabel().setText(value);
         }
         else if (propertyName.equals("imageURI")) {
