@@ -69,6 +69,8 @@ public class ChannelReaderJSON {
             reader = new FileReader("RadioList.json");
         } catch (FileNotFoundException e) {
             log.error("Cannot find RadioList.json", e);
+            //Bail out here is we can't find the file
+            return;
         }
 
         this.getJsonFromReader(reader);
@@ -86,8 +88,10 @@ public class ChannelReaderJSON {
             reader = new InputStreamReader(mUrl.openStream());
         } catch (MalformedURLException e) {
             log.error("Invalid URL given", e);
+            return;
         } catch (IOException e) {
             log.error("Cannot open stream", e);
+            return;
         }
 
         this.getJsonFromReader(reader);
