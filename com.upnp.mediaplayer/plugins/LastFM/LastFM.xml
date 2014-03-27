@@ -18,5 +18,9 @@
 			<artist>Back</artist>
 			<title>Soon</title>
 		</BlackListItem>
+		<BlackListItem>
+			<artist></artist>
+			<title>We'll be right back...</title>
+		</BlackListItem>
 	</BlackList>
 </LastFM>

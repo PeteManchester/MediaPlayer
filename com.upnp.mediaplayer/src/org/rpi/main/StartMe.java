@@ -199,6 +199,7 @@ public class StartMe {
 			Config.webHttpPort=pr.getProperty("web.http.port");
 			Config.radio_tunein_username = pr.getProperty("radio.tunein.username");
 			Config.setStartHttpDaemon(pr.getProperty("start.http.daemon"));
+			Config.startup_volume = Config.convertStringToInt(pr.getProperty("startup_volume"), -1);
 
 		} catch (Exception e) {
 			e.printStackTrace();

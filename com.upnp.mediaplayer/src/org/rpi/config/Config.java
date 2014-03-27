@@ -1,12 +1,15 @@
 package org.rpi.config;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.log4j.Level;
-import org.rpi.utils.Utils;
 
 public class Config {
 	
@@ -34,6 +37,7 @@ public class Config {
 	public static String songcastNICName = "";
 	public static String songcastSoundCardName = "";
 	public static String radio_tunein_username = "";
+	public static long startup_volume = -1;
 	
 	private static Calendar cal = Calendar.getInstance();
 	public static boolean songcastLatencyEnabled = false;
@@ -156,5 +160,20 @@ public class Config {
 
 	public static Date getStartTime() {
 		return cal.getTime();
+	}
+	
+	public static void saveParamChanges() {
+	    try {
+	        Properties props = new Properties();
+	        //props.setProperty("ServerAddress", serverAddr);
+	        //props.setProperty("ServerPort", ""+serverPort);
+	        //props.setProperty("ThreadCount", ""+threadCnt);
+	        File f = new File("server.properties");
+	        OutputStream out = new FileOutputStream( f );
+	        props.store(out, "This is an optional header comment string");
+	    }
+	    catch (Exception e ) {
+	        e.printStackTrace();
+	    }
 	}
 }

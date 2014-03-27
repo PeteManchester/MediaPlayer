@@ -47,7 +47,7 @@ import org.rpi.sources.Source;
 import org.rpi.sources.SourceReader;
 import org.rpi.utils.NetworkUtils;
 
-public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessageListener,Observer {
+public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessageListener, Observer {
 
 	private Logger log = Logger.getLogger(SimpleDevice.class);
 	private DvDevice iDevice = null;
@@ -59,17 +59,17 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	private PrvProduct iProduct = null;
 	private PrvInfo iInfo = null;
 	private PrvTime iTime = null;
-	private PrvRadio iRadio =  null;
+	private PrvRadio iRadio = null;
 	private PrvReceiver iReceiver = null;
 	private PrvAVTransport iAVTransport = null;
 	private PrvRenderingControl iRenderingControl = null;
 	private HttpServerGrizzly httpServer = null;
 
 	private PlayManager iPlayer = PlayManager.getInstance();
-	//private int iCount = 0;
 
-	//private PluginManager pm = null;
+	// private int iCount = 0;
 
+	// private PluginManager pm = null;
 
 	/***
 	 * Constructor for our Simple Device
@@ -78,7 +78,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		PluginGateWay.getInstance().setSimpleDevice(this);
 		log.debug("Creating Simple Device version: " + Config.version);
 		// System.loadLibrary("ohNetJni");
-		//Call the OSManager to set our path to the libohNet libraries
+		// Call the OSManager to set our path to the libohNet libraries
 		OSManager.getInstance();
 
 		InitParams initParams = new InitParams();
@@ -107,7 +107,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		iDevice.setAttribute("Upnp.Manufacturer", "Made in Manchester");
 		iDevice.setAttribute("Upnp.ModelName", "Open Home Java Renderer: v" + Config.version);
 		iDevice.setAttribute("Upnp.ModelDescription", "'We Made History Not Money' - Tony Wilson..");
-		iDevice.setAttribute("Upnp.PresentationUrl", "http://" + NetworkUtils.getHostName() +":" + Config.webHttpPort  + "/MainPage.html");
+		iDevice.setAttribute("Upnp.PresentationUrl", "http://" + NetworkUtils.getHostName() + ":" + Config.webHttpPort + "/MainPage.html");
 		// iDevice.setAttribute("Upnp.IconList" , sb.toString());
 		// iDevice.setAttribute("Upnp.ModelUri", "www.google.co.uk");
 		// iDevice.setAttribute("Upnp.ModelImageUri","http://upload.wikimedia.org/wikipedia/en/thumb/0/04/Joy_Division.JPG/220px-Joy_Division.JPG");
@@ -119,7 +119,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		iInfo = new PrvInfo(iDevice);
 		iTime = new PrvTime(iDevice);
 		iRadio = new PrvRadio(iDevice);
-		//iInput = new PrvRadio(iDevice);
+		// iInput = new PrvRadio(iDevice);
 		if (Config.enableReceiver) {
 			iReceiver = new PrvReceiver(iDevice);
 		}
@@ -128,36 +128,31 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			iRenderingControl = new PrvRenderingControl(iDevice);
 		}
 
-		//updateRadioList();
-		
-		try{
+		// updateRadioList();
+
+		try {
 			SourceReader sr = new SourceReader();
 			ConcurrentHashMap<String, Source> sources = sr.getSources();
-			if(sources.size()==0)
-			{
-				Source playlist = new Source("PlayList","Playlist","-99");
-				sources.put(playlist.getName(),playlist);
-				Source radio = new Source("Radio","Radio","-99");
-				sources.put(radio.getName(),radio);
-				if(Config.enableReceiver)
-				{
+			if (sources.size() == 0) {
+				Source playlist = new Source("PlayList", "Playlist", "-99");
+				sources.put(playlist.getName(), playlist);
+				Source radio = new Source("Radio", "Radio", "-99");
+				sources.put(radio.getName(), radio);
+				if (Config.enableReceiver) {
 					Source reciever = new Source("Receiver", "Receiver", "-99");
 					sources.put(reciever.getName(), reciever);
 				}
 			}
 			PluginGateWay.getInstance().setSources(sources);
 			PluginGateWay.getInstance().setDefaultSourcePin(sr.getDefaultPin());
-			for(String key : sources.keySet())
-			{
+			for (String key : sources.keySet()) {
 				Source s = sources.get(key);
-				log.debug("Adding Source: " +s.toString());
+				log.debug("Adding Source: " + s.toString());
 				iProduct.addSource(Config.friendly_name, s.getName(), s.getType(), true);
 			}
 			iProduct.updateCurrentSource();
-			
-		}
-		catch(Exception e)
-		{
+
+		} catch (Exception e) {
 			log.error("Error Reading Input Sources");
 		}
 
@@ -165,54 +160,59 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		log.debug("Device Enabled UDN: " + iDevice.getUdn());
 		iProduct.setSourceByname("PlayList");
 
-        if (Config.startHttpDaemon) {
-		    httpServer = new HttpServerGrizzly(Config.webHttpPort);
-        } else {
-            log.warn("HTTP Daemon is set to false, not starting");
-        }
+		if (Config.startHttpDaemon) {
+			httpServer = new HttpServerGrizzly(Config.webHttpPort);
+		} else {
+			log.warn("HTTP Daemon is set to false, not starting");
+		}
+		
+		if (Config.startup_volume >= 0) {
+			log.debug("Setting Startup Volume: " + Config.startup_volume);
+			PlayManager.getInstance().setVolume(Config.startup_volume);
+		}
+		
 		OSManager.getInstance().loadPlugins();
 	}
 
-    protected SimpleDevice(boolean test) {
-        // this constructor is just for test purposes...
-        // do not remove it
-    }
+	protected SimpleDevice(boolean test) {
+		// this constructor is just for test purposes...
+		// do not remove it
+	}
 
-    protected String constructIconList(String deviceName) {
-        StringBuffer sb = new StringBuffer();
-        sb.append(this.constructIconEntry(deviceName, "image/png", ".png", "240"));
-        sb.append(this.constructIconEntry(deviceName, "image/jpeg", ".jpg", "240"));
-        sb.append(this.constructIconEntry(deviceName, "image/png", ".png", "120"));
-        sb.append(this.constructIconEntry(deviceName, "image/jpeg", ".jpg", "120"));
-        sb.append(this.constructIconEntry(deviceName, "image/png", ".png", "50"));
-        sb.append(this.constructIconEntry(deviceName, "image/jpeg", ".jpg", "50"));
+	protected String constructIconList(String deviceName) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(this.constructIconEntry(deviceName, "image/png", ".png", "240"));
+		sb.append(this.constructIconEntry(deviceName, "image/jpeg", ".jpg", "240"));
+		sb.append(this.constructIconEntry(deviceName, "image/png", ".png", "120"));
+		sb.append(this.constructIconEntry(deviceName, "image/jpeg", ".jpg", "120"));
+		sb.append(this.constructIconEntry(deviceName, "image/png", ".png", "50"));
+		sb.append(this.constructIconEntry(deviceName, "image/jpeg", ".jpg", "50"));
 
-        return sb.toString();
-    }
+		return sb.toString();
+	}
 
-    protected String constructIconEntry(String deviceName, String mimeType, String fileSuffix, String size) {
-        StringBuffer sb = new StringBuffer();
+	protected String constructIconEntry(String deviceName, String mimeType, String fileSuffix, String size) {
+		StringBuffer sb = new StringBuffer();
 
-        sb.append("<icon>");
-        sb.append("<mimetype>");
-        sb.append(mimeType);
-        sb.append("</mimetype>");
-        sb.append("<width>");
-        sb.append(size);
-        sb.append("</width>");
-        sb.append("<height>");
-        sb.append(size);
-        sb.append("</height>");
-        sb.append("<depth>24</depth>");
-        sb.append("<url>/" + deviceName + "/Upnp/resource/org/rpi/image/mediaplayer");
-        sb.append(size);
-        sb.append(fileSuffix);
-        sb.append("</url>");
-        sb.append("</icon>");
+		sb.append("<icon>");
+		sb.append("<mimetype>");
+		sb.append(mimeType);
+		sb.append("</mimetype>");
+		sb.append("<width>");
+		sb.append(size);
+		sb.append("</width>");
+		sb.append("<height>");
+		sb.append(size);
+		sb.append("</height>");
+		sb.append("<depth>24</depth>");
+		sb.append("<url>/" + deviceName + "/Upnp/resource/org/rpi/image/mediaplayer");
+		sb.append(size);
+		sb.append(fileSuffix);
+		sb.append("</url>");
+		sb.append("</icon>");
 
-        return sb.toString();
-    }
-
+		return sb.toString();
+	}
 
 	private int getDebugLevel(String sLevel) {
 
@@ -274,16 +274,12 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	}
 
 	public void dispose() {
-		
-		try
-		{
-			if(httpServer !=null)
-			{
+
+		try {
+			if (httpServer != null) {
 				httpServer.shutdown();
 			}
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			log.error("Error Stopping HTTP Server:", e);
 		}
 
@@ -314,16 +310,16 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			}
 		}
 
-        this.disposeDevice(iConnectionManager);
-        this.disposeDevice(iPlayList);
-        this.disposeDevice(iVolume);
-        this.disposeDevice(iProduct);
-        this.disposeDevice(iInfo);
-        this.disposeDevice(iTime);
-        this.disposeDevice(iRadio);
-        this.disposeDevice(iReceiver);
-        this.disposeDevice(iAVTransport);
-        this.disposeDevice(iRenderingControl);
+		this.disposeDevice(iConnectionManager);
+		this.disposeDevice(iPlayList);
+		this.disposeDevice(iVolume);
+		this.disposeDevice(iProduct);
+		this.disposeDevice(iInfo);
+		this.disposeDevice(iTime);
+		this.disposeDevice(iRadio);
+		this.disposeDevice(iReceiver);
+		this.disposeDevice(iAVTransport);
+		this.disposeDevice(iRenderingControl);
 
 		if (lib != null) {
 			try {
@@ -337,20 +333,20 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 	}
 
-    private void disposeDevice(IDisposableDevice device) {
-        if (device != null) {
-            String name = device.getName();
-            log.info("Dispose " + name);
+	private void disposeDevice(IDisposableDevice device) {
+		if (device != null) {
+			String name = device.getName();
+			log.info("Dispose " + name);
 
-            try {
-                device.dispose();
-                log.info("Disposed " + name);
-            } catch (Exception e) {
-                log.error("Error Disposing " + name, e);
-            }
+			try {
+				device.dispose();
+				log.info("Disposed " + name);
+			} catch (Exception e) {
+				log.error("Error Disposing " + name, e);
+			}
 
-        }
-    }
+		}
+	}
 
 	@Override
 	public void writeResource(String resource_name, int arg1, List<String> arg2, IResourceWriter writer) {
@@ -405,23 +401,21 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	public void message(String paramString) {
 		log.fatal("Fatal Error: " + paramString);
 	}
-	
+
 	/**
 	 * Get the Product Provider
+	 * 
 	 * @return
 	 */
-	public PrvProduct getProduct()
-	{
+	public PrvProduct getProduct() {
 		return iProduct;
 	}
-	
-	
-	private void updateRadioList()
-	{
+
+	private void updateRadioList() {
 		try {
 			ChannelReaderJSON cr = new ChannelReaderJSON();
 			iRadio.addChannels(cr.getChannels());
-			//iCount  = cr.getCount();
+			// iCount = cr.getCount();
 		} catch (Exception e) {
 			log.error("Error Reading Radio Channels");
 		}
@@ -432,14 +426,11 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		EventBase base = (EventBase) event;
 		switch (base.getType()) {
 		case EVENTSOURCECHANGED:
-			EventSourceChanged ev = (EventSourceChanged)event;
-			if(ev.getSourceType().equalsIgnoreCase("RADIO"))
-			{
+			EventSourceChanged ev = (EventSourceChanged) event;
+			if (ev.getSourceType().equalsIgnoreCase("RADIO")) {
 				updateRadioList();
-			}
-			else
-			{
-				
+			} else {
+
 			}
 			break;
 		}
