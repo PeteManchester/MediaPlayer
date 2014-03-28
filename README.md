@@ -40,8 +40,8 @@ Right now, we have the following Plugins:
 ## Installation Instructions
 
 * [Raspberry Pi / Debian](https://github.com/PeteManchester/MediaPlayer/wiki/Install-Raspberry-Pi)
-* [Raspberry Pi / ArchLinux](/docs/archlinux-setup.html)
-* [Fullscreen Plugin / ArchLinux](/docs/fullscreen-setup.html)
+* [Raspberry Pi / ArchLinux]({{ baseUrl }}/docs/archlinux-setup.html)
+* [Fullscreen Plugin / ArchLinux]({{ baseUrl }}/docs/fullscreen-setup.html)
 
 ## UPnP Support
 
