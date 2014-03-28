@@ -94,7 +94,7 @@ public class SongcastSocket implements Runnable {
 		try {
 			Thread.sleep(value);
 		} catch (InterruptedException e) {
-			log.error(e.getMessage(), e);
+			log.error("Sleep Interupted");
 		}
 	}
 

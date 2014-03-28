@@ -169,29 +169,38 @@ function checkStatusConfig() {
 
 					var data = JSON.parse(text);
 					config_json = data;
-					$("#friendlyName").val(decode(data.friendly_name));
+					$("#friendlyName").val(
+							decode(data.mediaplayer_friendly_name));
 
-					$("#select-choice-player").val(decode(data.player));
+					$("#select-choice-player").val(
+							decode(data.mediaplayer_player));
 					$("#select-choice-player").selectmenu("refresh");
 
-					$("#playlistMax").val(decode(data.playlist_max));
+					$("#playlistMax")
+							.val(decode(data.mediaplayer_playlist_max));
 
-					$("#logFileName").val(decode(data.log_file));
+					$("#logFileName").val(decode(data.log_file_name));
 
-					$("#savePlayList").val(decode(data.save_local_playlist));
+					$("#savePlayList").val(
+							decode(data.mediaplayer_save_local_playlist));
 					$("#savePlayList").slider("refresh");
 
-					$("#AVTransport").val(decode(data.enableAVTransport));
+					$("#AVTransport").val(
+							decode(data.mediaplayer_enable_avTransport));
 					$("#AVTransport").slider("refresh");
 
-					$("#songcastReceiver").val(decode(data.enableReceiver));
+					$("#slider-volume").val(data.mediapalyer_startup_volume);
+					$("#slider-volume").slider("refresh");
+
+					$("#songcastReceiver").val(
+							decode(data.mediaplayer_enable_receiver));
 					$("#songcastReceiver").slider("refresh");
 
-					$("#mplayerPlayList").val(decode(data.log_file));
+					$("#mplayerPlayList").val(decode(data.mplayer_playlist));
 
 					$("#mplayerPath").val(decode(data.mplayer_path));
 
-					$("#mplayerCache").val(decode(data.mplayer_cache));
+					$("#mplayerCache").val(decode(data.mplayer_cache_size));
 
 					$("#mplayerCacheMin").val(decode(data.mplayer_cache_min));
 
@@ -206,7 +215,7 @@ function checkStatusConfig() {
 					$("#log_console_level").selectmenu("refresh");
 
 					$("#log_openhome_level").val(
-							decode(data.openhome_debug_level));
+							decode(data.openhome_log_level));
 					$("#log_openhome_level").selectmenu("refresh");
 
 					$("#openhome_port").val(decode(data.openhome_port));
@@ -218,10 +227,16 @@ function checkStatusConfig() {
 							decode(data.songcast_latency_enabled));
 					$("#songcast_latency").slider("refresh");
 
-					$("#http_web_port").val(decode(data.web_http_port));
+					$("#http_web_port").val(decode(data.web_server_port));
+					
+					$("#web_server_enabled").val(
+							decode(data.web_server_enabled));
+					$("#web_server_enabled").slider("refresh");
 
 					$("#tunein_username").val(
 							decode(data.radio_tunein_username));
+					
+					
 
 				},
 				error : function(result) {
@@ -235,8 +250,52 @@ function updateConfig() {
 	// alert('Here');
 	if (config_json != null) {
 
-		config_json.save_local_playlist = false;
-		config_json.friendly_name = $("#friendlyName").val();
+		config_json.mediaplayer_friendly_name = $("#friendlyName").val();
+
+		config_json.mediaplayer_player = $("#select-choice-player").val();
+
+		config_json.mediaplayer_playlist_max = $("#playlistMax").val();
+
+		config_json.log_file_name = $("#logFileName").val();
+
+		config_json.mediaplayer_save_local_playlist = $("#savePlayList").val();
+
+		config_json.mediaplayer_enable_avTransport = $("#AVTransport").val();
+
+		config_json.mediapalyer_startup_volume = $("#slider-volume").val();
+
+		config_json.mediaplayer_enable_receiver = $("#songcastReceiver").val();
+
+		config_json.mplayer_playlist = $("#mplayerPlayList").val();
+
+		config_json.mplayer_path = $("#mplayerPath").val();
+
+		config_json.mplayer_cache_size = $("#mplayerCache").val();
+
+		config_json.mplayer_cache_min = $("#mplayerCacheMin").val();
+
+		config_json.mpd_host = $("#mpdHost").val();
+
+		config_json.mpd_port = $("#mpdPort").val();
+
+		config_json.log_file_level = $("#log_file_level").val();
+
+		config_json.log_console_level = $("#log_console_level").val();
+
+		config_json.openhome_log_level = $("#log_openhome_level").val();
+
+		config_json.openhome_port = $("#openhome_port").val();
+
+		config_json.songcast_soundcard_name = $("#songcast_sound_name").val();
+
+		config_json.songcast_latency_enabled = $("#songcast_latency").val();
+
+		config_json.web_server_port = $("#http_web_port").val();
+
+		config_json.radio_tunein_username = $("#tunein_username").val();
+		
+		config_json.web_server_enabled = $("#web_server_enabled").val();
+
 		$.ajax({
 			type : 'POST',
 			url : '/myapp/config/setConfig',

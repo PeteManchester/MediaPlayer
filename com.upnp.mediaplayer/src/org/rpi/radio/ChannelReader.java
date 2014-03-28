@@ -224,7 +224,7 @@ public class ChannelReader {
 	 * Get the Favourites from the TuneIn Radio Account
 	 */
 	private void getTuneInChannels() {
-		if (Utils.isEmpty(Config.radio_tunein_username)) {
+		if (Utils.isEmpty(Config.getInstance().getRadioTuneinUsername())) {
 			log.debug("TuneIn UserName not configured, do not attempt to load TuneIn stations");
 			return;
 		}
@@ -235,7 +235,7 @@ public class ChannelReader {
 			return;
 		}
 
-		String url = "http://opml.radiotime.com/Browse.ashx?c=presets&partnerid="+ partnerId +"&username=" + Config.radio_tunein_username;
+		String url = "http://opml.radiotime.com/Browse.ashx?c=presets&partnerid="+ partnerId +"&username=" + Config.getInstance().getRadioTuneinUsername();
 		log.debug("Getting TuneIn Radio Favourites");
 		try {
 

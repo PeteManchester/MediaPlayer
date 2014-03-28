@@ -18,7 +18,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -99,9 +98,9 @@ public class ConfigRest {
 			String colon = ":";
 			String space = " ";
 			String comma = ",";
-			sb.append(q + "version" + q + colon + space + q + Config.version + q);
+			sb.append(q + "version" + q + colon + space + q + Config.getInstance().getVersion() + q);
 			sb.append(comma + q + "java_version" + q + colon + space + q + System.getProperty("java.version") + q);
-			sb.append(comma + q + "mp_starttime" + q + colon + space + q + Config.getStartTime() + q);
+			sb.append(comma + q + "mp_starttime" + q + colon + space + q + Config.getInstance().getStartTime() + q);
 			sb.append(comma + q + "mp_currenttime" + q + colon + space + q + new Date() + q);
 			MemoryMXBean memBean = ManagementFactory.getMemoryMXBean();
 			MemoryUsage heap = memBean.getHeapMemoryUsage();
@@ -131,8 +130,12 @@ public class ConfigRest {
 			JsonReader reader = Json.createReader(new StringReader(msg));
 			JsonObject configObject = reader.readObject();
 	        reader.close();
-	        log.debug("Name: " + configObject.getString("friendly_name"));
-	        Config.friendly_name = configObject.getString("friendly_name");
+	        if(configObject !=null)
+	        {
+	        	Config.getInstance().updateConfig(configObject);
+	        }
+	        log.debug("Name: " + configObject.getString("mediaplayer_friendly_name"));
+	        //Config.friendly_name = configObject.getString("friendly_name");
 	        log.debug("ConsoleLogLevel: " + configObject.getString("log_console_level"));
 	        
 	        

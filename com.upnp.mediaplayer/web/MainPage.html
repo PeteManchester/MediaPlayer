@@ -61,8 +61,12 @@
 							<option value="true">On</option>
 					</select></li>
 					
+					<li class="ui-field-contain"><label for="slider-volume">Startup Volume:</label>
+								<input type="range" name="slider-volume" id="slider-volume" value="-1" min="-1" max="100" data-highlight="true" data-mini="true" /></li>
+					
 					<li class="ui-field-contain"><label for="mplayerPlayList">MPlayer Playlist:</label> <input type="text" name="mplayerPlayList" id="mplayerPlayList" value="" data-clear-btn="true"></li>
-
+					
+					
 					<li class="ui-field-contain"><label for="mplayerPath">MPlayer Path:</label> <input type="text" name="mplayerPath" id="mplayerPath" value="" data-clear-btn="true"></li>
 					
 					<li class="ui-field-contain"><label for="mplayerCache">MPlayer Cache:</label> <input type="text" name="mplayerCache" id="mplayerCache" value="" data-clear-btn="true"></li>
@@ -98,7 +102,6 @@
 					<li class="ui-field-contain"><label for="log_openhome_level"	class="select">OpenHome Log Level</label> 
 					<select	name="log_openhome_level" id="log_openhome_level">
 							<option value="None">None</option>
-							<option value="None">None</option>
 							<option value="Thread">Thread</option>
 							<option value="Network">Network</option>							
 							<option value="Timer">Timer</option>
@@ -129,9 +132,14 @@
 							<option value="true">True</option>
 					</select></li>
 					
-					<li class="ui-field-contain"><label for="http_web_port">Http Port:</label> <input type="number" name="http_web_port" id="http_web_port" value="" data-clear-btn="true"></li>
+					<li class="ui-field-contain"><label for="http_web_port">Web Server Port:</label> <input type="number" name="http_web_port" id="http_web_port" value="" data-clear-btn="true"></li>
 					
-					<li class="ui-field-contain"><label for="tunein_username">TuneIn UserName:</label> <input type="number" name="tunein_username" id="tunein_username" value="" data-clear-btn="true"></li>
+					<li class="ui-field-contain"><label for="web_server_enabled">Web Server Enabled:</label> <select name="web_server_enabled" id="web_server_enabled"	data-role="slider">
+							<option value="false">False</option>
+							<option value="true">True</option>
+					</select></li>
+					
+					<li class="ui-field-contain"><label for="tunein_username">TuneIn UserName:</label> <input type="text" name="tunein_username" id="tunein_username" value="" data-clear-btn="true"></li>
 					
 					<li class="ui-body ui-body-b">
 						<fieldset class="ui-grid-a">

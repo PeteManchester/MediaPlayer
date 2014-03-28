@@ -90,7 +90,7 @@ public class OHMMessageQueue extends Observable implements Runnable {
 	}
 
 	public void run() {
-		if (Config.songcastLatencyEnabled) {
+		if (Config.getInstance().isSongcastLatencyEnabled()) {
 			// With Latency
 			player = new SongcastPlayerJSLatency();
 			threadPlayer = new Thread(player, "SongcastPlayerJavaSoundLatency");
@@ -127,6 +127,7 @@ public class OHMMessageQueue extends Observable implements Runnable {
 			audio.data = data;
 			forwardToSlaves(data);
 			audio.checkMessageType();
+			bCheckAudioFormat = true;
 			if (bCheckAudioFormat) {
 				AudioInformation ai = audio.getAudioInfo();
 				if (ai != null && !ai.compare(audioInformation)) {

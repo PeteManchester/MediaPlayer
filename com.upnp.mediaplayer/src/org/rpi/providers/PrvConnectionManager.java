@@ -14,7 +14,7 @@ public class PrvConnectionManager extends DvProviderUpnpOrgConnectionManager1 im
 	private String currentConnectionIDs = "0";
 	// private String sinkProtocolInfo =
 	// "http-get:*:audio/mpegurl:*,http-get:*:audio/mp3:*,http-get:*:audio/mpeg:*,http-get:*:audio/x-ms-wma:*,http-get:*:audio/wma:*,http-get:*:audio/mpeg3:*,http-get:*:video/x-ms-wmv:*,http-get:*:video/x-ms-asf:*,http-get:*:video/x-ms-avi:*,http-get:*:video/mpeg:*";
-	private String sinkProtocolInfo = Config.getProtocolInfo();
+	private String sinkProtocolInfo = Config.getInstance().getProtocolInfo();
 	private String sourceProtocolInfo = "";// "http-get:*:*:*";//
 											// "";//Config.getProtocolInfo();
 

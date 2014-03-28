@@ -26,7 +26,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 	private Logger log = Logger.getLogger(PrvPlayList.class);
 	private int next_id;
 	private PlayListWriter plw = null;
-	private int playlist_max = Config.playlist_max;
+	private int playlist_max = Config.getInstance().getMediaplayerPlaylistMax();
 	private CommandTracker tracker = new CommandTracker();
 
 	private CopyOnWriteArrayList<ChannelPlayList> tracks = new CopyOnWriteArrayList<ChannelPlayList>();
@@ -49,7 +49,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 
 		byte[] array = new byte[0];
 		setPropertyId(0);
-		setPropertyProtocolInfo(Config.getProtocolInfo());
+		setPropertyProtocolInfo(Config.getInstance().getProtocolInfo());
 		setPropertyRepeat(false);
 		setPropertyShuffle(false);
 		setPropertyTracksMax(playlist_max);
@@ -85,7 +85,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 	}
 
 	private void loadPlayList() {
-		if (Config.save_local_playlist) {
+		if (Config.getInstance().isMediaplayerSaveLocalPlaylist()) {
 			PlayListReader plr = new PlayListReader(this);
 			plr.getXML();
 		}

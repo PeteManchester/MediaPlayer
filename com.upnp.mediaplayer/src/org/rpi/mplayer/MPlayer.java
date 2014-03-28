@@ -118,16 +118,18 @@ public class MPlayer extends Observable   implements IPlayer, Observer  {
 	private void initProcess(String url) throws IOException {
 		try {
 			List<String> params = new ArrayList<String>();
-			params.add(Config.mplayer_path);
+			params.add(Config.getInstance().getMPlayerPath());
 			params.add("-slave");
 			params.add("-quiet");
-			if (Config.mplayer_cache > 0) {
+			int cache_size = Config.getInstance().getMplayerCacheSize();
+			if (cache_size > 0) {
 				params.add("-cache");
-				params.add("" + Config.mplayer_cache);
+				params.add("" + cache_size);
 			}
-			if (Config.mplayer_cache_min > 0) {
+			int cache_min = Config.getInstance().getMPlayerCacheMin();
+			if (cache_min > 0) {
 				params.add("-cache-min");
-				params.add("" + Config.mplayer_cache_min);
+				params.add("" + cache_min);
 			}
 
 			trackInfo = new TrackInfo();
@@ -160,7 +162,8 @@ public class MPlayer extends Observable   implements IPlayer, Observer  {
 	 * @return
 	 */
 	private boolean isPlayList(String url) {
-		for (String s : Config.playlists) {
+		List<String> pl = Config.getInstance().getMplayerPlayListDefinitions();
+		for (String s :pl ) {
 			if (url.toLowerCase().contains(s.toLowerCase())) {
 				return true;
 			}

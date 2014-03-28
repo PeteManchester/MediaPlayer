@@ -37,7 +37,7 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 		enablePropertyUri();
 
 		setPropertyMetadata("");
-		setPropertyProtocolInfo(Config.getProtocolInfo());
+		setPropertyProtocolInfo(Config.getInstance().getProtocolInfo());
 		setPropertyTransportState("Stopped");
 		setPropertyUri("");
 
@@ -99,7 +99,7 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 						if (i.getHostAddress().equalsIgnoreCase(ip)) {
 							log.info("IPAddress for Network Interface: " + n.getDisplayName() + " : " + i.getHostAddress());
 							nic = n.getName();
-							Config.songcastNICName = nic;
+							Config.getInstance().setSongCastNICName(nic);
 						}
 					}
 				}

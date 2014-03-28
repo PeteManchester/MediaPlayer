@@ -41,7 +41,7 @@ public class PlayListWriter extends Thread {
 	public void run() {
 		try {
 			while (true) {
-				if (save && Config.save_local_playlist) {
+				if (save && Config.getInstance().isMediaplayerSaveLocalPlaylist()) {
 					if (counter < 5) {
 						counter++;
 					} else {

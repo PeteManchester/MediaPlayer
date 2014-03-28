@@ -1,0 +1,16 @@
+{
+	"mediaplayer": {
+		"friendly_name": "test",
+		"player": "mpd",
+		"playlist_max": 1000,
+		"save_local_playlist": true,
+		"enable_receiver": true,
+		"startup_volume": 70
+	},
+	"mplayer": {
+		"playlist": "asx,b4s,kpl,m3u,pls,ram,rm,smil,wax,wvx",
+		"path": "C:\\Keep\\Software\\mplayer\\mplayer.exe",
+		"cache_size": 520,
+		"cache_min": 80
+	}
+}

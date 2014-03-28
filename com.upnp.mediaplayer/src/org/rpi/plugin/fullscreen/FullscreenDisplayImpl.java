@@ -45,7 +45,7 @@ public class FullscreenDisplayImpl implements FullscreenDisplayInterface, Observ
 //        getConfig();
 //        init();
 
-        String friendlyName = Config.friendly_name;
+        String friendlyName = Config.getInstance().getMediaplayerFriendlyName();
 
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice device = ge.getDefaultScreenDevice();

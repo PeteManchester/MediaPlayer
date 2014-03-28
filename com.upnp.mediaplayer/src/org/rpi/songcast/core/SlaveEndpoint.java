@@ -8,6 +8,7 @@ import java.net.NetworkInterface;
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
 
+
 public class SlaveEndpoint {
 
 	private Logger log = Logger.getLogger(this.getClass());
@@ -24,7 +25,7 @@ public class SlaveEndpoint {
 	public void createSocket() {
 		try {
 			mSocket = new MulticastSocket();
-			NetworkInterface netIf = NetworkInterface.getByName(Config.songcastNICName);
+			NetworkInterface netIf = NetworkInterface.getByName(Config.getInstance().getSongCastNICName());
 			mSocket.setNetworkInterface(netIf);
 		} catch (Exception e) {
 			log.error(e);

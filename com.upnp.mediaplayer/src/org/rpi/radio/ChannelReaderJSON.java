@@ -51,7 +51,7 @@ public class ChannelReaderJSON {
 				log.debug("TuneIn PartnerId not configured, do not attempt to load TuneIn stations");
 
 			} else {
-				String url = "http://opml.radiotime.com/Browse.ashx?c=presets&partnerid=" + partnerId + "&username=" + Config.radio_tunein_username + "&render=json";
+				String url = "http://opml.radiotime.com/Browse.ashx?c=presets&partnerid=" + partnerId + "&username=" + Config.getInstance().getRadioTuneinUsername() + "&render=json";
 				getJsonFromURL(url);
 			}
 

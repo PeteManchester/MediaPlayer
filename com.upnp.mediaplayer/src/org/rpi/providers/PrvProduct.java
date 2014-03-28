@@ -18,7 +18,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Observer, IDisposableDevice {
 
 	private Logger log = Logger.getLogger(PrvProduct.class);
-	private String friendly_name = Config.friendly_name;
+	private String friendly_name = Config.getInstance().getMediaplayerFriendlyName();
 	// private String iSourceXml =
 	// "<SourceList><Source><Name>Playlist</Name><Type>Playlist</Type><Visible>1</Visible></Source><Source><Name>Receiver</Name><Type>Receiver</Type><Visible>1</Visible></Source><Source><Name>Radio</Name><Type>Radio</Type><Visible>1</Visible></Source></SourceList>";
 	private String iSourceXml = "";
@@ -111,13 +111,13 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	private CopyOnWriteArrayList<Source> sources = new CopyOnWriteArrayList<Source>();
 
 	private void initSources() {
-		addSource(Config.friendly_name, "Radio", "Radio", true);
-		addSource(Config.friendly_name, "Playlist", "Playlist", true);
-		if (Config.enableReceiver) {
-			addSource(Config.friendly_name, "Receiver", "Receiver", true);
+		addSource(friendly_name, "Radio", "Radio", true);
+		addSource(friendly_name, "Playlist", "Playlist", true);
+		if (Config.getInstance().isMediaplayerEnableReceiver()) {
+			addSource(friendly_name, "Receiver", "Receiver", true);
 		}
-		if (Config.enableAVTransport) {
-			addSource(Config.friendly_name, "UpnpAV", "UpnpAv", false);
+		if (Config.getInstance().isMediaplayerEnableAVTransport()) {
+			addSource(friendly_name, "UpnpAV", "UpnpAv", false);
 		}
 	}
 
@@ -192,7 +192,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	@Override
 	protected Product product(IDvInvocation paramIDvInvocation) {
 		log.debug("Product" + Utils.getLogText(paramIDvInvocation));
-		Product product = new Product(Config.friendly_name, prod_name, prod_info, prod_url, prod_image);
+		Product product = new Product(friendly_name, prod_name, prod_info, prod_url, prod_image);
 		return product;
 	}
 

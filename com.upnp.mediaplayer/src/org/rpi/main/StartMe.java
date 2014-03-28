@@ -1,23 +1,20 @@
 package org.rpi.main;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeSet;
+
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Mixer;
-import org.apache.log4j.ConsoleAppender;
+
 import org.apache.log4j.Logger;
-import org.apache.log4j.RollingFileAppender;
 import org.rpi.config.Config;
-import org.rpi.log.CustomPatternLayout;
 import org.rpi.utils.Utils;
 
 
@@ -34,17 +31,19 @@ public class StartMe {
 	public static void main(String[] args) {
 		// NativeLibraryLoader.load("mssql", "mssqlserver.jar");
 		// NativeLibraryLoader.load("pi4j", "libpi4j.so");
-		Config.setStartTime();
+		//Config.setStartTime();
+		Config.getInstance();
 		boolean bInput = false;
 		for (String s : args) {
 			if (s.equalsIgnoreCase("-input")) {
 				bInput = true;
 			}
 		}
-		getConfig();
-		ConfigureLogging();
+		
+		//getConfig();
+		//ConfigureLogging();
 		log.info("Starting......");
-		if (!Utils.isEmpty(Config.songcastSoundCardName)) {
+		if (!Utils.isEmpty(Config.getInstance().getSongcastSoundcardName())) {
 			setAudioDevice();
 		}
 
@@ -165,45 +164,45 @@ public class StartMe {
 	 * Read the app.properties file
 	 */
 	private static void getConfig() {
-		Properties pr = new Properties();
-		try {
-			pr.load(new FileInputStream("app.properties"));
-			Config.friendly_name = pr.getProperty("friendly.name");
-
-			try {
-				String playlists = pr.getProperty("mplayer.playlist");
-				String[] splits = playlists.split(",");
-				Config.playlists = Arrays.asList(splits);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			Config.debug = pr.getProperty("openhome.debug.level");
-			Config.logfile = pr.getProperty("log.file");
-			Config.loglevel = pr.getProperty("log.file.level");
-			Config.logconsole = pr.getProperty("log.console.level");
-			Config.mplayer_path = pr.getProperty("mplayer.path");
-			Config.setSaveLocalPlayList(pr.getProperty("save.local.playlist"));
-			Config.port = Config.convertStringToInt(pr.getProperty("openhome.port"));
-			Config.mplayer_cache = Config.convertStringToInt(pr.getProperty("mplayer.cache"));
-			Config.mplayer_cache_min = Config.convertStringToInt(pr.getProperty("mplayer.cache_min"));
-			Config.playlist_max = Config.convertStringToInt(pr.getProperty("playlist.max"), 1000);
-			Config.mpd_host = pr.getProperty("mpd.host");
-			Config.mpd_port = Config.convertStringToInt(pr.getProperty("mpd.port"), 6600);
-			Config.mpd_preload_timer = Config.convertStringToInt(pr.getProperty("mpd.preload.timer"), 10);
-			Config.player = pr.getProperty("player");
-			Config.enableAVTransport = Config.convertStringToBoolean(pr.getProperty("enableAVTransport"), true);
-			Config.enableReceiver = Config.convertStringToBoolean(pr.getProperty("enableReceiver"), true);
-			//Config.songcastNICName = NetworkUtils.getNICName(pr.getProperty("songcast.nic.name"));
-			Config.songcastSoundCardName = pr.getProperty("songcast.soundcard.name");
-			Config.songcastLatencyEnabled = Config.convertStringToBoolean(pr.getProperty("songcast.latency.enabled"),true);
-			Config.webHttpPort=pr.getProperty("web.http.port");
-			Config.radio_tunein_username = pr.getProperty("radio.tunein.username");
-			Config.setStartHttpDaemon(pr.getProperty("start.http.daemon"));
-			Config.startup_volume = Config.convertStringToInt(pr.getProperty("startup_volume"), -1);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		Properties pr = new Properties();
+//		try {
+//			pr.load(new FileInputStream("app.properties"));
+//			Config.friendly_name = pr.getProperty("friendly.name");
+//
+//			try {
+//				String playlists = pr.getProperty("mplayer.playlist");
+//				String[] splits = playlists.split(",");
+//				Config.playlists = Arrays.asList(splits);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//			Config.debug = pr.getProperty("openhome.debug.level");
+//			Config.logfile = pr.getProperty("log.file");
+//			Config.loglevel = pr.getProperty("log.file.level");
+//			Config.logconsole = pr.getProperty("log.console.level");
+//			Config.mplayer_path = pr.getProperty("mplayer.path");
+//			Config.setSaveLocalPlayList(pr.getProperty("save.local.playlist"));
+//			Config.port = Config.convertStringToInt(pr.getProperty("openhome.port"));
+//			Config.mplayer_cache = Config.convertStringToInt(pr.getProperty("mplayer.cache"));
+//			Config.mplayer_cache_min = Config.convertStringToInt(pr.getProperty("mplayer.cache_min"));
+//			Config.playlist_max = Config.convertStringToInt(pr.getProperty("playlist.max"), 1000);
+//			Config.mpd_host = pr.getProperty("mpd.host");
+//			Config.mpd_port = Config.convertStringToInt(pr.getProperty("mpd.port"), 6600);
+//			Config.mpd_preload_timer = Config.convertStringToInt(pr.getProperty("mpd.preload.timer"), 10);
+//			Config.player = pr.getProperty("player");
+//			Config.enableAVTransport = Config.convertStringToBoolean(pr.getProperty("enableAVTransport"), true);
+//			Config.enableReceiver = Config.convertStringToBoolean(pr.getProperty("enableReceiver"), true);
+//			//Config.songcastNICName = NetworkUtils.getNICName(pr.getProperty("songcast.nic.name"));
+//			Config.songcastSoundCardName = pr.getProperty("songcast.soundcard.name");
+//			Config.songcastLatencyEnabled = Config.convertStringToBoolean(pr.getProperty("songcast.latency.enabled"),true);
+//			Config.webHttpPort=pr.getProperty("web.http.port");
+//			Config.radio_tunein_username = pr.getProperty("radio.tunein.username");
+//			Config.setStartHttpDaemon(pr.getProperty("start.http.daemon"));
+//			Config.startup_volume = Config.convertStringToInt(pr.getProperty("startup_volume"), -1);
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	/**
@@ -211,7 +210,7 @@ public class StartMe {
 	 */
 	private static void setAudioDevice() {
 		Properties props = System.getProperties();
-		String name = "#" + Config.songcastSoundCardName;
+		String name = "#" + Config.getInstance().getSongcastSoundcardName();
 		props.setProperty("javax.sound.sampled.SourceDataLine", name);
 		log.warn("###Setting Sound Card Name: " + name);
 	}
@@ -219,31 +218,31 @@ public class StartMe {
 	/***
 	 * Set up our logging
 	 */
-	private static void ConfigureLogging() {
-
-		try {
-			CustomPatternLayout pl = new CustomPatternLayout();
-			pl.setConversionPattern("%d [%t] %-5p [%-10c] %m%n");
-			pl.activateOptions();
-			// CustomRollingFileAppender fileAppender = new
-			// CustomRollingFileAppender(pl,Config.logfile,".log",true);
-			RollingFileAppender fileAppender = new RollingFileAppender();
-			fileAppender.setAppend(true);
-			fileAppender.setMaxFileSize("5mb");
-			fileAppender.setMaxBackupIndex(5);
-			fileAppender.setFile(Config.logfile);
-			fileAppender.setThreshold(Config.getLogFileLevel());
-			fileAppender.setLayout(pl);
-			fileAppender.activateOptions();
-			Logger.getRootLogger().addAppender(fileAppender);
-			ConsoleAppender consoleAppender = new ConsoleAppender();
-			consoleAppender.setLayout(pl);
-			consoleAppender.activateOptions();
-			consoleAppender.setThreshold(Config.getLogConsoleLevel());
-			Logger.getRootLogger().addAppender(consoleAppender);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	private static void ConfigureLogging() {
+//
+//		try {
+//			CustomPatternLayout pl = new CustomPatternLayout();
+//			pl.setConversionPattern("%d [%t] %-5p [%-10c] %m%n");
+//			pl.activateOptions();
+//			// CustomRollingFileAppender fileAppender = new
+//			// CustomRollingFileAppender(pl,Config.logfile,".log",true);
+//			RollingFileAppender fileAppender = new RollingFileAppender();
+//			fileAppender.setAppend(true);
+//			fileAppender.setMaxFileSize("5mb");
+//			fileAppender.setMaxBackupIndex(5);
+//			fileAppender.setFile(Config.logfile);
+//			fileAppender.setThreshold(Config.getLogFileLevel());
+//			fileAppender.setLayout(pl);
+//			fileAppender.activateOptions();
+//			Logger.getRootLogger().addAppender(fileAppender);
+//			ConsoleAppender consoleAppender = new ConsoleAppender();
+//			consoleAppender.setLayout(pl);
+//			consoleAppender.activateOptions();
+//			consoleAppender.setThreshold(Config.getLogConsoleLevel());
+//			Logger.getRootLogger().addAppender(consoleAppender);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 }

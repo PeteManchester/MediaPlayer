@@ -11,6 +11,7 @@ import org.rpi.config.Config;
 
 
 
+
 public class CustomPatternLayout extends Layout {
 
 	private String header;
@@ -112,13 +113,13 @@ public class CustomPatternLayout extends Layout {
 			dstOffset = dstOffset/3600000;
 		}
 		String nl = System.getProperty("line.separator");
-		sb.append("Friendly Name :\t\t" + Config.friendly_name);
+		sb.append("Friendly Name :\t\t" + Config.getInstance().getMediaplayerFriendlyName());
 		sb.append(nl);
-		sb.append("Version :\t\t\t" + Config.version);
+		sb.append("Version :\t\t\t" + Config.getInstance().getVersion());
 		sb.append(nl);
 		sb.append("Host name  : \t\t\t" + getHostName().trim());
 		sb.append(nl);		
-		sb.append("StartTime :\t\t\t" + Config.getStartTime());
+		sb.append("StartTime :\t\t\t" + Config.getInstance().getStartTime());
 		sb.append(nl);
 		header = sb.toString();
 	}

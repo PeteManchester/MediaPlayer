@@ -57,12 +57,12 @@ public class SourceReader {
 					GPIO_PIN = getElement(element, "GPIO_PIN");
 					Source source = new Source(name, type, GPIO_PIN);
 					if (type.equalsIgnoreCase("RECEIVER")) {
-						if (!Config.enableReceiver) {
+						if (!Config.getInstance().isMediaplayerEnableReceiver()) {
 							addToSource = false;
 						}
 					}else if (type.equalsIgnoreCase("UPNP"))
 					{
-						if(!Config.enableAVTransport)
+						if(!Config.getInstance().isMediaplayerEnableAVTransport())
 						{
 							addToSource = false;
 						}

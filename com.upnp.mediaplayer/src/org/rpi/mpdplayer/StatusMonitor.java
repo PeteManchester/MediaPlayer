@@ -107,7 +107,7 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 				}
 
 				if (lTime > 0 && lDuration > 0) {
-					if ((lDuration - lTime) < Config.mpd_preload_timer) {
+					if ((lDuration - lTime) < Config.getInstance().getMpdPreloadTimer()) {
 						if (!sentFinishingEvent) {
 							EventCurrentTrackFinishing ev = new EventCurrentTrackFinishing();
 							fireEvent(ev);

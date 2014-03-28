@@ -90,7 +90,7 @@ public class PlayManager implements Observer {
 	 * 
 	 */
 	private PlayManager() {
-		if (Config.player.equalsIgnoreCase("MPD")) {
+		if (Config.getInstance().getMediaplayerPlayerType().equalsIgnoreCase("MPD")) {
 			log.debug("MPD Player Selected");
 			mPlayer = new MPDPlayerController();
 		} else {

@@ -37,8 +37,8 @@ public class TCPConnector extends Observable implements Observer {
 
 	public TCPConnector(IPlayer iPlayer) {
 		this.iPlayer = iPlayer;
-		this.host = Config.mpd_host;
-		this.port = Config.mpd_port;
+		this.host = Config.getInstance().getMpdHost();
+		this.port = Config.getInstance().getMpdPort();
 		sm = new StatusMonitor(this);
 		sm.addObserver(this);
 		th = new Thread(sm);

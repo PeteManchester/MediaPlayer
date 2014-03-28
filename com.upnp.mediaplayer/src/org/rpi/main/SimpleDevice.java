@@ -76,24 +76,24 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	 */
 	public SimpleDevice() {
 		PluginGateWay.getInstance().setSimpleDevice(this);
-		log.debug("Creating Simple Device version: " + Config.version);
+		log.debug("Creating Simple Device version: " + Config.getInstance().getVersion());
 		// System.loadLibrary("ohNetJni");
 		// Call the OSManager to set our path to the libohNet libraries
 		OSManager.getInstance();
 
 		InitParams initParams = new InitParams();
 		initParams.setLogOutput(new OpenHomeLogger());
-		if (Config.port > 0) {
-			initParams.setDvServerPort(Config.port);
+		if (Config.getInstance().getOpenhomePort() > 0) {
+			initParams.setDvServerPort(Config.getInstance().getOpenhomePort());
 		}
 		// initParams.setDvEnableBonjour();
 		initParams.setFatalErrorHandler(this);
 
 		lib = Library.create(initParams);
-		lib.setDebugLevel(getDebugLevel(Config.debug));
+		lib.setDebugLevel(getDebugLevel(Config.getInstance().getOpenhomeLogLevel()));
 
 		DeviceStack ds = lib.startDv();
-		String friendly_name = Config.friendly_name.replace(":", " ");
+		String friendly_name = Config.getInstance().getMediaplayerFriendlyName().replace(":", " ");
 		String iDeviceName = "device-" + friendly_name + "-" + NetworkUtils.getHostName() + "-MediaRenderer";
 		iDevice = new DvDeviceFactory(ds).createDeviceStandard(iDeviceName, this);
 		log.debug("Created StandardDevice: " + iDevice.getUdn());
@@ -103,11 +103,11 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		iDevice.setAttribute("Upnp.Domain", "schemas-upnp-org");
 		iDevice.setAttribute("Upnp.Type", "MediaRenderer");
 		iDevice.setAttribute("Upnp.Version", "1");
-		iDevice.setAttribute("Upnp.FriendlyName", Config.friendly_name);
+		iDevice.setAttribute("Upnp.FriendlyName", Config.getInstance().getMediaplayerFriendlyName());
 		iDevice.setAttribute("Upnp.Manufacturer", "Made in Manchester");
-		iDevice.setAttribute("Upnp.ModelName", "Open Home Java Renderer: v" + Config.version);
+		iDevice.setAttribute("Upnp.ModelName", "Open Home Java Renderer: v" + Config.getInstance().getVersion());
 		iDevice.setAttribute("Upnp.ModelDescription", "'We Made History Not Money' - Tony Wilson..");
-		iDevice.setAttribute("Upnp.PresentationUrl", "http://" + NetworkUtils.getHostName() + ":" + Config.webHttpPort + "/MainPage.html");
+		iDevice.setAttribute("Upnp.PresentationUrl", "http://" + NetworkUtils.getHostName() + ":" + Config.getInstance().getWebServerPort() + "/MainPage.html");
 		// iDevice.setAttribute("Upnp.IconList" , sb.toString());
 		// iDevice.setAttribute("Upnp.ModelUri", "www.google.co.uk");
 		// iDevice.setAttribute("Upnp.ModelImageUri","http://upload.wikimedia.org/wikipedia/en/thumb/0/04/Joy_Division.JPG/220px-Joy_Division.JPG");
@@ -120,10 +120,10 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		iTime = new PrvTime(iDevice);
 		iRadio = new PrvRadio(iDevice);
 		// iInput = new PrvRadio(iDevice);
-		if (Config.enableReceiver) {
+		if (Config.getInstance().isMediaplayerEnableReceiver()) {
 			iReceiver = new PrvReceiver(iDevice);
 		}
-		if (Config.enableAVTransport) {
+		if (Config.getInstance().isMediaplayerEnableAVTransport()) {
 			iAVTransport = new PrvAVTransport(iDevice);
 			iRenderingControl = new PrvRenderingControl(iDevice);
 		}
@@ -138,7 +138,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 				sources.put(playlist.getName(), playlist);
 				Source radio = new Source("Radio", "Radio", "-99");
 				sources.put(radio.getName(), radio);
-				if (Config.enableReceiver) {
+				if (Config.getInstance().isMediaplayerEnableReceiver()) {
 					Source reciever = new Source("Receiver", "Receiver", "-99");
 					sources.put(reciever.getName(), reciever);
 				}
@@ -148,7 +148,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			for (String key : sources.keySet()) {
 				Source s = sources.get(key);
 				log.debug("Adding Source: " + s.toString());
-				iProduct.addSource(Config.friendly_name, s.getName(), s.getType(), true);
+				iProduct.addSource(Config.getInstance().getMediaplayerFriendlyName(), s.getName(), s.getType(), true);
 			}
 			iProduct.updateCurrentSource();
 
@@ -160,15 +160,15 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		log.debug("Device Enabled UDN: " + iDevice.getUdn());
 		iProduct.setSourceByname("PlayList");
 
-		if (Config.startHttpDaemon) {
-			httpServer = new HttpServerGrizzly(Config.webHttpPort);
+		if (Config.getInstance().isWebWerverEnabled()) {
+			httpServer = new HttpServerGrizzly(Config.getInstance().getWebServerPort());
 		} else {
 			log.warn("HTTP Daemon is set to false, not starting");
 		}
 		
-		if (Config.startup_volume >= 0) {
-			log.debug("Setting Startup Volume: " + Config.startup_volume);
-			PlayManager.getInstance().setVolume(Config.startup_volume);
+		if (Config.getInstance().getMediaplayerStartupVolume() >= 0) {
+			log.debug("Setting Startup Volume: " + Config.getInstance().getMediaplayerStartupVolume());
+			PlayManager.getInstance().setVolume(Config.getInstance().getMediaplayerStartupVolume());
 		}
 		
 		OSManager.getInstance().loadPlugins();

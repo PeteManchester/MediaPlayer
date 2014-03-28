@@ -52,7 +52,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 		setPropertyId(0);
 		setPropertyIdArray(array);
 		setPropertyMetadata("");
-		setPropertyProtocolInfo(Config.getProtocolInfo());
+		setPropertyProtocolInfo(Config.getInstance().getProtocolInfo());
 		setPropertyTransportState("Stopped");
 		setPropertyUri("");
 
@@ -132,7 +132,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 
 	protected String protocolInfo(IDvInvocation paramIDvInvocation) {
 		log.debug("protocolInfo" + Utils.getLogText(paramIDvInvocation));
-		return Config.getProtocolInfo();
+		return Config.getInstance().getProtocolInfo();
 	};
 
 	@Override
