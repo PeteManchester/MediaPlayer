@@ -46,7 +46,7 @@ public class ChannelReaderJSON {
 	private void getAllChannels() {
 		try {
 			getJSONFromFile();
-			String partnerId = "";
+			String partnerId = Config.getInstance().getRadioTuneInPartnerId();
 			if (Utils.isEmpty(partnerId)) {
 				log.debug("TuneIn PartnerId not configured, do not attempt to load TuneIn stations");
 

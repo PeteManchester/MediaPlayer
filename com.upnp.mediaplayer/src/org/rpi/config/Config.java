@@ -26,7 +26,7 @@ import org.apache.log4j.RollingFileAppender;
 import org.rpi.log.CustomPatternLayout;
 
 enum Props {
-	MEDIAPLAYER_FRIENDLY_NAME("mediaplayer_friendly_name"), MEDIAPLAYER_PLAYER("mediaplayer_player"), MEDIAPLAYER_PLAYLIST_MAX("mediaplayer_playlist_max"), MEDIAPLAYER_ENABLE_AVTRANSPORT("mediaplayer_enable_avTransport"), MEDIAPLAYER_ENABLE_RECEIVER("mediaplayer_enable_receiver"), MEDIAPLAYER_STARTUP_VOLUME("mediaplayer_startup_volume"), MEDIAPLAYER_SAVE_LOCAL_PLAYLIST("mediaplayer_save_local_playlist"), MPLAYER_PLAY_DEFINITIONS("mplayer_play_definitions"), MPLAYER_PATH("mplayer_path"), MPLAYER_CACHE_SIZE("mplayer_cache_size"), MPLAYER_CACHE_MIN("mplayer_cache_min"), MPD_HOST("mpd_host"), MPD_PORT("mpd_port"), MPD_PRELOAD_TIMER("mpd_preload_timer"), LOG_FILE_NAME("log_file_name"), LOG_FILE_LEVEL("log_file_level"), LOG_CONSOLE_LEVEL("log_console_level"), OPENHOME_PORT("openhome_port"), OPENHOME_LOG_LEVEL("openhome_log_level"), SONGCAST_SOUNDCARD_NAME("songcast_soundcard_name"), SONGCAST_LATENCY_ENABLED("songcast_latency_enabled"), RADIO_TUNEIN_USERNAME("radio_tunein_username"), WEB_SERVER_PORT("web_server_port"), WEB_SERVER_ENABLED("web_server_enabled");
+	MEDIAPLAYER_FRIENDLY_NAME("mediaplayer_friendly_name"), MEDIAPLAYER_PLAYER("mediaplayer_player"), MEDIAPLAYER_PLAYLIST_MAX("mediaplayer_playlist_max"), MEDIAPLAYER_ENABLE_AVTRANSPORT("mediaplayer_enable_avTransport"), MEDIAPLAYER_ENABLE_RECEIVER("mediaplayer_enable_receiver"), MEDIAPLAYER_STARTUP_VOLUME("mediaplayer_startup_volume"), MEDIAPLAYER_SAVE_LOCAL_PLAYLIST("mediaplayer_save_local_playlist"), MPLAYER_PLAY_DEFINITIONS("mplayer_play_definitions"), MPLAYER_PATH("mplayer_path"), MPLAYER_CACHE_SIZE("mplayer_cache_size"), MPLAYER_CACHE_MIN("mplayer_cache_min"), MPD_HOST("mpd_host"), MPD_PORT("mpd_port"), MPD_PRELOAD_TIMER("mpd_preload_timer"), LOG_FILE_NAME("log_file_name"), LOG_FILE_LEVEL("log_file_level"), LOG_CONSOLE_LEVEL("log_console_level"), OPENHOME_PORT("openhome_port"), OPENHOME_LOG_LEVEL("openhome_log_level"), SONGCAST_SOUNDCARD_NAME("songcast_soundcard_name"), SONGCAST_LATENCY_ENABLED("songcast_latency_enabled"), RADIO_TUNEIN_USERNAME("radio_tunein_username"), RADIO_TUNEIN_PARTNERID("radio_tunein_partnerid"), WEB_SERVER_PORT("web_server_port"), WEB_SERVER_ENABLED("web_server_enabled");
 	private final String stringValue;
 
 	private Props(final String s) {
@@ -117,20 +117,10 @@ public class Config {
 		}
 	}
 
-	public static void saveParamChanges() {
-		try {
-			Properties props = new Properties();
-			// props.setProperty("ServerAddress", serverAddr);
-			// props.setProperty("ServerPort", ""+serverPort);
-			// props.setProperty("ThreadCount", ""+threadCnt);
-			File f = new File("server.properties");
-			OutputStream out = new FileOutputStream(f);
-			props.store(out, "This is an optional header comment string");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
+	/**
+	 * Get the ProtocolInfo
+	 * @return
+	 */
 	public String getProtocolInfo() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("http-get:*:audio/x-flac:*,");
@@ -242,7 +232,7 @@ public class Config {
 	 * @return the mediaplayer_player
 	 */
 	public String getMediaplayerPlayerType() {
-		return getValue(Props.MEDIAPLAYER_PLAYER, "Default");
+		return getValue(Props.MEDIAPLAYER_PLAYER, "mpd");
 	}
 
 	/**
@@ -303,7 +293,7 @@ public class Config {
 	 * @return the mediaplayer_startup_volume
 	 */
 	public long getMediaplayerStartupVolume() {
-		return getValueInt(Props.MEDIAPLAYER_STARTUP_VOLUME, 100);
+		return getValueInt(Props.MEDIAPLAYER_STARTUP_VOLUME, -1);
 	}
 
 	/**
@@ -357,7 +347,7 @@ public class Config {
 	 * @return the mplayer_path
 	 */
 	public String getMPlayerPath() {
-		return getValue(Props.MPLAYER_PATH, "Default");
+		return getValue(Props.MPLAYER_PATH, "/usr/bin/mplayer");
 	}
 
 	/**
@@ -507,7 +497,7 @@ public class Config {
 	 * @return the openhome_log_level
 	 */
 	public String getOpenhomeLogLevel() {
-		return getValue(Props.OPENHOME_LOG_LEVEL, "Default");
+		return getValue(Props.OPENHOME_LOG_LEVEL, "Off");
 	}
 
 	/**
@@ -539,6 +529,7 @@ public class Config {
 	public String getRadioTuneinUsername() {
 		return getValue(Props.RADIO_TUNEIN_USERNAME, "");
 	}
+	
 
 	/**
 	 * @param radio_tunein_username
@@ -547,12 +538,21 @@ public class Config {
 	public void setRadioTuneinUsername(String radio_tunein_username) {
 		// this.radio_tunein_username = radio_tunein_username;
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public String getRadioTuneInPartnerId()
+	{
+		return getValue(Props.RADIO_TUNEIN_PARTNERID, "");
+	}
 
 	/**
 	 * @return the web_server_enabled
 	 */
 	public boolean isWebWerverEnabled() {
-		return getValueBool(Props.WEB_SERVER_ENABLED, false);
+		return getValueBool(Props.WEB_SERVER_ENABLED, true);
 	}
 
 	/**
@@ -642,6 +642,10 @@ public class Config {
 		songcast_nic_name = nic;
 	}
 	
+	/**
+	 * Change the Console log level
+	 * @param level
+	 */
 	private void changeConsoleLogLevel(String level)
 	{
 		try
@@ -656,6 +660,10 @@ public class Config {
 		}
 	}
 	
+	/**
+	 * Change the LogFile log level
+	 * @param level
+	 */
 	private void changeFileLogLevel(String level)
 	{
 		try
@@ -671,7 +679,7 @@ public class Config {
 	}
 
 	/**
-	 * 
+	 * Update the app.properties file
 	 * @param configObject
 	 */
 	public void updateConfig(JsonObject configObject) {
