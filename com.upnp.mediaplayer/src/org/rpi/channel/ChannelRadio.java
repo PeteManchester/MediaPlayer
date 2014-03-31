@@ -1,9 +1,10 @@
 package org.rpi.channel;
 
-public class ChannelRadio extends ChannelBase {
+public class ChannelRadio  extends ChannelBase implements Comparable<ChannelRadio> {
 
 	private String full_text = "";
 	private String name = "";
+	private int preset_number = 0;
 
     public ChannelRadio(String uri, String metadata, int id,String name) {
         super(uri, metadata, id);
@@ -115,5 +116,20 @@ public class ChannelRadio extends ChannelBase {
 	 */
 	private void setName(String name) {
 		this.name = name;
+	}
+	
+	public void setPresetNumber(int preset_number)
+	{
+		this.preset_number = preset_number;
+	}
+	
+	public String getPresetNumber()
+	{
+		return ""+preset_number + name;
+	}
+
+	@Override
+	public int compareTo(ChannelRadio channel) {
+		return this.getPresetNumber().compareToIgnoreCase(channel.getPresetNumber());
 	}
 }

@@ -1,6 +1,12 @@
 package org.rpi.radio;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -64,49 +70,49 @@ public class ChannelReaderJSON {
 	 * Get a JSON Object from a File
 	 */
 	private void getJSONFromFile() {
-        Reader reader = null;
-        try {
-            reader = new FileReader("RadioList.json");
-        } catch (FileNotFoundException e) {
-            log.error("Cannot find RadioList.json", e);
-            //Bail out here is we can't find the file
-            return;
-        }
+		Reader reader = null;
+		try {
+			reader = new FileReader("RadioList.json");
+		} catch (FileNotFoundException e) {
+			log.error("Cannot find RadioList.json", e);
+			// Bail out here is we can't find the file
+			return;
+		}
 
-        this.getJsonFromReader(reader);
+		this.getJsonFromReader(reader);
 	}
 
 	/*
 	 * Get a JSON Object from a URL
 	 */
 	private void getJsonFromURL(String url) {
-        URL mUrl = null;
-        Reader reader = null;
+		URL mUrl = null;
+		Reader reader = null;
 
-        try {
-            mUrl = new URL(url);
-            reader = new InputStreamReader(mUrl.openStream());
-        } catch (MalformedURLException e) {
-            log.error("Invalid URL given", e);
-            return;
-        } catch (IOException e) {
-            log.error("Cannot open stream", e);
-            return;
-        }
+		try {
+			mUrl = new URL(url);
+			reader = new InputStreamReader(mUrl.openStream());
+		} catch (MalformedURLException e) {
+			log.error("Invalid URL given", e);
+			return;
+		} catch (IOException e) {
+			log.error("Cannot open stream", e);
+			return;
+		}
 
-        this.getJsonFromReader(reader);
+		this.getJsonFromReader(reader);
 	}
 
-    private void getJsonFromReader(Reader reader) {
-        try {
-            JsonReader jsonReader = Json.createReader(reader);
-            JsonObject array = jsonReader.readObject();
-            jsonReader.close();
-            getBody(array);
-        } catch (Exception e) {
-            log.error("Error Reading RadioList.json from given reader", e);
-        }
-    }
+	private void getJsonFromReader(Reader reader) {
+		try {
+			JsonReader jsonReader = Json.createReader(reader);
+			JsonObject array = jsonReader.readObject();
+			jsonReader.close();
+			getBody(array);
+		} catch (Exception e) {
+			log.error("Error Reading RadioList.json from given reader", e);
+		}
+	}
 
 	private void getBody(JsonObject array) {
 		if (array == null)
@@ -117,25 +123,6 @@ public class ChannelReaderJSON {
 
 		}
 	}
-
-	// private void parseJSON(JsonObject array) {
-	// if (array == null)
-	// return;
-	// if (array.containsKey("body")) {
-	// JsonArray body = array.getJsonArray("body");
-	// for (JsonValue jsonValue : body) {
-	// if (jsonValue.getValueType() == ValueType.OBJECT) {
-	// JsonObject object = (JsonObject) jsonValue;
-	// if (object.containsKey("children") &&
-	// object.getString("key").equalsIgnoreCase("stations")) {
-	// JsonArray stations = object.getJsonArray("children");
-	// getStations(stations);
-	// }
-	//
-	// }
-	// }
-	// }
-	// }
 
 	private void getStations(JsonArray array) {
 		for (JsonValue jsonValue : array) {
@@ -148,21 +135,25 @@ public class ChannelReaderJSON {
 							getStations(children);
 						} else if (object.getString("key").equalsIgnoreCase("shows")) {
 							JsonArray children = object.getJsonArray("children");
+							
 							// String s = object.getString("URL");
 							// getJsonFromURL(object.getString("URL"));
 							getStations(children);
 						} else if (object.getString("key").equalsIgnoreCase("topics")) {
 							JsonArray children = object.getJsonArray("children");
 							getStations(children);
+						} else if (object.getString("key").equalsIgnoreCase("presetUrls")) {
+							JsonArray children = object.getJsonArray("children");
+							getStations(children);
 						}
 					}
 				} else {
-					if (object.getString("type").toLowerCase().equalsIgnoreCase("link")) {
+					if (object.getString("type").toLowerCase().equalsIgnoreCase("link") && object.getString("item").equalsIgnoreCase("show")) {
+						log.debug("Get Shows");
 						String url = object.getString("URL");
-
+						//int temp = getIntFromString(object, "preset_number");
 						getJsonFromURL(url + "&render=json");
-					} else if (object.getString("type").equalsIgnoreCase("audio")) {
-
+					} else if (object.getString("type").equalsIgnoreCase("audio") || object.getString("item").equalsIgnoreCase("url") || object.getString("item").equalsIgnoreCase("topic")) {
 						String text = getString(object, "text");
 						String url = getString(object, "URL");
 						url = tidyURL(url);
@@ -171,11 +162,21 @@ public class ChannelReaderJSON {
 						preset_id = preset_id.replaceAll("[^0-9]+", "");
 						String item = getString(object, "item");
 						boolean icy_reverse = getBoolean(object, "icy_reverse", false);
+//						pres_number = getIntFromString(object, "preset_number", pres_number);
+//						if(pres_number <=0)
+//						{
+//							preset_number ++;
+//						}
+//						else
+//						{
+//							preset_number = pres_number;
+//						}
 						addChannel(text, url, image, icy_reverse, preset_id, item);
 					}
 				}
 			}
 		}
+		//Collections.sort(channels);
 	}
 
 	/**
@@ -231,16 +232,29 @@ public class ChannelReaderJSON {
 		return res;
 	}
 
-    /**
-     * Create a Channel and add it to the List
-     *
-     * @param name
-     * @param url
-     * @param image
-     * @param icy_reverse
-     * @param preset_id
-     * @param item
-     */
+	private int getIntFromString(JsonObject value, String key, int default_value) {
+		int res = default_value;
+		try {
+			if (value.containsKey(key)) {
+				String temp = value.getString(key);
+				return Integer.parseInt(temp);
+			}
+		} catch (Exception e) {
+
+		}
+		return res;
+	}
+
+	/**
+	 * Create a Channel and add it to the List
+	 * 
+	 * @param name
+	 * @param url
+	 * @param image
+	 * @param icy_reverse
+	 * @param preset_id
+	 * @param item
+	 */
 	private void addChannel(String name, String url, String image, boolean icy_reverse, String preset_id, String item) {
 
 		String m = createMetaData(name, url, image);
@@ -252,7 +266,7 @@ public class ChannelReaderJSON {
 		}
 
 		ChannelRadio channel = null;
-        ChannelRadio oldChannel = null;
+		ChannelRadio oldChannel = null;
 		for (ChannelRadio ch : channels) {
 			if (name.equalsIgnoreCase(ch.getName()) && item.equalsIgnoreCase("station")) {
 				channel = new ChannelRadio(url, m, id, name);
@@ -263,20 +277,19 @@ public class ChannelReaderJSON {
 			}
 		}
 
-		if(oldChannel !=null)
-		{
+		if (oldChannel != null) {
 			channels.remove(oldChannel);
 		}
-		
-		if(channel ==null)
-		{
+
+		if (channel == null) {
 			channel = new ChannelRadio(url, m, id, name);
+			//channel.setPresetNumber(preset_number);
 			channel.setICYReverse(icy_reverse);
-		}		
-		
+		}
+
 		channels.add(channel);
 		log.debug("Added Channel: " + channel.getId() + " - " + channel.getUri() + " " + channel.getFullDetails());
-		
+
 	}
 
 	/***
