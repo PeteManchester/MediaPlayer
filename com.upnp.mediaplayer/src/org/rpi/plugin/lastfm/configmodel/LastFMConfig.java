@@ -3,20 +3,16 @@ package org.rpi.plugin.lastfm.configmodel;
 import org.rpi.utils.SecUtils;
 import org.rpi.utils.Utils;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 import java.net.Proxy;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
+@XmlType(propOrder={"userName","password", "proxyType", "proxyIP", "proxyPort"})
 public class LastFMConfig {
 
     private String userName;
 
     private String password;
-
-    private String passwordEnc;
 
     // default value for the proxyType is DIRECT
     private Proxy.Type proxyType = Proxy.Type.DIRECT;
@@ -41,15 +37,6 @@ public class LastFMConfig {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    @XmlElement(name = "Password_ENC")
-    public String getPasswordEnc() {
-        return passwordEnc;
-    }
-
-    public void setPasswordEnc(String passwordEnc) {
-        this.passwordEnc = passwordEnc;
     }
 
     @XmlElement(name = "ProxyType")

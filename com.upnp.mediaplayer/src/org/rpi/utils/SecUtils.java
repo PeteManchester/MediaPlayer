@@ -1,7 +1,6 @@
 package org.rpi.utils;
 
 import org.apache.log4j.Logger;
-import org.rpi.plugin.lastfm.Base64;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;

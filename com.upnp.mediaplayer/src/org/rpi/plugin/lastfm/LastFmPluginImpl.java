@@ -183,10 +183,10 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
                 Caller.getInstance().setProxy(proxy);
             }
 
-            if (Utils.isEmpty(config.getUserName()) || Utils.isEmpty(config.getPassword())) {
+            if (Utils.isEmpty(config.getUserName()) || Utils.isEmpty(this.clearTextPassword)) {
                 LOGGER.error("LastFM User Credentials not supplied");
             } else {
-                session = Authenticator.getMobileSession(config.getUserName(), config.getPassword(), lastfm_api_key, lastfm_secret);
+                session = Authenticator.getMobileSession(config.getUserName(), this.clearTextPassword, lastfm_api_key, lastfm_secret);
                 LOGGER.debug("SessionKey: " + session.getKey());
             }
         } catch (Exception e) {
@@ -217,7 +217,9 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
 
         boolean passwordEncrypted = false;
         if (!Utils.isEmpty(configModel.getConfig().getPassword())) {
-            if (!configModel.getConfig().getPassword().startsWith("ENC:")) {
+            String encryptionPrefix = "ENC:";
+
+            if (!configModel.getConfig().getPassword().startsWith(encryptionPrefix)) {
                 this.clearTextPassword = configModel.getConfig().getPassword();
 
                 String encryptedPassword = SecUtils.encrypt(key, clearTextPassword);
@@ -226,7 +228,7 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
                 passwordEncrypted = true;
             }
             else {
-                String encryptedPassword = configModel.getConfig().getPassword().substring(4);
+                String encryptedPassword = configModel.getConfig().getPassword().substring(encryptionPrefix.length());
                 this.clearTextPassword = SecUtils.decrypt(key, encryptedPassword);
             }
         }
@@ -235,6 +237,7 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
             LOGGER.debug("update LastFM config with encrypted password");
             try {
                 Marshaller marshaller = context.createMarshaller();
+                marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
                 marshaller.marshal(configModel, file);
             } catch (JAXBException e) {
                 LOGGER.error("Cannot marshall (write) config file");

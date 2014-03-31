@@ -1,26 +1,23 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <LastFM>
-	<Config>
-		<UserName></UserName>
-		<Password></Password>
-		<Password_ENC></Password_ENC>
-		<ProxyType>DIRECT</ProxyType>
-		<Proxy_IP></Proxy_IP>
-		<Proxy_Port></Proxy_Port>
-	</Config>
-	
-	<BlackList>
-		<BlackListItem>
-			<artist>Psy</artist>
-			<title></title>
-		</BlackListItem>
-		<BlackListItem>
-			<artist>Back</artist>
-			<title>Soon</title>
-		</BlackListItem>
-		<BlackListItem>
-			<artist></artist>
-			<title>We'll be right back...</title>
-		</BlackListItem>
-	</BlackList>
+    <Config>
+        <UserName></UserName>
+        <Password></Password>
+        <ProxyType>DIRECT</ProxyType>
+        <ProxyPort>-1</ProxyPort>
+    </Config>
+    <BlackList>
+        <BlackListItem>
+            <artist>Psy</artist>
+            <title></title>
+        </BlackListItem>
+        <BlackListItem>
+            <artist>Back</artist>
+            <title>Soon</title>
+        </BlackListItem>
+        <BlackListItem>
+            <artist></artist>
+            <title>We'll be right back...</title>
+        </BlackListItem>
+    </BlackList>
 </LastFM>
