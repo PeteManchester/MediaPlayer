@@ -1,4 +1,4 @@
-package org.rpi.plugin.lastfm;
+package org.rpi.utils;
 public class Base64 {
 
     private final static char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();

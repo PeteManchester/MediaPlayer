@@ -48,10 +48,10 @@ public class XMLUtilsTest {
             Node channel = listOfChannels.item(s);
             Element element = (Element) channel;
 
-            assertEquals("11", XMLUtils.getElementTest(element, "Id"));
-            assertEquals("Somevalue", XMLUtils.getElementTest(element, "Metadata", "default"));
-            assertEquals("default", XMLUtils.getElementTest(element, "NotAvailableElement", "default"));
-            assertEquals("default", XMLUtils.getElementTest(element, "EmptyData", "default"));
+            assertEquals("11", XMLUtils.getStringFromElement(element, "Id"));
+            assertEquals("Somevalue", XMLUtils.getStringFromElement(element, "Metadata", "default"));
+            assertEquals("default", XMLUtils.getStringFromElement(element, "NotAvailableElement", "default"));
+            assertEquals("default", XMLUtils.getStringFromElement(element, "EmptyData", "default"));
         }
 
     }

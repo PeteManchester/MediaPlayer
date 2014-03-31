@@ -3,7 +3,6 @@
 	<Config>
 		<UserName></UserName>
 		<Password></Password>
-		<Password_ENC></Password_ENC>
 		<ProxyType>DIRECT</ProxyType>
 		<Proxy_IP></Proxy_IP>
 		<Proxy_Port></Proxy_Port>
