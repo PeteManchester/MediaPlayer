@@ -1,4 +1,4 @@
-package org.rpi.playlist;
+package org.rpi.channel;
 
 import org.junit.Test;
 
@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by triplem on 24.02.14.
  */
-public class CustomTrackTest {
+public class ChannelBaseTest {
 
     @Test
     public void testGetTrackDetails() {
@@ -23,7 +23,7 @@ public class CustomTrackTest {
                 "<res protocolInfo=\"http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01;DLNA.ORG_FLAGS=01700000000000000000000000000000\" " +
                 "bitrate=\"8000\" size=\"1264962\" duration=\"0:02:34.000\">http://somehost:57645/external/audio/media/138.mp3</res></item></DIDL-Lite>";
 
-        CustomTrack ct = new CustomTrack("anURI", metadata, 4711);
+        ChannelBase ct = new ChannelBase("anURI", metadata, 4711);
 
         assertEquals("Captain Future", ct.getAlbum());
         assertEquals("Christian Bruhn", ct.getArtist());

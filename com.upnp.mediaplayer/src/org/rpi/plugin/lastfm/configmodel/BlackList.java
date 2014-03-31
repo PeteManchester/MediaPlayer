@@ -1,5 +1,10 @@
-package org.rpi.plugin.lastfm;
+package org.rpi.plugin.lastfm.configmodel;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlAccessorType(XmlAccessType.FIELD)
 public class BlackList {
 	
 	private String artist = "";
