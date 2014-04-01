@@ -117,15 +117,17 @@ public class OHMMessageQueue extends Observable implements Runnable {
 
 	private void processEvent(byte[] data) {
 		byte[] type = getBytes(5, 5, data);
-
 		int iType = new BigInteger(type).intValue();
+		//Trim the bytes array before we process..
+		int size = new BigInteger(getBytes(6, 7, data)).intValue();
+		byte[] send = getBytes(0, size - 1, data);
 		switch (iType) {
 		case 3:// AUDIO
 				// startListen();
 				// bCheckAudioFormat = true;
+			forwardToSlaves(send);
 			OHMEventAudio audio = new OHMEventAudio();
-			audio.data = data;
-			forwardToSlaves(data);
+			audio.data = send;			
 			audio.checkMessageType();
 			bCheckAudioFormat = true;
 			if (bCheckAudioFormat) {
@@ -152,27 +154,28 @@ public class OHMMessageQueue extends Observable implements Runnable {
 			player.put(audio);
 			break;
 		case 4:// TRACK INFO
+			forwardToSlaves(send);
 			startListen();
 			log.debug("OHM TrackInfo");
 			OHMEventTrack evt = new OHMEventTrack();
-			evt.data = data;
+			evt.data = send;
 			evt.checkMessageType();
-			forwardToSlaves(data);
 			// Do Something..
 			break;
 		case 5:// MetaText INFO
+			forwardToSlaves(send);
 			bCheckAudioFormat = true;
 			startListen();
 			log.debug("OHM MetaInfo");
 			OHMEventMetaData evm = new OHMEventMetaData();
-			evm.data = data;
+			evm.data = send;
 			evm.checkMessageType();
 			break;
 		case 6:
 			log.debug("OHU Slave Info");
 			try {
 				OHMEventSlave evs = new OHMEventSlave();
-				evs.data = data;
+				evs.data = send;
 				evs.checkMessageType(this);
 			} catch (Exception e) {
 				log.error("Erorr SlaveInfo", e);
@@ -192,10 +195,10 @@ public class OHMMessageQueue extends Observable implements Runnable {
 	 */
 	private void forwardToSlaves(byte[] bytes) {
 		if (endpoints.size() > 0) {
-			int size = new BigInteger(getBytes(6, 7, bytes)).intValue();
-			byte[] send = getBytes(0, size - 1, bytes);
+//			int size = new BigInteger(getBytes(6, 7, bytes)).intValue();
+//			byte[] send = getBytes(0, size - 1, bytes);
 			for (SlaveEndpoint endpoint : endpoints.values()) {
-				endpoint.sendData(send);
+				endpoint.sendData(bytes);
 			}
 		}
 
