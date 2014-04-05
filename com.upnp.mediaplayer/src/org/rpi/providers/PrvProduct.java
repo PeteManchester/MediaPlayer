@@ -7,6 +7,7 @@ import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgProduct1;
 import org.rpi.config.Config;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
+import org.rpi.player.events.EventSourceChanged;
 import org.rpi.player.events.EventStandbyChanged;
 import org.rpi.plugingateway.PluginGateWay;
 import org.rpi.utils.Utils;
@@ -103,6 +104,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 		enableActionAttributes();
 		enableActionSourceXmlChangeCount();
 		PlayManager.getInstance().observeProductEvents(this);
+		PluginGateWay.getInstance().addObserver(this);
 		// initSources();
 		setPropertySourceIndex(0);
 
@@ -119,6 +121,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 		if (Config.getInstance().isMediaplayerEnableAVTransport()) {
 			addSource(friendly_name, "UpnpAV", "UpnpAv", false);
 		}
+		//addSource(friendly_name, "AirPlay", "AirPlay", false);
 	}
 
 	public void addSource(String system_name, String name, String type, boolean visible) {
@@ -286,7 +289,10 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 			EventStandbyChanged ev = (EventStandbyChanged) e;
 			updateStandby(ev.isStandby());
 			break;
-		}
+		case EVENTSOURCECHANGED:
+			EventSourceChanged es = (EventSourceChanged) e;
+			setSourceByname(es.getName());
+		} 
 
 	}
 

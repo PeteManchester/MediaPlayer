@@ -26,7 +26,7 @@ public class OHMManager implements Observer, SongcastManager {
 
 	private String nic = "";
 
-	private SongcastTimer timer = null;
+	private SourceTimer timer = null;
 	private Thread timerThread = null;
 
 	private OHUThreadRequester ohuRequester = null;
@@ -136,7 +136,7 @@ public class OHMManager implements Observer, SongcastManager {
 	}
 
 	private void startTimer() {
-		timer = new SongcastTimer();
+		timer = new SourceTimer();
 		timerThread = new Thread(timer, "SongcastTimer");
 		timerThread.start();
 	}
