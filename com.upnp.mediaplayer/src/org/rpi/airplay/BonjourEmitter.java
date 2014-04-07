@@ -7,6 +7,7 @@ import javax.jmdns.*;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 /**
  * Emetteur Bonjour pour qu'iTunes detecte la borne airport
@@ -21,7 +22,7 @@ public class BonjourEmitter {
 	private Logger log = Logger.getLogger(this.getClass());
 	JmDNS jmdns;
 
-	public BonjourEmitter(String name, String identifier, int port, boolean pass) throws IOException {
+	public BonjourEmitter(String name, String identifier, int port, boolean pass, InetAddress address) throws IOException {
 		log.debug("Starting Bonjour Service");
 		// Set up TXT Record
 		Map<String, Object> txtRec = new HashMap<String, Object>();
@@ -48,7 +49,7 @@ public class BonjourEmitter {
 		// identifier = "b8:27:eb:4c:65:cd";
 
 		// Zeroconf registration
-		jmdns = JmDNS.create();
+		jmdns =  JmDNS.create(address, name + "-jmdns");
 		ServiceInfo serviceInfo = ServiceInfo.create("_raop._tcp.local.", identifier + "@" + name, port, 0, 0, txtRec);
 		jmdns.registerService(serviceInfo);
 		log.info("Registered for Service: " + serviceInfo.toString());

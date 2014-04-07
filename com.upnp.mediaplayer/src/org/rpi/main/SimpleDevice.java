@@ -179,8 +179,12 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		
 		log.info("Start AirPlay Receiver");
 		
+		//log.info("Network Adapter: " + NetworkUtils.getMacAddress());
+		
 		airplay =  new AirPlayThread(Config.getInstance().getMediaplayerFriendlyName());
 		airplay.start();
+		
+		
 		
 		OSManager.getInstance().loadPlugins();
 	}

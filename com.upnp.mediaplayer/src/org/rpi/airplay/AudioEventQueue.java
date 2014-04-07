@@ -34,7 +34,6 @@ public class AudioEventQueue implements Runnable, Observer {
 	private boolean run = true;
 	private int frame_size = 4;
 	public final int MAX_PACKET = 2048;
-	//private SourceDataLine line;
 	private int lastSeqNo = 0;
 	private AlacFile alac;
 	private int[] outbuffer;
@@ -43,9 +42,6 @@ public class AudioEventQueue implements Runnable, Observer {
 	private SourceDataLine soundLine = null;
 	private AudioFormat audioFormat = null;
 	private DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
-	
-//	private ISongcastPlayer player = null;
-//	private Thread threadPlayer = null;
 
 	private SecretKeySpec k;
 	private Cipher c;
@@ -56,13 +52,14 @@ public class AudioEventQueue implements Runnable, Observer {
 	
 	private SourceTimer timer = null;
 	private Thread timerThread = null;
+	
+	private AudioSession session = null;
 
-	public AudioEventQueue() {
+	public AudioEventQueue(AudioSession session) {
+		this.session = session;
 		try
 		{
-//			player = new SongcastPlayerJavaSound();
-//			threadPlayer = new Thread(player, "AirPlayerJavaSound");
-//			threadPlayer.start();
+
 			startTimer();
 
 		if (soundLine != null) {
@@ -166,7 +163,7 @@ public class AudioEventQueue implements Runnable, Observer {
 					log.error(e);
 				}
 			} else {
-				//log.debug("Emppty Queue");
+				//log.debug("Empty Queue");
 				sleep(1);
 			}
 		}
@@ -194,16 +191,6 @@ public class AudioEventQueue implements Runnable, Observer {
 				int lenBytes = convertSampleBufferToByteBuffer(buffer, samplesInBytes >> 1, outbufferBytes);
 
 				if (bWrite) {
-//					if(bFirstTime )
-//					{
-//						AudioInformation ai = new AudioInformation(44100, 96000, 16, 2, "PCM", 0, 0);
-//						player.createSoundLine(ai);
-//						bFirstTime = false;
-//					}
-//					OHMEventAudio event = new OHMEventAudio();
-//					byte[] outb = Utils.getBytes(0, lenBytes-1, outbufferBytes);
-//					event.setSound(outb);
-//					player.put(event);
 					soundLine.write(outbufferBytes, 0, lenBytes);
 				}
 
@@ -214,78 +201,6 @@ public class AudioEventQueue implements Runnable, Observer {
 
 	}
 
-	// private void processEventOLD(DatagramPacket packet) {
-	//
-	// int offset = 0; // packet.getOffset();
-	// int length = packet.getLength();
-	// byte[] data = packet.getData();
-	// byte type = (byte) (data[offset + 1] & ~0x80);
-	// if (type == 0x60 || type == 0x56) { // audio data / resend
-	// if (type == 0x56) {
-	// offset = 4;
-	// // length = length - 4;
-	// }
-	// // int seqno = (data[offset + 2] << 8) | data[offset + 3];
-	// putDataInBuffer(data, offset + 12, length - (12 - offset));
-	// }
-	//
-	// }
-
-	// private void putDataInBuffer(byte[] data, int offset, int len) {
-	// try {
-	// byte[] out = new byte[len];
-	// decryptAes(data, offset, len, out);
-	// int size = 4 * (frame_size + 3);
-	// int[] buffer = new int[size];
-	// log.debug("Decryted Data: " + out.length + " Buffer Size: " +
-	// buffer.length + " offset: " + offset + " Length: " + len);
-	// // TEST
-	// int samplesInBytes = alac_decode(data, buffer);
-	// samplesInBytes = AlacDecodeUtils.decode_frame(alac, out, buffer,
-	// buffer.length);
-	// assert (samplesInBytes == frame_size * 4);
-	//
-	// int lenBytes = convertSampleBufferToByteBuffer(buffer, samplesInBytes >>
-	// 1, outbufferBytes);
-	//
-	// if (line != null) {
-	// if (bWrite) {
-	// line.write(outbufferBytes, 0, lenBytes);
-	// }
-	// }
-	// } catch (Exception e) {
-	// log.error(e);
-	// }
-	//
-	// }
-
-	/**
-	 * Does not work
-	 * 
-	 * @param inbuf
-	 * @param offset
-	 * @param len
-	 * @param outbuffer
-	 * @return
-	 */
-	// private int decryptAes(byte[] inbuf, int offset, int len, byte[]
-	// outbuffer) {
-	// int decodeLen = len - (len % 16);
-	// try {
-	// // log.debug("decrptAes Decryted Data: " + decodeLen +
-	// // " BufferSize: " + outbuffer.length + " offset: " + offset +
-	// // "Length: " + );
-	// int ret = c.doFinal(inbuf, offset, decodeLen, outbuffer);
-	// System.arraycopy(inbuf, offset + decodeLen, outbuffer, decodeLen, len %
-	// 16);
-	// log.debug("BAD Encrypted bits: " + decodeLen + " Unencypted bits: " + len
-	// % 16 + "OutBuffer: " + outbuffer.length);
-	// return ret;
-	// } catch (Exception e) {
-	// log.error("Error DecrpytAes", e);
-	// }
-	// return 0;
-	// }
 
 	/**
 	 * Initiate the cipher
@@ -338,12 +253,6 @@ public class AudioEventQueue implements Runnable, Observer {
 			outbuffer[j++] = (byte) sample;
 		}
 		return j;
-
-		// ByteBuffer byteBuffer = ByteBuffer.allocate(sampleBuffer.length * 4);
-		// IntBuffer intBuffer = byteBuffer.asIntBuffer();
-		// intBuffer.put(sampleBuffer);
-		// outbuffer = byteBuffer.array();
-		// return outbuffer.length/4;
 	}
 
 	/**
@@ -369,7 +278,7 @@ public class AudioEventQueue implements Runnable, Observer {
 
 	private void sessionChanged() {
 		log.debug("Session Changed");
-		AudioSession session = AudioSessionHolder.getInstance().getSession();
+		//AudioSession session = AudioSessionHolder.getInstance().getSession();
 		alac = session.getAlac();
 		frame_size = session.getFrameSize();
 		outbuffer = new int[4 * (frame_size + 3)];
@@ -379,7 +288,7 @@ public class AudioEventQueue implements Runnable, Observer {
 
 	@Override
 	public void update(Observable arg0, Object arg1) {
-		sessionChanged();
+		//sessionChanged();
 	}
 
 	/**
@@ -387,10 +296,6 @@ public class AudioEventQueue implements Runnable, Observer {
 	 */
 	private void close() {
 		try {
-//			player.stop();
-//			if (threadPlayer != null) {
-//				threadPlayer = null;
-//			}
 			if (soundLine != null) {
 				soundLine.close();
 				soundLine = null;

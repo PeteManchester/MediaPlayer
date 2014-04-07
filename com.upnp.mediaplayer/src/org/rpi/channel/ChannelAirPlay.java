@@ -1,9 +1,30 @@
 package org.rpi.channel;
 
+import java.io.StringReader;
+import java.io.StringWriter;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.apache.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
 public class ChannelAirPlay extends ChannelBase {
+	
+	private Logger log = Logger.getLogger(this.getClass());
 
 	public ChannelAirPlay(String uri, String metadata, int id,String name) {
 		super(uri, metadata, id);
+		metadata = this.createMetaData(name, uri, "");
+		super.setMetaText(metadata);
 		setName(name);
 	}
 	
@@ -21,6 +42,63 @@ public class ChannelAirPlay extends ChannelBase {
 	 */
 	private void setName(String name) {
 		this.name = name;
+		String temp_meta = super.updateTrack(name, "AirPlay");
+		super.setMetaText(temp_meta);
+		super.getTrackDetails();
+	}
+	
+	
+	
+	
+	/***
+	 * Build a simple MetaData String for the Channel
+	 * 
+	 * @param name
+	 * @param url
+	 * @param image
+	 * @return
+	 */
+	private String createMetaData(String name, String url, String image) {
+		String res = "";
+
+		try {
+
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			InputSource insrc = new InputSource(new StringReader(super.getMetadata()));
+			Document doc = builder.parse(insrc);
+			Node node = doc.getFirstChild();
+			Node item = node.getFirstChild();
+			// int count = item.getAttributes().getLength();
+			NamedNodeMap attts = item.getAttributes();
+			Node nid = attts.getNamedItem("id");
+			nid.setTextContent(name);
+			// log.debug("Item Child Nodes " +
+			// item.getChildNodes().getLength());
+			NodeList childs = item.getChildNodes();
+			for (int i = 0; i < childs.getLength(); i++) {
+				Node n = childs.item(i);
+				// log.debug("Name: " + n.getNodeName() + " Value " +
+				// n.getTextContent());
+				if (n.getNodeName() == "dc:title") {
+					n.setTextContent(name);
+				} else if (n.getNodeName() == "res") {
+					n.setTextContent(url);
+				} else if (n.getNodeName() == "upnp:albumArtURI") {
+					n.setTextContent(image);
+				} else if (n.getNodeName() == "upnp:artist") {
+					n.setTextContent(name);
+				}
+			}
+			Transformer transformer = TransformerFactory.newInstance().newTransformer();
+			StreamResult result = new StreamResult(new StringWriter());
+			DOMSource source = new DOMSource(doc);
+			transformer.transform(source, result);
+			res = (result.getWriter().toString());
+		} catch (Exception e) {
+			log.error("Error Creating XML Doc", e);
+		}
+		return res;
 	}
 
 }

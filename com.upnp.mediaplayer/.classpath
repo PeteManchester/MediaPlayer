@@ -13,5 +13,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/javaxjson"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/airplay"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/joda"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/netty"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

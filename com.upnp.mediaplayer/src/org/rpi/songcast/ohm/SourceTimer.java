@@ -25,6 +25,7 @@ public class SourceTimer implements Runnable {
 					EventTimeUpdate e = new EventTimeUpdate();
 					e.setTime(time);
 					PlayManager.getInstance().updateTime(e);
+					//log.debug(time);
 				}
 				Thread.sleep(990);
 			} catch (Exception e) {

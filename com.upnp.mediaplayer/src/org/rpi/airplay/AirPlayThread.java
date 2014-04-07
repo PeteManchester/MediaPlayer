@@ -1,6 +1,9 @@
 package org.rpi.airplay;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -9,10 +12,30 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.security.Security;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Level;
+
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
 
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.jboss.netty.channel.ChannelHandler;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelStateEvent;
+import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import org.jboss.netty.channel.group.ChannelGroup;
+import org.jboss.netty.channel.group.ChannelGroupFuture;
+import org.jboss.netty.channel.group.DefaultChannelGroup;
+import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.jboss.netty.handler.execution.ExecutionHandler;
+import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.rpi.utils.NetworkUtils;
 import org.rpi.utils.SecUtils;
 import org.rpi.utils.Utils;
@@ -26,10 +49,36 @@ import org.rpi.utils.Utils;
 public class AirPlayThread extends Thread {
 	private Logger log = Logger.getLogger(this.getClass());
 	private List<BonjourEmitter> emitter = new ArrayList<BonjourEmitter>();
-	private ServerSocket servSock = null;
+	//private ServerSocket servSock = null;
 	private String name;
 	private String password;
 	private boolean stopThread = false;
+	private byte[] hwAddr = null;
+	
+	private static ChannelGroup s_allChannels = new DefaultChannelGroup();
+	
+	/**
+	 * Global executor service. Used e.g. to initialize the various netty channel factories 
+	 */
+	public static final ExecutorService ExecutorService = Executors.newCachedThreadPool();
+
+	/**
+	 * Channel execution handler. Spreads channel message handling over multiple threads
+	 */
+	public static final ExecutionHandler ChannelExecutionHandler = new ExecutionHandler(
+		new OrderedMemoryAwareThreadPoolExecutor(4, 0, 0)
+	);
+	
+	/**
+	 * Channel handle that registers the channel to be closed on shutdown
+	 */
+	public static final ChannelHandler CloseChannelOnShutdownHandler = new SimpleChannelUpstreamHandler() {
+		@Override
+		public void channelOpen(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
+			s_allChannels.add(e.getChannel());
+			super.channelOpen(ctx, e);
+		}
+	};
 
 	/**
 	 * Constructor
@@ -51,37 +100,60 @@ public class AirPlayThread extends Thread {
 		this.name = name;
 		this.password = pass;
 	}
+	
+	public byte[] getHardwareAddress() {
+	    if (hwAddr == null || hwAddr.length == 0) {
+	      // MAC couldn't be determined
+	      try {
+	        InetAddress local = InetAddress.getLocalHost();
+	        NetworkInterface ni = NetworkInterface.getByInetAddress(local);
+	        if (ni != null) {
+	          hwAddr = ni.getHardwareAddress();
+	          return hwAddr;
+	        }
+	      } catch (Exception e) {
+	        log.error("Error Getting HardwareAddress:",e);
+	      }
+	      log.debug("Could not get HardwareAddress, create a Randon one");
+	      Random rand = new Random();
+	      byte[] mac = new byte[8];
+	      rand.nextBytes(mac);
+	      mac[0] = 0x00;
+	      hwAddr = mac;
+	    }
+	    return hwAddr;
+	  }
 
-	private byte[] getHardwareAdress() {
-		byte[] hwAddr = null;
-		InetAddress local;
-
-		try {
-			hwAddr = NetworkInterface.getByName("eth0").getHardwareAddress();
-			if (hwAddr != null) {
-				log.debug("eth0 Address: " + hwAddr.toString());
-				return hwAddr;
-			}
-		} catch (Exception e) {
-			log.error(e);
-		}
-
-		try {
-			local = InetAddress.getLocalHost();
-			// local = InetAddress.getByName("eth0");
-			log.debug("LocalAddhress: " + local.getHostAddress());
-			NetworkInterface ni = NetworkInterface.getByInetAddress(local);
-
-			if (ni != null)
-				hwAddr = ni.getHardwareAddress();
-		} catch (UnknownHostException e) {
-			log.error(e);
-		} catch (SocketException e) {
-			log.error(e);
-		}
-
-		return hwAddr;
-	}
+//	private byte[] getHardwareAddress() {
+//		byte[] hwAddr = null;
+//		InetAddress local;
+//
+////		try {
+////			hwAddr = NetworkInterface.getByName("wlan0").getHardwareAddress();
+////			if (hwAddr != null) {
+////				log.debug("eth0 Address: " + hwAddr.toString());
+////				return hwAddr;
+////			}
+////		} catch (Exception e) {
+////			log.error(e);
+////		}
+//
+//		try {
+//			local = InetAddress.getLocalHost();
+//			// local = InetAddress.getByName("eth0");
+//			log.debug("LocalAddress: " + local.getHostAddress());
+//			NetworkInterface ni = NetworkInterface.getByInetAddress(local);
+//
+//			if (ni != null)
+//				hwAddr = ni.getHardwareAddress();
+//		} catch (UnknownHostException e) {
+//			log.error(e);
+//		} catch (SocketException e) {
+//			log.error(e);
+//		}
+//
+//		return hwAddr;
+//	}
 
 	private String getStringHardwareAdress(byte[] hwAddr) {
 		StringBuilder sb = new StringBuilder();
@@ -94,7 +166,9 @@ public class AirPlayThread extends Thread {
 
 	public void run() {
 		log.debug("Starting AirPlay Service...");
-		//For the Raspi we have to do this now, because for some reason it is very slow the first time it is run and if we run it when we get an AirPlay connection the connection times out.
+		// For the Raspi we have to do this now, because for some reason it is
+		// very slow the first time it is run and if we run it when we get an
+		// AirPlay connection the connection times out.
 		log.debug("Create BouncyCastleProvider");
 		Security.addProvider(new BouncyCastleProvider());
 		log.debug("Created BouncyCastleProvider");
@@ -105,91 +179,53 @@ public class AirPlayThread extends Thread {
 		int port = 5004;
 		try {
 			// DNS Emitter (Bonjour)
-			byte[] hwAddr = getHardwareAdress();
-			// for(final NetworkInterface iface:
-			// Collections.list(NetworkInterface.getNetworkInterfaces())) {
-			// if (iface.isLoopback())
-			// continue;
-			// if (iface.isPointToPoint())
-			// continue;
-			// if (!iface.isUp())
-			// continue;
-			//
-			// for(final InetAddress addr:
-			// Collections.list(iface.getInetAddresses())) {
-			// if (!(addr instanceof Inet4Address) && !(addr instanceof
-			// Inet6Address))
-			// continue;
-			//
-			// try {
-			// // Check if password is set
-			// log.debug("Registering for Interface: " +
-			// iface.getDisplayName());
+			byte[] hwAddr = getHardwareAddress();
 			log.debug("Check if Passsword is set");
 			boolean bPassword = false;
 			if (!Utils.isEmpty(password)) {
 				bPassword = true;
 			}
+			AudioSessionHolder.getInstance().setHardWareAddress(hwAddr);
+			
+			ServerBootstrap bootstrap = new ServerBootstrap(new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool()));
+			bootstrap.setOption("reuseAddress", true);
+			bootstrap.setOption("child.tcpNoDelay", true);
+			bootstrap.setOption("child.keepAlive", true);
+			bootstrap.setPipelineFactory(new RtspServerPipelineFactory());
+			s_allChannels.add(bootstrap.bind(new InetSocketAddress(port)));
+			log.debug("Registering AirTunes Services");
+			for (final NetworkInterface iface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+				if (iface.isLoopback())
+					continue;
+				if (iface.isPointToPoint())
+					continue;
+				if (!iface.isUp())
+					continue;
 
-			BonjourEmitter be = new BonjourEmitter(name, getStringHardwareAdress(hwAddr), port, bPassword);
-			emitter.add(be);
+				for (final InetAddress addr : Collections.list(iface.getInetAddresses())) {
+					if (!(addr instanceof Inet4Address) && !(addr instanceof Inet6Address))
+						continue;
 
-			// }
-			// catch (final Throwable e) {
-			// log.error("Failed to publish service on " , e);
-			// }
-			// }
-			// }
-
-			// log.debug("announced [" + name + " @ " +
-			// getStringHardwareAdress(hwAddr) + "]");
-
-			// We listen for new connections
-			log.debug("Starting ServerSocket on Port: " + port);
-			try {
-				servSock = new ServerSocket(port);
-			} catch (Exception e) {
-				log.debug("port busy, using default.");
-				servSock = new ServerSocket();
-			}
-
-			servSock.setSoTimeout(8000);
-
-			log.debug("SocketServer Started, now entering Run Loop.");
-
-			while (!stopThread) {
-				try {
-					Socket socket = servSock.accept();
-					log.debug("Accepted Connection From " + socket.toString());
-					// InetAddress addr = socket.getInetAddress();
-					// NetworkInterface nic =
-					// NetworkInterface.getByInetAddress(addr);
-					// byte[] hwAddr = nic.getHardwareAddress();
-
-					// Check if password is set
 					try {
-						if (!bPassword) {
-
-							log.debug("Create new RTSPResponder");
-							RTSPResponder res = new RTSPResponder(hwAddr, socket);
-							res.start();
-							log.debug("Created new RTSPResponder");
-
-						} else {
-							log.debug("Create new RTSPResponder");
-							RTSPResponder res = new RTSPResponder(hwAddr, socket, password);
-							res.start();
-							log.debug("Created new RTSPResponder");
-						}
-					} catch (Exception e) {
-						log.error("Error creating RTSPResponder", e);
+						/* Create mDNS responder for address */
+						BonjourEmitter be = new BonjourEmitter(name, getStringHardwareAdress(hwAddr), port, bPassword, addr);
+						emitter.add(be);
+						log.debug("Registered AirTunes service '" + name + "' on " + addr);
+					} catch (final Throwable e) {
+						log.error("Failed to publish service on " + addr.toString() , e);
 					}
-				} catch (SocketTimeoutException e) {
-					//
-				} catch (Exception e) {
-					log.error("Error", e);
 				}
 			}
+			log.debug("Finished Registering AirTunes Services");
+
+			while (!Thread.interrupted()) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// ignore
+				}
+			}
+
 
 		} catch (Exception e) {
 			log.error(e);
@@ -197,7 +233,8 @@ public class AirPlayThread extends Thread {
 		} finally {
 			try {
 				closeBonjourServices();
-				servSock.close();
+				closeRTSPServer();
+				//servSock.close();
 			} catch (Exception e) {
 				log.error(e);
 			}
@@ -210,7 +247,7 @@ public class AirPlayThread extends Thread {
 				try {
 					be.stop();
 					log.debug("Close Socket");
-					servSock.close();
+					//servSock.close();
 				} catch (Exception e) {
 					log.error("Error Stopping BonjourService", e);
 				}
@@ -221,6 +258,19 @@ public class AirPlayThread extends Thread {
 			log.error(e);
 		}
 	}
+	
+	private synchronized void closeRTSPServer()
+	{
+		final ChannelGroupFuture allChannelsClosed = s_allChannels.close();
+		/* Wait for all channels to finish closing */
+		allChannelsClosed.awaitUninterruptibly();
+		
+		/* Stop the ExecutorService */
+		ExecutorService.shutdown();
+
+		/* Release the OrderedMemoryAwareThreadPoolExecutor */
+		ChannelExecutionHandler.releaseExternalResources();
+	}
 
 	/**
 	 * Stop Our Thread
@@ -230,5 +280,6 @@ public class AirPlayThread extends Thread {
 		log.debug("AirplayThread Shutdown...");
 		stopThread = true;
 		closeBonjourServices();
+		closeRTSPServer();
 	}
 }

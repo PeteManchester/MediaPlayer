@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
  * @author bencall
  * 
  */
-public class UDPListener extends Thread {
+public class UDPListener implements Runnable {
 
 	private Logger log = Logger.getLogger(this.getClass());
 	// Constantes
@@ -23,18 +23,17 @@ public class UDPListener extends Thread {
 	private AudioEventQueue queue = null;
 	private Thread threadMessageQueue = null;
 
-	public UDPListener(DatagramSocket socket) {
+	public UDPListener(DatagramSocket socket,AudioSession session) {
 		super();
 		this.socket = socket;
-		queue = new AudioEventQueue();
+		queue = new AudioEventQueue(session);
 		threadMessageQueue = new Thread(queue, "AudioEventQueue");
 		threadMessageQueue.start();
-		this.start();
 	}
 
 	public void run() {
-		boolean fin = stopThread;
-		while (!fin) {
+		//boolean fin = stopThread;
+		while (!stopThread) {
 			byte[] buffer = new byte[MAX_PACKET];
 			DatagramPacket p = new DatagramPacket(buffer, buffer.length);
 			try {
@@ -49,16 +48,12 @@ public class UDPListener extends Thread {
 			} catch (Exception e) {
 				log.error("Error in Run", e);
 			}
-
-			// Stop
-			synchronized (this) {
-				fin = this.stopThread;
-			}
 		}
+		log.debug("UDPListener Stopped");
 	}
 
 	public synchronized void stopThread() {
-
+		log.debug("Stop UDPListener");
 		try {
 			if (queue != null) {
 				queue.stop();

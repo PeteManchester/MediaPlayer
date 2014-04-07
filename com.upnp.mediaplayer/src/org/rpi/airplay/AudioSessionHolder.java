@@ -6,6 +6,8 @@ public class AudioSessionHolder extends Observable {
 	private static AudioSessionHolder instance = null;
 	
 	private AudioSession session = null;
+
+	private byte[] hwAddr;
 	
 	public static AudioSessionHolder getInstance()
 	{
@@ -39,6 +41,16 @@ public class AudioSessionHolder extends Observable {
 	private void fireEvent(String s) {
 		setChanged();
 		notifyObservers(s);
+	}
+
+	public void setHardWareAddress(byte[] hwAddr) {
+		this.hwAddr = hwAddr;
+		
+	}
+	
+	public byte[] getHardWareAddress()
+	{
+		return hwAddr;
 	}
 	
 	

@@ -27,7 +27,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	private String attributes = "Info Time Volume";
 	// private String attributes = "";
 	private String man_name = "Java Inc";
-	private String man_info = "Developed in Java using OpenHome and MPlayer";
+	private String man_info = "Developed in Java using OpenHome";
 	private String man_url = "";
 	private String man_image = "";
 	private String model_name = "Test Model Name";

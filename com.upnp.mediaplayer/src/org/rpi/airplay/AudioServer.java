@@ -12,6 +12,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
+import org.rpi.player.PlayManager;
 
 /**
  * Main class that listen for new packets.
@@ -31,7 +32,8 @@ public class AudioServer {
 
 	// Sockets
 	private DatagramSocket sock, csock;
-	private UDPListener l1;
+	private UDPListener listener = null;
+	private Thread listenerThread = null;
 
 	// client address
 	private InetAddress rtpClient;
@@ -56,20 +58,28 @@ public class AudioServer {
 	}
 
 	public void stop() {
-		l1.stopThread();
-		// synchronized(sock){
-		// sock.close();
-		// }
+		log.debug("Stop AudioServer");
+		if (listener != null) {
+			try
+			{
+			listener.stopThread();
+			listener = null;
+			}
+			catch(Exception e)
+			{
+				log.error("Error Stopping UDPListener Thread",e);
+			}
+			listenerThread = null;
+		}
 		try {
 			csock.close();
 		} catch (Exception e) {
 			log.error("Error Closing Socket", e);
 		}
-
+		PlayManager.getInstance().setStatus("Stopped", "AIRPLAY");
 	}
 
 	public void setVolume(double vol) {
-		// player.setVolume(vol);
 		// TODO Change Volume
 		log.debug("Set Volume: " + vol);
 	}
@@ -87,7 +97,7 @@ public class AudioServer {
 	 * Opens the sockets and begin listening
 	 */
 	private void initRTP() {
-		int port = 6000;
+		int port = session.getControlPort();
 		while (true) {
 			try {
 				sock = new DatagramSocket(port);
@@ -99,43 +109,16 @@ public class AudioServer {
 			break;
 		}
 
-		l1 = new UDPListener(sock);
+		listener = new UDPListener(sock, session);
+		listenerThread = new Thread(listener, "UDPListner");
+		listenerThread.start();
 	}
-
-	/**
-	 * Ask iTunes to resend packet FUNCTIONAL??? NO PROOFS
-	 * 
-	 * @param first
-	 * @param last
-	 */
-	// public void request_resend(int first, int last) {
-	// log.debug("Resend Request: " + first + "::" + last);
-	// if(last<first){
-	// return;
-	// }
-	//
-	// int len = last - first + 1;
-	// byte[] request = new byte[] { (byte) 0x80, (byte) (0x55|0x80), 0x01,
-	// 0x00, (byte) ((first & 0xFF00) >> 8), (byte) (first & 0xFF), (byte) ((len
-	// & 0xFF00) >> 8), (byte) (len & 0xFF)};
-	//
-	// try {
-	// DatagramPacket temp = new DatagramPacket(request, request.length,
-	// rtpClient, session.getControlPort());
-	// csock.send(temp);
-	//
-	// } catch (IOException e) {
-	// e.printStackTrace();
-	// }
-	//
-	//
-	// }
 
 	/**
 	 * Flush the audioBuffer
 	 */
 	public void flush() {
-		l1.flush();
+		listener.flush();
 	}
 
 }

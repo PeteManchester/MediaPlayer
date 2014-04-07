@@ -43,9 +43,9 @@ public class StartMe {
 		//getConfig();
 		//ConfigureLogging();
 		log.info("Starting......");
-		if (!Utils.isEmpty(Config.getInstance().getSongcastSoundcardName())) {
-			setAudioDevice();
-		}
+		//if (!Utils.isEmpty(Config.getInstance().getSongcastSoundcardName())) {
+		//	setAudioDevice();
+		//}
 
         if (log.isInfoEnabled()) {
             // to improve startup performance, if loglevel info is not enabled, this is not needed, right?
@@ -68,14 +68,19 @@ public class StartMe {
             log.info("End Of Network Interfaces");
         }
 
-        if (log.isInfoEnabled()) {
-            // improve performance if loglevel info is not enabled
+        //Do we need to attempt to set the AudioCard
+        if (Config.getInstance().isMediaplayerEnableReceiver()||Config.getInstance().isAirPlayEnabled()) {
             log.info("Available Audio Devices:");
             try {
                 Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
 
                 for (int cnt = 0; cnt < mixerInfo.length; cnt++) {
-                    log.info("'" + mixerInfo[cnt].getName() + "'");
+                	String mixer = mixerInfo[cnt].getName().trim();
+                    log.info("'" + mixer + "'");
+                    if(mixer.toUpperCase().endsWith("[plughw:0,0]")||mixer.toUpperCase().contains("PRIMARY SOUND DRIVER"))
+                    {
+                    	setAudioDevice(mixer);
+                    }
                 }
             } catch (Exception e) {
                 log.error("Error getting Audio Devices");
@@ -160,89 +165,15 @@ public class StartMe {
 		log.warn("");
 	}
 
-	/***
-	 * Read the app.properties file
-	 */
-	private static void getConfig() {
-//		Properties pr = new Properties();
-//		try {
-//			pr.load(new FileInputStream("app.properties"));
-//			Config.friendly_name = pr.getProperty("friendly.name");
-//
-//			try {
-//				String playlists = pr.getProperty("mplayer.playlist");
-//				String[] splits = playlists.split(",");
-//				Config.playlists = Arrays.asList(splits);
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//			Config.debug = pr.getProperty("openhome.debug.level");
-//			Config.logfile = pr.getProperty("log.file");
-//			Config.loglevel = pr.getProperty("log.file.level");
-//			Config.logconsole = pr.getProperty("log.console.level");
-//			Config.mplayer_path = pr.getProperty("mplayer.path");
-//			Config.setSaveLocalPlayList(pr.getProperty("save.local.playlist"));
-//			Config.port = Config.convertStringToInt(pr.getProperty("openhome.port"));
-//			Config.mplayer_cache = Config.convertStringToInt(pr.getProperty("mplayer.cache"));
-//			Config.mplayer_cache_min = Config.convertStringToInt(pr.getProperty("mplayer.cache_min"));
-//			Config.playlist_max = Config.convertStringToInt(pr.getProperty("playlist.max"), 1000);
-//			Config.mpd_host = pr.getProperty("mpd.host");
-//			Config.mpd_port = Config.convertStringToInt(pr.getProperty("mpd.port"), 6600);
-//			Config.mpd_preload_timer = Config.convertStringToInt(pr.getProperty("mpd.preload.timer"), 10);
-//			Config.player = pr.getProperty("player");
-//			Config.enableAVTransport = Config.convertStringToBoolean(pr.getProperty("enableAVTransport"), true);
-//			Config.enableReceiver = Config.convertStringToBoolean(pr.getProperty("enableReceiver"), true);
-//			//Config.songcastNICName = NetworkUtils.getNICName(pr.getProperty("songcast.nic.name"));
-//			Config.songcastSoundCardName = pr.getProperty("songcast.soundcard.name");
-//			Config.songcastLatencyEnabled = Config.convertStringToBoolean(pr.getProperty("songcast.latency.enabled"),true);
-//			Config.webHttpPort=pr.getProperty("web.http.port");
-//			Config.radio_tunein_username = pr.getProperty("radio.tunein.username");
-//			Config.setStartHttpDaemon(pr.getProperty("start.http.daemon"));
-//			Config.startup_volume = Config.convertStringToInt(pr.getProperty("startup_volume"), -1);
-//
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-	}
 
 	/**
 	 * Used to set the Songcast Audio Device
 	 */
-	private static void setAudioDevice() {
+	private static void setAudioDevice(String name) {
 		Properties props = System.getProperties();
-		String name = "#" + Config.getInstance().getSongcastSoundcardName();
+		name = "#" + name;
 		props.setProperty("javax.sound.sampled.SourceDataLine", name);
 		log.warn("###Setting Sound Card Name: " + name);
 	}
-
-	/***
-	 * Set up our logging
-	 */
-//	private static void ConfigureLogging() {
-//
-//		try {
-//			CustomPatternLayout pl = new CustomPatternLayout();
-//			pl.setConversionPattern("%d [%t] %-5p [%-10c] %m%n");
-//			pl.activateOptions();
-//			// CustomRollingFileAppender fileAppender = new
-//			// CustomRollingFileAppender(pl,Config.logfile,".log",true);
-//			RollingFileAppender fileAppender = new RollingFileAppender();
-//			fileAppender.setAppend(true);
-//			fileAppender.setMaxFileSize("5mb");
-//			fileAppender.setMaxBackupIndex(5);
-//			fileAppender.setFile(Config.logfile);
-//			fileAppender.setThreshold(Config.getLogFileLevel());
-//			fileAppender.setLayout(pl);
-//			fileAppender.activateOptions();
-//			Logger.getRootLogger().addAppender(fileAppender);
-//			ConsoleAppender consoleAppender = new ConsoleAppender();
-//			consoleAppender.setLayout(pl);
-//			consoleAppender.activateOptions();
-//			consoleAppender.setThreshold(Config.getLogConsoleLevel());
-//			Logger.getRootLogger().addAppender(consoleAppender);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
 
 }
