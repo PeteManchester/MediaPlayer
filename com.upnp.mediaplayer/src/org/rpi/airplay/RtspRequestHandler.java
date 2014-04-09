@@ -44,8 +44,7 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
 		HttpRequest request = (HttpRequest) e.getMessage();
-		// log.debug(request.toString());
-
+		String content = request.getContent().toString(Charset.forName("UTF-8"));
 		if (!RtspVersions.RTSP_1_0.equals(request.getProtocolVersion())) {
 			HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR);
 			response.addHeader("Connection", "close");
@@ -80,8 +79,10 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 		HttpMethod method = request.getMethod();
 		if (RtspMethods.OPTIONS.equals(method)) {
 			response.addHeader("Public", "ANNOUNCE, SETUP, RECORD, PAUSE, FLUSH, TEARDOWN, OPTIONS, GET_PARAMETER, SET_PARAMETER");
+			//log.debug("OPTIONS \r\n" + request.toString() + content);
 		} else if (RtspMethods.ANNOUNCE.equals(method)) {
-			String content = request.getContent().toString(Charset.forName("UTF-8"));
+			log.debug("ANNOUNCE \r\n" + request.toString() + content);
+			closeChannel = false;
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			try {
 				request.getContent().readBytes(out, request.getContent().readableBytes());
@@ -113,12 +114,16 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 				if (session == null) {
 					session = new AudioSession(Base64.decode(aesIv), SecUtils.decryptRSA(Base64.decode(rsaAesKey)), fmtp, 0, 0);
 					RaopSessionManager.addSession(clientInstance, session);
+					log.debug("Audio Session being created");
+					AudioSessionHolder.getInstance().setSession(session);
 				} else {
+					log.debug("Audio Session being updated");
 					session.setAESIV(Base64.decode(aesIv));
 					session.setAESKEY(SecUtils.decryptRSA(Base64.decode(rsaAesKey)));
 					session.setFmtp(fmtp);
+					AudioSessionHolder.getInstance().setSession(session);
 				}
-				String client_name = URLDecoder.decode(request.getHeader("X-Apple-Client-Name"),"UTF-8");
+				String client_name = URLDecoder.decode(request.getHeader("X-Apple-Client-Name"), "UTF-8");
 				String metaData = "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:artist role='Performer' xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:artist><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='' nrAudioChannels='' protocolInfo='http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01'></res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:albumArtURI></item></DIDL-Lite>";
 				ChannelAirPlay channel = new ChannelAirPlay("", metaData, 1, client_name);
 				PlayManager.getInstance().playAirPlayer(channel);
@@ -126,12 +131,12 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 				ev.setTitle(client_name);
 				ev.setArtist("AirPlay");
 				PlayManager.getInstance().updateTrackInfo(ev);
-				// TODO Maybe Don't need to do this, with better refactoring.
-				AudioSessionHolder.getInstance().setSession(session);
 			} finally {
 				out.close();
 			}
 		} else if (RtspMethods.SETUP.equals(method)) {
+			log.debug("SETUP \r\n" + request.toString() + content);
+			closeChannel = false;
 			AudioSession session = RaopSessionManager.getSession(clientInstance);
 			if (session == null) {
 				throw new RuntimeException("No Session " + clientInstance);
@@ -143,11 +148,13 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 			PluginGateWay.getInstance().setSourceId("AirPlay", "AirPlay");
 			response.setHeader("Transport", request.getHeader("Transport") + ";server_port=" + session.getControlPort());
 		} else if (RtspMethods.RECORD.equals(method)) {
+			log.debug("RECORD \r\n" + request.toString() + content);
 			// ignore
 		} else if ("FLUSH".equalsIgnoreCase(method.getName())) {
-			log.debug("FLUSH");
+			log.debug("FLUSH \r\n" + request.toString() + content);
 			audioServer.flush();
 		} else if (RtspMethods.TEARDOWN.equals(method)) {
+			log.debug("TEARDOWN \r\n" + request.toString() + content);
 			tearDown();
 			response.setHeader("Connection", "close");
 			e.getChannel().write(response);
@@ -155,32 +162,30 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 			e.getChannel().disconnect();
 			return;
 		} else if (RtspMethods.SET_PARAMETER.equals(method)) {
-			String content = request.getContent().toString(Charset.forName("UTF-8"));
-			if(content.startsWith(VOLUME))
-			{
+			// String content =
+			// request.getContent().toString(Charset.forName("UTF-8"));
+			if (content.startsWith(VOLUME)) {
 				String vol = content.substring(VOLUME.length());
-				try
-				{
+				try {
 					Double dVol = Double.parseDouble(vol.trim());
 					dVol = dVol + 144;
-					dVol = dVol*1000;
-					//dVol += 100;
+					dVol = dVol * 1000;
+					// dVol += 100;
 					int iVol = dVol.intValue();
-					if(iVol !=0)
-					{
-					iVol = iVol/1000;
+					if (iVol != 0) {
+						iVol = iVol / 1000;
 					}
-					iVol = iVol -44;
+					iVol = iVol - 44;
 					log.debug("Vol: " + iVol);
-					//Not very good at maths so use this dodgy method to convert from db in the range -144-0 to long in the range 0-100
-					if(iVol> 100)
+					// Not very good at maths so use this dodgy method to
+					// convert from db in the range -144-0 to long in the range
+					// 0-100
+					if (iVol > 100)
 						iVol = 100;
-					if(iVol<0)
+					if (iVol < 0)
 						iVol = 0;
 					PlayManager.getInstance().setVolume(iVol);
-				}
-				catch(Exception ex)
-				{
+				} catch (Exception ex) {
 					log.error(ex);
 				}
 			}
@@ -193,21 +198,25 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 		}
 
 		boolean keepAlive = isKeepAlive(request);
+
 		if (keepAlive) {
-			response.setHeader("Content-Length", response.getContent().readableBytes());
+			if (closeChannel) {
+				keepAlive = false;
+				closeChannel = false;
+			} else {
+				response.setHeader("Content-Length", response.getContent().readableBytes());
+			}
 		}
 		// log.debug("Respone: " + response.toString());
 		ChannelFuture future = e.getChannel().write(response);
 
-		if (closeChannel) {
-			response.setHeader("Connection", "close");
-			e.getChannel().write(response);
-			RaopSessionManager.shutdownSession(clientInstance);
-			e.getChannel().disconnect();
-		}
-
 		if (!keepAlive) {
-			future.addListener(ChannelFutureListener.CLOSE);
+			log.debug("Attempting to Close Channel");
+			try {
+				future.addListener(ChannelFutureListener.CLOSE);
+			} catch (Exception ex) {
+				log.error("Error Closing Future Channel", ex);
+			}
 		}
 	}
 
@@ -246,7 +255,8 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 	}
 
 	private void tearDown() {
-		closeChannel = true;
+		//closeChannel = true;
+		log.debug("Stopping Audio Playing");
 		try {
 			if (audioServer != null) {
 				audioServer.stop();

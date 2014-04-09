@@ -10,8 +10,6 @@
 */
 package org.rpi.alacdecoder;
 
-
-
 public class AlacDecodeUtils
 {
 	public static void alac_set_info(AlacFile alac, int[] inputbuffer)

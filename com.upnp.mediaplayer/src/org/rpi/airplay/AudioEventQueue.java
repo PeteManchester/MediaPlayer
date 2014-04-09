@@ -1,8 +1,7 @@
 package org.rpi.airplay;
 
+import java.math.BigInteger;
 import java.net.DatagramPacket;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
@@ -17,14 +16,12 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.jmx.Agent;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.rpi.alacdecoder.AlacDecodeUtils;
 import org.rpi.alacdecoder.AlacFile;
 import org.rpi.config.Config;
 import org.rpi.songcast.core.AudioInformation;
-import org.rpi.songcast.core.ISongcastPlayer;
-import org.rpi.songcast.core.SongcastPlayerJavaSound;
-import org.rpi.songcast.ohm.OHMEventAudio;
 import org.rpi.songcast.ohm.SourceTimer;
 
 public class AudioEventQueue implements Runnable, Observer {
@@ -38,53 +35,59 @@ public class AudioEventQueue implements Runnable, Observer {
 	private AlacFile alac;
 	private int[] outbuffer;
 	private byte[] outbufferBytes;
-	
+
 	private SourceDataLine soundLine = null;
 	private AudioFormat audioFormat = null;
 	private DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
 
-	private SecretKeySpec k;
-	private Cipher c;
+	// private SecretKeySpec specKey;
+	private Cipher cipher = null;
+	private SecretKeySpec specKey = null;
+
+	/**
+	 * AES key
+	 */
+	private IvParameterSpec m_aesIv = null;
 
 	private boolean bWrite = false;
 
 	private boolean bFirstTime = true;
-	
+
 	private SourceTimer timer = null;
 	private Thread timerThread = null;
-	
+
 	private AudioSession session = null;
 
 	public AudioEventQueue(AudioSession session) {
-		this.session = session;
-		try
-		{
+		// this.session = session;
+		sessionChanged();
+		try {
 
 			startTimer();
 
-		if (soundLine != null) {
-			close();
-		}
-		setAudioDevice();
-		AudioSessionHolder.getInstance().addObserver(this);
-		sessionChanged();
-		AudioInformation audioInf = new AudioInformation(44100, 96000, 16, 2, "ALAC", 0, 0);
-		log.debug("Creating Audio Format: " + audioInf.toString());
-		audioFormat = new AudioFormat(audioInf.getSampleRate(), audioInf.getBitDepth(), audioInf.getChannels(), audioInf.isSigned(), audioInf.isBigEndian());
-		info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
-		if (soundLine == null) {
-			soundLine = (SourceDataLine) AudioSystem.getLine(info);
-			soundLine.open(audioFormat);
-			soundLine.start();
+			if (soundLine != null) {
+				close();
+			}
+			alac = session.getAlac();
+			setAudioDevice();
+			AudioSessionHolder.getInstance().addObserver(this);
+
+			AudioInformation audioInf = new AudioInformation(44100, 96000, 16, 2, "ALAC", 0, 0);
+			log.debug("Creating Audio Format: " + audioInf.toString());
+			audioFormat = new AudioFormat(audioInf.getSampleRate(), audioInf.getBitDepth(), audioInf.getChannels(), audioInf.isSigned(), audioInf.isBigEndian());
+			info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
+			if (soundLine == null) {
+				soundLine = (SourceDataLine) AudioSystem.getLine(info);
+				soundLine.open(audioFormat);
+				soundLine.start();
+				bWrite = true;
+			}
 			bWrite = true;
-		}
-		bWrite=true;
-		}
-		 catch (Exception e) {
+		} catch (Exception e) {
 			log.error("Error Opening Audio Line", e);
 		}
 	}
-	
+
 	/**
 	 * Used to set the Songcast Audio Device
 	 */
@@ -144,14 +147,6 @@ public class AudioEventQueue implements Runnable, Observer {
 		}
 	}
 
-	public void stop() {
-		stopTimer();
-		bWrite = false;
-		run = false;
-		clear();
-		close();
-	}
-
 	@Override
 	public void run() {
 		while (run) {
@@ -163,7 +158,7 @@ public class AudioEventQueue implements Runnable, Observer {
 					log.error(e);
 				}
 			} else {
-				//log.debug("Empty Queue");
+				// log.debug("Empty Queue");
 				sleep(1);
 			}
 		}
@@ -180,20 +175,78 @@ public class AudioEventQueue implements Runnable, Observer {
 				if (type == 0x56) {
 					off = 4;
 				}
+				
+				long seq =  new BigInteger(Utils.getBytes(2, 3, packet.getData())).longValue();
+				long l = seq & 0xFFFFFFFFL;
+				//log.debug("Seq: " + l);
+				byte[] pktp = new byte[packet.getLength() - off - 12];
+				for(int i=0; i<pktp.length; i++){
+					pktp[i] = packet.getData()[i+12+off];
+				}
+				
+				byte[] p = new byte[MAX_PACKET];
 
-				// + les 12 (cfr. RFC RTP: champs a ignorer)
-				int packet_size = packet.getLength();
-				byte[] pktp = Utils.getBytes(12 + off, packet_size, packet.getData());
+				// Init AES
+				initAES();
 
-				int size = 4 * (frame_size + 3);
-				int[] buffer = new int[size];
-				int samplesInBytes = alac_decode(pktp, buffer);
-				int lenBytes = convertSampleBufferToByteBuffer(buffer, samplesInBytes >> 1, outbufferBytes);
-
-				if (bWrite) {
-					soundLine.write(outbufferBytes, 0, lenBytes);
+				int i;
+				for (i = 0; i + 16 <= pktp.length; i += 16) {
+					// Decrypt
+					this.decryptAES(pktp, i, 16, p, i);
 				}
 
+				// The rest of the packet is unencrypted
+				for (int k = 0; k < (pktp.length % 16); k++) {
+					p[i + k] = pktp[i + k];
+				}
+				//System.out.println("Size " + pktp.length);
+				int outputsize = 0;
+				try {
+					outputsize = AlacDecodeUtils.decode_frame(session.getAlac(), p, outbuffer, outputsize);
+					if (bWrite) {
+						byte[] input = new byte[outbuffer.length*2];
+						
+						int j = 0;
+						for(int ic=0; ic<outbuffer.length; ic++){
+							input[j++] = (byte)(outbuffer[ic] >> 8);
+							input[j++] = (byte)(outbuffer[ic]);
+						}
+						soundLine.write(input, 0, outputsize);
+					}
+				} catch (Exception e) {
+					log.error("Error decoding",e);
+				}
+
+				assert outputsize == session.getFrameSize() * 4; // FRAME_BYTES length
+				
+				
+				
+//				// + les 12 (cfr. RFC RTP: champs a ignorer)
+//				int packet_size = packet.getLength();
+//				// byte[] pktp = Utils.getBytes(12 + off, packet_size,
+//				// packet.getData());
+//				ChannelBuffer pktp = ChannelBuffers.buffer(packet_size - (12 - off) + 1);
+//
+//				pktp.setBytes(0, Utils.getBytes((12 + off), packet_size, packet.getData()));
+//
+//				pktp = decode(pktp);
+//				final byte[] alacBytes = new byte[pktp.capacity() + 3];
+//				pktp.getBytes(0, alacBytes, 0, pktp.capacity());
+//				int m_samplesPerFrame = session.getFrameSize();
+//				final int[] pcmSamples = new int[m_samplesPerFrame * 2];
+//				// log.debug("Buffer Size: " + pktp.capacity() + " OutputSize: "
+//				// + pcmSamples.length);
+//				try {
+//					final int pcmSamplesBytes = AlacDecodeUtils.decode_frame(alac, alacBytes, pcmSamples, m_samplesPerFrame);
+//					int lenBytes = convertSampleBufferToByteBuffer(pcmSamples, pcmSamplesBytes >> 1, outbufferBytes);
+//					if (bWrite) {
+//						soundLine.write(outbufferBytes, 0, lenBytes);
+//					}
+//
+//				} catch (Exception e) {
+//					//TODO Getting a lot of error when listening to certain streams, such as BBC radio
+//					log.error("Error ALAC: Buffer Size: " + pktp.capacity() + " OutputSize: " + pcmSamples.length);
+//				}
 			}
 		} catch (Exception e) {
 			log.error("Error processEvent", e);
@@ -201,18 +254,31 @@ public class AudioEventQueue implements Runnable, Observer {
 
 	}
 
-
 	/**
 	 * Initiate the cipher
 	 */
 	private void initAES() {
 		try {
-			k = new SecretKeySpec(AudioSessionHolder.getInstance().getSession().getAESKEY(), "AES");
-			c = Cipher.getInstance("AES/CBC/NoPadding");
-			c.init(Cipher.DECRYPT_MODE, k, new IvParameterSpec(AudioSessionHolder.getInstance().getSession().getAESIV()));
+			cipher.init(Cipher.DECRYPT_MODE, specKey, m_aesIv);
 		} catch (Exception e) {
 			log.error("Error initAES", e);
 		}
+	}
+
+	/**
+	 * New method to decode the encoded stream
+	 * @param data
+	 * @return
+	 */
+	private ChannelBuffer decode(ChannelBuffer data) {
+		initAES();
+		for (int i = 0; (i + 16) <= data.capacity(); i += 16) {
+			byte[] block = new byte[16];
+			data.getBytes(i, block);
+			block = cipher.update(block);
+			data.setBytes(i, block);
+		}
+		return data;
 	}
 
 	/**
@@ -227,10 +293,8 @@ public class AudioEventQueue implements Runnable, Observer {
 		byte[] packet = new byte[MAX_PACKET];
 		// Init AES
 		initAES();
-
 		int i;
 		for (i = 0; i + 16 <= data.length; i += 16) {
-			// Decrypt
 			this.decryptAES(data, i, 16, packet, i);
 		}
 
@@ -240,11 +304,22 @@ public class AudioEventQueue implements Runnable, Observer {
 			packet[i + k] = data[i + k];
 		}
 		int outputsize = 0;
-		outputsize = AlacDecodeUtils.decode_frame(alac, packet, outbuffer, outputsize);
-		assert outputsize == frame_size * 4; // FRAME_BYTES length
+		try {
+			outputsize = AlacDecodeUtils.decode_frame(alac, packet, outbuffer, outputsize);
+			assert outputsize == frame_size * 4; // FRAME_BYTES length
+		} catch (Exception e) {
+			log.error("Error ALAC Decode. 'i': " + i + " k: " + k, e);
+		}
 		return outputsize;
 	}
 
+	/**
+	 * Convert an int array to a byte array
+	 * @param sampleBuffer
+	 * @param len
+	 * @param outbuffer
+	 * @return
+	 */
 	private int convertSampleBufferToByteBuffer(int[] sampleBuffer, int len, byte[] outbuffer) {
 		int j = 0;
 		for (int i = 0; i < len; ++i) {
@@ -268,7 +343,7 @@ public class AudioEventQueue implements Runnable, Observer {
 	 */
 	private int decryptAES(byte[] array, int inputOffset, int inputLen, byte[] output, int outputOffset) {
 		try {
-			return c.update(array, inputOffset, inputLen, output, outputOffset);
+			return cipher.update(array, inputOffset, inputLen, output, outputOffset);
 		} catch (Exception e) {
 			log.error("Error decryptAES", e);
 		}
@@ -276,19 +351,31 @@ public class AudioEventQueue implements Runnable, Observer {
 		return -1;
 	}
 
+	/**
+	 * The session has changed to reset our values
+	 */
 	private void sessionChanged() {
 		log.debug("Session Changed");
-		//AudioSession session = AudioSessionHolder.getInstance().getSession();
+		session = AudioSessionHolder.getInstance().getSession();
 		alac = session.getAlac();
+		// frame_size = session.getFrameSize();
 		frame_size = session.getFrameSize();
 		outbuffer = new int[4 * (frame_size + 3)];
 		outbufferBytes = new byte[outbuffer.length * 2];
-		initAES();
+		try {
+			cipher = Cipher.getInstance("AES/CBC/NoPadding");
+		} catch (Exception e) {
+			log.error("Error Initiating Cipher", e);
+		}
+		m_aesIv = new IvParameterSpec(session.getAESIV());
+		specKey = new SecretKeySpec(session.getAESKEY(), "AES");
+
+		// initAES();
 	}
 
 	@Override
 	public void update(Observable arg0, Object arg1) {
-		//sessionChanged();
+		sessionChanged();
 	}
 
 	/**
@@ -305,15 +392,14 @@ public class AudioEventQueue implements Runnable, Observer {
 		}
 
 	}
-	
 
 	private void startTimer() {
 		timer = new SourceTimer();
 		timerThread = new Thread(timer, "SongcastTimer");
 		timerThread.start();
 	}
-	
-	private void stopTimer(){
+
+	private void stopTimer() {
 		if (timer != null) {
 			timer.setRun(false);
 			timer = null;
@@ -321,6 +407,14 @@ public class AudioEventQueue implements Runnable, Observer {
 		if (timerThread != null) {
 			timerThread = null;
 		}
+	}
+	
+	public void stop() {
+		stopTimer();
+		bWrite = false;
+		run = false;
+		clear();
+		close();
 	}
 
 }

@@ -1,9 +1,12 @@
 package org.rpi.airplay;
 
+import org.apache.log4j.Logger;
 import org.rpi.alacdecoder.AlacDecodeUtils;
 import org.rpi.alacdecoder.AlacFile;
 
 public class AudioSession {
+	
+	private Logger log = Logger.getLogger(this.getClass());
 	private AlacFile alac;
 	private byte[] aesiv;
 	private byte[] aeskey;
@@ -34,7 +37,7 @@ public class AudioSession {
 
 	public void setFmtp(String val) {
 		String[] fmt = val.split(" ");
-		alac = AlacDecodeUtils.create_alac(this.getSampleSize(), 2);
+		//alac = AlacDecodeUtils.create_alac(this.getSampleSize(), 2);
 		frameSize = Integer.parseInt(fmt[1]);
 		_7a = Integer.parseInt(fmt[2]);
 		sampleSize = Integer.parseInt(fmt[3]);
@@ -54,13 +57,12 @@ public class AudioSession {
 	 */
 	private void initDecoder() {
 		if (this.getSampleSize() != 16) {
-			System.err.println("ERROR: 16 bits only!!!");
+			log.error("ERROR: 16 bits only!!!");
 			return;
 		}
-
 		alac = AlacDecodeUtils.create_alac(this.getSampleSize(), 2);
 		if (alac == null) {
-			System.err.println("ERROR: creating alac!!!");
+			log.error("ERROR: creating alac!!!");
 			return;
 		}
 		alac.setinfo_max_samples_per_frame = this.getFrameSize();
@@ -74,6 +76,7 @@ public class AudioSession {
 		alac.setinfo_82 = this.get_82();
 		alac.setinfo_86 = this.get_86();
 		alac.setinfo_8a_rate = this.get_8a_rate();
+		log.debug("AudioSession Created: " + this.toString());
 	}
 
 	public int OUTFRAME_BYTES() {
@@ -170,5 +173,40 @@ public class AudioSession {
 
 	public void setTimingPort(int timingPort) {
 		this.timingPort = timingPort;
+	}
+	
+
+	@Override
+	public String toString()
+	{
+		String n = "\r\n";
+		StringBuffer sb = new StringBuffer();
+		sb.append("controlPort: " + this.getControlPort());
+		sb.append(n);
+		sb.append("timingPort: " + this.getTimingPort());
+		sb.append(n);
+		sb.append("frameSize: " + this.getFrameSize());
+		sb.append(n);
+		sb.append("sampleSize: " + this.getSampleSize());
+		sb.append(n);
+		sb.append("_7a: " + this.get_7a());
+		sb.append(n);
+		sb.append("rice_historymult: " + this.getRiceHistoryMult());
+		sb.append(n);
+		sb.append("rice_initialhistory: " + this.getRiceInitialhistory());
+		sb.append(n);
+		sb.append("rice_kmodifier: " + this.getRiceKModifier());
+		sb.append(n);
+		sb.append("_7f: " + this.get_7f());
+		sb.append(n);
+		sb.append("_80: " + this.get_80());
+		sb.append(n);
+		sb.append("_82: " + this.get_82());
+		sb.append(n);
+		sb.append("_86: " + this.get_86());
+		sb.append(n);
+		sb.append("_8a_rate: " + this.get_8a_rate());
+		sb.append(n);		
+		return sb.toString();
 	}
 }

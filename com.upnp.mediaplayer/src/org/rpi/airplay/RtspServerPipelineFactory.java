@@ -11,7 +11,8 @@ public class RtspServerPipelineFactory implements ChannelPipelineFactory {
   @Override
   public ChannelPipeline getPipeline() throws Exception {
     ChannelPipeline pipeline = pipeline();
-
+    pipeline.addLast("executionHandler", AirPlayThread.ChannelExecutionHandler);
+	pipeline.addLast("closeOnShutdownHandler", AirPlayThread.CloseChannelOnShutdownHandler);
     pipeline.addLast("decoder", new RtspRequestDecoder());
     pipeline.addLast("encoder", new RtspResponseEncoder());
     pipeline.addLast("handler", new RtspRequestHandler());
