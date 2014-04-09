@@ -26,6 +26,7 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
+import org.rpi.config.Config;
 import org.rpi.utils.SecUtils;
 import org.rpi.utils.Utils;
 
@@ -41,7 +42,6 @@ public class AirPlayThread extends Thread {
 	//private ServerSocket servSock = null;
 	private String name;
 	private String password;
-	private boolean stopThread = false;
 	private byte[] hwAddr = null;
 	
 	private static ChannelGroup s_allChannels = new DefaultChannelGroup();
@@ -134,7 +134,8 @@ public class AirPlayThread extends Thread {
 		byte[] test = new byte[] { (byte) 0xe0, 0x4f, (byte) 0xd0, 0x20, (byte) 0xea, 0x3a, 0x69, 0x10, (byte) 0xa2, (byte) 0xd8, 0x08, 0x00, 0x2b, 0x30, 0x30, (byte) 0x9d };
 		SecUtils.encryptRSA(test);
 
-		int port = 5004;
+		//int port = 5004;
+		int port = Config.getInstance().getAirPlayPort();
 		try {
 			// DNS Emitter (Bonjour)
 			byte[] hwAddr = getHardwareAddress();
@@ -151,6 +152,7 @@ public class AirPlayThread extends Thread {
 			bootstrap.setOption("child.keepAlive", true);
 			bootstrap.setPipelineFactory(new RtspServerPipelineFactory());
 			s_allChannels.add(bootstrap.bind(new InetSocketAddress(port)));
+			
 			log.debug("Registering AirTunes Services");
 			for (final NetworkInterface iface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
 				if (iface.isLoopback())
@@ -234,8 +236,8 @@ public class AirPlayThread extends Thread {
 	 */
 	public synchronized void stopThread() {
 		log.debug("AirplayThread Shutdown...");
-		stopThread = true;
 		closeBonjourServices();
 		closeRTSPServer();
+		this.interrupt();
 	}
 }

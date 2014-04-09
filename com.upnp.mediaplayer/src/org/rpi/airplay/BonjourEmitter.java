@@ -21,9 +21,11 @@ public class BonjourEmitter {
 
 	private Logger log = Logger.getLogger(this.getClass());
 	JmDNS jmdns;
+	private String myName = "";
 
 	public BonjourEmitter(String name, String identifier, int port, boolean pass, InetAddress address) throws IOException {
-		log.debug("Starting Bonjour Service");
+		myName = identifier + "@" + name + "@" + address;
+		log.debug("Starting Bonjour Service: " + myName);
 		// Set up TXT Record
 		Map<String, Object> txtRec = new HashMap<String, Object>();
 		txtRec.put("txtvers", "1");
@@ -49,7 +51,7 @@ public class BonjourEmitter {
 		// identifier = "b8:27:eb:4c:65:cd";
 
 		// Zeroconf registration
-		jmdns =  JmDNS.create(address, name + "-jmdns");
+		jmdns = JmDNS.create(address, name + "-jmdns");
 		ServiceInfo serviceInfo = ServiceInfo.create("_raop._tcp.local.", identifier + "@" + name, port, 0, 0, txtRec);
 		jmdns.registerService(serviceInfo);
 		log.info("Registered for Service: " + serviceInfo.toString());
@@ -59,8 +61,17 @@ public class BonjourEmitter {
 	 * Stop service publishing
 	 */
 	public void stop() throws IOException {
-		log.debug("Stop BonjourEmitter");
-		jmdns.unregisterAllServices();
-		jmdns.close();
+		log.debug("Stop BonjourEmitter: " + myName);
+		try {
+			jmdns.unregisterAllServices();
+		} catch (Exception e) {
+			log.error("Error Unregistering Bonjour " + myName,e);
+		} finally {
+			try {
+				jmdns.close();
+			} catch (Exception ignore) {
+
+			}
+		}
 	}
 }

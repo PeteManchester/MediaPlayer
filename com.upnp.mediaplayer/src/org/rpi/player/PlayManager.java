@@ -649,7 +649,7 @@ public class PlayManager implements Observer {
 				return;
 			}
 			this.volume = volume;
-			log.debug("Set Volume");
+			log.debug("Set Volume: " + volume);
 			EventVolumeChanged ev = new EventVolumeChanged();
 			ev.setVolume(volume);
 			obsvVolume.notifyChange(ev);

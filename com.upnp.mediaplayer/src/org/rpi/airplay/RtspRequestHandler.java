@@ -35,7 +35,7 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 	private static final String VOLUME = "volume:";
 	private AudioServer audioServer = null;
 	private Logger log = Logger.getLogger(this.getClass());
-	private boolean closeChannel = false;
+	private boolean disconnectChannel = false;
 
 	public RtspRequestHandler() {
 		PlayManager.getInstance().observeAirPlayEvents(this);
@@ -43,6 +43,16 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+		if (disconnectChannel) {
+			try {
+				e.getChannel().disconnect();
+				return;
+			} catch (Exception ex) {
+				log.error("Error Disconnecting Channel", ex);
+			} finally {
+				disconnectChannel = false;
+			}
+		}
 		HttpRequest request = (HttpRequest) e.getMessage();
 		String content = request.getContent().toString(Charset.forName("UTF-8"));
 		if (!RtspVersions.RTSP_1_0.equals(request.getProtocolVersion())) {
@@ -79,10 +89,10 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 		HttpMethod method = request.getMethod();
 		if (RtspMethods.OPTIONS.equals(method)) {
 			response.addHeader("Public", "ANNOUNCE, SETUP, RECORD, PAUSE, FLUSH, TEARDOWN, OPTIONS, GET_PARAMETER, SET_PARAMETER");
-			//log.debug("OPTIONS \r\n" + request.toString() + content);
+			// log.debug("OPTIONS \r\n" + request.toString() + content);
 		} else if (RtspMethods.ANNOUNCE.equals(method)) {
 			log.debug("ANNOUNCE \r\n" + request.toString() + content);
-			closeChannel = false;
+			disconnectChannel = false;
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			try {
 				request.getContent().readBytes(out, request.getContent().readableBytes());
@@ -136,7 +146,7 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 			}
 		} else if (RtspMethods.SETUP.equals(method)) {
 			log.debug("SETUP \r\n" + request.toString() + content);
-			closeChannel = false;
+			disconnectChannel = false;
 			AudioSession session = RaopSessionManager.getSession(clientInstance);
 			if (session == null) {
 				throw new RuntimeException("No Session " + clientInstance);
@@ -162,24 +172,22 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 			e.getChannel().disconnect();
 			return;
 		} else if (RtspMethods.SET_PARAMETER.equals(method)) {
+			log.debug("SETPARAMTER: \r\n" + request.toString() + "\r\n" + content);
 			// String content =
 			// request.getContent().toString(Charset.forName("UTF-8"));
 			if (content.startsWith(VOLUME)) {
 				String vol = content.substring(VOLUME.length());
 				try {
 					Double dVol = Double.parseDouble(vol.trim());
-					dVol = dVol + 144;
+					dVol = dVol + 30;
 					dVol = dVol * 1000;
-					// dVol += 100;
-					int iVol = dVol.intValue();
-					if (iVol != 0) {
-						iVol = iVol / 1000;
+
+					try {
+						dVol = dVol / 300;
+					} catch (Exception ex) {
+						log.debug(ex);
 					}
-					iVol = iVol - 44;
-					log.debug("Vol: " + iVol);
-					// Not very good at maths so use this dodgy method to
-					// convert from db in the range -144-0 to long in the range
-					// 0-100
+					long iVol = dVol.longValue();
 					if (iVol > 100)
 						iVol = 100;
 					if (iVol < 0)
@@ -200,23 +208,13 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 		boolean keepAlive = isKeepAlive(request);
 
 		if (keepAlive) {
-			if (closeChannel) {
-				keepAlive = false;
-				closeChannel = false;
-			} else {
-				response.setHeader("Content-Length", response.getContent().readableBytes());
-			}
+			response.setHeader("Content-Length", response.getContent().readableBytes());
 		}
 		// log.debug("Respone: " + response.toString());
 		ChannelFuture future = e.getChannel().write(response);
 
 		if (!keepAlive) {
-			log.debug("Attempting to Close Channel");
-			try {
-				future.addListener(ChannelFutureListener.CLOSE);
-			} catch (Exception ex) {
-				log.error("Error Closing Future Channel", ex);
-			}
+			future.addListener(ChannelFutureListener.CLOSE);
 		}
 	}
 
@@ -255,7 +253,6 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 	}
 
 	private void tearDown() {
-		//closeChannel = true;
 		log.debug("Stopping Audio Playing");
 		try {
 			if (audioServer != null) {
@@ -276,6 +273,8 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 		EventBase e = (EventBase) obj;
 		switch (e.getType()) {
 		case EVENTAIRPLAYERSTOP:
+			log.debug("Stop Airplayer");
+			disconnectChannel = true;
 			tearDown();
 			break;
 		}
