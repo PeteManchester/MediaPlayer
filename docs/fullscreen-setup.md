@@ -96,3 +96,10 @@ xset -dpms
 
 java -jar "${SCRIPTPATH}"/mediaplayer.jar > /dev/null &
 ```
+
+## Cubox-I specific setup
+
+```
+xwininfo -display :0.0 -name xterm -size
+```
+

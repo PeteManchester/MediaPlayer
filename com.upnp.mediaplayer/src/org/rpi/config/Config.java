@@ -26,7 +26,31 @@ import org.apache.log4j.RollingFileAppender;
 import org.rpi.log.CustomPatternLayout;
 
 enum Props {
-	MEDIAPLAYER_FRIENDLY_NAME("mediaplayer_friendly_name"), MEDIAPLAYER_PLAYER("mediaplayer_player"), MEDIAPLAYER_PLAYLIST_MAX("mediaplayer_playlist_max"), MEDIAPLAYER_ENABLE_AVTRANSPORT("mediaplayer_enable_avTransport"), MEDIAPLAYER_ENABLE_RECEIVER("mediaplayer_enable_receiver"), MEDIAPLAYER_STARTUP_VOLUME("mediaplayer_startup_volume"), MEDIAPLAYER_SAVE_LOCAL_PLAYLIST("mediaplayer_save_local_playlist"), MPLAYER_PLAY_DEFINITIONS("mplayer_play_definitions"), MPLAYER_PATH("mplayer_path"), MPLAYER_CACHE_SIZE("mplayer_cache_size"), MPLAYER_CACHE_MIN("mplayer_cache_min"), MPD_HOST("mpd_host"), MPD_PORT("mpd_port"), MPD_PRELOAD_TIMER("mpd_preload_timer"), LOG_FILE_NAME("log_file_name"), LOG_FILE_LEVEL("log_file_level"), LOG_CONSOLE_LEVEL("log_console_level"), OPENHOME_PORT("openhome_port"), OPENHOME_LOG_LEVEL("openhome_log_level"), SONGCAST_SOUNDCARD_NAME("songcast_soundcard_name"), SONGCAST_LATENCY_ENABLED("songcast_latency_enabled"), RADIO_TUNEIN_USERNAME("radio_tunein_username"), RADIO_TUNEIN_PARTNERID("radio_tunein_partnerid"), WEB_SERVER_PORT("web_server_port"), WEB_SERVER_ENABLED("web_server_enabled");
+	MEDIAPLAYER_FRIENDLY_NAME("mediaplayer_friendly_name"),
+    MEDIAPLAYER_PLAYER("mediaplayer_player"),
+    MEDIAPLAYER_PLAYLIST_MAX("mediaplayer_playlist_max"),
+    MEDIAPLAYER_ENABLE_AVTRANSPORT("mediaplayer_enable_avTransport"),
+    MEDIAPLAYER_ENABLE_RECEIVER("mediaplayer_enable_receiver"),
+    MEDIAPLAYER_STARTUP_VOLUME("mediaplayer_startup_volume"),
+    MEDIAPLAYER_SAVE_LOCAL_PLAYLIST("mediaplayer_save_local_playlist"),
+    MPLAYER_PLAY_DEFINITIONS("mplayer_play_definitions"),
+    MPLAYER_PATH("mplayer_path"),
+    MPLAYER_CACHE_SIZE("mplayer_cache_size"),
+    MPLAYER_CACHE_MIN("mplayer_cache_min"),
+    MPD_HOST("mpd_host"), MPD_PORT("mpd_port"),
+    MPD_PRELOAD_TIMER("mpd_preload_timer"),
+    LOG_FILE_NAME("log_file_name"),
+    LOG_FILE_LEVEL("log_file_level"),
+    LOG_CONSOLE_LEVEL("log_console_level"),
+    OPENHOME_PORT("openhome_port"),
+    OPENHOME_LOG_LEVEL("openhome_log_level"),
+    SONGCAST_SOUNDCARD_NAME("songcast_soundcard_name"),
+    SONGCAST_LATENCY_ENABLED("songcast_latency_enabled"),
+    RADIO_TUNEIN_USERNAME("radio_tunein_username"),
+    RADIO_TUNEIN_PARTNERID("radio_tunein_partnerid"),
+    WEB_SERVER_PORT("web_server_port"),
+    WEB_SERVER_ENABLED("web_server_enabled");
+
 	private final String stringValue;
 
 	private Props(final String s) {
