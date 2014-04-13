@@ -135,7 +135,7 @@ public class FullscreenDisplayView extends JFrame {
 
         // artist text
         String artistText = "Artist";
-        artistPanel = this.addTextToPane(artistText, null, xHalf, y, halfWidth, lineHeight);
+        artistPanel = this.addTextToPane(artistText, smallFont, xHalf, y, halfWidth, lineHeight);
         d_pane.add(artistPanel);
 
         Font smallFont = new Font(Font.SANS_SERIF, Font.PLAIN, 30);
