@@ -50,7 +50,7 @@ public class MarqueePanel extends JPanel
         this(new JLabel(), scrollFrequency, scrollAmount);
 
         // set default font
-        this.label.setFont(new Font(Font.SANS_SERIF, Font.ITALIC, 40));
+        this.label.setFont(new Font(Font.SANS_SERIF, Font.ITALIC, 50));
         // set default layout of label
         this.label.setForeground(Color.YELLOW);
         this.label.setBackground(Color.BLACK);
