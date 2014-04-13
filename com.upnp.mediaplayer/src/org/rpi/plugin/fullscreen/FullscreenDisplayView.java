@@ -133,12 +133,12 @@ public class FullscreenDisplayView extends JFrame {
             LOGGER.error("Cannot determine Track Image", e);
         }
 
+        Font smallFont = new Font(Font.SANS_SERIF, Font.PLAIN, 30);
+
         // artist text
         String artistText = "Artist";
         artistPanel = this.addTextToPane(artistText, smallFont, xHalf, y, halfWidth, lineHeight);
         d_pane.add(artistPanel);
-
-        Font smallFont = new Font(Font.SANS_SERIF, Font.PLAIN, 30);
 
         // album text
         y = y + lineHeight + separator;
