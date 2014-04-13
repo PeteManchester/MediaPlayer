@@ -36,7 +36,7 @@
     
         <div class="container">
             <section>
-                <h1>Setup MediaPlayer on ArchLinux (Raspberry Pi)</h1>
+                <h1>Setup MediaPlayer on ArchLinux (Raspberry Pi/cubox-i)</h1>
 <p>Since I am using ArchLinux this installation instruction covers this distribution.</p>
 <h2>Setup ArchLinux</h2>
 <pre><code>[Downloads]$ sudo dd bs=1M if=ArchLinuxARM-2014.03-rpi.img of=/dev/mmcblk0</code></pre>
@@ -47,24 +47,46 @@
 is enough ;-)</p>
 <pre><code>[root@alarmpi]# pacman -S jre7-openjdk</code></pre>
 <h2>Setup MPD</h2>
-<pre><code>[root@alarmpi]# pacman -S mpd</code></pre>
-<p>An example configuration is shown here.</p>
+<pre><code>[root@alarmpi]# pacman -S mpd
+[root@alarmpi]# pacman -S alsa-plugins alsa-utils alsaplayer alsa-tools</code></pre>
+<p>This will bring up (at least on the cubox-i) a question on the libgl provider,
+I have chosen to use mesa-libgl. Could be, that you are better off with another
+setting.</p>
+<p>An example configuration for raspberry pi is shown here.</p>
 <pre><code>user "mpd"
 pid_file "/run/mpd/mpd.pid"
 #db_file "/var/lib/mpd/mpd.db"
 state_file "/var/lib/mpd/mpdstate"
 playlist_directory "/var/lib/mpd/playlists"
+log_file "/var/log/mpd.log"
 
 audio_output {
     type "alsa"
     name "PiALSA"
     device "hw:0,0"
 }</code></pre>
+<p>An example configuration for cubox-i is shown here:</p>
+<pre><code>user "mpd"
+pid_file "/run/mpd/mpd.pid"
+#db_file "/var/lib/mpd/mpd.db"
+state_file "/var/lib/mpd/mpdstate"
+playlist_directory "/var/lib/mpd/playlists"
+log_file "/var/log/mpd.log"
+
+audio_output {
+   type   "alsa"
+   name   "SPDIF out"
+   device   "hw:0,0"
+}</code></pre>
+<p>On a cubox-i this config will work, but could lead to errors in the log file
+(/var/log/mpd.log):</p>
+<pre><code>alsa_mixer: Failed to read mixer for 'SPDIF out': no such mixer control: PCM</code></pre>
 <p>Please note, that the default db is disabled, and MPD is configured to use the
-"usual" audio output of the Raspberry Pi. If you are using a different USB
+"usual" audio output of the Raspberry Pi/cubox-i. If you are using a different USB
 Audio Device, this should most probably be adopted.</p>
 <p>Enable automatic startup of mpd after a reboot.</p>
-<pre><code>systemctl enable mpd.service</code></pre>
+<pre><code>systemctl start mpd.service
+systemctl enable mpd.service</code></pre>
 <h2>Setup MediaPlayer</h2>
 <p>We are going to use the latest beta version in this install. If you would like to
 use a "stable" version, please replace "beta" with "release".</p>
@@ -124,7 +146,8 @@ ExecStart=/opt/mediaplayer/run_systemd.sh
 [Install]
 WantedBy=multi-user.target</code></pre>
 <p>Now start the mediaplayer service:</p>
-<pre><code>[root@alarmpi]# systemctl start mediaplayer.service</code></pre>
+<pre><code>[root@alarmpi]# systemctl start mediaplayer.service
+[root@alarmpi]# systemctl enable mediaplayer.service</code></pre>
 <h2>Enable Plugins</h2>
 <p>MediaPlayer provides a lot of <a href="https://github.com/PeteManchester/MediaPlayer/wiki">Plugins</a>
 which need to be installed separately and on request. In the following we enable the
