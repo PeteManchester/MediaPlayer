@@ -4,19 +4,12 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-import org.joda.time.Duration;
-import org.joda.time.Period;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
 import org.openhome.net.device.IDvInvocation;
 
 public class Utils {
@@ -24,24 +17,24 @@ public class Utils {
     private static Logger log = Logger.getLogger(Utils.class);
     private static Pattern pattern = Pattern.compile("(\\d{1}):(\\d{2}):(\\d{2}).(\\d{3})");
 
-    private static PeriodFormatter pfWithSeconds = new PeriodFormatterBuilder()
-            .printZeroAlways()
-            .maximumParsedDigits(2)
-            .minimumPrintedDigits(2)
-            .appendHours()
-            .appendSeparator(":")
-            .maximumParsedDigits(2)
-            .minimumPrintedDigits(2)
-            .appendMinutes()
-            .appendSeparator(":")
-            .maximumParsedDigits(2)
-            .minimumPrintedDigits(2)
-            .appendSeconds()
-            .appendSeparator(".")
-            .printZeroRarelyFirst()
-            .maximumParsedDigits(3)
-            .appendMillis()
-            .toFormatter();
+//    private static PeriodFormatter pfWithSeconds = new PeriodFormatterBuilder()
+//            .printZeroAlways()
+//            .maximumParsedDigits(2)
+//            .minimumPrintedDigits(2)
+//            .appendHours()
+//            .appendSeparator(":")
+//            .maximumParsedDigits(2)
+//            .minimumPrintedDigits(2)
+//            .appendMinutes()
+//            .appendSeparator(":")
+//            .maximumParsedDigits(2)
+//            .minimumPrintedDigits(2)
+//            .appendSeconds()
+//            .appendSeparator(".")
+//            .printZeroRarelyFirst()
+//            .maximumParsedDigits(3)
+//            .appendMillis()
+//            .toFormatter();
 
     public static String getLogText(IDvInvocation paramIDvInvocation) {
         if (!log.isDebugEnabled())

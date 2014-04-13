@@ -233,11 +233,14 @@ function checkStatusConfig() {
 							decode(data.web_server_enabled));
 					$("#web_server_enabled").slider("refresh");
 
-					$("#tunein_username").val(
-							decode(data.radio_tunein_username));
+					//$("#tunein_username").val(
+					//		decode(data.radio_tunein_username));
 					
+					$("#aiplayerRecevier").val(
+							decode(data.airplay_enabled));
+					$("#aiplayerRecevier").slider("refresh");
 					
-
+					$("#airplay_port").val(decode(data.airplay_port));
 				},
 				error : function(result) {
 					alert("Error " + result);

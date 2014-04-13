@@ -41,5 +41,11 @@
 	    <type>Receiver</type>
 	    <GPIO_PIN>9</GPIO_PIN>
 	</Source>
+	
+	<Source>
+	    <name>AirPlay</name>
+	    <type>AirPlay</type>
+	    <GPIO_PIN>9</GPIO_PIN>
+	</Source>
 
 </Sources>

@@ -26,6 +26,7 @@ public class NetworkUtils {
      * Get the MAC Address.
      *
      * The previous implementation was kind of "oldschool", see http://www.mkyong.com/java/how-to-get-mac-address-in-java/
+     * TODO Does not work on Raspi...
      *
      * @return
      */
@@ -36,6 +37,7 @@ public class NetworkUtils {
 
         try {
             ip = InetAddress.getLocalHost();
+            log.debug("InterAdress: " + ip.getHostAddress());
             NetworkInterface network = NetworkInterface.getByInetAddress(ip);
 
             byte[] mac = network.getHardwareAddress();

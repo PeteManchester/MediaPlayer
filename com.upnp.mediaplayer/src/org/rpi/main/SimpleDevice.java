@@ -1,5 +1,6 @@
 package org.rpi.main;
 
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -24,6 +25,7 @@ import org.openhome.net.device.DvDeviceFactory;
 import org.openhome.net.device.IDvDeviceListener;
 import org.openhome.net.device.IResourceManager;
 import org.openhome.net.device.IResourceWriter;
+import org.rpi.airplay.AirPlayThread;
 import org.rpi.config.Config;
 import org.rpi.http.HttpServerGrizzly;
 import org.rpi.os.OSManager;
@@ -64,6 +66,8 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	private PrvAVTransport iAVTransport = null;
 	private PrvRenderingControl iRenderingControl = null;
 	private HttpServerGrizzly httpServer = null;
+	
+	private AirPlayThread airplay = null;
 
 	private PlayManager iPlayer = PlayManager.getInstance();
 
@@ -142,6 +146,8 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 					Source reciever = new Source("Receiver", "Receiver", "-99");
 					sources.put(reciever.getName(), reciever);
 				}
+				Source airplay = new Source("AirPlay", "AirPlay", "-99");
+				sources.put(airplay.getName(), airplay);
 			}
 			PluginGateWay.getInstance().setSources(sources);
 			PluginGateWay.getInstance().setDefaultSourcePin(sr.getDefaultPin());
@@ -170,6 +176,15 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			log.debug("Setting Startup Volume: " + Config.getInstance().getMediaplayerStartupVolume());
 			PlayManager.getInstance().setVolume(Config.getInstance().getMediaplayerStartupVolume());
 		}
+		
+		log.info("Start AirPlay Receiver");
+		
+		//log.info("Network Adapter: " + NetworkUtils.getMacAddress());
+		
+		airplay =  new AirPlayThread(Config.getInstance().getMediaplayerFriendlyName());
+		airplay.start();
+		
+		
 		
 		OSManager.getInstance().loadPlugins();
 	}
@@ -274,6 +289,17 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	}
 
 	public void dispose() {
+		
+		try{
+			if(airplay!=null)
+			{
+				airplay.stopThread();
+			}
+		}
+		catch(Exception e)
+		{
+			log.error("Error Shutting Down AirPlay Server",e);
+		}
 
 		try {
 			if (httpServer != null) {

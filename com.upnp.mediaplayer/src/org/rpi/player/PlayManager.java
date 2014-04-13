@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.log4j.Logger;
+import org.rpi.channel.ChannelAirPlay;
 import org.rpi.channel.ChannelBase;
 import org.rpi.channel.ChannelPlayList;
 import org.rpi.channel.ChannelRadio;
@@ -14,6 +15,7 @@ import org.rpi.channel.ChannelSongcast;
 import org.rpi.config.Config;
 import org.rpi.mpdplayer.MPDPlayerController;
 import org.rpi.mplayer.MPlayerController;
+import org.rpi.player.events.EventAirPlayerStop;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventFinishedCurrentTrack;
 import org.rpi.player.events.EventMuteChanged;
@@ -70,6 +72,7 @@ public class PlayManager implements Observer {
 	private ObservableProduct obsvProduct = new ObservableProduct();
 	private ObservableAVTransport obsvAVTransport = new ObservableAVTransport();
 	private ObservableSongcast obsvSongcast = new ObservableSongcast();
+	private ObservableAirPlay obsvAirPlay = new ObservableAirPlay();
 	private String status = "";
 
 	private static PlayManager instance = null;
@@ -107,8 +110,15 @@ public class PlayManager implements Observer {
 	 */
 	private void playThis(ChannelBase t) {
 		if (t != null) {
-			EventStopSongcast ev = new EventStopSongcast();
-			obsvSongcast.notifyChange(ev);
+			if (current_track instanceof ChannelSongcast) {
+				EventStopSongcast ev = new EventStopSongcast();
+				obsvSongcast.notifyChange(ev);
+			}
+			if (current_track instanceof ChannelAirPlay) {
+				EventAirPlayerStop eva = new EventAirPlayerStop();
+				obsvAirPlay.notifyChange(eva);
+			}
+
 			current_track = t;
 			long v = mplayer_volume;
 			if (!isUseExternalVolume())
@@ -465,6 +475,14 @@ public class PlayManager implements Observer {
 		if (mPlayer.isPlaying()) {
 			mPlayer.stop();
 		}
+		if (current_track instanceof ChannelSongcast) {
+			EventStopSongcast ev = new EventStopSongcast();
+			obsvSongcast.notifyChange(ev);
+		}
+		if (current_track instanceof ChannelAirPlay) {
+			EventAirPlayerStop eva = new EventAirPlayerStop();
+			obsvAirPlay.notifyChange(eva);
+		}		
 	}
 
 	/**
@@ -550,6 +568,18 @@ public class PlayManager implements Observer {
 		setCurrentTrack(track);
 	}
 
+	/**
+	 * Play an AirPlay channel
+	 * 
+	 * @param channel
+	 */
+	public void playAirPlayer(ChannelAirPlay track) {
+		log.debug("Playing AirPlay Server. Stop Playing current Track");
+		stop();
+		// current_track = channel;
+		setCurrentTrack(track);
+	}
+
 	public synchronized void playAV(ChannelPlayList c) {
 		log.debug("Play AV Track :  " + c.getUri());
 		playThis(c);
@@ -619,7 +649,7 @@ public class PlayManager implements Observer {
 				return;
 			}
 			this.volume = volume;
-			log.debug("Set Volume");
+			log.debug("Set Volume: " + volume);
 			EventVolumeChanged ev = new EventVolumeChanged();
 			ev.setVolume(volume);
 			obsvVolume.notifyChange(ev);
@@ -1063,6 +1093,15 @@ public class PlayManager implements Observer {
 	public void observeSongcastEvents(Observer o) {
 		obsvSongcast.addObserver(o);
 
+	}
+
+	/**
+	 * Register for AirPlay Events
+	 * 
+	 * @param o
+	 */
+	public void observeAirPlayEvents(Observer o) {
+		obsvAirPlay.addObserver(o);
 	}
 
 	public void observeAVEvents(Observer o) {

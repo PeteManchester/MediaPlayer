@@ -31,9 +31,9 @@ public class OHMEventSlave extends SongcastMessage {
 //		log.debug("Slave Message: " + s);
 
 		int slave_count = new BigInteger(getBytes(8, 11)).intValue();
-		byte[] slave = getBytes(12, 17);
+		//byte[] slave = getBytes(12, 17);
 		for (int i = 0; i < slave_count; i++) {
-			byte[] endpoint = getBytes(12+(6*i), 17+(6*1));
+			byte[] endpoint = getBytes(12+(6*i), 17+(6*i));
 			try {				
 				InetAddress address = InetAddress.getByAddress(getBytesFragment(0, 3, endpoint));
 				byte[] bPort = getBytesFragment(4, 5, endpoint);
