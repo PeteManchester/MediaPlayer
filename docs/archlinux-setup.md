@@ -8,7 +8,9 @@ Since I am using ArchLinux this installation instruction covers this distributio
 [Downloads]$ sudo dd bs=1M if=ArchLinuxARM-2014.03-rpi.img of=/dev/mmcblk0
 ```
 
-see http://archlinuxarm.org/platforms/armv6/raspberry-pi for additional hints
+see http://archlinuxarm.org/platforms/armv6/raspberry-pi or
+http://archlinuxarm.org/platforms/armv7/freescale/cubox-i
+for additional hints
 
 ```
 ssh root@alarmpi
