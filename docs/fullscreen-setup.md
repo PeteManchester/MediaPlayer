@@ -1,7 +1,7 @@
 # Fullscreen Plugin
 
 To use the Fullscreen plugin, some additional steps to the already described
-[installation instructions](/docs/archlinux-setup.html) are required.
+[installation instructions](/MediaPlayer/docs/archlinux-setup.html) are required.
 
 Since I am using ArchLinux this installation instruction covers this distribution.
 
