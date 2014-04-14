@@ -21,6 +21,9 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.rpi.alacdecoder.AlacDecodeUtils;
 import org.rpi.alacdecoder.AlacFile;
 import org.rpi.config.Config;
+import org.rpi.mplayer.TrackInfo;
+import org.rpi.player.PlayManager;
+import org.rpi.player.events.EventUpdateTrackInfo;
 import org.rpi.songcast.core.AudioInformation;
 import org.rpi.songcast.ohm.SourceTimer;
 
@@ -72,7 +75,7 @@ public class AudioEventQueue implements Runnable, Observer {
 			setAudioDevice();
 			AudioSessionHolder.getInstance().addObserver(this);
 
-			AudioInformation audioInf = new AudioInformation(44100, 96000, 16, 2, "ALAC", 0, 0);
+			AudioInformation audioInf = new AudioInformation(44100, 48, 16, 2, "ALAC", 0, 0);
 			log.debug("Creating Audio Format: " + audioInf.toString());
 			audioFormat = new AudioFormat(audioInf.getSampleRate(), audioInf.getBitDepth(), audioInf.getChannels(), audioInf.isSigned(), audioInf.isBigEndian());
 			info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
@@ -83,6 +86,19 @@ public class AudioEventQueue implements Runnable, Observer {
 				bWrite = true;
 			}
 			bWrite = true;
+			
+			TrackInfo info = new TrackInfo();
+			info.setBitDepth(audioInf.getBitDepth());
+			info.setCodec(audioInf.getCodec());
+			info.setBitrate(audioInf.getBitRate());
+			info.setSampleRate((long) audioInf.getSampleRate());
+			info.setDuration(0);
+			EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
+			ev.setTrackInfo(info);
+			if (ev != null) {
+				PlayManager.getInstance().updateTrackInfo(ev);
+			}
+			
 		} catch (Exception e) {
 			log.error("Error Opening Audio Line", e);
 		}

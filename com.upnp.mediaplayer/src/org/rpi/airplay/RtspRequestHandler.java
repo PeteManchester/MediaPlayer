@@ -9,6 +9,7 @@ import static org.jboss.netty.handler.codec.http.HttpHeaders.*;
 import org.jboss.netty.handler.codec.rtsp.RtspMethods;
 import org.jboss.netty.handler.codec.rtsp.RtspVersions;
 import org.rpi.channel.ChannelAirPlay;
+import org.rpi.config.Config;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventUpdateTrackMetaText;
@@ -133,7 +134,11 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 					session.setFmtp(fmtp);
 					AudioSessionHolder.getInstance().setSession(session);
 				}
-				String client_name = URLDecoder.decode(request.getHeader("X-Apple-Client-Name"), "UTF-8");
+				String client_name = "iTunes";
+				if(request.containsHeader("X-Apple-Client-Name"))
+				{
+					client_name = URLDecoder.decode(request.getHeader("X-Apple-Client-Name"), "UTF-8");
+				}				
 				String metaData = "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:artist role='Performer' xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:artist><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='' nrAudioChannels='' protocolInfo='http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01'></res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:albumArtURI></item></DIDL-Lite>";
 				ChannelAirPlay channel = new ChannelAirPlay("", metaData, 1, client_name);
 				PlayManager.getInstance().playAirPlayer(channel);
@@ -157,6 +162,7 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 			PlayManager.getInstance().setStatus("Playing", "AIRPLAY");
 			PluginGateWay.getInstance().setSourceId("AirPlay", "AirPlay");
 			response.setHeader("Transport", request.getHeader("Transport") + ";server_port=" + session.getControlPort());
+			log.debug("SetUp Response: " + response.toString());
 		} else if (RtspMethods.RECORD.equals(method)) {
 			log.debug("RECORD \r\n" + request.toString() + content);
 			// ignore
@@ -210,6 +216,7 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 		if (keepAlive) {
 			response.setHeader("Content-Length", response.getContent().readableBytes());
 		}
+		response.addHeader("Session", "WENEEDASSESSION");
 		// log.debug("Respone: " + response.toString());
 		ChannelFuture future = e.getChannel().write(response);
 
@@ -234,10 +241,11 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 			timingPort = Integer.parseInt(timingPortMatcher.group(1));
 		}
 
+		//If iTunes is setting up the session we need to set the ports and let iTunes know..
 		if (controlPort == 0) {
-			throw new RuntimeException("no control port");
+			controlPort = Config.getInstance().getAirPlayPort() + 1;
 		} else if (timingPort == 0) {
-			throw new RuntimeException("no timing port");
+			timingPort = Config.getInstance().getAirPlayPort() + 2;
 		}
 
 		session.setControlPort(controlPort);

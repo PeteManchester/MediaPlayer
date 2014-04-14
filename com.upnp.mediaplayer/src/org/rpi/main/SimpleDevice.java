@@ -1,6 +1,5 @@
 package org.rpi.main;
 
-
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -66,7 +65,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	private PrvAVTransport iAVTransport = null;
 	private PrvRenderingControl iRenderingControl = null;
 	private HttpServerGrizzly httpServer = null;
-	
+
 	private AirPlayThread airplay = null;
 
 	private PlayManager iPlayer = PlayManager.getInstance();
@@ -115,7 +114,6 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		// iDevice.setAttribute("Upnp.IconList" , sb.toString());
 		// iDevice.setAttribute("Upnp.ModelUri", "www.google.co.uk");
 		// iDevice.setAttribute("Upnp.ModelImageUri","http://upload.wikimedia.org/wikipedia/en/thumb/0/04/Joy_Division.JPG/220px-Joy_Division.JPG");
-
 		iConnectionManager = new PrvConnectionManager(iDevice);
 		iProduct = new PrvProduct(iDevice);
 		iVolume = new PrvVolume(iDevice);
@@ -171,21 +169,18 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		} else {
 			log.warn("HTTP Daemon is set to false, not starting");
 		}
-		
+
 		if (Config.getInstance().getMediaplayerStartupVolume() >= 0) {
 			log.debug("Setting Startup Volume: " + Config.getInstance().getMediaplayerStartupVolume());
 			PlayManager.getInstance().setVolume(Config.getInstance().getMediaplayerStartupVolume());
 		}
-		
-		log.info("Start AirPlay Receiver");
-		
-		//log.info("Network Adapter: " + NetworkUtils.getMacAddress());
-		
-		airplay =  new AirPlayThread(Config.getInstance().getMediaplayerFriendlyName());
-		airplay.start();
-		
-		
-		
+
+		if (Config.getInstance().isAirPlayEnabled()) {
+			log.info("Start AirPlay Receiver");
+			airplay = new AirPlayThread(Config.getInstance().getMediaplayerFriendlyName());
+			airplay.start();
+		}
+
 		OSManager.getInstance().loadPlugins();
 	}
 
@@ -289,16 +284,13 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	}
 
 	public void dispose() {
-		
-		try{
-			if(airplay!=null)
-			{
+
+		try {
+			if (airplay != null) {
 				airplay.stopThread();
 			}
-		}
-		catch(Exception e)
-		{
-			log.error("Error Shutting Down AirPlay Server",e);
+		} catch (Exception e) {
+			log.error("Error Shutting Down AirPlay Server", e);
 		}
 
 		try {

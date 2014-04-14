@@ -9,7 +9,6 @@ import java.security.Security;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -27,6 +26,7 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.rpi.config.Config;
+import org.rpi.utils.NetworkUtils;
 import org.rpi.utils.SecUtils;
 import org.rpi.utils.Utils;
 
@@ -90,38 +90,8 @@ public class AirPlayThread extends Thread {
 		this.password = pass;
 	}
 	
-	public byte[] getHardwareAddress() {
-	    if (hwAddr == null || hwAddr.length == 0) {
-	      // MAC couldn't be determined
-	      try {
-	        InetAddress local = InetAddress.getLocalHost();
-	        NetworkInterface ni = NetworkInterface.getByInetAddress(local);
-	        if (ni != null) {
-	          hwAddr = ni.getHardwareAddress();
-	          return hwAddr;
-	        }
-	      } catch (Exception e) {
-	        log.error("Error Getting HardwareAddress:",e);
-	      }
-	      log.debug("Could not get HardwareAddress, create a Randon one");
-	      Random rand = new Random();
-	      byte[] mac = new byte[8];
-	      rand.nextBytes(mac);
-	      mac[0] = 0x00;
-	      hwAddr = mac;
-	    }
-	    return hwAddr;
-	  }
 
-	private String getStringHardwareAdress(byte[] hwAddr) {
-		StringBuilder sb = new StringBuilder();
-
-		for (byte b : hwAddr)
-			sb.append(String.format("%02x", b));
-
-		return sb.toString();
-	}
-
+	
 	public void run() {
 		log.debug("Starting AirPlay Service...");
 		// For the Raspi we have to do this now, because for some reason it is
@@ -138,7 +108,7 @@ public class AirPlayThread extends Thread {
 		int port = Config.getInstance().getAirPlayPort();
 		try {
 			// DNS Emitter (Bonjour)
-			byte[] hwAddr = getHardwareAddress();
+			byte[] hwAddr = NetworkUtils.getMacAddress();
 			log.debug("Check if Passsword is set");
 			boolean bPassword = false;
 			if (!Utils.isEmpty(password)) {
@@ -168,7 +138,7 @@ public class AirPlayThread extends Thread {
 
 					try {
 						/* Create mDNS responder for address */
-						BonjourEmitter be = new BonjourEmitter(name, getStringHardwareAdress(hwAddr), port, bPassword, addr);
+						BonjourEmitter be = new BonjourEmitter(name, NetworkUtils.toHexString(hwAddr), port, bPassword, addr);
 						emitter.add(be);
 						log.debug("Registered AirTunes service '" + name + "' on " + addr);
 					} catch (final Throwable e) {
@@ -240,4 +210,5 @@ public class AirPlayThread extends Thread {
 		closeRTSPServer();
 		this.interrupt();
 	}
+
 }
