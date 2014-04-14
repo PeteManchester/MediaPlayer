@@ -92,5 +92,7 @@ MediaPlayer is made possible due to the support of the following great human bei
   </table>
 </div>
 
+The AirPlay implementation is based on the [RPlay](https://github.com/bencall/RPlay) source code by Benjamin de Callatay
+
 If you are interested, please fork the project and apply your changes. Every Pull
 Request is greatly welcome.
