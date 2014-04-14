@@ -47,13 +47,13 @@ public class FullscreenDisplayView extends JFrame {
     public FullscreenDisplayView(String friendlyName, Boolean debug) throws HeadlessException {
 
         // initial alignment
-        int x = 10;
-        int y = 10;
+        int x = 20;
+        int y = 20;
 
-        int xHalf = 275;
-        int fullWidth = 636;
-        int halfWidth = 371;
-        int lineHeight = 50;
+        int xHalf = 320;
+        int fullWidth = 640;
+        int halfWidth = 320;
+        int lineHeight = 70;
         int separator = 0;
 
         this.debug = debug;
@@ -63,10 +63,15 @@ public class FullscreenDisplayView extends JFrame {
             border = BorderFactory.createLineBorder(Color.GREEN, 2);
         }
 
+        // small font
         Font timeFont = new Font(Font.SANS_SERIF, Font.PLAIN, 20);
 
         this.setLayout(new BorderLayout());
-        this.setSize(656, 416);
+
+        if (this.debug) {
+            this.setSize(640, 480);
+        }
+
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setUndecorated(true);
@@ -85,7 +90,7 @@ public class FullscreenDisplayView extends JFrame {
         currentDateLabel.setForeground(Color.YELLOW);
         currentDateLabel.setBackground(Color.BLACK);
         currentDateLabel.setFont(timeFont);
-        currentDateLabel.setBounds(x, y, 130, 30);
+        currentDateLabel.setBounds(x, y, 140, 30);
         currentDateLabel.setBorder(border);
         d_pane.add(currentDateLabel);
 
@@ -94,7 +99,7 @@ public class FullscreenDisplayView extends JFrame {
         currentTimeLabel.setForeground(Color.YELLOW);
         currentTimeLabel.setBackground(Color.BLACK);
         currentTimeLabel.setFont(timeFont);
-        currentTimeLabel.setBounds(140, y, 80, 30);
+        currentTimeLabel.setBounds(160, y, 80, 30);
         currentTimeLabel.setBorder(border);
         d_pane.add(currentTimeLabel);
 
@@ -103,7 +108,7 @@ public class FullscreenDisplayView extends JFrame {
         infoLabel.setForeground(Color.YELLOW);
         infoLabel.setBackground(Color.BLACK);
         infoLabel.setFont(timeFont);
-        infoLabel.setBounds(220, y, 426, 30);
+        infoLabel.setBounds(240, y, 400, 30);
         infoLabel.setBorder(border);
         d_pane.add(infoLabel);
 
@@ -128,12 +133,12 @@ public class FullscreenDisplayView extends JFrame {
             LOGGER.error("Cannot determine Track Image", e);
         }
 
+        Font smallFont = new Font(Font.SANS_SERIF, Font.PLAIN, 30);
+
         // artist text
         String artistText = "Artist";
-        artistPanel = this.addTextToPane(artistText, null, xHalf, y, halfWidth, lineHeight);
+        artistPanel = this.addTextToPane(artistText, smallFont, xHalf, y, halfWidth, lineHeight);
         d_pane.add(artistPanel);
-
-        Font smallFont = new Font(Font.SANS_SERIF, Font.PLAIN, 30);
 
         // album text
         y = y + lineHeight + separator;
@@ -162,7 +167,7 @@ public class FullscreenDisplayView extends JFrame {
         String initialTime = "00:00:00";
 
         // set y to the bottom of the panel
-        y = 350;
+        y = 410;
 
         // label with playing time
         playTimeLabel = new JLabel(initialTime);
@@ -178,7 +183,7 @@ public class FullscreenDisplayView extends JFrame {
         trackDurationLabel.setForeground(Color.YELLOW);
         trackDurationLabel.setBackground(Color.BLACK);
         trackDurationLabel.setFont(timeFont);
-        trackDurationLabel.setBounds(170, y, 100, lineHeight);
+        trackDurationLabel.setBounds(210, y, 100, lineHeight);
         trackDurationLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         trackDurationLabel.setBorder(border);
         d_pane.add(trackDurationLabel);
@@ -239,7 +244,7 @@ public class FullscreenDisplayView extends JFrame {
 
     public ImageIcon calculateImageLabel(URL url) throws IOException {
         BufferedImage image = ImageIO.read(url);
-        image = Scalr.resize(image, Scalr.Method.QUALITY, 260, Scalr.OP_ANTIALIAS);
+        image = Scalr.resize(image, Scalr.Method.QUALITY, 285, Scalr.OP_ANTIALIAS);
         ImageIcon icon = new ImageIcon(image);
 
         return icon;

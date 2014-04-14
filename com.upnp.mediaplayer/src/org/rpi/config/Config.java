@@ -26,7 +26,34 @@ import org.apache.log4j.RollingFileAppender;
 import org.rpi.log.CustomPatternLayout;
 
 enum Props {
-	MEDIAPLAYER_FRIENDLY_NAME("mediaplayer_friendly_name"), MEDIAPLAYER_PLAYER("mediaplayer_player"), MEDIAPLAYER_PLAYLIST_MAX("mediaplayer_playlist_max"), MEDIAPLAYER_ENABLE_AVTRANSPORT("mediaplayer_enable_avTransport"), MEDIAPLAYER_ENABLE_RECEIVER("mediaplayer_enable_receiver"), MEDIAPLAYER_STARTUP_VOLUME("mediaplayer_startup_volume"), MEDIAPLAYER_SAVE_LOCAL_PLAYLIST("mediaplayer_save_local_playlist"), MPLAYER_PLAY_DEFINITIONS("mplayer_play_definitions"), MPLAYER_PATH("mplayer_path"), MPLAYER_CACHE_SIZE("mplayer_cache_size"), MPLAYER_CACHE_MIN("mplayer_cache_min"), MPD_HOST("mpd_host"), MPD_PORT("mpd_port"), MPD_PRELOAD_TIMER("mpd_preload_timer"), LOG_FILE_NAME("log_file_name"), LOG_FILE_LEVEL("log_file_level"), LOG_CONSOLE_LEVEL("log_console_level"), OPENHOME_PORT("openhome_port"), OPENHOME_LOG_LEVEL("openhome_log_level"), SONGCAST_SOUNDCARD_NAME("songcast_soundcard_name"), SONGCAST_LATENCY_ENABLED("songcast_latency_enabled"), RADIO_TUNEIN_USERNAME("radio_tunein_username"), RADIO_TUNEIN_PARTNERID("radio_tunein_partnerid"), WEB_SERVER_PORT("web_server_port"), WEB_SERVER_ENABLED("web_server_enabled"),AIRPLAY_ENABLED("airplay_enabled"),AIRPLAY_PORT("airplay_port");
+	MEDIAPLAYER_FRIENDLY_NAME("mediaplayer_friendly_name"),
+	MEDIAPLAYER_PLAYER("mediaplayer_player"),
+	MEDIAPLAYER_PLAYLIST_MAX("mediaplayer_playlist_max"),
+	MEDIAPLAYER_ENABLE_AVTRANSPORT("mediaplayer_enable_avTransport"),
+	MEDIAPLAYER_ENABLE_RECEIVER("mediaplayer_enable_receiver"),
+	MEDIAPLAYER_STARTUP_VOLUME("mediaplayer_startup_volume"),
+	MEDIAPLAYER_SAVE_LOCAL_PLAYLIST("mediaplayer_save_local_playlist"),
+	MPLAYER_PLAY_DEFINITIONS("mplayer_play_definitions"),
+	MPLAYER_PATH("mplayer_path"),
+	MPLAYER_CACHE_SIZE("mplayer_cache_size"),
+	MPLAYER_CACHE_MIN("mplayer_cache_min"),
+	MPD_HOST("mpd_host"),
+	MPD_PORT("mpd_port"),
+	MPD_PRELOAD_TIMER("mpd_preload_timer"),
+	LOG_FILE_NAME("log_file_name"),
+	LOG_FILE_LEVEL("log_file_level"),
+	LOG_CONSOLE_LEVEL("log_console_level"),
+	OPENHOME_PORT("openhome_port"),
+	OPENHOME_LOG_LEVEL("openhome_log_level"),
+	SONGCAST_SOUNDCARD_NAME("songcast_soundcard_name"),
+	SONGCAST_LATENCY_ENABLED("songcast_latency_enabled"),
+	RADIO_TUNEIN_USERNAME("radio_tunein_username"),
+	RADIO_TUNEIN_PARTNERID("radio_tunein_partnerid"),
+	WEB_SERVER_PORT("web_server_port"),
+	WEB_SERVER_ENABLED("web_server_enabled"),
+	AIRPLAY_ENABLED("airplay_enabled"),
+	AIRPLAY_PORT("airplay_port");
+
 	private final String stringValue;
 
 	private Props(final String s) {
@@ -164,7 +191,7 @@ public class Config {
 
 	/**
 	 * Get a String value from the properties map
-	 * 
+	 *
 	 * @param key
 	 * @param default_value
 	 * @return
@@ -183,7 +210,7 @@ public class Config {
 
 	/**
 	 * Get an int value from the properties map
-	 * 
+	 *
 	 * @param key
 	 * @param default_value
 	 * @return
@@ -199,7 +226,7 @@ public class Config {
 
 	/**
 	 * Get a boolean value from the properties map
-	 * 
+	 *
 	 * @param key
 	 * @param default_value
 	 * @return
@@ -529,7 +556,7 @@ public class Config {
 	public String getRadioTuneinUsername() {
 		return getValue(Props.RADIO_TUNEIN_USERNAME, "");
 	}
-	
+
 
 	/**
 	 * @param radio_tunein_username
@@ -538,9 +565,9 @@ public class Config {
 	public void setRadioTuneinUsername(String radio_tunein_username) {
 		// this.radio_tunein_username = radio_tunein_username;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public String getRadioTuneInPartnerId()
@@ -592,21 +619,21 @@ public class Config {
 	public void setWebServerPort(String web_server_port) {
 		// Config.web_server_port = web_server_port;
 	}
-	
+
 	public boolean isAirPlayEnabled() {
-		
+
 		return getValueBool(Props.AIRPLAY_ENABLED, true);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @return
 	 */
 	public int getAirPlayPort()
 	{
 		return getValueInt(Props.AIRPLAY_PORT, 5000);
 	}
-	
+
 	/***
 	 * Set up our logging
 	 */
@@ -655,7 +682,7 @@ public class Config {
 	public void setSongCastNICName(String nic) {
 		songcast_nic_name = nic;
 	}
-	
+
 	/**
 	 * Change the Console log level
 	 * @param level
@@ -673,7 +700,7 @@ public class Config {
 			log.error("Error setting Console Log Level",e);
 		}
 	}
-	
+
 	/**
 	 * Change the LogFile log level
 	 * @param level
@@ -745,7 +772,7 @@ public class Config {
 				}
 				catch(Exception e)
 				{
-					
+
 				}
 			}
 		}
