@@ -8,6 +8,7 @@ package org.rpi.airplay;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 import org.apache.log4j.Logger;
 import org.rpi.player.PlayManager;
@@ -52,6 +53,7 @@ public class AudioServer {
 		// Init instance var
 		this.session = session;
 		initRTP();
+		initTiming();
 
 	}
 
@@ -72,14 +74,14 @@ public class AudioServer {
 		try {
 			csock.close();
 		} catch (Exception e) {
+			log.error("Error Closing CSocket", e);
+		}
+		try {
+			sock.close();
+		} catch (Exception e) {
 			log.error("Error Closing Socket", e);
 		}
 		PlayManager.getInstance().setStatus("Stopped", "AIRPLAY");
-	}
-
-	public void setVolume(double vol) {
-		// TODO Change Volume
-		log.debug("Set Volume: " + vol);
 	}
 
 	/**
@@ -110,6 +112,12 @@ public class AudioServer {
 		listener = new UDPListener(sock, session);
 		listenerThread = new Thread(listener, "UDPListner");
 		listenerThread.start();
+	}
+	
+	private void initTiming()
+	{
+		//int port = session.getTimingPort();
+		//TimingChannel timing = new TimingChannel(session.getLocalAddress(), session.getRemoteAddress(),session.getTimingPort());
 	}
 
 	/**

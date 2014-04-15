@@ -575,7 +575,13 @@ public class PlayManager implements Observer {
 	 */
 	public void playAirPlayer(ChannelAirPlay track) {
 		log.debug("Playing AirPlay Server. Stop Playing current Track");
-		stop();
+		if (mPlayer.isPlaying()) {
+			mPlayer.stop();
+		}
+		if (current_track instanceof ChannelSongcast) {
+			EventStopSongcast ev = new EventStopSongcast();
+			obsvSongcast.notifyChange(ev);
+		}
 		// current_track = channel;
 		setCurrentTrack(track);
 	}

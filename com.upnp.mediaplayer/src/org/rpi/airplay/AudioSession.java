@@ -1,5 +1,7 @@
 package org.rpi.airplay;
 
+import java.net.InetSocketAddress;
+
 import org.apache.log4j.Logger;
 import org.rpi.alacdecoder.AlacDecodeUtils;
 import org.rpi.alacdecoder.AlacFile;
@@ -24,6 +26,8 @@ public class AudioSession {
 	private int _86;
 	private int _8a_rate;
 	private BiquadFilter bFilter;
+	private InetSocketAddress localAddress =null;
+	private InetSocketAddress remoteAddress = null;
 
 	public AudioSession(byte[] aesiv, byte[] aeskey, String fmtp, int controlPort, int timingPort) {
 		// KEYS
@@ -208,5 +212,25 @@ public class AudioSession {
 		sb.append("_8a_rate: " + this.get_8a_rate());
 		sb.append(n);		
 		return sb.toString();
+	}
+	
+	public InetSocketAddress getLocalAddress()
+	{
+		return localAddress;
+	}
+
+	public void setLocalAddress(InetSocketAddress localAddress) {
+		this.localAddress  = localAddress;
+		
+	}
+	
+	public InetSocketAddress getRemoteAddress()
+	{
+		return remoteAddress;
+	}
+
+	public void setRemoteAddress(InetSocketAddress remoteAddress) {
+		this.remoteAddress = remoteAddress;
+		
 	}
 }

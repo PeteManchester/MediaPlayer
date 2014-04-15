@@ -77,8 +77,9 @@ public class StartMe {
                 for (int cnt = 0; cnt < mixerInfo.length; cnt++) {
                 	String mixer = mixerInfo[cnt].getName().trim();
                     log.info("'" + mixer + "'");
-                    if(mixer.toUpperCase().endsWith("[plughw:0,0]")||mixer.toUpperCase().contains("PRIMARY SOUND DRIVER"))
+                    if(mixer.trim().toUpperCase().endsWith("[PLUGHW:0,0]")||mixer.toUpperCase().trim().contains("PRIMARY SOUND DRIVER"))
                     {
+                    	log.debug("Setting Audio Device: " + mixer);
                     	setAudioDevice(mixer);
                     }
                 }

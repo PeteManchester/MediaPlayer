@@ -62,6 +62,15 @@ public class UDPListener implements Runnable {
 		} catch (Exception e) {
 			log.error("Error Stopping AudioEventQueue", e);
 		}
+		
+		try
+		{
+			socket.close();
+		}
+		catch(Exception e)
+		{
+			log.error("Error Closing UDP Socket",e);
+		}
 
 		try {
 			if (threadMessageQueue != null) {
