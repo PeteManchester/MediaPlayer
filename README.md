@@ -25,6 +25,8 @@ We support the following UPnP and OpenHome Functionality:
 * [Radio](http://www.openhome.org/wiki/Av:Developer:RadioService)
 * [SongCast](http://www.linn.co.uk/software#songcast)
 
+Also supported is Apples AirPlay Receiver.  
+
 We are currently implementing a http-daemon to make it possible to configure and
 control the whole application via a web-interface.
 
@@ -89,6 +91,8 @@ MediaPlayer is made possible due to the support of the following great human bei
     </tbody>
   </table>
 </div>
+
+The AirPlay implementation is based on the [RPlay](https://github.com/bencall/RPlay) source code by Benjamin de Callatay
 
 If you are interested, please fork the project and apply your changes. Every Pull
 Request is greatly welcome.
