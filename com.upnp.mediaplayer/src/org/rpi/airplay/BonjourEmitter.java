@@ -54,7 +54,7 @@ public class BonjourEmitter {
 		jmdns = JmDNS.create(address, name + "-jmdns");
 		ServiceInfo serviceInfo = ServiceInfo.create("_raop._tcp.local.", identifier + "@" + name, port, 0, 0, txtRec);
 		jmdns.registerService(serviceInfo);
-		log.info("Registered for Service: " + serviceInfo.toString());
+		log.info("Registered for Service: \r\n" + serviceInfo.toString());
 	}
 
 	/**

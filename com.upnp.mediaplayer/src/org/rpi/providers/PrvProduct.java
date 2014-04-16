@@ -215,6 +215,8 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 
 	@Override
 	protected long sourceCount(IDvInvocation paramIDvInvocation) {
+		String uri = paramIDvInvocation.getResourceUriPrefix();
+		log.debug(uri);
 		long source_count = getPropertySourceCount();
 		log.debug("SourceCount: " + source_count + Utils.getLogText(paramIDvInvocation));
 		return source_count;

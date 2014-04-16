@@ -80,7 +80,7 @@ public class StartMe {
                     if(mixer.trim().toUpperCase().endsWith("[PLUGHW:0,0]")||mixer.toUpperCase().trim().contains("PRIMARY SOUND DRIVER"))
                     {
                     	log.debug("Setting Audio Device: " + mixer);
-                    	setAudioDevice(mixer);
+                    	//setAudioDevice(mixer);
                     }
                 }
             } catch (Exception e) {
@@ -88,7 +88,7 @@ public class StartMe {
             }
             log.info("End Of Audio Devices");
         }
-
+        setAudioDevice();
 		log.info("JVM Version: " + System.getProperty("java.version"));
 		printSystemProperties();
 		SimpleDevice sd = new SimpleDevice();
@@ -170,9 +170,9 @@ public class StartMe {
 	/**
 	 * Used to set the Songcast Audio Device
 	 */
-	private static void setAudioDevice(String name) {
+	private static void setAudioDevice() {
 		Properties props = System.getProperties();
-		name = "#" + name;
+		String name = "#" + Config.getInstance().getSongcastSoundcardName();
 		props.setProperty("javax.sound.sampled.SourceDataLine", name);
 		log.warn("###Setting Sound Card Name: " + name);
 	}

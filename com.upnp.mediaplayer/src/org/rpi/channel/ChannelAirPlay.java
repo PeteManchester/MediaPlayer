@@ -20,6 +20,7 @@ import org.xml.sax.InputSource;
 public class ChannelAirPlay extends ChannelBase {
 	
 	private Logger log = Logger.getLogger(this.getClass());
+	private String metadata = "";
 
 	public ChannelAirPlay(String uri, String metadata, int id,String name) {
 		super(uri, metadata, id);
@@ -27,6 +28,21 @@ public class ChannelAirPlay extends ChannelBase {
 		super.setMetaText(metadata);
 		setName(name);
 	}
+	
+	public ChannelAirPlay(String uri, String metadata, int id,String name,String image) {
+		super(uri, metadata, id);
+		this.metadata = metadata;
+		this.metadata = this.createMetaData(name, uri, image);
+		super.setMetaText(this.metadata);
+		setName(name);
+	}
+	
+	@Override
+    public String getMetadata() {
+        return metadata;
+    }
+	
+	
 	
 	private String name = "";
 	
@@ -95,6 +111,7 @@ public class ChannelAirPlay extends ChannelBase {
 			DOMSource source = new DOMSource(doc);
 			transformer.transform(source, result);
 			res = (result.getWriter().toString());
+			metadata = res;
 		} catch (Exception e) {
 			log.error("Error Creating XML Doc", e);
 		}

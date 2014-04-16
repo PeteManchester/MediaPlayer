@@ -14,6 +14,7 @@ import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.plugingateway.PluginGateWay;
+import org.rpi.utils.Base64;
 import org.rpi.utils.SecUtils;
 
 import java.io.BufferedReader;
@@ -38,6 +39,7 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 	private Logger log = Logger.getLogger(this.getClass());
 	private boolean disconnectChannel = false;
 	private String client_name = "iTunes";
+	private String metaData = "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'>AirPlay</dc:title><upnp:artist role='Performer' xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>AirPlay</upnp:artist><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='' nrAudioChannels='' protocolInfo='http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01'></res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:albumArtURI></item></DIDL-Lite>";
 
 	public RtspRequestHandler() {
 		PlayManager.getInstance().observeAirPlayEvents(this);
@@ -96,7 +98,7 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 			log.debug("ANNOUNCE \r\n" + request.toString() + content);
 			disconnectChannel = false;
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			try {
+			try {	
 				request.getContent().readBytes(out, request.getContent().readableBytes());
 				BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(out.toByteArray())));
 				String line;
@@ -138,7 +140,9 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 				if(request.containsHeader("X-Apple-Client-Name"))
 				{
 					client_name = URLDecoder.decode(request.getHeader("X-Apple-Client-Name"), "UTF-8");
-				}				
+				}
+				ChannelAirPlay channel = new ChannelAirPlay("", metaData, 1, client_name,Config.getInstance().getResourceURIPrefix()+"org/rpi/image/AirPlay.png");
+				PlayManager.getInstance().playAirPlayer(channel);
 			} finally {
 				out.close();
 			}
@@ -155,9 +159,6 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 			session.setRemoteAddress((InetSocketAddress)ctx.getChannel().getRemoteAddress());
 			audioServer = new AudioServer(session);
 			PlayManager.getInstance().setStatus("Playing", "AIRPLAY");
-			String metaData = "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:artist role='Performer' xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:artist><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='' nrAudioChannels='' protocolInfo='http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01'></res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:albumArtURI></item></DIDL-Lite>";
-			ChannelAirPlay channel = new ChannelAirPlay("", metaData, 1, client_name);
-			PlayManager.getInstance().playAirPlayer(channel);
 			PluginGateWay.getInstance().setSourceId("AirPlay", "AirPlay");
 			EventUpdateTrackMetaText ev = new EventUpdateTrackMetaText();
 			ev.setTitle(client_name);

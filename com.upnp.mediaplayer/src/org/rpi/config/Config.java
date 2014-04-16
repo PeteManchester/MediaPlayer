@@ -73,6 +73,8 @@ public class Config {
 
 	private String songcast_nic_name = "";
 
+	private String resourceURIPrefix ="";
+
 	private static Properties pr = null;
 
 	private static Calendar cal = null;
@@ -776,5 +778,14 @@ public class Config {
 				}
 			}
 		}
+	}
+	
+	public void setResourceURIPrefix(String resourceURIPrefix )
+	{
+		this.resourceURIPrefix  = resourceURIPrefix;
+	}
+
+	public String getResourceURIPrefix() {
+		return resourceURIPrefix;
 	}
 }
