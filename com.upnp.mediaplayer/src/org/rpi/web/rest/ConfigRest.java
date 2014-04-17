@@ -119,7 +119,7 @@ public class ConfigRest {
 	@Path("setConfig")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response setConfig(String msg) {
+	public String setConfig(String msg) {
 		try {
 			msg = URLDecoder.decode(msg, "UTF-8");
 			if(msg.startsWith("="))
@@ -142,8 +142,10 @@ public class ConfigRest {
 
 		} catch (Exception e) {
 			log.error("Error creating Status JSON",e);
+			return "Error :" + e.getMessage();
 		}
-		return Response.status(200).entity("HELLO").build();
+		//return Response.status(200).entity("HELLO").build();
+		return "Saved";
 	}
 	
 	private String getStringValue(JsonObject configObject, String key )

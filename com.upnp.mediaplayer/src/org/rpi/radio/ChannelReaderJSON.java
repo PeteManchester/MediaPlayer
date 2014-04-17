@@ -135,7 +135,7 @@ public class ChannelReaderJSON {
 							getStations(children);
 						} else if (object.getString("key").equalsIgnoreCase("shows")) {
 							JsonArray children = object.getJsonArray("children");
-							
+
 							// String s = object.getString("URL");
 							// getJsonFromURL(object.getString("URL"));
 							getStations(children);
@@ -148,35 +148,41 @@ public class ChannelReaderJSON {
 						}
 					}
 				} else {
-					if (object.getString("type").toLowerCase().equalsIgnoreCase("link") && object.getString("item").equalsIgnoreCase("show")) {
-						log.debug("Get Shows");
-						String url = object.getString("URL");
-						//int temp = getIntFromString(object, "preset_number");
-						getJsonFromURL(url + "&render=json");
-					} else if (object.getString("type").equalsIgnoreCase("audio") || object.getString("item").equalsIgnoreCase("url") || object.getString("item").equalsIgnoreCase("topic")) {
-						String text = getString(object, "text");
-						String url = getString(object, "URL");
-						url = tidyURL(url);
-						String image = getString(object, "image");
-						String preset_id = getString(object, "preset_id");
-						preset_id = preset_id.replaceAll("[^0-9]+", "");
-						String item = getString(object, "item");
-						boolean icy_reverse = getBoolean(object, "icy_reverse", false);
-//						pres_number = getIntFromString(object, "preset_number", pres_number);
-//						if(pres_number <=0)
-//						{
-//							preset_number ++;
-//						}
-//						else
-//						{
-//							preset_number = pres_number;
-//						}
-						addChannel(text, url, image, icy_reverse, preset_id, item);
+					boolean bType = object.containsKey("type");
+					boolean bItem = object.containsKey("item");
+					if (bType && bItem) {//Probably a ListenLive
+						if (object.getString("type").toLowerCase().equalsIgnoreCase("link") && object.getString("item").equalsIgnoreCase("show")) {				
+							String url = object.getString("URL");
+							log.debug("Get Shows: " + url);
+							// int temp = getIntFromString(object,
+							// "preset_number");
+							getJsonFromURL(url + "&render=json");
+						} else if (object.getString("type").equalsIgnoreCase("audio") || object.getString("item").equalsIgnoreCase("url") || object.getString("item").equalsIgnoreCase("topic")) {
+							String text = getString(object, "text");
+							String url = getString(object, "URL");
+							url = tidyURL(url);
+							String image = getString(object, "image");
+							String preset_id = getString(object, "preset_id");
+							preset_id = preset_id.replaceAll("[^0-9]+", "");
+							String item = getString(object, "item");
+							boolean icy_reverse = getBoolean(object, "icy_reverse", false);
+							// pres_number = getIntFromString(object,
+							// "preset_number", pres_number);
+							// if(pres_number <=0)
+							// {
+							// preset_number ++;
+							// }
+							// else
+							// {
+							// preset_number = pres_number;
+							// }
+							addChannel(text, url, image, icy_reverse, preset_id, item);
+						}
 					}
 				}
 			}
 		}
-		//Collections.sort(channels);
+		// Collections.sort(channels);
 	}
 
 	/**
@@ -283,7 +289,7 @@ public class ChannelReaderJSON {
 
 		if (channel == null) {
 			channel = new ChannelRadio(url, m, id, name);
-			//channel.setPresetNumber(preset_number);
+			// channel.setPresetNumber(preset_number);
 			channel.setICYReverse(icy_reverse);
 		}
 

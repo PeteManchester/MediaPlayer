@@ -15,18 +15,16 @@ $(document)
 				'#main',
 				function() {
 					clearInterval(interval);
-					// alert("MainPage Ready");
 					var response = '{ "friendly_name": "Bedroom","player":"mpd", "log_file_name": "mediaplayer.log",  "songcast_soundcard_name": "Audio [plughw:0,0]"}';
 
 					try {
 						checkStatusConfig();
 					} catch (e) {
-						alert(e);
+						message('Error CheckConfig: ' + e.ErrorMessage);
 					}
 
 					$("#Stop").click(function() {
 						stopMediaPlayer();
-						alert("After Stop");
 					});
 
 					$("#Restart").click(function() {
@@ -48,7 +46,6 @@ $(document)
 
 					// Submit Button
 					$("#mpSubmit").click(function() {
-						// alert('Submit');
 						updateConfig();
 					});
 
@@ -95,10 +92,10 @@ $(document).on('pageshow', '#alarm', function() {
 			type : 'GET',
 			url : '/myapp/config/setSleepTimer?value=' + value,
 			success : function(data) {
-				// alert(data);
+				message('Set Sleep: ' + data);
 			},
-			error : function(result) {
-				alert("Error " + result.message);
+			error : function(result, errorThrown) {
+				message('Error Set Sleep: ' + errorThrown);
 			}
 
 		});
@@ -115,10 +112,10 @@ $(document).on('pageshow', '#alarm', function() {
 			type : 'GET',
 			url : '/myapp/config/cancelSleepTimer',
 			success : function(data) {
-				// alert(data);
+				message('Sleep Cancel: ' + data);
 			},
-			error : function(result) {
-				alert("Error " + result.message);
+			error : function(result, errorThrown) {
+				message('Error SleepCancel: ' + errorThrown);
 			}
 
 		});
@@ -242,8 +239,8 @@ function checkStatusConfig() {
 					
 					$("#airplay_port").val(decode(data.airplay_port));
 				},
-				error : function(result) {
-					alert("Error " + result);
+				error : function(result,errorThrown) {
+					message('Error CheckSleepConfig: ' + errorThrown);
 				}
 
 			});
@@ -298,17 +295,19 @@ function updateConfig() {
 		config_json.radio_tunein_username = $("#tunein_username").val();
 		
 		config_json.web_server_enabled = $("#web_server_enabled").val();
-
 		$.ajax({
 			type : 'POST',
 			url : '/myapp/config/setConfig',
 			contentType : "application/json; charset=utf-8",
-			dataType : 'json',
+			dataType : 'text',
 			data : {
 				'' : JSON.stringify(config_json)
 			},
 			success : function(msg) {
-				alert(msg);
+				message('Update Config Result: ' + msg);
+			},
+			error : function(jqXHR, textStatus, errorThrown) {
+				message('Error UpdateConfig: ' + textStatus + ' ' + errorThrown);
 			}
 		});
 
@@ -354,8 +353,8 @@ function checkStatus() {
 							+ '</a></td> </tr>');
 
 		},
-		error : function(result) {
-			alert("Error " + result);
+		error : function(result, errorThrown) {
+			message('Error CheckStatus: ' +  errorThrown)
 		}
 
 	});
@@ -379,8 +378,8 @@ function checkSleepStatus() {
 			// alert(data);
 			$("#alSleepStatus").val(data);
 		},
-		error : function(result) {
-			alert("Error " + result);
+		error : function(result, errorThrown) {
+			message('Error CheckSleepStatus: ' + errorThrown);
 		}
 
 	});
@@ -389,3 +388,17 @@ function checkSleepStatus() {
 function decode(encoded) {
 	return decodeURIComponent(encoded.replace(/\+/g, " "));
 }
+
+
+function message(text){
+$("<div class='ui-loader ui-overlay-shadow ui-body-e ui-corner-all'><p>" + text + "</p></div>").css({ "display": "block", "opacity": 0.96, "top": $(window).scrollTop() + 100 })
+.appendTo( $.mobile.pageContainer )
+.delay( 1500 )
+.fadeOut( 400, function(){
+  $(this).remove();
+});
+}
+
+
+
+
