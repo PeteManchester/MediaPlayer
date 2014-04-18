@@ -109,7 +109,7 @@ public class AudioEventQueue implements Runnable, Observer {
 	 */
 	private void setAudioDevice() {
 		Properties props = System.getProperties();
-		String name = "#" + Config.getInstance().getSongcastSoundcardName();
+		String name = "#" + Config.getInstance().getJavaSoundcardName();
 		props.setProperty("javax.sound.sampled.SourceDataLine", name);
 		log.warn("###Setting Sound Card Name: " + name);
 	}

@@ -172,7 +172,7 @@ public class StartMe {
 	 */
 	private static void setAudioDevice() {
 		Properties props = System.getProperties();
-		String name = "#" + Config.getInstance().getSongcastSoundcardName();
+		String name = "#" + Config.getInstance().getJavaSoundcardName();
 		props.setProperty("javax.sound.sampled.SourceDataLine", name);
 		log.warn("###Setting Sound Card Name: " + name);
 	}

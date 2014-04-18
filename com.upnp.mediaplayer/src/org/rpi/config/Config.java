@@ -45,7 +45,7 @@ enum Props {
 	LOG_CONSOLE_LEVEL("log_console_level"),
 	OPENHOME_PORT("openhome_port"),
 	OPENHOME_LOG_LEVEL("openhome_log_level"),
-	SONGCAST_SOUNDCARD_NAME("songcast_soundcard_name"),
+	JAVA_SOUNDCARD_NAME("java_soundcard_name"),
 	SONGCAST_LATENCY_ENABLED("songcast_latency_enabled"),
 	RADIO_TUNEIN_USERNAME("radio_tunein_username"),
 	RADIO_TUNEIN_PARTNERID("radio_tunein_partnerid"),
@@ -538,17 +538,17 @@ public class Config {
 	}
 
 	/**
-	 * @return the songcast_soundcard_name
+	 * @return the java_soundcard_name
 	 */
-	public String getSongcastSoundcardName() {
-		return getValue(Props.SONGCAST_SOUNDCARD_NAME, "");
+	public String getJavaSoundcardName() {
+		return getValue(Props.JAVA_SOUNDCARD_NAME, "");
 	}
 
 	/**
-	 * @param songcast_soundcard_name
+	 * @param java_soundcard_name
 	 *            the songcast_soundcard_name to set
 	 */
-	public void setSongcastSoundcardName(String songcast_soundcard_name) {
+	public void setJavaSoundcardName(String java_soundcard_name) {
 		// Config.songcast_soundcard_name = songcast_soundcard_name;
 	}
 

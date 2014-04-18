@@ -217,8 +217,8 @@ function checkStatusConfig() {
 
 					$("#openhome_port").val(decode(data.openhome_port));
 
-					$("#songcast_sound_name").val(
-							decode(data.songcast_soundcard_name));
+					$("#java_soundcard_name").val(
+							decode(data.java_soundcard_name));
 
 					$("#songcast_latency").val(
 							decode(data.songcast_latency_enabled));
@@ -286,7 +286,7 @@ function updateConfig() {
 
 		config_json.openhome_port = $("#openhome_port").val();
 
-		config_json.songcast_soundcard_name = $("#songcast_sound_name").val();
+		config_json.java_soundcard_name = $("#java_soundcard_name").val();
 
 		config_json.songcast_latency_enabled = $("#songcast_latency").val();
 
@@ -295,6 +295,12 @@ function updateConfig() {
 		config_json.radio_tunein_username = $("#tunein_username").val();
 		
 		config_json.web_server_enabled = $("#web_server_enabled").val();
+		
+		config_json.airplay_enabled = $("#airplay_enabled").val();
+		
+		config_json.airplay_port = $("#airplay_port").val();
+		
+		
 		$.ajax({
 			type : 'POST',
 			url : '/myapp/config/setConfig',
