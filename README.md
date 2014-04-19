@@ -94,5 +94,11 @@ MediaPlayer is made possible due to the support of the following great human bei
 
 The AirPlay implementation is based on the [RPlay](https://github.com/bencall/RPlay) source code by Benjamin de Callatay
 
-If you are interested, please fork the project and apply your changes. Every Pull
-Request is greatly welcome.
+If you are interested, we always welcome feedback or suggestion or if you want you could fork the project and apply your own changes.
+
+If you appreciate the Java MediaPlayer please suport 
+
+[Linn] (http://www.linn.co.uk/) Who produce top end Audio equipment whilst providing OpenSource Software  
+
+[OpenHome] (http://www.openhome.org/wiki/OhNet) Who provide the ohNet API on which this MediaPlayer is based and who have provided great support whilst I have been developing the MediaPlayer.
+
