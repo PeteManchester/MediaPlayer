@@ -96,9 +96,9 @@ The AirPlay implementation is based on the [RPlay](https://github.com/bencall/RP
 
 If you are interested, we always welcome feedback or suggestion or if you want you could fork the project and apply your own changes.
 
-If you appreciate the Java MediaPlayer please suport 
+If you appreciate the Java MediaPlayer please support:
 
-[Linn] (http://www.linn.co.uk/) Who produce top end Audio equipment whilst providing OpenSource Software  
+[Linn] (http://www.linn.co.uk/) Who produce top end Audio equipment whilst providing OpenSource Software. They also have their own record label. 
 
 [OpenHome] (http://www.openhome.org/wiki/OhNet) Who provide the ohNet API on which this MediaPlayer is based and who have provided great support whilst I have been developing the MediaPlayer.
 
