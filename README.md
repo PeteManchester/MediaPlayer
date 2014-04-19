@@ -30,6 +30,11 @@ Also supported is Apples AirPlay Receiver.
 We are currently implementing a http-daemon to make it possible to configure and
 control the whole application via a web-interface.
 
+##Wiki
+We have a [Wiki](https://github.com/PeteManchester/MediaPlayer/wiki) where you can find the documentation
+
+
+
 The MediaPlayer is easily extentable via [Plugins](https://github.com/PeteManchester/MediaPlayer/wiki).
 Right now, we have the following Plugins:
 
