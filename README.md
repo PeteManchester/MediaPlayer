@@ -30,6 +30,8 @@ Also supported is Apples AirPlay Receiver.
 We are currently implementing a http-daemon to make it possible to configure and
 control the whole application via a web-interface.
 
+
+
 The MediaPlayer is easily extentable via [Plugins](https://github.com/PeteManchester/MediaPlayer/wiki).
 Right now, we have the following Plugins:
 
@@ -38,6 +40,9 @@ Right now, we have the following Plugins:
 * [LCDDisplay](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-Display)
 * [Fullscreen](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-Fullscreen)
 * [LIRCIntegration](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-LIRCIntegration)
+
+##Wiki
+We have a [Wiki](https://github.com/PeteManchester/MediaPlayer/wiki) where you can find the documentation
 
 ## Installation Instructions
 
@@ -94,5 +99,15 @@ MediaPlayer is made possible due to the support of the following great human bei
 
 The AirPlay implementation is based on the [RPlay](https://github.com/bencall/RPlay) source code by Benjamin de Callatay
 
-If you are interested, please fork the project and apply your changes. Every Pull
-Request is greatly welcome.
+If you are interested, we always welcome feedback or suggestions or if you want you could fork the project and apply your own changes.
+
+Feedback and suggestions can be submitted here:
+
+https://github.com/PeteManchester/MediaPlayer/issues?state=open
+
+If you appreciate the Java MediaPlayer please support:
+
+[Linn] (http://www.linn.co.uk/) Who produce top end Audio equipment whilst providing OpenSource Software. They also have their own record label. 
+
+[OpenHome] (http://www.openhome.org/wiki/OhNet) Who provide the ohNet API on which this MediaPlayer is based and who have provided great support whilst I have been developing the MediaPlayer.
+
