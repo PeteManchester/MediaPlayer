@@ -5,11 +5,7 @@ package org.rpi.airplay;
  * @author bencall
  *
  */
-import java.io.IOException;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-
 import org.apache.log4j.Logger;
 import org.rpi.player.PlayManager;
 
@@ -27,18 +23,18 @@ public class AudioServer {
 	public static final int START_FILL = 282; // Alac will wait till there are
 												// START_FILL frames in buffer
 	public static final int MAX_PACKET = 2048; // Also in UDPListener (possible
-												// to merge it in one place?)
 
-	// Sockets
-	private DatagramSocket sock, csock;
-	private UDPListener listener = null;
-	private Thread listenerThread = null;
+	
+	private AudioEventQueue queue = null;
+	private Thread threadMessageQueue = null;
 
 	// client address
 	private InetAddress rtpClient;
 
 	// Audio infos and datas
 	private AudioSession session;
+	
+	private AudioChannel control = null;
 
 	/**
 	 * Constructor. Initiate instances vars
@@ -50,81 +46,51 @@ public class AudioServer {
 	 * @param timingPort
 	 */
 	public AudioServer(AudioSession session) {
-		// Init instance var
 		this.session = session;
 		initRTP();
-		initTiming();
-
 	}
 
 	public void stop() {
 		log.debug("Stop AudioServer");
-		if (listener != null) {
+		if(queue !=null)
+		{
+			queue.stop();
+		}
+		threadMessageQueue = null;
+		
+		if(control !=null)
+		{
 			try
 			{
-			listener.stopThread();
-			listener = null;
+			control.close();
 			}
 			catch(Exception e)
 			{
-				log.error("Error Stopping UDPListener Thread",e);
+				log.error("Error Closing AudioChannel",e);
+			}finally
+			{
+				control = null;
 			}
-			listenerThread = null;
-		}
-		try {
-			csock.close();
-		} catch (Exception e) {
-			log.error("Error Closing CSocket", e);
-		}
-		try {
-			sock.close();
-		} catch (Exception e) {
-			log.error("Error Closing Socket", e);
 		}
 		PlayManager.getInstance().setStatus("Stopped", "AIRPLAY");
-	}
-
-	/**
-	 * Return the server port for the bonjour service
-	 * 
-	 * @return
-	 */
-	public int getServerPort() {
-		return sock.getLocalPort();
 	}
 
 	/**
 	 * Opens the sockets and begin listening
 	 */
 	private void initRTP() {
-		int port = session.getControlPort();
-		while (true) {
-			try {
-				sock = new DatagramSocket(port);
-				csock = new DatagramSocket(port + 1);
-			} catch (IOException e) {
-				port = port + 2;
-				continue;
-			}
-			break;
-		}
+		queue = new AudioEventQueue(session);
+		threadMessageQueue = new Thread(queue, "AudioEventQueue");
+		threadMessageQueue.start();		
+		control = new AudioChannel(session.getLocalAddress(), session.getRemoteAddress(),session.getControlPort(),queue);
+	}
 
-		listener = new UDPListener(sock, session);
-		listenerThread = new Thread(listener, "UDPListner");
-		listenerThread.start();
-	}
-	
-	private void initTiming()
-	{
-		//int port = session.getTimingPort();
-		//TimingChannel timing = new TimingChannel(session.getLocalAddress(), session.getRemoteAddress(),session.getTimingPort());
-	}
 
 	/**
 	 * Flush the audioBuffer
 	 */
 	public void flush() {
-		listener.flush();
+		queue.clear();
 	}
 
 }

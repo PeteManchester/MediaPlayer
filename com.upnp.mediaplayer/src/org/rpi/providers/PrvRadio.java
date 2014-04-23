@@ -82,13 +82,14 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	 * @param channels
 	 */
 	public void addChannels(List<ChannelRadio> channels) {
+		log.debug("Start of AddRadioChannels");
 		this.channels = channels;
-		propertiesLock();
 		UpdateIdArray();
+		propertiesLock();		
 		setPropertyIdArray(array);
 		setPropertyChannelsMax(channels.size());
 		propertiesUnlock();
-		log.debug("Added Channels: " + channels.size());
+		log.debug("Added Radio Channels: " + channels.size());
 	}
 
 	protected Channel channel(IDvInvocation paramIDvInvocation) {
@@ -258,6 +259,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	 * long string 4 bytes (8bits) And add to a byte array
 	 */
 	private void UpdateIdArray() {
+		log.debug("Start of UpdateIdArray Radio");
 		int size = channels.size() * 4;
 		StringBuilder sb = new StringBuilder();
 		byte[] bytes = new byte[size];
@@ -286,6 +288,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 			bytes[i] = sens;
 		}
 		array = bytes;
+		log.debug("End of UpdateIdArray Radio");
 		// setPropertyIdArray(bytes);
 	}
 

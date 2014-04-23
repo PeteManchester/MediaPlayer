@@ -1,7 +1,5 @@
 package org.rpi.airplay;
 
-import java.math.BigInteger;
-import java.net.DatagramPacket;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
@@ -17,9 +15,7 @@ import javax.sound.sampled.SourceDataLine;
 
 import org.apache.log4j.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
 import org.rpi.alacdecoder.AlacDecodeUtils;
-import org.rpi.alacdecoder.AlacFile;
 import org.rpi.config.Config;
 import org.rpi.mplayer.TrackInfo;
 import org.rpi.player.PlayManager;
@@ -34,16 +30,14 @@ public class AudioEventQueue implements Runnable, Observer {
 	private boolean run = true;
 	private int frame_size = 4;
 	public final int MAX_PACKET = 2048;
-	private int lastSeqNo = 0;
-	private AlacFile alac;
+
+	//private AlacFile alac;
 	private int[] outbuffer;
-	private byte[] outbufferBytes;
 
 	private SourceDataLine soundLine = null;
 	private AudioFormat audioFormat = null;
 	private DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
 
-	// private SecretKeySpec specKey;
 	private Cipher cipher = null;
 	private SecretKeySpec specKey = null;
 
@@ -54,7 +48,7 @@ public class AudioEventQueue implements Runnable, Observer {
 
 	private boolean bWrite = false;
 
-	private boolean bFirstTime = true;
+
 
 	private SourceTimer timer = null;
 	private Thread timerThread = null;
@@ -71,8 +65,6 @@ public class AudioEventQueue implements Runnable, Observer {
 			if (soundLine != null) {
 				close();
 			}
-			alac = session.getAlac();
-			setAudioDevice();
 			AudioSessionHolder.getInstance().addObserver(this);
 
 			AudioInformation audioInf = new AudioInformation(44100, 48, 16, 2, "ALAC", 0, 0);
@@ -168,7 +160,7 @@ public class AudioEventQueue implements Runnable, Observer {
 		while (run) {
 			if (!isEmpty()) {
 				try {
-					DatagramPacket packet = (DatagramPacket) get();
+					ChannelBuffer packet = (ChannelBuffer) get();
 					processEvent(packet);
 				} catch (Exception e) {
 					log.error(e);
@@ -181,10 +173,11 @@ public class AudioEventQueue implements Runnable, Observer {
 
 	}
 
-	private void processEvent(DatagramPacket packet) {
+	private void processEvent(ChannelBuffer packet) {
 		// 4*(this.getFrameSize()+3);
 		try {
-			int type = packet.getData()[1] & ~0x80;
+			int type = packet.getByte(1) & ~0x80;
+			//int type = packet.getData()[1] & ~0x80;
 			if (type == 0x60 || type == 0x56) { // audio data / resend
 				// Add 4 bits for resend packet
 				int off = 0;
@@ -192,13 +185,14 @@ public class AudioEventQueue implements Runnable, Observer {
 					off = 4;
 				}
 				
-				long seq =  new BigInteger(Utils.getBytes(2, 3, packet.getData())).longValue();
+				long seq =  ((packet.getByte(2) & 0xff) << 8) | ((packet.getByte(3) & 0xff) << 0);
 				long l = seq & 0xFFFFFFFFL;
 				//log.debug("Seq: " + l);
-				byte[] pktp = new byte[packet.getLength() - off - 12];
-				for(int i=0; i<pktp.length; i++){
-					pktp[i] = packet.getData()[i+12+off];
-				}
+				byte[] pktp = new byte[packet.capacity() - off - 12];
+				packet.getBytes(off + 12, pktp);
+//				for(int i=0; i<pktp.length; i++){
+//					pktp[i] = packet.getData()[i+12+off];
+//				}
 				
 				byte[] p = new byte[MAX_PACKET];
 
@@ -234,35 +228,6 @@ public class AudioEventQueue implements Runnable, Observer {
 				}
 
 				assert outputsize == session.getFrameSize() * 4; // FRAME_BYTES length
-				
-				
-				
-//				// + les 12 (cfr. RFC RTP: champs a ignorer)
-//				int packet_size = packet.getLength();
-//				// byte[] pktp = Utils.getBytes(12 + off, packet_size,
-//				// packet.getData());
-//				ChannelBuffer pktp = ChannelBuffers.buffer(packet_size - (12 - off) + 1);
-//
-//				pktp.setBytes(0, Utils.getBytes((12 + off), packet_size, packet.getData()));
-//
-//				pktp = decode(pktp);
-//				final byte[] alacBytes = new byte[pktp.capacity() + 3];
-//				pktp.getBytes(0, alacBytes, 0, pktp.capacity());
-//				int m_samplesPerFrame = session.getFrameSize();
-//				final int[] pcmSamples = new int[m_samplesPerFrame * 2];
-//				// log.debug("Buffer Size: " + pktp.capacity() + " OutputSize: "
-//				// + pcmSamples.length);
-//				try {
-//					final int pcmSamplesBytes = AlacDecodeUtils.decode_frame(alac, alacBytes, pcmSamples, m_samplesPerFrame);
-//					int lenBytes = convertSampleBufferToByteBuffer(pcmSamples, pcmSamplesBytes >> 1, outbufferBytes);
-//					if (bWrite) {
-//						soundLine.write(outbufferBytes, 0, lenBytes);
-//					}
-//
-//				} catch (Exception e) {
-//					//TODO Getting a lot of error when listening to certain streams, such as BBC radio
-//					log.error("Error ALAC: Buffer Size: " + pktp.capacity() + " OutputSize: " + pcmSamples.length);
-//				}
 			}
 		} catch (Exception e) {
 			log.error("Error processEvent", e);
@@ -281,70 +246,7 @@ public class AudioEventQueue implements Runnable, Observer {
 		}
 	}
 
-	/**
-	 * New method to decode the encoded stream
-	 * @param data
-	 * @return
-	 */
-	private ChannelBuffer decode(ChannelBuffer data) {
-		initAES();
-		for (int i = 0; (i + 16) <= data.capacity(); i += 16) {
-			byte[] block = new byte[16];
-			data.getBytes(i, block);
-			block = cipher.update(block);
-			data.setBytes(i, block);
-		}
-		return data;
-	}
 
-	/**
-	 * Good method Decrypt and decode the packet.
-	 * 
-	 * @param data
-	 * @param outbuffer
-	 *            the result
-	 * @return
-	 */
-	private int alac_decode(byte[] data, int[] outbuffer) {
-		byte[] packet = new byte[MAX_PACKET];
-		// Init AES
-		initAES();
-		int i;
-		for (i = 0; i + 16 <= data.length; i += 16) {
-			this.decryptAES(data, i, 16, packet, i);
-		}
-
-		// The rest of the packet is unencrypted
-		int k = 0;
-		for (k = 0; k < (data.length % 16); k++) {
-			packet[i + k] = data[i + k];
-		}
-		int outputsize = 0;
-		try {
-			outputsize = AlacDecodeUtils.decode_frame(alac, packet, outbuffer, outputsize);
-			assert outputsize == frame_size * 4; // FRAME_BYTES length
-		} catch (Exception e) {
-			log.error("Error ALAC Decode. 'i': " + i + " k: " + k, e);
-		}
-		return outputsize;
-	}
-
-	/**
-	 * Convert an int array to a byte array
-	 * @param sampleBuffer
-	 * @param len
-	 * @param outbuffer
-	 * @return
-	 */
-	private int convertSampleBufferToByteBuffer(int[] sampleBuffer, int len, byte[] outbuffer) {
-		int j = 0;
-		for (int i = 0; i < len; ++i) {
-			int sample = sampleBuffer[i];
-			outbuffer[j++] = (byte) (sample >> 8);
-			outbuffer[j++] = (byte) sample;
-		}
-		return j;
-	}
 
 	/**
 	 * Decrypt array from input offset with a length of inputlen and puts it in
@@ -373,11 +275,9 @@ public class AudioEventQueue implements Runnable, Observer {
 	private void sessionChanged() {
 		log.debug("Session Changed");
 		session = AudioSessionHolder.getInstance().getSession();
-		alac = session.getAlac();
 		// frame_size = session.getFrameSize();
 		frame_size = session.getFrameSize();
 		outbuffer = new int[4 * (frame_size + 3)];
-		outbufferBytes = new byte[outbuffer.length * 2];
 		try {
 			cipher = Cipher.getInstance("AES/CBC/NoPadding");
 		} catch (Exception e) {
@@ -385,7 +285,7 @@ public class AudioEventQueue implements Runnable, Observer {
 		}
 		m_aesIv = new IvParameterSpec(session.getAESIV());
 		specKey = new SecretKeySpec(session.getAESKEY(), "AES");
-
+		setAudioDevice();
 		// initAES();
 	}
 
