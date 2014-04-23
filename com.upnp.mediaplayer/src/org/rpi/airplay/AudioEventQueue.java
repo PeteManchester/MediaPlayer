@@ -16,6 +16,7 @@ import javax.sound.sampled.SourceDataLine;
 import org.apache.log4j.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.rpi.alacdecoder.AlacDecodeUtils;
+import org.rpi.alacdecoder.AlacFile;
 import org.rpi.config.Config;
 import org.rpi.mplayer.TrackInfo;
 import org.rpi.player.PlayManager;
@@ -37,14 +38,8 @@ public class AudioEventQueue implements Runnable, Observer {
 	private SourceDataLine soundLine = null;
 	private AudioFormat audioFormat = null;
 	private DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
+	private AlacFile alac;
 
-	private Cipher cipher = null;
-	private SecretKeySpec specKey = null;
-
-	/**
-	 * AES key
-	 */
-	private IvParameterSpec m_aesIv = null;
 
 	private boolean bWrite = false;
 
@@ -56,7 +51,7 @@ public class AudioEventQueue implements Runnable, Observer {
 	private AudioSession session = null;
 
 	public AudioEventQueue(AudioSession session) {
-		// this.session = session;
+		//this.session = session;
 		sessionChanged();
 		try {
 
@@ -174,99 +169,32 @@ public class AudioEventQueue implements Runnable, Observer {
 	}
 
 	private void processEvent(ChannelBuffer packet) {
-		// 4*(this.getFrameSize()+3);
 		try {
-			int type = packet.getByte(1) & ~0x80;
-			//int type = packet.getData()[1] & ~0x80;
-			if (type == 0x60 || type == 0x56) { // audio data / resend
-				// Add 4 bits for resend packet
-				int off = 0;
-				if (type == 0x56) {
-					off = 4;
-				}
-				
-				long seq =  ((packet.getByte(2) & 0xff) << 8) | ((packet.getByte(3) & 0xff) << 0);
-				long l = seq & 0xFFFFFFFFL;
-				//log.debug("Seq: " + l);
-				byte[] pktp = new byte[packet.capacity() - off - 12];
-				packet.getBytes(off + 12, pktp);
-//				for(int i=0; i<pktp.length; i++){
-//					pktp[i] = packet.getData()[i+12+off];
-//				}
-				
-				byte[] p = new byte[MAX_PACKET];
-
-				// Init AES
-				initAES();
-
-				int i;
-				for (i = 0; i + 16 <= pktp.length; i += 16) {
-					// Decrypt
-					this.decryptAES(pktp, i, 16, p, i);
-				}
-
-				// The rest of the packet is unencrypted
-				for (int k = 0; k < (pktp.length % 16); k++) {
-					p[i + k] = pktp[i + k];
-				}
-				//System.out.println("Size " + pktp.length);
-				int outputsize = 0;
-				try {
-					outputsize = AlacDecodeUtils.decode_frame(session.getAlac(), p, outbuffer, outputsize);
-					if (bWrite) {
-						byte[] input = new byte[outbuffer.length*2];
-						
-						int j = 0;
-						for(int ic=0; ic<outbuffer.length; ic++){
-							input[j++] = (byte)(outbuffer[ic] >> 8);
-							input[j++] = (byte)(outbuffer[ic]);
-						}
-						soundLine.write(input, 0, outputsize);
+			
+			final byte[] alacBytes = new byte[packet.capacity() + 3];
+			packet.getBytes(0, alacBytes, 0, packet.capacity());					
+			/* Decode ALAC to PCM */
+			int outputsize = 0;
+			try {
+				outputsize = AlacDecodeUtils.decode_frame(alac, alacBytes, outbuffer, outputsize);
+				if (bWrite) {
+					byte[] input = new byte[outputsize*2];
+					
+					int j = 0;
+					for(int ic=0; ic<outputsize; ic++){
+						input[j++] = (byte)(outbuffer[ic] >> 8);
+						input[j++] = (byte)(outbuffer[ic]);
 					}
-				} catch (Exception e) {
-					log.error("Error decoding",e);
+					soundLine.write(input, 0, outputsize);
 				}
-
-				assert outputsize == session.getFrameSize() * 4; // FRAME_BYTES length
+			} catch (Exception e) {
+				log.error("Error decoding",e);
 			}
+			assert outputsize == session.getFrameSize() * 4; // FRAME_BYTES length
 		} catch (Exception e) {
 			log.error("Error processEvent", e);
 		}
 
-	}
-
-	/**
-	 * Initiate the cipher
-	 */
-	private void initAES() {
-		try {
-			cipher.init(Cipher.DECRYPT_MODE, specKey, m_aesIv);
-		} catch (Exception e) {
-			log.error("Error initAES", e);
-		}
-	}
-
-
-
-	/**
-	 * Decrypt array from input offset with a length of inputlen and puts it in
-	 * output at outputoffsest
-	 * 
-	 * @param array
-	 * @param inputOffset
-	 * @param inputLen
-	 * @param output
-	 * @param outputOffset
-	 * @return
-	 */
-	private int decryptAES(byte[] array, int inputOffset, int inputLen, byte[] output, int outputOffset) {
-		try {
-			return cipher.update(array, inputOffset, inputLen, output, outputOffset);
-		} catch (Exception e) {
-			log.error("Error decryptAES", e);
-		}
-
-		return -1;
 	}
 
 	/**
@@ -275,18 +203,10 @@ public class AudioEventQueue implements Runnable, Observer {
 	private void sessionChanged() {
 		log.debug("Session Changed");
 		session = AudioSessionHolder.getInstance().getSession();
-		// frame_size = session.getFrameSize();
+		alac = session.getAlac();
 		frame_size = session.getFrameSize();
 		outbuffer = new int[4 * (frame_size + 3)];
-		try {
-			cipher = Cipher.getInstance("AES/CBC/NoPadding");
-		} catch (Exception e) {
-			log.error("Error Initiating Cipher", e);
-		}
-		m_aesIv = new IvParameterSpec(session.getAESIV());
-		specKey = new SecretKeySpec(session.getAESKEY(), "AES");
 		setAudioDevice();
-		// initAES();
 	}
 
 	@Override
