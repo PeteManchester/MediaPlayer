@@ -32,7 +32,7 @@ public class AudioEventQueue implements Runnable, Observer {
 	private int frame_size = 4;
 	public final int MAX_PACKET = 2048;
 
-	//private AlacFile alac;
+	// private AlacFile alac;
 	private int[] outbuffer;
 
 	private SourceDataLine soundLine = null;
@@ -40,10 +40,7 @@ public class AudioEventQueue implements Runnable, Observer {
 	private DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
 	private AlacFile alac;
 
-
 	private boolean bWrite = false;
-
-
 
 	private SourceTimer timer = null;
 	private Thread timerThread = null;
@@ -51,7 +48,7 @@ public class AudioEventQueue implements Runnable, Observer {
 	private AudioSession session = null;
 
 	public AudioEventQueue(AudioSession session) {
-		//this.session = session;
+		// this.session = session;
 		sessionChanged();
 		try {
 
@@ -73,7 +70,7 @@ public class AudioEventQueue implements Runnable, Observer {
 				bWrite = true;
 			}
 			bWrite = true;
-			
+
 			TrackInfo info = new TrackInfo();
 			info.setBitDepth(audioInf.getBitDepth());
 			info.setCodec(audioInf.getCodec());
@@ -85,7 +82,7 @@ public class AudioEventQueue implements Runnable, Observer {
 			if (ev != null) {
 				PlayManager.getInstance().updateTrackInfo(ev);
 			}
-			
+
 		} catch (Exception e) {
 			log.error("Error Opening Audio Line", e);
 		}
@@ -155,42 +152,22 @@ public class AudioEventQueue implements Runnable, Observer {
 		while (run) {
 			if (!isEmpty()) {
 				try {
-					ChannelBuffer packet = (ChannelBuffer) get();
+					byte[] packet = (byte[]) get();
 					processEvent(packet);
 				} catch (Exception e) {
 					log.error(e);
 				}
 			} else {
-				// log.debug("Empty Queue");
 				sleep(1);
 			}
 		}
 
 	}
 
-	private void processEvent(ChannelBuffer packet) {
+	private void processEvent(byte[] packet) {
 		try {
-			
-			final byte[] alacBytes = new byte[packet.capacity() + 3];
-			packet.getBytes(0, alacBytes, 0, packet.capacity());					
-			/* Decode ALAC to PCM */
-			int outputsize = 0;
-			try {
-				outputsize = AlacDecodeUtils.decode_frame(alac, alacBytes, outbuffer, outputsize);
-				if (bWrite) {
-					byte[] input = new byte[outputsize*2];
-					
-					int j = 0;
-					for(int ic=0; ic<outputsize; ic++){
-						input[j++] = (byte)(outbuffer[ic] >> 8);
-						input[j++] = (byte)(outbuffer[ic]);
-					}
-					soundLine.write(input, 0, outputsize);
-				}
-			} catch (Exception e) {
-				log.error("Error decoding",e);
-			}
-			assert outputsize == session.getFrameSize() * 4; // FRAME_BYTES length
+			int length = packet.length;
+			soundLine.write(packet, 0, length / 2);
 		} catch (Exception e) {
 			log.error("Error processEvent", e);
 		}
@@ -244,7 +221,7 @@ public class AudioEventQueue implements Runnable, Observer {
 			timerThread = null;
 		}
 	}
-	
+
 	public void stop() {
 		stopTimer();
 		bWrite = false;

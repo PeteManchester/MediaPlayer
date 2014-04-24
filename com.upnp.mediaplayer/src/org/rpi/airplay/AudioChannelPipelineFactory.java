@@ -4,8 +4,7 @@ import static org.jboss.netty.channel.Channels.pipeline;
 
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.handler.codec.rtsp.RtspRequestDecoder;
-import org.jboss.netty.handler.codec.rtsp.RtspResponseEncoder;
+
 
 public class AudioChannelPipelineFactory implements ChannelPipelineFactory {
 	
@@ -21,8 +20,8 @@ public class AudioChannelPipelineFactory implements ChannelPipelineFactory {
 		ChannelPipeline pipeline = pipeline();
 	    //pipeline.addLast("executionHandler", AirPlayThread.ChannelExecutionHandler);
 		//pipeline.addLast("closeOnShutdownHandler", AirPlayThread.CloseChannelOnShutdownHandler);
-	    //pipeline.addLast("decoder", new RtspRequestDecoder());
-	    //pipeline.addLast("encoder", new RtspResponseEncoder());
+	    pipeline.addLast("decrypter", new AudioDecrpyt());
+	    pipeline.addLast("deocder", new AudioALACDecode());
 	    pipeline.addLast("handler", new AudioChannelRequestHandler(audioQueue));
 	    return pipeline;
 	}
