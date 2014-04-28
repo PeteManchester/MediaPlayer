@@ -5,17 +5,12 @@ import java.util.Observer;
 import java.util.Properties;
 import java.util.Vector;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
 
 import org.apache.log4j.Logger;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.rpi.alacdecoder.AlacDecodeUtils;
 import org.rpi.alacdecoder.AlacFile;
 import org.rpi.config.Config;
 import org.rpi.mplayer.TrackInfo;
@@ -33,12 +28,12 @@ public class AudioEventQueue implements Runnable, Observer {
 	public final int MAX_PACKET = 2048;
 
 	// private AlacFile alac;
-	private int[] outbuffer;
+	//private int[] outbuffer;
 
 	private SourceDataLine soundLine = null;
 	private AudioFormat audioFormat = null;
 	private DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
-	private AlacFile alac;
+	//private AlacFile alac;
 
 	private boolean bWrite = false;
 
@@ -158,7 +153,7 @@ public class AudioEventQueue implements Runnable, Observer {
 					log.error(e);
 				}
 			} else {
-				sleep(1);
+				sleep(1000);
 			}
 		}
 
@@ -180,9 +175,9 @@ public class AudioEventQueue implements Runnable, Observer {
 	private void sessionChanged() {
 		log.debug("Session Changed");
 		session = AudioSessionHolder.getInstance().getSession();
-		alac = session.getAlac();
-		frame_size = session.getFrameSize();
-		outbuffer = new int[4 * (frame_size + 3)];
+		//alac = session.getAlac();
+		//frame_size = session.getFrameSize();
+		//outbuffer = new int[4 * (frame_size + 3)];
 		setAudioDevice();
 	}
 

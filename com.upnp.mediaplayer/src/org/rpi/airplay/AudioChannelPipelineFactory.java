@@ -1,12 +1,13 @@
 package org.rpi.airplay;
 
-import static org.jboss.netty.channel.Channels.pipeline;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.socket.nio.NioDatagramChannel;
 
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
 
 
-public class AudioChannelPipelineFactory implements ChannelPipelineFactory {
+
+public class AudioChannelPipelineFactory extends ChannelInitializer<NioDatagramChannel> {
 	
 	private AudioEventQueue audioQueue = null;
 	
@@ -16,14 +17,12 @@ public class AudioChannelPipelineFactory implements ChannelPipelineFactory {
 	}
 
 	@Override
-	public ChannelPipeline getPipeline() throws Exception {
-		ChannelPipeline pipeline = pipeline();
-	    //pipeline.addLast("executionHandler", AirPlayThread.ChannelExecutionHandler);
-		//pipeline.addLast("closeOnShutdownHandler", AirPlayThread.CloseChannelOnShutdownHandler);
-	    pipeline.addLast("decrypter", new AudioDecrpyt());
-	    pipeline.addLast("deocder", new AudioALACDecode());
-	    pipeline.addLast("handler", new AudioChannelRequestHandler(audioQueue));
-	    return pipeline;
+	protected void initChannel(NioDatagramChannel ch) throws Exception {	
+		ChannelPipeline p = ch.pipeline();
+		//EventExecutorGroup e1 = new DefaultEventExecutorGroup(1);
+		p.addLast("Audio Decrypter", new AudioDecrpyt());
+		p.addLast("Audio Deocder", new AudioALACDecode(audioQueue));
+		p.addLast("Audio Handler",new AudioChannelRequestHandler());
 	}
 
 }

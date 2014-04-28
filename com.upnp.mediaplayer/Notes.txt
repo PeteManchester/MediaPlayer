@@ -217,6 +217,11 @@ audio_output {
 
 speaker-test -c2 -D hw:0,0
 
+Stop debug log filling with 'delay: estimated 0, actual'
+/etc/modprobe.d/alsa-base.conf
+options snd-usb-audio nrpacks=1
+http://www.raspberrypi.org/forums/viewtopic.php?f=28&t=15204
+
 UBUNTU 	
 
 sudo passwd root

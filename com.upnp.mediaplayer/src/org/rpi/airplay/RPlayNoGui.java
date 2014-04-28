@@ -11,10 +11,10 @@ public class RPlayNoGui {
 		
 		if(args.length == 1) {
 			// Name only
-			new AirPlayThread(args[0]).start();
+			new AirPlayThread(args[0]).run();
 		} else if(args.length == 2) {
 			// Name and password
-			new AirPlayThread(args[0], args[1]).start();
+			new AirPlayThread(args[0], args[1]).run();
 		} else {
 			log.error("Java port of shairport.");
 			log.error("usage : java -jar " + RPlayNoGui.class.getCanonicalName() + ".jar <AP_name> [<password>]");

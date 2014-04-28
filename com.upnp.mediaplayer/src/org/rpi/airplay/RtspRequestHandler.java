@@ -1,13 +1,6 @@
 package org.rpi.airplay;
 
 import org.apache.log4j.Logger;
-import org.jboss.netty.channel.*;
-import org.jboss.netty.handler.codec.http.*;
-
-import static org.jboss.netty.handler.codec.http.HttpHeaders.*;
-
-import org.jboss.netty.handler.codec.rtsp.RtspMethods;
-import org.jboss.netty.handler.codec.rtsp.RtspVersions;
 import org.rpi.channel.ChannelAirPlay;
 import org.rpi.config.Config;
 import org.rpi.player.PlayManager;
@@ -17,10 +10,29 @@ import org.rpi.plugingateway.PluginGateWay;
 import org.rpi.utils.Base64;
 import org.rpi.utils.SecUtils;
 
+import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.DefaultHttpRequest;
+import io.netty.handler.codec.http.DefaultHttpResponse;
+import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpVersion;
+import io.netty.handler.codec.rtsp.RtspMethods;
+import io.netty.handler.codec.rtsp.RtspVersions;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.URLDecoder;
@@ -30,7 +42,7 @@ import java.util.Observer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements Observer {
+public class RtspRequestHandler extends ChannelInboundHandlerAdapter implements Observer {
 	private static final String RSAAESKEY = "a=rsaaeskey:";
 	private static final String AESIV = "a=aesiv:";
 	private static final String FMTP = "a=fmtp:";
@@ -39,154 +51,51 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 	private Logger log = Logger.getLogger(this.getClass());
 	private boolean disconnectChannel = false;
 	private String client_name = "iTunes";
+	private boolean bAnnounced = false;
+	private String clientInstance = "";
+	
 	private String metaData = "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'>AirPlay</dc:title><upnp:artist role='Performer' xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>AirPlay</upnp:artist><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='' nrAudioChannels='' protocolInfo='http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01'></res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:albumArtURI></item></DIDL-Lite>";
 
 	public RtspRequestHandler() {
 		PlayManager.getInstance().observeAirPlayEvents(this);
 	}
+	
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		log.error(cause);
+		ctx.close();
+	}
 
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-		if (disconnectChannel) {
-			try {
-				e.getChannel().disconnect();
-				return;
-			} catch (Exception ex) {
-				log.error("Error Disconnecting Channel", ex);
-			} finally {
+	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+		// The http message and content are new received as separate events in
+		// Netty4
+		
+		if(disconnectChannel)
+		{
+			try
+			{
+				ctx.channel().close();
+			}
+			catch(Exception e)
+			{
+				log.error("Error Disconnecting Channel");
+			}finally {
 				disconnectChannel = false;
 			}
 		}
-		HttpRequest request = (HttpRequest) e.getMessage();
-		String content = request.getContent().toString(Charset.forName("UTF-8"));
-		if (!RtspVersions.RTSP_1_0.equals(request.getProtocolVersion())) {
-			HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR);
-			response.addHeader("Connection", "close");
-			e.getChannel().write(response);
-			e.getChannel().disconnect();
-			return;
-		}
-		HttpMethod methods = request.getMethod();
-		HttpResponse response = new DefaultHttpResponse(RtspVersions.RTSP_1_0, HttpResponseStatus.OK);
-		response.clearHeaders();
 
-		String cSeq = request.getHeader("CSeq");
-		if (cSeq != null) {
-			response.addHeader("CSeq", cSeq);
-		}
-
-		response.addHeader("Audio-Jack-Status", "connected; type=analog");
-
-		String challenge = request.getHeader("Apple-Challenge");
-		if (challenge != null) {
-			// SocketAddress remoteAddress = e.getRemoteAddress();
-			SocketAddress remoteAddress = e.getChannel().getLocalAddress();
-			response.addHeader("Apple-Response", Utils.getChallengeResponse(challenge, ((InetSocketAddress) remoteAddress).getAddress(), AudioSessionHolder.getInstance().getHardWareAddress()));
-		}
-
-		// String clientInstance = request.getHeader("DACP-ID");
-		String clientInstance = request.getHeader("DACP-ID");
-		if (org.rpi.utils.Utils.isEmpty(clientInstance)) {
-			throw new RuntimeException("No Client Instance given");
-		}
-
-		HttpMethod method = request.getMethod();
-		if (RtspMethods.OPTIONS.equals(method)) {
-			response.addHeader("Public", "ANNOUNCE, SETUP, RECORD, PAUSE, FLUSH, TEARDOWN, OPTIONS, GET_PARAMETER, SET_PARAMETER");
-			// log.debug("OPTIONS \r\n" + request.toString() + content);
-		} else if (RtspMethods.ANNOUNCE.equals(method)) {
-			log.debug("ANNOUNCE \r\n" + request.toString() + content);
-			disconnectChannel = false;
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			try {	
-				request.getContent().readBytes(out, request.getContent().readableBytes());
-				BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(out.toByteArray())));
-				String line;
-				String rsaAesKey = null;
-				String aesIv = null;
-				String fmtp = null;
-				// Get attributes of Service-Discovery-Protocol
-				while ((line = reader.readLine()) != null) {
-					if (line.startsWith(RSAAESKEY)) {
-						rsaAesKey = line.substring(RSAAESKEY.length());
-					} else if (line.startsWith(AESIV)) {
-						aesIv = line.substring(AESIV.length());
-					} else if (line.startsWith(FMTP)) {
-						fmtp = line.substring(FMTP.length());
-					}
-				}
-
-				if (org.rpi.utils.Utils.isEmpty(aesIv)) {
-					throw new RuntimeException("No AES Iv");
-				}
-
-				if (org.rpi.utils.Utils.isEmpty(rsaAesKey)) {
-					throw new RuntimeException("No RSA AES Key");
-				}
-
-				AudioSession session = RaopSessionManager.getSession(clientInstance);
-				if (session == null) {
-					session = new AudioSession(Base64.decode(aesIv), SecUtils.decryptRSA(Base64.decode(rsaAesKey)), fmtp, 0, 0);
-					RaopSessionManager.addSession(clientInstance, session);
-					log.debug("Audio Session being created");
-					AudioSessionHolder.getInstance().setSession(session);
-				} else {
-					log.debug("Audio Session being updated");
-					session.setAESIV(Base64.decode(aesIv));
-					session.setAESKEY(SecUtils.decryptRSA(Base64.decode(rsaAesKey)));
-					session.setFmtp(fmtp);
-					AudioSessionHolder.getInstance().setSession(session);
-				}
-				if(request.containsHeader("X-Apple-Client-Name"))
-				{
-					client_name = URLDecoder.decode(request.getHeader("X-Apple-Client-Name"), "UTF-8");
-				}
-				ChannelAirPlay channel = new ChannelAirPlay("", metaData, 1, client_name,Config.getInstance().getResourceURIPrefix()+"org/rpi/image/AirPlay.png");
-				PlayManager.getInstance().playAirPlayer(channel);
-			} finally {
-				out.close();
+		// Get the Content
+		if (msg instanceof HttpContent) {
+			HttpContent content = (HttpContent) msg;
+			String s = content.content().toString(Charset.defaultCharset());
+			if (s.equalsIgnoreCase("EmptyLastHttpContent")) {
+				content.release();
+				return;
 			}
-		} else if (RtspMethods.SETUP.equals(method)) {
-			log.debug("SETUP \r\n" + request.toString() + content);
-			disconnectChannel = false;
-			AudioSession session = RaopSessionManager.getSession(clientInstance);
-			if (session == null) {
-				throw new RuntimeException("No Session " + clientInstance);
-			}
-			String transport = request.getHeader("Transport");
-			setPorts(session, transport);
-			session.setLocalAddress((InetSocketAddress)ctx.getChannel().getLocalAddress());
-			session.setRemoteAddress((InetSocketAddress)ctx.getChannel().getRemoteAddress());
-			audioServer = new AudioServer(session);
-			PlayManager.getInstance().setStatus("Playing", "AIRPLAY");
-			PluginGateWay.getInstance().setSourceId("AirPlay", "AirPlay");
-			EventUpdateTrackMetaText ev = new EventUpdateTrackMetaText();
-			ev.setTitle(client_name);
-			ev.setArtist("AirPlay");
-			PlayManager.getInstance().updateTrackInfo(ev);			
-			response.setHeader("Transport", request.getHeader("Transport") + ";server_port=" + session.getControlPort());
-			log.debug("SetUp Response: " + response.toString());
-		} else if (RtspMethods.RECORD.equals(method)) {
-			log.debug("RECORD \r\n" + request.toString() + content);
-			// ignore
-		} else if ("FLUSH".equalsIgnoreCase(method.getName())) {
-			log.debug("FLUSH \r\n" + request.toString() + content);
-			audioServer.flush();
-		} else if (RtspMethods.TEARDOWN.equals(method)) {
-			log.debug("TEARDOWN \r\n" + request.toString() + content);
-			tearDown();
-			response.setHeader("Connection", "close");
-			e.getChannel().write(response);
-			RaopSessionManager.shutdownSession(clientInstance);
-			e.getChannel().disconnect();
-			PlayManager.getInstance().setStatus("Stopped", "AIRPLAY");
-			return;
-		} else if (RtspMethods.SET_PARAMETER.equals(method)) {
-			log.debug("SETPARAMTER: \r\n" + request.toString() + "\r\n" + content);
-			// String content =
-			// request.getContent().toString(Charset.forName("UTF-8"));
-			if (content.startsWith(VOLUME)) {
-				String vol = content.substring(VOLUME.length());
+
+			if (s.startsWith(VOLUME)) {
+				String vol = s.substring(VOLUME.length());
 				try {
 					Double dVol = Double.parseDouble(vol.trim());
 					dVol = dVol + 30;
@@ -207,26 +116,165 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 					log.error(ex);
 				}
 			}
-		} else if (RtspMethods.GET_PARAMETER.equals(method)) {
-			log.debug("GET_PARAMETER");
-		} else if ("DENIED".equalsIgnoreCase(method.getName())) {
-			log.debug("DENIED");
-		} else {
-			throw new RuntimeException("Unknown Method: " + method.getName());
+
+			if (bAnnounced) {
+				try {
+					BufferedReader reader = new BufferedReader(new StringReader(s));
+					String line;
+					String rsaAesKey = null;
+					String aesIv = null;
+					String fmtp = null;
+					// Get attributes of Service-Discovery-Protocol
+					while ((line = reader.readLine()) != null) {
+						log.debug(line);
+						if (line.startsWith(RSAAESKEY)) {
+							rsaAesKey = line.substring(RSAAESKEY.length());
+						} else if (line.startsWith(AESIV)) {
+							aesIv = line.substring(AESIV.length());
+						} else if (line.startsWith(FMTP)) {
+							fmtp = line.substring(FMTP.length());
+						}
+					}
+
+					if (org.rpi.utils.Utils.isEmpty(aesIv)) {
+						// throw new RuntimeException("No AES Iv");
+						return;
+					}
+
+					if (org.rpi.utils.Utils.isEmpty(rsaAesKey)) {
+						// throw new RuntimeException("No RSA AES Key");
+						return;
+					}
+					bAnnounced = false;
+					AudioSession session = RaopSessionManager.getSession(clientInstance);
+					if (session == null) {
+						// session = new AudioSession(Base64.decode(aesIv),
+						session = new AudioSession(Base64.decode(aesIv), SecUtils.decryptRSA(Base64.decode(rsaAesKey)), fmtp, 0, 0);
+						RaopSessionManager.addSession(clientInstance, session);
+						log.debug("Audio Session being created");
+						AudioSessionHolder.getInstance().setSession(session);
+					} else {
+						log.debug("Audio Session being updated");
+						session.setAESIV(Base64.decode(aesIv));
+						//
+						session.setAESKEY(SecUtils.decryptRSA(Base64.decode(rsaAesKey)));
+						session.setFmtp(fmtp);
+						AudioSessionHolder.getInstance().setSession(session);
+					}
+				} finally {
+					content.release();
+				}
+			}
 		}
 
-		boolean keepAlive = isKeepAlive(request);
+		if (msg instanceof DefaultHttpRequest) {
+			DefaultHttpRequest request = (DefaultHttpRequest) msg;
+			// String content = request.getContent().toString(Charset.forName("UTF-8"));
+			String content = request.toString();
+			// log.debug(content);
+			if (!RtspVersions.RTSP_1_0.equals(request.getProtocolVersion())) {
+				HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR);
+				response.headers().add("Connection", "close");
+				ctx.writeAndFlush(response);
+				ctx.disconnect();
+				return;
+			}
+			//HttpMethod methods = request.getMethod();
+			FullHttpResponse response = new DefaultFullHttpResponse(RtspVersions.RTSP_1_0, HttpResponseStatus.OK);
+			response.headers().clear();
 
-		if (keepAlive) {
-			response.setHeader("Content-Length", response.getContent().readableBytes());
-		}
-		response.addHeader("Session", "WENEEDASSESSION");
-		// log.debug("Respone: " + response.toString());
-		ChannelFuture future = e.getChannel().write(response);
+			String cSeq = request.headers().get("CSeq");
+			if (cSeq != null) {
+				response.headers().add("CSeq", cSeq);
+			}
 
-		if (!keepAlive) {
-			future.addListener(ChannelFutureListener.CLOSE);
+			response.headers().add("Audio-Jack-Status", "connected; type=analog");
+
+			String challenge = request.headers().get("Apple-Challenge");
+			if (challenge != null) {
+				SocketAddress remoteAddress = ctx.channel().localAddress();
+				response.headers().add("Apple-Response", Utils.getChallengeResponse(challenge, ((InetSocketAddress) remoteAddress).getAddress(), AudioSessionHolder.getInstance().getHardWareAddress()));
+			}
+
+			// String clientInstance = request.headers().get("DACP-ID");
+			clientInstance = request.headers().get("DACP-ID");
+			if (org.rpi.utils.Utils.isEmpty(clientInstance)) {
+				throw new RuntimeException("No Client Instance given");
+			}
+
+			HttpMethod method = request.getMethod();
+			if (RtspMethods.OPTIONS.equals(method)) {
+				response.headers().add("Public", "ANNOUNCE, SETUP, RECORD, PAUSE, FLUSH, TEARDOWN, OPTIONS, GET_PARAMETER, SET_PARAMETER");
+				// log.debug("OPTIONS \r\n" + request.toString() + content);
+			} else if (RtspMethods.ANNOUNCE.equals(method)) {
+				log.debug("ANNOUNCE \r\n" + request.toString() + content);
+				disconnectChannel = false;
+				bAnnounced = true;
+				String client_name = "iTunes";
+				if (request.headers().contains("X-Apple-Client-Name")) {
+					client_name = URLDecoder.decode(request.headers().get("X-Apple-Client-Name"), "UTF-8");
+				}
+				 ChannelAirPlay channel = new ChannelAirPlay("", metaData, 1, client_name,Config.getInstance().getResourceURIPrefix()+"org/rpi/image/AirPlay.png");
+				 PlayManager.getInstance().playAirPlayer(channel);
+			} else if (RtspMethods.SETUP.equals(method)) {
+				log.debug("SETUP \r\n" + request.toString() + content);
+				disconnectChannel = false;
+				AudioSession session = RaopSessionManager.getSession(clientInstance);
+				if (session == null) {
+					throw new RuntimeException("No Session " + clientInstance);
+				}
+				String transport = request.headers().get("Transport");
+				setPorts(session, transport);
+				session.setLocalAddress((InetSocketAddress) ctx.channel().localAddress());
+				session.setRemoteAddress((InetSocketAddress) ctx.channel().remoteAddress());
+				audioServer = new AudioServer(session);
+				 PlayManager.getInstance().setStatus("Playing", "AIRPLAY");
+				 PluginGateWay.getInstance().setSourceId("AirPlay", "AirPlay");
+				 EventUpdateTrackMetaText ev = new EventUpdateTrackMetaText();
+				 ev.setTitle(client_name);
+				 ev.setArtist("AirPlay");
+				 PlayManager.getInstance().updateTrackInfo(ev);
+				response.headers().add("Transport", request.headers().get("Transport") + ";server_port=" + session.getControlPort());
+				log.debug("SetUp Response: " + response.toString());
+			} else if (RtspMethods.RECORD.equals(method)) {
+				log.debug("RECORD \r\n" + request.toString() + content);
+				// ignore
+			} else if ("FLUSH".equalsIgnoreCase(method.name())) {
+				log.debug("FLUSH \r\n" + request.toString() + content);
+				audioServer.flush();
+			} else if (RtspMethods.TEARDOWN.equals(method)) {
+				log.debug("TEARDOWN \r\n" + request.toString() + content);
+				tearDown();
+				response.headers().set("Connection", "close");
+				ctx.writeAndFlush(response);
+				RaopSessionManager.shutdownSession(clientInstance);
+				ctx.disconnect();
+				PlayManager.getInstance().setStatus("Stopped", "AIRPLAY");
+			} else if (RtspMethods.SET_PARAMETER.equals(method)) {
+				log.debug("SETPARAMTER: \r\n" + request.toString() + "\r\n" + content);
+				// String content = request.getContent().toString(Charset.forName("UTF-8"));
+			} else if (RtspMethods.GET_PARAMETER.equals(method)) {
+				log.debug("GET_PARAMETER");
+			} else if ("DENIED".equalsIgnoreCase(method.name())) {
+				log.debug("DENIED");
+			} else {
+				log.info("Unknown RSTPMethod: " + method.name());
+			}
+
+			boolean keepAlive = isKeepAlive(request);
+
+			if (keepAlive) {
+				response.headers().add("Content-Length", response.content().readableBytes());
+			}
+			response.headers().add("Session", "WENEEDASSESSION");
+			// log.debug("Respone: " + response.toString());
+			ChannelFuture future = ctx.writeAndFlush(response);
+			if (!keepAlive) {
+				future.addListener(ChannelFutureListener.CLOSE);
+			}
 		}
+
+		// super.channelRead(ctx, msg);
 	}
 
 	private void setPorts(AudioSession session, String transport) {
@@ -245,7 +293,8 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 			timingPort = Integer.parseInt(timingPortMatcher.group(1));
 		}
 
-		//If iTunes is setting up the session we need to set the ports and let iTunes know..
+		// If iTunes is setting up the session we need to set the ports and let
+		// iTunes know..
 		if (controlPort == 0) {
 			controlPort = Config.getInstance().getAirPlayPort() + 1;
 		} else if (timingPort == 0) {
@@ -256,13 +305,7 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 		session.setTimingPort(timingPort);
 	}
 
-	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
-		if (e.getCause() != null) {
-			log.error("Error ChannelHandler", e.getCause());
-		}
-		e.getChannel().close();
-	}
+
 
 	private void tearDown() {
 		log.debug("Stopping Audio Playing");
@@ -289,6 +332,45 @@ public class RtspRequestHandler extends SimpleChannelUpstreamHandler implements 
 			disconnectChannel = true;
 			tearDown();
 			break;
+		}
+	}
+	
+	public String getChallengeResponse(String challenge, InetAddress address, byte[] hwAddress) {
+		{
+			// BASE64 DECODE
+			byte[] decoded = Base64.decode(challenge);
+
+			byte[] ip = address.getAddress();
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			// Challenge
+			try {
+				out.write(decoded);
+				// IP-Address
+				out.write(ip);
+				// HW-Addr
+				out.write(hwAddress);
+
+				// Pad to 32 Bytes
+				int padLen = 32 - out.size();
+				for (int i = 0; i < padLen; ++i) {
+					out.write(0x00);
+				}
+
+			} catch (Exception e) {
+				// log.error(e);
+			}
+
+			// RSA
+			byte[] crypted = SecUtils.encryptRSA(out.toByteArray());
+
+			// Encode64
+			String ret = Base64.encode(crypted);
+
+			// On retire les ==
+			return ret = ret.replace("=", "").replace("\r", "").replace("\n", "");
+
+			// Write
+			// response.append("Apple-Response", ret);
 		}
 	}
 

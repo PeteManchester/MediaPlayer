@@ -211,7 +211,7 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
             Unmarshaller unmarshaller = context.createUnmarshaller();
             configModel = (LastFMConfigModel) unmarshaller.unmarshal(file);
         }
-        catch (JAXBException e) {
+        catch (Exception e) {
             LOGGER.error("Cannot unmarshall (read) config file");
         }
 

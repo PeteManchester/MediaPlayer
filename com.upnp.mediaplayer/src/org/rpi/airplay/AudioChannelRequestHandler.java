@@ -1,59 +1,59 @@
 package org.rpi.airplay;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+
 import org.apache.log4j.Logger;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
-public class AudioChannelRequestHandler extends SimpleChannelUpstreamHandler {
+public class AudioChannelRequestHandler extends ChannelInboundHandlerAdapter{
 
-	private AudioEventQueue audioQueue = null;
+	//private AudioEventQueue audioQueue = null;
 	private Logger log = Logger.getLogger(this.getClass());
 
 
-	public AudioChannelRequestHandler(AudioEventQueue audioQueue) {
-		this.audioQueue = audioQueue;
+	public AudioChannelRequestHandler() {
+		//this.audioQueue = audioQueue;
 	}
 	
 
 	@Override
-	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-		try {
-			byte[] audio = (byte[]) e.getMessage();
-			//
-			if (audioQueue != null) {
-				audioQueue.put(audio);
-			}
-		} catch (Exception ex) {
-			log.error("Error ", ex);
+	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+		if(msg instanceof ByteBuf)
+		{
+			ByteBuf res = (ByteBuf)msg;
+			res.release();
 		}
-		super.messageReceived(ctx, e);
 	}
 
 	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
-		if (e.getCause() != null) {
-			log.error("Error AudioChannelHandler", e.getCause());
-		}
-		e.getChannel().close();
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		log.error(cause);
+		ctx.close();
+	}
+	
+	@Override	
+	public void channelRegistered(ChannelHandlerContext ctx) throws Exception{
+		String name = ctx.name();
+		log.debug("AudioChannel Registered: " + ctx.name());
+		super.channelRegistered(ctx);
 	}
 
 	@Override
-	public void channelOpen(final ChannelHandlerContext ctx, final ChannelStateEvent evt) throws Exception {
-		log.debug("AudioChannel Opened");
-		super.channelOpen(ctx, evt);
+	public void channelActive( ChannelHandlerContext ctx) throws Exception {
+		log.debug("AudioChannel Actvie: " + ctx.name());
+		super.channelActive(ctx);
 	}
 
 	@Override
-	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
-		log.debug("AudioChannel Connected");
-		super.channelConnected(ctx, e);
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+		log.debug("AudioChannel Inactive: " + ctx.name());
+		super.channelInactive(ctx);
 	};
 
 	@Override
-	public void channelClosed(final ChannelHandlerContext ctx, final ChannelStateEvent evt) throws Exception {
-		log.debug("AudioChannel Closed");
+	public void channelUnregistered(ChannelHandlerContext ctx ) throws Exception {
+		log.debug("AudioChannel Unregistered: " + ctx.name());
+		super.channelUnregistered(ctx);
 	}
 }
