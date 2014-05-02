@@ -13,6 +13,7 @@ import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgReceiver1;
 import org.rpi.channel.ChannelPlayList;
 import org.rpi.channel.ChannelSongcast;
 import org.rpi.config.Config;
+import org.rpi.netty.songcast.ohz.OHZConnector;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventPlayListStatusChanged;
@@ -25,7 +26,8 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 	private Logger log = Logger.getLogger(PrvReceiver.class);
 	private boolean bPlay = false;
 	private ChannelPlayList track = null;
-	private OHZManager manager = null;
+	//private OHZManager manager = null;
+	private OHZConnector manager = null;
 	private String zoneID = "";
 
 	public PrvReceiver(DvDevice iDevice) {
@@ -88,39 +90,37 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 			try {
 				InetAddress local_address = InetAddress.getByName(ip);
 
-				Enumeration e = NetworkInterface.getNetworkInterfaces();
-				while (e.hasMoreElements()) {
-					NetworkInterface n = (NetworkInterface) e.nextElement();
-					Enumeration ee = n.getInetAddresses();
-					//log.info("Network Interface Display Name: '" + n.getDisplayName() + "'");
-					//log.info("NIC Name: '" + n.getName() + "'");
-					while (ee.hasMoreElements()) {
-						InetAddress i = (InetAddress) ee.nextElement();
-						if (i.getHostAddress().equalsIgnoreCase(ip)) {
-							log.info("IPAddress for Network Interface: " + n.getDisplayName() + " : " + i.getHostAddress());
-							nic = n.getName();
-							Config.getInstance().setSongCastNICName(nic);
-						}
-					}
-				}
+//				Enumeration e = NetworkInterface.getNetworkInterfaces();
+//				while (e.hasMoreElements()) {
+//					NetworkInterface n = (NetworkInterface) e.nextElement();
+//					Enumeration ee = n.getInetAddresses();
+//					//log.info("Network Interface Display Name: '" + n.getDisplayName() + "'");
+//					//log.info("NIC Name: '" + n.getName() + "'");
+//					while (ee.hasMoreElements()) {
+//						InetAddress i = (InetAddress) ee.nextElement();
+//						if (i.getHostAddress().equalsIgnoreCase(ip)) {
+//							log.info("IPAddress for Network Interface: " + n.getDisplayName() + " : " + i.getHostAddress());
+//							nic = n.getName();
+//							Config.getInstance().setSongCastNICName(nic);
+//						}
+//					}
+//				}
 
 				PlayManager.getInstance().playSongcast(track);
-				// String nic = Config.songcastNICName;
-				// if (nic.equalsIgnoreCase("")) {
-				// log.error("No NIC Configured for SONGCAST");
-				// return;
-				// }
+
 				if (manager != null) {
-					manager.stop(zoneID);
+					//manager.stop(zoneID);
+					manager.stop();
 					manager = null;
 				}
 				int lastSlash = uri.lastIndexOf("/");
 				String songcast_url = uri.substring(0, lastSlash);
 				zoneID = uri.substring(lastSlash + 1);
 				log.debug("SongCast URL: " + songcast_url + " ZoneID: " + zoneID);
-
-				manager = new OHZManager(songcast_url, zoneID, nic);
-				manager.start();
+				manager = new OHZConnector(songcast_url, zoneID, local_address);
+				manager.run();
+				//manager = new OHZManager(songcast_url, zoneID, nic);
+				//manager.start();
 			} catch (Exception e) {
 				log.error("Error Starting Songcast Playback: ", e);
 
@@ -136,7 +136,8 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 	}
 
 	private void stop() {
-		manager.stop(zoneID);
+		//manager.stop(zoneID);
+		manager.stop();
 		manager = null;
 		PlayManager.getInstance().setStatus("Stopped","SONGCAST");
 	}

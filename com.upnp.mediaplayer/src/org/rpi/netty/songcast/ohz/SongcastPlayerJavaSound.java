@@ -1,4 +1,4 @@
-package org.rpi.songcast.core;
+package org.rpi.netty.songcast.ohz;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -6,16 +6,12 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
 
 import org.apache.log4j.Logger;
+import org.rpi.netty.songcast.ohu.OHUMessageAudio;
+import org.rpi.songcast.core.AudioInformation;
+import org.rpi.songcast.core.ISongcastPlayer;
 import org.rpi.songcast.ohm.OHMEventAudio;
 
-/**
- * SongcastPlayer that uses JavaSound
- * 
- * @author phoyle
- * 
- */
-
-public class SongcastPlayerJavaSound implements ISongcastPlayer, Runnable {
+public class SongcastPlayerJavaSound {
 
 	private Logger log = Logger.getLogger(this.getClass());
 	private boolean run = true;
@@ -64,13 +60,6 @@ public class SongcastPlayerJavaSound implements ISongcastPlayer, Runnable {
 
 	}
 
-	@Override
-	public void run() {
-		while (run) {
-			sleep(100);
-		}
-
-	}
 
 	private void sleep(int value) {
 		try {
@@ -80,30 +69,32 @@ public class SongcastPlayerJavaSound implements ISongcastPlayer, Runnable {
 		}
 	}
 
-	@Override
+	//@Override
 	public void play() {
 
 	}
 
-	@Override
+	//@Override
 	public void stop() {
 		run = false;
 		close();
 	}
 
-	@Override
-	public void put(OHMEventAudio event) {
+	public void put(OHUMessageAudio event) {
 		if (!bWrite)
+		{
+			event=null;
 			return;
+		}
 		try {
 			if (soundLine != null) {
-				//log.debug(event.getSound().length);
-				soundLine.write(event.getSound(), 0, event.getSound().length);
+				// log.debug(data.length);
+				soundLine.write(event.getAudio(), 0, event.getAudio().length);
+				event = null;
 			}
 		} catch (Exception e) {
 			log.error("Error Writing Data", e);
 		}
 
 	}
-
 }

@@ -8,7 +8,6 @@ import java.net.NetworkInterface;
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
 
-
 public class SlaveEndpoint {
 
 	private Logger log = Logger.getLogger(this.getClass());
@@ -26,6 +25,10 @@ public class SlaveEndpoint {
 		try {
 			mSocket = new MulticastSocket();
 			NetworkInterface netIf = NetworkInterface.getByName(Config.getInstance().getSongCastNICName());
+			if (netIf == null) {
+				InetAddress add = InetAddress.getByName("192.168.1.72");
+				netIf = NetworkInterface.getByInetAddress(add);
+			}
 			mSocket.setNetworkInterface(netIf);
 		} catch (Exception e) {
 			log.error(e);
@@ -87,11 +90,12 @@ public class SlaveEndpoint {
 	}
 
 	public void sendData(byte[] data) {
-		if(mSocket==null)
+		if (mSocket == null)
 			return;
 		try {
 			DatagramPacket packet = new DatagramPacket(data, data.length, address, port);
 			mSocket.send(packet);
+			log.debug("Send: " + address.getHostAddress() + " Port: " + port);
 		} catch (Exception e) {
 			log.error("Sending Packet", e);
 		}
@@ -101,18 +105,14 @@ public class SlaveEndpoint {
 	 * Dispose of the Endpont
 	 */
 	public void dispose() {
-		try
-		{
-			if(mSocket !=null)
-			{
+		try {
+			if (mSocket != null) {
 				mSocket.disconnect();
 				mSocket = null;
 			}
+		} catch (Exception e) {
+			log.error("Error disposing of Endpoint: ", e);
 		}
-		catch(Exception e)
-		{
-			log.error("Error disposing of Endpoint: " , e);
-		}		
 	}
 
 }

@@ -268,5 +268,6 @@ irsend SEND_ONCE TEAC_H300 KEY_VOLUMEUP
 irsend SEND_ONCE TEAC_H300 KEY_VOLUMEDOWN
 
 
-
+Songcase wireshark filter
+(ip.addr eq 192.168.1.72 and ip.addr eq 239.255.255.250) 
 

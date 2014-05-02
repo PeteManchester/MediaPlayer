@@ -6,6 +6,8 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.util.ResourceLeakDetector;
+import io.netty.util.ResourceLeakDetector.Level;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -34,6 +36,7 @@ import org.rpi.utils.Utils;
  */
 public class AirPlayThread extends Thread {
 	private Logger log = Logger.getLogger(this.getClass());
+
 	private List<BonjourEmitter> emitter = new ArrayList<BonjourEmitter>();
 	// private ServerSocket servSock = null;
 	private String name;
@@ -49,7 +52,7 @@ public class AirPlayThread extends Thread {
 	 * Global executor service. Used e.g. to initialize the various netty
 	 * channel factories
 	 */
-	public static final ExecutorService ExecutorService = Executors.newCachedThreadPool();
+	//public static final ExecutorService ExecutorService = Executors.newCachedThreadPool();
 
 
 
@@ -76,6 +79,7 @@ public class AirPlayThread extends Thread {
 
 	public void run() {
 		log.debug("Starting AirPlay Service...");
+		ResourceLeakDetector.setLevel(Level.DISABLED);
 		// For the Raspi we have to do this now, because for some reason it is
 		// very slow the first time it is run and if we run it when we get an
 		// AirPlay connection the connection times out.

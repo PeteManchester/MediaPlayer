@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 public class AudioChannel {
 
 	private Logger log = Logger.getLogger(this.getClass());
-	EventLoopGroup workerGroup = new NioEventLoopGroup(10);
+	EventLoopGroup workerGroup = new NioEventLoopGroup(1);
 	Bootstrap bootstrap = new Bootstrap();
 	ChannelFuture channel = null;
 

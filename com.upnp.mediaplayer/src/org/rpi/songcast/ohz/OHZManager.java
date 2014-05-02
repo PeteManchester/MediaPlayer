@@ -23,7 +23,7 @@ public class OHZManager implements SongcastManager {
 
 	private SongcastSocket songcastSocket = null;
 	private String nic = "";
-	private OHZRequestJoin join = null;
+	//private OHZRequestJoin join = null;
 	private OHMManager ohm = null;
 
 	public OHZManager(String uri, String zoneID, String nic) {

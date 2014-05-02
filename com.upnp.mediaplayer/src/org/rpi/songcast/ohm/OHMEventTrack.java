@@ -93,13 +93,4 @@ public class OHMEventTrack extends SongcastMessage {
 	public int getSequence() {
 		return sequence;
 	}
-
-	/**
-	 * @param sequence
-	 *            the sequence to set
-	 */
-	private void setSequence(int sequence) {
-		this.sequence = sequence;
-	}
-
 }
