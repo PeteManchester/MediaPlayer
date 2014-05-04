@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -22,37 +23,14 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.apache.log4j.RollingFileAppender;
 import org.rpi.log.CustomPatternLayout;
+import org.rpi.log.MemoryAppender;
+import org.rpi.utils.Utils;
 
 enum Props {
-	MEDIAPLAYER_FRIENDLY_NAME("mediaplayer_friendly_name"),
-	MEDIAPLAYER_PLAYER("mediaplayer_player"),
-	MEDIAPLAYER_PLAYLIST_MAX("mediaplayer_playlist_max"),
-	MEDIAPLAYER_ENABLE_AVTRANSPORT("mediaplayer_enable_avTransport"),
-	MEDIAPLAYER_ENABLE_RECEIVER("mediaplayer_enable_receiver"),
-	MEDIAPLAYER_STARTUP_VOLUME("mediaplayer_startup_volume"),
-	MEDIAPLAYER_SAVE_LOCAL_PLAYLIST("mediaplayer_save_local_playlist"),
-	MPLAYER_PLAY_DEFINITIONS("mplayer_play_definitions"),
-	MPLAYER_PATH("mplayer_path"),
-	MPLAYER_CACHE_SIZE("mplayer_cache_size"),
-	MPLAYER_CACHE_MIN("mplayer_cache_min"),
-	MPD_HOST("mpd_host"),
-	MPD_PORT("mpd_port"),
-	MPD_PRELOAD_TIMER("mpd_preload_timer"),
-	LOG_FILE_NAME("log_file_name"),
-	LOG_FILE_LEVEL("log_file_level"),
-	LOG_CONSOLE_LEVEL("log_console_level"),
-	OPENHOME_PORT("openhome_port"),
-	OPENHOME_LOG_LEVEL("openhome_log_level"),
-	JAVA_SOUNDCARD_NAME("java_soundcard_name"),
-	SONGCAST_LATENCY_ENABLED("songcast_latency_enabled"),
-	RADIO_TUNEIN_USERNAME("radio_tunein_username"),
-	RADIO_TUNEIN_PARTNERID("radio_tunein_partnerid"),
-	WEB_SERVER_PORT("web_server_port"),
-	WEB_SERVER_ENABLED("web_server_enabled"),
-	AIRPLAY_ENABLED("airplay_enabled"),
-	AIRPLAY_PORT("airplay_port");
+	MEDIAPLAYER_FRIENDLY_NAME("mediaplayer_friendly_name"), MEDIAPLAYER_PLAYER("mediaplayer_player"), MEDIAPLAYER_PLAYLIST_MAX("mediaplayer_playlist_max"), MEDIAPLAYER_ENABLE_AVTRANSPORT("mediaplayer_enable_avTransport"), MEDIAPLAYER_ENABLE_RECEIVER("mediaplayer_enable_receiver"), MEDIAPLAYER_STARTUP_VOLUME("mediaplayer_startup_volume"), MEDIAPLAYER_MAX_VOLUME("mediaplayer_max_volume"), MEDIAPLAYER_SAVE_LOCAL_PLAYLIST("mediaplayer_save_local_playlist"), MPLAYER_PLAY_DEFINITIONS("mplayer_play_definitions"), MPLAYER_PATH("mplayer_path"), MPLAYER_CACHE_SIZE("mplayer_cache_size"), MPLAYER_CACHE_MIN("mplayer_cache_min"), MPD_HOST("mpd_host"), MPD_PORT("mpd_port"), MPD_PRELOAD_TIMER("mpd_preload_timer"), LOG_FILE_NAME("log_file_name"), LOG_FILE_LEVEL("log_file_level"), LOG_CONSOLE_LEVEL("log_console_level"), OPENHOME_PORT("openhome_port"), OPENHOME_LOG_LEVEL("openhome_log_level"), JAVA_SOUNDCARD_SUFFIX("java_soundcard_suffix"), SONGCAST_LATENCY_ENABLED("songcast_latency_enabled"), RADIO_TUNEIN_USERNAME("radio_tunein_username"), RADIO_TUNEIN_PARTNERID("radio_tunein_partnerid"), WEB_SERVER_PORT("web_server_port"), WEB_SERVER_ENABLED("web_server_enabled"), AIRPLAY_ENABLED("airplay_enabled"), AIRPLAY_PORT("airplay_port");
 
 	private final String stringValue;
 
@@ -73,11 +51,15 @@ public class Config {
 
 	private String songcast_nic_name = "";
 
-	private String resourceURIPrefix ="";
+	private String resourceURIPrefix = "";
+
+	private String java_soundcard_name = "";
 
 	private static Properties pr = null;
 
 	private static Calendar cal = null;
+
+	private MemoryAppender memory_appender = new MemoryAppender();
 
 	private static Config instance = null;
 
@@ -148,6 +130,7 @@ public class Config {
 
 	/**
 	 * Get the ProtocolInfo
+	 * 
 	 * @return
 	 */
 	public String getProtocolInfo() {
@@ -193,7 +176,7 @@ public class Config {
 
 	/**
 	 * Get a String value from the properties map
-	 *
+	 * 
 	 * @param key
 	 * @param default_value
 	 * @return
@@ -212,7 +195,7 @@ public class Config {
 
 	/**
 	 * Get an int value from the properties map
-	 *
+	 * 
 	 * @param key
 	 * @param default_value
 	 * @return
@@ -228,7 +211,7 @@ public class Config {
 
 	/**
 	 * Get a boolean value from the properties map
-	 *
+	 * 
 	 * @param key
 	 * @param default_value
 	 * @return
@@ -323,6 +306,10 @@ public class Config {
 	 */
 	public long getMediaplayerStartupVolume() {
 		return getValueInt(Props.MEDIAPLAYER_STARTUP_VOLUME, -1);
+	}
+
+	public long getMaxVolume() {
+		return getValueInt(Props.MEDIAPLAYER_MAX_VOLUME, 100);
 	}
 
 	/**
@@ -538,10 +525,28 @@ public class Config {
 	}
 
 	/**
-	 * @return the java_soundcard_name
+	 * 
+	 * @return
+	 */
+	public List<String> getJavaSoundcardSuffix() {
+		List<String> res = new ArrayList<String>();
+		try {
+			String names = getValue(Props.JAVA_SOUNDCARD_SUFFIX, "");
+			String[] list = names.split("|");
+			res = Arrays.asList(list);
+		} catch (Exception e) {
+			log.error("Error parsing SoundCard Suffix", e);
+		}
+
+		return res;
+	}
+
+	/**
+	 * 
+	 * @return
 	 */
 	public String getJavaSoundcardName() {
-		return getValue(Props.JAVA_SOUNDCARD_NAME, "");
+		return java_soundcard_name;
 	}
 
 	/**
@@ -549,7 +554,10 @@ public class Config {
 	 *            the songcast_soundcard_name to set
 	 */
 	public void setJavaSoundcardName(String java_soundcard_name) {
-		// Config.songcast_soundcard_name = songcast_soundcard_name;
+		this.java_soundcard_name = "";
+		if (!Utils.isEmpty(java_soundcard_name)) {
+			this.java_soundcard_name = "#" + java_soundcard_name;
+		}
 	}
 
 	/**
@@ -558,7 +566,6 @@ public class Config {
 	public String getRadioTuneinUsername() {
 		return getValue(Props.RADIO_TUNEIN_USERNAME, "");
 	}
-
 
 	/**
 	 * @param radio_tunein_username
@@ -569,11 +576,10 @@ public class Config {
 	}
 
 	/**
-	 *
+	 * 
 	 * @return
 	 */
-	public String getRadioTuneInPartnerId()
-	{
+	public String getRadioTuneInPartnerId() {
 		return getValue(Props.RADIO_TUNEIN_PARTNERID, "");
 	}
 
@@ -628,11 +634,10 @@ public class Config {
 	}
 
 	/**
-	 *
+	 * 
 	 * @return
 	 */
-	public int getAirPlayPort()
-	{
+	public int getAirPlayPort() {
 		return getValueInt(Props.AIRPLAY_PORT, 5000);
 	}
 
@@ -658,11 +663,16 @@ public class Config {
 			fileAppender.activateOptions();
 			Logger.getRootLogger().addAppender(fileAppender);
 			ConsoleAppender consoleAppender = new ConsoleAppender();
-			consoleAppender.setName("consoleLayout");;
+			consoleAppender.setName("consoleLayout");
+			;
 			consoleAppender.setLayout(pl);
 			consoleAppender.activateOptions();
 			consoleAppender.setThreshold(getLogLevel(getLogConsoleLevel()));
 			Logger.getRootLogger().addAppender(consoleAppender);
+			memory_appender.setLayout(pl);
+			memory_appender.activateOptions();
+			memory_appender.setThreshold(Level.DEBUG);
+			Logger.getRootLogger().addAppender(memory_appender);
 			log.info("Logging Configured");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -687,42 +697,37 @@ public class Config {
 
 	/**
 	 * Change the Console log level
+	 * 
 	 * @param level
 	 */
-	private void changeConsoleLogLevel(String level)
-	{
-		try
-		{
-			ConsoleAppender append = (ConsoleAppender)LogManager.getRootLogger().getAppender("consoleLayout");
+	private void changeConsoleLogLevel(String level) {
+		try {
+			ConsoleAppender append = (ConsoleAppender) LogManager.getRootLogger().getAppender("consoleLayout");
 			append.setThreshold(getLogLevel(level));
 			log.warn("Console Log Level Changed to: " + level);
-		}
-		catch(Exception e)
-		{
-			log.error("Error setting Console Log Level",e);
+		} catch (Exception e) {
+			log.error("Error setting Console Log Level", e);
 		}
 	}
 
 	/**
 	 * Change the LogFile log level
+	 * 
 	 * @param level
 	 */
-	private void changeFileLogLevel(String level)
-	{
-		try
-		{
-			RollingFileAppender append = (RollingFileAppender)LogManager.getRootLogger().getAppender("fileAppender");
+	private void changeFileLogLevel(String level) {
+		try {
+			RollingFileAppender append = (RollingFileAppender) LogManager.getRootLogger().getAppender("fileAppender");
 			append.setThreshold(getLogLevel(level));
 			log.warn("File Log Level Changed to: " + level);
-		}
-		catch(Exception e)
-		{
-			log.error("Error setting File Log Level",e);
+		} catch (Exception e) {
+			log.error("Error setting File Log Level", e);
 		}
 	}
 
 	/**
 	 * Update the app.properties file
+	 * 
 	 * @param configObject
 	 */
 	public void updateConfig(JsonObject configObject) {
@@ -730,16 +735,12 @@ public class Config {
 			for (String key : configObject.keySet()) {
 				String value = configObject.getString(key);
 				log.debug("Key: " + key + " = " + value);
-				if(key.equalsIgnoreCase(Props.LOG_CONSOLE_LEVEL.toString()))
-				{
-					if(!value.toString().equalsIgnoreCase(pr.getProperty(Props.LOG_CONSOLE_LEVEL.toString())))
-					{
+				if (key.equalsIgnoreCase(Props.LOG_CONSOLE_LEVEL.toString())) {
+					if (!value.toString().equalsIgnoreCase(pr.getProperty(Props.LOG_CONSOLE_LEVEL.toString()))) {
 						changeConsoleLogLevel(value);
 					}
-				}else if(key.equalsIgnoreCase(Props.LOG_FILE_LEVEL.toString()))
-				{
-					if(!value.toString().equalsIgnoreCase(pr.getProperty(Props.LOG_FILE_LEVEL.toString())))
-					{
+				} else if (key.equalsIgnoreCase(Props.LOG_FILE_LEVEL.toString())) {
+					if (!value.toString().equalsIgnoreCase(pr.getProperty(Props.LOG_FILE_LEVEL.toString()))) {
 						changeFileLogLevel(value);
 					}
 				}
@@ -752,40 +753,45 @@ public class Config {
 		try {
 
 			File f = new File("app.properties");
-	        out = new FileOutputStream( f );
+			out = new FileOutputStream(f);
 			Properties tmp = new Properties() {
-			    @Override
-			    public synchronized Enumeration<Object> keys() {
-			        return Collections.enumeration(new TreeSet<Object>(super.keySet()));
-			    }
+				@Override
+				public synchronized Enumeration<Object> keys() {
+					return Collections.enumeration(new TreeSet<Object>(super.keySet()));
+				}
 			};
 			tmp.putAll(pr);
 			tmp.store(new FileWriter(f), "Modified Using the Web Page");
 
 		} catch (Exception e) {
 
-		}finally
-		{
-			if(out!=null)
-			{
-				try
-				{
+		} finally {
+			if (out != null) {
+				try {
 					out.close();
-				}
-				catch(Exception e)
-				{
+				} catch (Exception e) {
 
 				}
 			}
 		}
 	}
-	
-	public void setResourceURIPrefix(String resourceURIPrefix )
-	{
-		this.resourceURIPrefix  = resourceURIPrefix;
+
+	public void setResourceURIPrefix(String resourceURIPrefix) {
+		this.resourceURIPrefix = resourceURIPrefix;
 	}
 
 	public String getResourceURIPrefix() {
 		return resourceURIPrefix;
 	}
+
+	public String getLoggingEvents() {
+		String text = "";
+		try {
+			text = URLEncoder.encode(memory_appender.getEventString(), "UTF-8");
+		} catch (Exception e) {
+
+		}
+		return text;
+	}
+
 }

@@ -26,8 +26,8 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 	private Logger log = Logger.getLogger(PrvReceiver.class);
 	private boolean bPlay = false;
 	private ChannelPlayList track = null;
-	//private OHZManager manager = null;
-	private OHZConnector manager = null;
+	private OHZManager manager = null;
+	//private OHZConnector manager = null;
 	private String zoneID = "";
 
 	public PrvReceiver(DvDevice iDevice) {
@@ -109,18 +109,18 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 				PlayManager.getInstance().playSongcast(track);
 
 				if (manager != null) {
-					//manager.stop(zoneID);
-					manager.stop();
+					manager.stop(zoneID);
+					//manager.stop();
 					manager = null;
 				}
 				int lastSlash = uri.lastIndexOf("/");
 				String songcast_url = uri.substring(0, lastSlash);
 				zoneID = uri.substring(lastSlash + 1);
 				log.debug("SongCast URL: " + songcast_url + " ZoneID: " + zoneID);
-				manager = new OHZConnector(songcast_url, zoneID, local_address);
-				manager.run();
-				//manager = new OHZManager(songcast_url, zoneID, nic);
-				//manager.start();
+				//manager = new OHZConnector(songcast_url, zoneID, local_address);
+				//manager.run();
+				manager = new OHZManager(songcast_url, zoneID, nic);
+				manager.start();
 			} catch (Exception e) {
 				log.error("Error Starting Songcast Playback: ", e);
 
@@ -136,8 +136,8 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 	}
 
 	private void stop() {
-		//manager.stop(zoneID);
-		manager.stop();
+		manager.stop(zoneID);
+		//manager.stop();
 		manager = null;
 		PlayManager.getInstance().setStatus("Stopped","SONGCAST");
 	}

@@ -3,6 +3,7 @@ package org.rpi.player;
 import java.util.Collections;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -654,6 +655,12 @@ public class PlayManager implements Observer {
 				log.debug("Volume is less than Zero, assume the DAC doesn't support Hardware Volume Control");
 				return;
 			}
+			long max_volume = Config.getInstance().getMaxVolume();
+			if(volume > max_volume )
+			{
+				log.debug("Reached Max Volume: " + max_volume);
+				volume = max_volume;
+			}
 			this.volume = volume;
 			log.debug("Set Volume: " + volume);
 			EventVolumeChanged ev = new EventVolumeChanged();
@@ -665,6 +672,7 @@ public class PlayManager implements Observer {
 						mPlayer.setVolume(volume);
 				}
 			}
+			
 		}
 	}
 
@@ -1156,5 +1164,7 @@ public class PlayManager implements Observer {
 	public void pause() {
 		pause(!bPaused);
 	}
+	
+
 
 }

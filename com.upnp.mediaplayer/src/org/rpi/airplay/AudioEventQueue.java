@@ -18,6 +18,7 @@ import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventUpdateTrackInfo;
 import org.rpi.songcast.core.AudioInformation;
 import org.rpi.songcast.ohm.SourceTimer;
+import org.rpi.utils.Utils;
 
 public class AudioEventQueue implements Runnable, Observer {
 	private Logger log = Logger.getLogger(this.getClass());
@@ -28,12 +29,12 @@ public class AudioEventQueue implements Runnable, Observer {
 	public final int MAX_PACKET = 2048;
 
 	// private AlacFile alac;
-	//private int[] outbuffer;
+	// private int[] outbuffer;
 
 	private SourceDataLine soundLine = null;
 	private AudioFormat audioFormat = null;
 	private DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
-	//private AlacFile alac;
+	// private AlacFile alac;
 
 	private boolean bWrite = false;
 
@@ -88,9 +89,11 @@ public class AudioEventQueue implements Runnable, Observer {
 	 */
 	private void setAudioDevice() {
 		Properties props = System.getProperties();
-		String name = "#" + Config.getInstance().getJavaSoundcardName();
-		props.setProperty("javax.sound.sampled.SourceDataLine", name);
-		log.warn("###Setting Sound Card Name: " + name);
+		String name = Config.getInstance().getJavaSoundcardName();
+		if (!Utils.isEmpty(name)) {
+			props.setProperty("javax.sound.sampled.SourceDataLine", name);
+			log.warn("###Setting Sound Card Name: " + name);
+		}
 	}
 
 	public synchronized boolean isEmpty() {
@@ -175,9 +178,9 @@ public class AudioEventQueue implements Runnable, Observer {
 	private void sessionChanged() {
 		log.debug("Session Changed");
 		session = AudioSessionHolder.getInstance().getSession();
-		//alac = session.getAlac();
-		//frame_size = session.getFrameSize();
-		//outbuffer = new int[4 * (frame_size + 3)];
+		// alac = session.getAlac();
+		// frame_size = session.getFrameSize();
+		// outbuffer = new int[4 * (frame_size + 3)];
 		setAudioDevice();
 	}
 

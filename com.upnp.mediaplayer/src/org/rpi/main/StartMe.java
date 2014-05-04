@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeSet;
@@ -16,7 +17,6 @@ import javax.sound.sampled.Mixer;
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
 import org.rpi.utils.Utils;
-
 
 public class StartMe {
 
@@ -31,7 +31,7 @@ public class StartMe {
 	public static void main(String[] args) {
 		// NativeLibraryLoader.load("mssql", "mssqlserver.jar");
 		// NativeLibraryLoader.load("pi4j", "libpi4j.so");
-		//Config.setStartTime();
+		// Config.setStartTime();
 		Config.getInstance();
 		boolean bInput = false;
 		for (String s : args) {
@@ -39,60 +39,68 @@ public class StartMe {
 				bInput = true;
 			}
 		}
-		
-		//getConfig();
-		//ConfigureLogging();
+
+		// getConfig();
+		// ConfigureLogging();
 		log.info("Starting......");
-		//if (!Utils.isEmpty(Config.getInstance().getSongcastSoundcardName())) {
-		//	setAudioDevice();
-		//}
+		// if (!Utils.isEmpty(Config.getInstance().getSongcastSoundcardName()))
+		// {
+		// setAudioDevice();
+		// }
 
-        if (log.isInfoEnabled()) {
-            // to improve startup performance, if loglevel info is not enabled, this is not needed, right?
-            log.info("Getting Network Interfaces");
-            try {
-                Enumeration e = NetworkInterface.getNetworkInterfaces();
-                while (e.hasMoreElements()) {
-                    NetworkInterface n = (NetworkInterface) e.nextElement();
-                    Enumeration ee = n.getInetAddresses();
-                    log.info("Network Interface Display Name: '" + n.getDisplayName() + "'");
-                    log.info("NIC Name: '" + n.getName() + "'");
-                    while (ee.hasMoreElements()) {
-                        InetAddress i = (InetAddress) ee.nextElement();
-                        log.info("IPAddress for Network Interface: " + n.getDisplayName() + " : " + i.getHostAddress());
-                    }
-                }
-            } catch (Exception e) {
-                log.error("Error Getting IPAddress", e);
-            }
-            log.info("End Of Network Interfaces");
-        }
+		if (log.isInfoEnabled()) {
+			// to improve startup performance, if loglevel info is not enabled,
+			// this is not needed, right?
+			log.info("Getting Network Interfaces");
+			try {
+				Enumeration e = NetworkInterface.getNetworkInterfaces();
+				while (e.hasMoreElements()) {
+					NetworkInterface n = (NetworkInterface) e.nextElement();
+					Enumeration ee = n.getInetAddresses();
+					log.info("Network Interface Display Name: '" + n.getDisplayName() + "'");
+					log.info("NIC Name: '" + n.getName() + "'");
+					while (ee.hasMoreElements()) {
+						InetAddress i = (InetAddress) ee.nextElement();
+						log.info("IPAddress for Network Interface: " + n.getDisplayName() + " : " + i.getHostAddress());
+					}
+				}
+			} catch (Exception e) {
+				log.error("Error Getting IPAddress", e);
+			}
+			log.info("End Of Network Interfaces");
+		}
 
-        //Do we need to attempt to set the AudioCard
-        if (Config.getInstance().isMediaplayerEnableReceiver()||Config.getInstance().isAirPlayEnabled()) {
-            log.info("Available Audio Devices:");
-            try {
-                Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
-
-                for (int cnt = 0; cnt < mixerInfo.length; cnt++) {
-                	String mixer = mixerInfo[cnt].getName().trim();
-                    log.info("'" + mixer + "'");
-                    if(mixer.trim().toUpperCase().endsWith("[PLUGHW:0,0]")||mixer.toUpperCase().trim().contains("PRIMARY SOUND DRIVER"))
-                    {
-                    	log.debug("Setting Audio Device: " + mixer);
-                    	//setAudioDevice(mixer);
-                    }
-                }
-            } catch (Exception e) {
-                log.error("Error getting Audio Devices");
-            }
-            log.info("End Of Audio Devices");
-        }
-        setAudioDevice();
+		// Do we need to attempt to set the AudioCard
+		if (Config.getInstance().isMediaplayerEnableReceiver() || Config.getInstance().isAirPlayEnabled()) {
+			log.info("Available Audio Devices:");
+			try {
+				Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
+				List<String> endsWith = Config.getInstance().getJavaSoundcardSuffix();
+				for (int cnt = 0; cnt < mixerInfo.length; cnt++) {
+					String mixer = mixerInfo[cnt].getName().trim();
+					log.info("'" + mixer + "'");
+					for (String endWith : endsWith) {
+						if (mixer.trim().toUpperCase().endsWith(endWith.trim().toUpperCase())) {
+							Config.getInstance().setJavaSoundcardName(mixer.trim());
+						}
+					}
+					// if(mixer.trim().toUpperCase().endsWith("[PLUGHW:0,0]")||mixer.toUpperCase().trim().contains("PRIMARY SOUND DRIVER"))
+					// {
+					// log.debug("Setting Audio Device: " + mixer);
+					// //setAudioDevice(mixer);
+					// }
+				}
+				//setAudioDevice();
+			} catch (Exception e) {
+				log.error("Error getting Audio Devices");
+			}
+			log.info("End Of Audio Devices");
+		}
+		setAudioDevice();
 		log.info("JVM Version: " + System.getProperty("java.version"));
 		printSystemProperties();
 		SimpleDevice sd = new SimpleDevice();
-		
+
 		// loadPlugins();
 		sd.attachShutDownHook();
 		if (bInput) {
@@ -166,15 +174,16 @@ public class StartMe {
 		log.warn("");
 	}
 
-
 	/**
 	 * Used to set the Songcast Audio Device
 	 */
 	private static void setAudioDevice() {
 		Properties props = System.getProperties();
-		String name = "#" + Config.getInstance().getJavaSoundcardName();
-		props.setProperty("javax.sound.sampled.SourceDataLine", name);
-		log.warn("###Setting Sound Card Name: " + name);
+		String name = Config.getInstance().getJavaSoundcardName();
+		if (!Utils.isEmpty(name)) {
+			props.setProperty("javax.sound.sampled.SourceDataLine", name);
+			log.warn("###Setting Sound Card Name: " + name);
+		}
 	}
 
 }

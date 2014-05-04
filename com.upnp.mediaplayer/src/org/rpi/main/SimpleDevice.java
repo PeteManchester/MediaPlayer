@@ -174,6 +174,10 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			log.debug("Setting Startup Volume: " + Config.getInstance().getMediaplayerStartupVolume());
 			PlayManager.getInstance().setVolume(Config.getInstance().getMediaplayerStartupVolume());
 		}
+		else
+		{
+			PlayManager.getInstance().setVolume(100);
+		}
 
 		if (Config.getInstance().isAirPlayEnabled()) {
 			log.info("Start AirPlay Receiver");

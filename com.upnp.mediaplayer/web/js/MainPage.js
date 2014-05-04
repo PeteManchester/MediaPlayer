@@ -90,7 +90,7 @@ $(document).on('pageshow', '#alarm', function() {
 				"Access-Control-Allow-Origin" : "*"
 			},
 			type : 'GET',
-			url : '/myapp/config/setSleepTimer?value=' + value,
+			url : '/myapp/alarm/setSleepTimer?value=' + value,
 			success : function(data) {
 				message('Set Sleep: ' + data);
 			},
@@ -110,7 +110,7 @@ $(document).on('pageshow', '#alarm', function() {
 				"Access-Control-Allow-Origin" : "*"
 			},
 			type : 'GET',
-			url : '/myapp/config/cancelSleepTimer',
+			url : '/myapp/alarm/cancelSleepTimer',
 			success : function(data) {
 				message('Sleep Cancel: ' + data);
 			},
@@ -173,8 +173,7 @@ function checkStatusConfig() {
 							decode(data.mediaplayer_player));
 					$("#select-choice-player").selectmenu("refresh");
 
-					$("#playlistMax")
-							.val(decode(data.mediaplayer_playlist_max));
+					$("#playlistMax").val(decode(data.mediaplayer_playlist_max));
 
 					$("#logFileName").val(decode(data.log_file_name));
 
@@ -186,11 +185,13 @@ function checkStatusConfig() {
 							decode(data.mediaplayer_enable_avTransport));
 					$("#AVTransport").slider("refresh");
 
-					$("#slider-volume").val(data.mediapalyer_startup_volume);
+					$("#slider-volume").val(data.mediaplayer_startup_volume);
 					$("#slider-volume").slider("refresh");
 
-					$("#songcastReceiver").val(
-							decode(data.mediaplayer_enable_receiver));
+					$("#slider-volume_max").val(data.mediaplayer_max_volume);
+					$("#slider-volume_max").slider("refresh");
+
+					$("#songcastReceiver").val(decode(data.mediaplayer_enable_receiver));
 					$("#songcastReceiver").slider("refresh");
 
 					$("#mplayerPlayList").val(decode(data.mplayer_playlist));
@@ -217,8 +218,8 @@ function checkStatusConfig() {
 
 					$("#openhome_port").val(decode(data.openhome_port));
 
-					$("#java_soundcard_name").val(
-							decode(data.java_soundcard_name));
+					$("#java_soundcard_suffix").val(
+							decode(data.java_soundcard_suffix));
 
 					$("#songcast_latency").val(
 							decode(data.songcast_latency_enabled));
@@ -262,7 +263,9 @@ function updateConfig() {
 
 		config_json.mediaplayer_enable_avTransport = $("#AVTransport").val();
 
-		config_json.mediapalyer_startup_volume = $("#slider-volume").val();
+		config_json.mediaplayer_startup_volume = $("#slider-volume").val();
+		
+		config_json.mediaplayer_max_volume = $("#slider-volume_max").val();
 
 		config_json.mediaplayer_enable_receiver = $("#songcastReceiver").val();
 
@@ -286,7 +289,7 @@ function updateConfig() {
 
 		config_json.openhome_port = $("#openhome_port").val();
 
-		config_json.java_soundcard_name = $("#java_soundcard_name").val();
+		config_json.java_soundcard_suffix = $("#java_soundcard_suffix").val();
 
 		config_json.songcast_latency_enabled = $("#songcast_latency").val();
 
@@ -333,7 +336,7 @@ function checkStatus() {
 			"Access-Control-Allow-Origin" : "*"
 		},
 		type : 'GET',
-		url : '/myapp/config/getStatus',
+		url : '/myapp/status/getStatus',
 		success : function(data) {
 			$('#status-table tr').remove();
 			$('#status-table > tbody:last').append(
@@ -357,6 +360,7 @@ function checkStatus() {
 			$('#status-table > tbody:last').append(
 					'<tr> <th>CPU Time</th> <td class="title">' + data.cpu_time
 							+ '</a></td> </tr>');
+			$("#textarea").val(decode(data.log_events));
 
 		},
 		error : function(result, errorThrown) {
@@ -379,7 +383,7 @@ function checkSleepStatus() {
 			"Access-Control-Allow-Origin" : "*"
 		},
 		type : 'GET',
-		url : '/myapp/config/getSleepTimer',
+		url : '/myapp/alarm/getSleepTimer',
 		success : function(data) {
 			// alert(data);
 			$("#alSleepStatus").val(data);
