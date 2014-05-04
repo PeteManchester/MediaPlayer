@@ -102,7 +102,7 @@ public class ConfigRest {
 	        reader.close();
 	        if(configObject !=null)
 	        {
-	        	Config.getInstance().updateConfig(configObject);
+				Config.getInstance().updateConfig(configObject);
 	        }
 	        log.debug("Name: " + configObject.getString("mediaplayer_friendly_name"));
 	        //Config.friendly_name = configObject.getString("friendly_name");

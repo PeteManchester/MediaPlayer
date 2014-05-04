@@ -29,9 +29,6 @@ public class StartMe {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// NativeLibraryLoader.load("mssql", "mssqlserver.jar");
-		// NativeLibraryLoader.load("pi4j", "libpi4j.so");
-		// Config.setStartTime();
 		Config.getInstance();
 		boolean bInput = false;
 		for (String s : args) {
@@ -40,13 +37,7 @@ public class StartMe {
 			}
 		}
 
-		// getConfig();
-		// ConfigureLogging();
 		log.info("Starting......");
-		// if (!Utils.isEmpty(Config.getInstance().getSongcastSoundcardName()))
-		// {
-		// setAudioDevice();
-		// }
 
 		if (log.isInfoEnabled()) {
 			// to improve startup performance, if loglevel info is not enabled,
@@ -90,7 +81,6 @@ public class StartMe {
 					// //setAudioDevice(mixer);
 					// }
 				}
-				//setAudioDevice();
 			} catch (Exception e) {
 				log.error("Error getting Audio Devices");
 			}

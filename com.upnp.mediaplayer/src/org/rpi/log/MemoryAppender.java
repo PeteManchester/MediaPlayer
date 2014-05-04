@@ -1,17 +1,13 @@
 package org.rpi.log;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 
 public class MemoryAppender extends AppenderSkeleton {
-	
-	LimitedSizeQueue<String> events = new LimitedSizeQueue<String>(10);
-	
-	public MemoryAppender()
-	{
+
+	LimitedSizeQueue<String> events = new LimitedSizeQueue<String>(50);
+
+	public MemoryAppender() {
 	}
 
 	@Override
@@ -21,45 +17,39 @@ public class MemoryAppender extends AppenderSkeleton {
 
 	@Override
 	public boolean requiresLayout() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	protected void append(LoggingEvent event) {
-				addEvent(this.layout.format(event));
+		addEvent(this.layout.format(event));
 	}
-	
-	private synchronized void addEvent(String event)
-	{
+
+	private synchronized void addEvent(String event) {
 		events.add(event);
 	}
-	
-	private synchronized LimitedSizeQueue<String>  getEvents()
-	{
+
+	private synchronized LimitedSizeQueue<String> getEvents() {
 		return events;
 	}
-	
+
 	/**
 	 * 
 	 * @return
 	 */
-	public synchronized String getEventString()
-	{
-		StringBuffer sb = new StringBuffer();
-		try
-		{
-			for(String s : getEvents())
-			{
-				sb.append(s);
-				sb.append("\r\n");
+	public synchronized String getEventString() {
+		String text = "";
+		try {
+			for (String s : getEvents()) {
+				if (!s.trim().equalsIgnoreCase("")) {
+					s = s + text;
+					text = s ;
+				}
 			}
+		} catch (Exception e) {
+
 		}
-		catch(Exception e)
-		{
-			
-		}
-		return sb.toString();
+		return text;
 	}
 
 }

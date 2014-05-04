@@ -532,7 +532,7 @@ public class Config {
 		List<String> res = new ArrayList<String>();
 		try {
 			String names = getValue(Props.JAVA_SOUNDCARD_SUFFIX, "");
-			String[] list = names.split("|");
+			String[] list = names.split("--");
 			res = Arrays.asList(list);
 		} catch (Exception e) {
 			log.error("Error parsing SoundCard Suffix", e);
