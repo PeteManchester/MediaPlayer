@@ -40,6 +40,8 @@ public class OHUConnector {
 	private InetSocketAddress localInetSocket = null;
 
 	private EventLoopGroup group = new NioEventLoopGroup(1);
+	
+	private OHMRequestListen listen = null;
 
 	private DatagramChannel ch = null;
 	private long started = System.nanoTime();
@@ -58,6 +60,7 @@ public class OHUConnector {
 		this.localInetAddr = localInetAddr;
 		remotePort = Integer.parseInt(sPort);
 		this.zoneID = zoneID;
+		listen = new OHMRequestListen(zoneID);
 	}
 
 	public void run() throws Exception {
@@ -77,7 +80,7 @@ public class OHUConnector {
 			});
 			b.option(ChannelOption.SO_BROADCAST, true);
 			b.option(ChannelOption.SO_REUSEADDR, true);
-			b.option(ChannelOption.IP_MULTICAST_LOOP_DISABLED, false);
+			b.option(ChannelOption.IP_MULTICAST_LOOP_DISABLED, true);
 			b.option(ChannelOption.SO_RCVBUF, 10240);
 			b.option(ChannelOption.IP_MULTICAST_TTL, 255);
 			b.handler(new OHUChannelInitializer());
@@ -97,7 +100,6 @@ public class OHUConnector {
 
 				@Override
 				public void run() {
-					OHMRequestListen listen = new OHMRequestListen(zoneID);
 					ByteBuf lBuffer = Unpooled.copiedBuffer(listen.data);
 					DatagramPacket pListen = new DatagramPacket(lBuffer, remoteInetSocket, localInetSocket);
 					sendMessage(pListen);

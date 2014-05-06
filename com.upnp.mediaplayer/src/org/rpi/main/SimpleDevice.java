@@ -47,6 +47,7 @@ import org.rpi.radio.ChannelReaderJSON;
 import org.rpi.sources.Source;
 import org.rpi.sources.SourceReader;
 import org.rpi.utils.NetworkUtils;
+import org.rpi.web.rest.PlayerStatus;
 
 public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessageListener, Observer {
 
@@ -185,6 +186,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			airplay.start();
 		}
 
+		PlayerStatus.getInstance();
 		OSManager.getInstance().loadPlugins();
 	}
 

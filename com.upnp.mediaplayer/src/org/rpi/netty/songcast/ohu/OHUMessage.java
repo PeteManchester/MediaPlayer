@@ -28,7 +28,8 @@ public class OHUMessage {
 //		data.getBytes(0, data);
 //		ByteBuf buf = Unpooled.copiedBuffer(bytes);
 //		this.data = buf;
-		this.data = data.copy();
+		//this.data = data.copy();
+		this.data = data;
 	}
 
 }

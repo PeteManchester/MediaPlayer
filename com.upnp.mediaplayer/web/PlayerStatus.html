@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>MediaPlayer Status Page</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"	href="js/jquery/jquery.mobile-1.4.2.css" />
+<script src="js/jquery/jquery-2.1.0.min.js"></script>
+<script	src="js/jquery/jquery.mobile-1.4.2.min.js"></script>
+<script src="js/PlayerStatus.js"></script>
+<script src="js/Common.js"></script>
+<style>
+<style type="text/css">
+#text {
+height: yourheightinpx;
+}
+#images img {
+position: absolute;
+max-width: 100%;
+width: auto\9;
+}
+</style>
+
+</head>
+<body>
+
+
+
+
+	<div data-role="page" id="status">
+		<div data-role="header" data-id="header1" data-position="fixed" >
+			<a href="#leftpanel1" data-role="button" data-icon="gear"	data-inline="true" data-mini="true" class="ui-btn-right"></a> 
+			<h1 id="header">
+			<img id="image_portrait" src="./images/mediaplayer240.png" alt="chef etat" width="60" height="60" class="ui-btn-left" />
+			Player Status
+			</h1>
+			<br>
+			<div data-role="navbar">
+				<ul>
+					<li><a href="PlayerStatus.html"   data-transition="slide">Status</a></li>
+				</ul>
+			</div>
+			<!-- /navbar -->
+		</div>
+		<!-- /header -->
+
+		<div data-role="content" id="text" height="100%">
+
+			<form>
+				<li class="ui-field-contain"><label for="title">Title:</label> <input type="text" name="title" id="title" value="" data-clear-btn="true"></li>
+				<li class="ui-field-contain"><label for="album_title">Album:</label> <input type="text" name="album_title" id="album_title" value="" data-clear-btn="true"></li>
+				<li class="ui-field-contain"><label for="album_artist">Artist:</label> <input type="text" name="album_artist" id="album_artist" value="" data-clear-btn="true"></li>
+				<li class="ui-field-contain"><label for="time_played">Time:</label> <input type="text" name="time_played" id="time_played" value="" data-clear-btn="true"></li>
+				<div class="ui-grid-a"> <div class="ui-block-a" style="width: 30%; "> <img id="image_uri" src="./images/mediaplayer240.png" style="width: 100%;" /> </div>
+			</form>
+		</div>
+		
+
+		
+
+
+		<!-- /content -->
+
+
+
+
+		<div data-role="footer" class="footer-docs" data-theme="c">
+			<p class="jqm-version"></p>
+			<p>&copy; 2014 Pete Hoyle</p>
+		</div>
+
+		<div data-role="panel" id="leftpanel1" data-position="left"	data-display="reveal" data-dismissible="true" data-theme="a">
+
+			<h3>Control</h3>
+			
+			<h4>MediaPlayer</h4>
+			<div data-role="content" id="mediaplayer">
+				<fieldset data-role="controlgroup" data-mini="true" 	data-inline="true">
+					<input type="button" id="Stops" name="Stops" data-mini="true" value="Stop" />
+					<p>
+					<input type="button" id="Restarts" name="Restarts" data-mini="true" value="Restart" />
+					<p>
+
+				</fieldset>
+				<p>
+				<h4>OS</h4>
+				<fieldset data-role="controlgroupOS" data-mini="true" 	data-inline="true">
+
+					<input type="button" id="Reboots" name="Reboots" data-mini="true" value="Reboot" />
+					<p>
+					<input type="button" id="Shutdowns" name="Shutdowns" data-mini="true" value="Shutdown" />
+					<p>
+				</fieldset>
+			</div>
+			<a href="#demo-links" data-rel="close" data-role="button" data-theme="a" data-icon="delete" data-inline="true"	data-mini="true">Close panel</a>
+
+		</div>
+		<!-- /leftpanel1 -->
+
+
+	</div>
+	<!-- /page -->
+
+</body>
+</html>

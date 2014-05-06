@@ -24,6 +24,7 @@ import java.net.InetSocketAddress;
 import java.nio.channels.spi.SelectorProvider;
 
 import org.apache.log4j.Logger;
+import org.rpi.songcast.ohm.OHMRequestLeave;
 import org.rpi.songcast.ohz.OHZRequestJoin;
 
 public class OHZConnector {
@@ -78,7 +79,7 @@ public class OHZConnector {
 			});
 			b.option(ChannelOption.SO_BROADCAST, true);
 			b.option(ChannelOption.SO_REUSEADDR, true);
-			b.option(ChannelOption.IP_MULTICAST_LOOP_DISABLED, false);
+			b.option(ChannelOption.IP_MULTICAST_LOOP_DISABLED, true);
 			b.option(ChannelOption.SO_RCVBUF, 2048);
 			b.option(ChannelOption.IP_MULTICAST_TTL, 255);
 
@@ -104,7 +105,20 @@ public class OHZConnector {
 		}
 	}
 
-	public void stop() {
+	public void stop(String zoneID) {
+		try
+		{
+			OHMRequestLeave leave = new OHMRequestLeave(zoneID);
+			ByteBuf buffer = Unpooled.copiedBuffer(leave.data);
+			DatagramPacket packet = new DatagramPacket(buffer, remoteInetSocket, localInetSocket);
+			log.debug("Sending : " + packet.toString());
+			ch.writeAndFlush(packet).sync();
+			log.debug("Sent Leave Message");
+		}
+		catch(Exception e)
+		{
+			log.error("Error Sending Leave Message" ,e );			
+		}
 		try {
 			if(ch!=null)
 			{

@@ -30,7 +30,7 @@ public class OHUMessageAudio extends OHUMessage {
 	private byte[] audio ;
 
 	public OHUMessageAudio(ByteBuf buf) {
-		super.setData(buf);
+		super.setData(buf.retain());
 		int headerLength = buf.getByte(8) & ~0x80;
 		int sampleCount = buf.getShort(10);
 		int frameNumber = buf.getInt(13);
