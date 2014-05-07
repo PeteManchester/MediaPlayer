@@ -14,6 +14,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
+import org.rpi.songcast.ohm.OHMEventTrack;
 
 public class OHUSlaveForwarder extends SimpleChannelInboundHandler<OHUMessage> {
 
@@ -23,20 +24,25 @@ public class OHUSlaveForwarder extends SimpleChannelInboundHandler<OHUMessage> {
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, OHUMessage msg) throws Exception {
 		if (msg instanceof OHUMessageSlave) {
+			// Don't send Slave messages to the Slaves..
 			OHUMessageSlave slave = (OHUMessageSlave) msg;
 			endpoints = slave.getEndpoints();
+			//msg.getData().release();
 		} else {
 			for (Slave sl : endpoints.values()) {
 				try {
-					byte[] data = new byte[msg.getData().readableBytes()];
-					msg.getData().getBytes(0, data,0,msg.getData().readableBytes());
-					InetSocketAddress to = sl.getRemoteAddress();
-					DatagramPacket packet = new DatagramPacket(msg.getData(), to);
+					InetSocketAddress toAddress = sl.getRemoteAddress();
+					DatagramPacket packet = new DatagramPacket(msg.getData().retain(), toAddress);
 					ctx.channel().writeAndFlush(packet).sync();
 				} catch (Exception e) {
 					log.error("Error forwarding to SlaveEndpoint", e);
 				}
 			}
+		}
+		try {
+			msg.getData().release();
+		} catch (Exception e) {
+			log.error("Error Releasing Data", e);
 		}
 		ctx.fireChannelRead(msg);
 	}

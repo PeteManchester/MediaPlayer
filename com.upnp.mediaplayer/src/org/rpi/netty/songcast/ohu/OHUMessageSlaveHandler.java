@@ -8,12 +8,21 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class OHUMessageSlaveHandler extends SimpleChannelInboundHandler<OHUMessageSlave> {
 
 	private Logger log = Logger.getLogger(this.getClass());
-	
+
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, OHUMessageSlave msg) throws Exception {
 		log.debug("Slave Message");
+		try {
+			if(msg instanceof OHUMessageSlave)
+			{
+				OHUMessageSlave slave = (OHUMessageSlave)msg;
+				log.debug(slave.toString());
+			}
+		} catch (Exception e) {
+			log.error("Error Releasing Slave ByteBuf");
+		}
 	}
-	
+
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 		log.error(cause);

@@ -1,11 +1,9 @@
 package org.rpi.netty.songcast.ohz;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+
+import java.net.InetSocketAddress;
 
 import org.apache.log4j.Logger;
 import org.rpi.netty.songcast.ohu.OHUConnector;
@@ -20,30 +18,22 @@ public class OHZRequestHandler extends SimpleChannelInboundHandler<OHZMessage> {
 		if (msg instanceof OHZMessage) {
 			OHZMessage mess = (OHZMessage) msg;
 			if (mess.getUri().endsWith("0.0.0.0:0")) {
-				log.debug("Stop OHUConnector");
-				if (ohu != null) {
-					ohu.stop();
-					ohu = null;
-					zone = "";
-//					PlayManager.getInstance().setStatus("Stopped","SONGCAST");					
-				}
-			} else {
-				if (!zone.equalsIgnoreCase(mess.getZone())) {
+				if (zone.equalsIgnoreCase(mess.getZone())) {
+					log.debug("Stop OHUConnector");
 					if (ohu != null) {
 						ohu.stop();
 						ohu = null;
+						zone = "";
 					}
+				}
+			} else if (ohu ==null) {
 					zone = mess.getZone();
 					InetSocketAddress localAddress = (InetSocketAddress) ctx.channel().localAddress();
 					ohu = new OHUConnector(mess.getUri(), mess.getZone(), localAddress.getAddress());
 					ohu.run();
-//					PlayManager.getInstance().setStatus("Buffering","SONGCAST");
-				}
-			}
-			ctx.fireChannelRead(msg);
-		} else {
-			
-		}
+			}			
+		} 
+		ctx.fireChannelRead(msg);
 	}
 
 	@Override

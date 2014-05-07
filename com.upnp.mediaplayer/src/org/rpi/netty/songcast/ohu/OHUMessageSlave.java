@@ -25,7 +25,7 @@ public class OHUMessageSlave extends OHUMessage {
 
 	
 	public OHUMessageSlave(ByteBuf buf) {
-		super.setData(buf);
+		super.setData(buf.retain());
 		int slave_count = buf.getInt(8);
 		log.debug("Slave Count: " + slave_count);		
 		for (int i = 0; i < slave_count; i++) {

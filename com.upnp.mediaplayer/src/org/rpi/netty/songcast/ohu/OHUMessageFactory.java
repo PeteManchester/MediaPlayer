@@ -27,7 +27,7 @@ public class OHUMessageFactory {
 			OHUMessageTrack track = new OHUMessageTrack(buf);
 			return track;
 		case 5://MetaText
-			log.debug("MetaData Message: " + buf.toString(Charset.defaultCharset()));
+			log.debug("MetaText Message: " + buf.toString(Charset.defaultCharset()));
 			OHUMessageMetaText text = new OHUMessageMetaText(buf);
 			return text;
 		case 6://Slave

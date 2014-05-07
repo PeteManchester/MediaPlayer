@@ -8,22 +8,19 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.epoll.EpollDatagramChannel;
-import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.oio.OioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.InternetProtocolFamily;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import io.netty.channel.socket.oio.OioDatagramChannel;
 import io.netty.util.internal.PlatformDependent;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.nio.channels.spi.SelectorProvider;
+import java.net.NetworkInterface;
 
 import org.apache.log4j.Logger;
+import org.rpi.player.PlayManager;
 import org.rpi.songcast.ohm.OHMRequestLeave;
 import org.rpi.songcast.ohz.OHZRequestJoin;
 
@@ -64,16 +61,16 @@ public class OHZConnector {
 	public void run() throws Exception {
 		log.debug("Run OHZConnector");
 		try {
-
+			PlayManager.getInstance().setStatus("Buffering","SONGCAST");
 			remoteInetSocket = new InetSocketAddress(remoteInetAddr, remotePort);
-			localInetSocket = new InetSocketAddress(localInetAddr, remotePort);
+			localInetSocket = new InetSocketAddress(remotePort);
+			NetworkInterface nic = NetworkInterface.getByInetAddress(localInetAddr);
 
 			Bootstrap b = new Bootstrap();
 			b.group(group);
 			b.channelFactory(new ChannelFactory<Channel>() {
 				@Override
 				public Channel newChannel() {
-					//return new EpollDatagramChannel();
 					return new NioDatagramChannel(InternetProtocolFamily.IPv4);
 				}
 			});
@@ -82,12 +79,13 @@ public class OHZConnector {
 			b.option(ChannelOption.IP_MULTICAST_LOOP_DISABLED, true);
 			b.option(ChannelOption.SO_RCVBUF, 2048);
 			b.option(ChannelOption.IP_MULTICAST_TTL, 255);
+			b.option(ChannelOption.IP_MULTICAST_IF, nic);
 
 			b.handler(new OHZChannelInitializer());
 			log.debug("Am I Logged on as ROOT: " + PlatformDependent.isRoot());
 			ch = (DatagramChannel) b.bind(localInetSocket).sync().channel();
 			if (remoteInetAddr.isMulticastAddress()) {
-				ChannelFuture future = ch.joinGroup(remoteInetAddr);
+				ChannelFuture future = ch.joinGroup(remoteInetSocket,nic);
 				log.debug("Result of Join: " + future.toString());
 			}
 			// Create Message

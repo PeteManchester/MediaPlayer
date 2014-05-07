@@ -17,14 +17,14 @@ public class OHUMessageMetaText extends OHUMessage {
 	private String metaText = "";
 
 	public OHUMessageMetaText(ByteBuf buf) {
-		super.setData(buf);
+		super.setData(buf.retain());
 		sequence = buf.getInt(8);
 		int meta_length = buf.getInt(12);
 		if (meta_length > 0) {
 			byte[] bmeta_data = new byte[meta_length];
 			buf.getBytes(16, bmeta_data,0,meta_length);
 			metaText = new String(bmeta_data);
-			log.debug("MetaData: " + getMetaText());
+			log.debug(this.toString());
 		}
 	}
 
@@ -46,6 +46,8 @@ public class OHUMessageMetaText extends OHUMessage {
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
+		sb.append("OHUMessageMetaText");
+		sb.append("\r\n");
 		sb.append("Sequence: " + getSequence());
 		sb.append("\r\n");
 		sb.append("MetaText: " + getMetaText());

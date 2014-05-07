@@ -16,6 +16,7 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -39,8 +40,7 @@ public class OHUConnector {
 	private InetAddress localInetAddr = null;
 	private InetSocketAddress localInetSocket = null;
 
-	private EventLoopGroup group = new NioEventLoopGroup(1);
-	
+	private EventLoopGroup group = new NioEventLoopGroup(1);	
 	private OHMRequestListen listen = null;
 
 	private DatagramChannel ch = null;
@@ -66,9 +66,9 @@ public class OHUConnector {
 	public void run() throws Exception {
 
 		try {
-
 			remoteInetSocket = new InetSocketAddress(remoteInetAddr, remotePort);
-			localInetSocket = new InetSocketAddress(localInetAddr, remotePort);
+			localInetSocket = new InetSocketAddress(remotePort);
+			NetworkInterface nic = NetworkInterface.getByInetAddress(localInetAddr);
 
 			Bootstrap b = new Bootstrap();
 			b.group(group);
@@ -81,13 +81,15 @@ public class OHUConnector {
 			b.option(ChannelOption.SO_BROADCAST, true);
 			b.option(ChannelOption.SO_REUSEADDR, true);
 			b.option(ChannelOption.IP_MULTICAST_LOOP_DISABLED, true);
-			b.option(ChannelOption.SO_RCVBUF, 10240);
+			b.option(ChannelOption.SO_RCVBUF, 2 * 1024);
 			b.option(ChannelOption.IP_MULTICAST_TTL, 255);
+			b.option(ChannelOption.IP_MULTICAST_IF, nic);
 			b.handler(new OHUChannelInitializer());
 
 			ch = (DatagramChannel) b.bind(localInetSocket).sync().channel();
 			if (remoteInetAddr.isMulticastAddress()) {
-				ChannelFuture future = ch.joinGroup(remoteInetAddr);
+				ChannelFuture future = ch.joinGroup(remoteInetSocket,nic);
+				log.debug("Result of Join: " + future.toString());
 			}
 
 			OHMRequestJoin join = new OHMRequestJoin(zoneID);
@@ -95,7 +97,6 @@ public class OHUConnector {
 			DatagramPacket packet = new DatagramPacket(buffer, remoteInetSocket, localInetSocket);
 			sendMessage(packet);
 			PlayManager.getInstance().setStatus("Playing","SONGCAST");
-
 			group.scheduleAtFixedRate(new Runnable() {
 
 				@Override

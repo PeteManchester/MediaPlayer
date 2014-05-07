@@ -89,21 +89,21 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 			try {
 				InetAddress local_address = InetAddress.getByName(ip);
 
-//				Enumeration e = NetworkInterface.getNetworkInterfaces();
-//				while (e.hasMoreElements()) {
-//					NetworkInterface n = (NetworkInterface) e.nextElement();
-//					Enumeration ee = n.getInetAddresses();
-//					//log.info("Network Interface Display Name: '" + n.getDisplayName() + "'");
-//					//log.info("NIC Name: '" + n.getName() + "'");
-//					while (ee.hasMoreElements()) {
-//						InetAddress i = (InetAddress) ee.nextElement();
-//						if (i.getHostAddress().equalsIgnoreCase(ip)) {
-//							log.info("IPAddress for Network Interface: " + n.getDisplayName() + " : " + i.getHostAddress());
-//							nic = n.getName();
-//							Config.getInstance().setSongCastNICName(nic);
-//						}
-//					}
-//				}
+				Enumeration e = NetworkInterface.getNetworkInterfaces();
+				while (e.hasMoreElements()) {
+					NetworkInterface n = (NetworkInterface) e.nextElement();
+					Enumeration ee = n.getInetAddresses();
+					//log.info("Network Interface Display Name: '" + n.getDisplayName() + "'");
+					//log.info("NIC Name: '" + n.getName() + "'");
+					while (ee.hasMoreElements()) {
+						InetAddress i = (InetAddress) ee.nextElement();
+						if (i.getHostAddress().equalsIgnoreCase(ip)) {
+							log.info("IPAddress for Network Interface: " + n.getDisplayName() + " : " + i.getHostAddress());
+							nic = n.getName();
+							Config.getInstance().setSongCastNICName(nic);
+						}
+					}
+				}
 
 				PlayManager.getInstance().playSongcast(track);
 

@@ -8,9 +8,6 @@ import javax.sound.sampled.SourceDataLine;
 import org.apache.log4j.Logger;
 import org.rpi.netty.songcast.ohu.OHUMessageAudio;
 import org.rpi.songcast.core.AudioInformation;
-import org.rpi.songcast.core.ISongcastPlayer;
-import org.rpi.songcast.ohm.OHMEventAudio;
-
 public class SongcastPlayerJavaSound {
 
 	private Logger log = Logger.getLogger(this.getClass());
@@ -88,7 +85,6 @@ public class SongcastPlayerJavaSound {
 		}
 		try {
 			if (soundLine != null) {
-				// log.debug(data.length);
 				soundLine.write(event.getAudio(), 0, event.getAudio().length);
 				event = null;
 			}

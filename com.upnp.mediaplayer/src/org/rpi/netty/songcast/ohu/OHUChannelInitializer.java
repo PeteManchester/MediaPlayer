@@ -15,9 +15,10 @@ public class OHUChannelInitializer extends ChannelInitializer<NioDatagramChannel
 		p.addLast("OHUDecoder",new OHUMessageDecoder());
 		p.addLast("OHUSlaveForwarder",new OHUSlaveForwarder());
 		p.addLast("OHUAudioHandler", new OHUMessageAudioHandler());
-		//p.addLast("OHMTrackHandler", new OHUMessageTrackHandler());
-		//p.addLast("OHMMessageMetaTextHandler", new OHUMessageMetaTextHandler());
-		//p.addLast("OHUSlaveHandler", new OHUMessageSlaveHandler());
+		p.addLast("OHMTrackHandler", new OHUMessageTrackHandler());
+		p.addLast("OHMMessageMetaTextHandler", new OHUMessageMetaTextHandler());
+		p.addLast("OHUSlaveHandler", new OHUMessageSlaveHandler());
+		//p.addLast("OHULeakCatcher", new OHULeakCatcher());
 		
 	}
 }

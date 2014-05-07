@@ -17,41 +17,39 @@ import org.rpi.player.events.EventUpdateTrackInfo;
 import org.rpi.songcast.core.AudioInformation;
 
 public class OHUMessageAudioHandler extends SimpleChannelInboundHandler<OHUMessageAudio> {
-	
+
 	private Logger log = Logger.getLogger(this.getClass());
-	private SongcastPlayerJavaSound player =null;
+	private SongcastPlayerJavaSound player = null;
 	private AudioInformation audioInformation = null;
+
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, OHUMessageAudio msg) throws Exception {
-		if(msg instanceof OHUMessageAudio)
-		{
-			if(player !=null)
-			{
-				//log.debug("Audio" + msg.getAudio().length);
-				AudioInformation ai = msg.getAudioInformation();
-				if(ai !=null && !ai.compare(audioInformation))
-				{
-					player.createSoundLine(ai);
-					setAudioInformation(ai);
+		if (msg instanceof OHUMessageAudio) {
+			try {
+				if (player != null) {
+					AudioInformation ai = msg.getAudioInformation();
+					if (ai != null && !ai.compare(audioInformation)) {
+						player.createSoundLine(ai);
+						setAudioInformation(ai);
+					}
+					ai = null;
+					player.put(msg);
+				} else {
+					player = new SongcastPlayerJavaSound();
+					setAudioInformation(msg.getAudioInformation());
+					player.createSoundLine(audioInformation);
+					player.put(msg);
 				}
-				ai=null;
-				player.put(msg);				
+				// msg.getData().release();
+			} catch (Exception e) {
+				log.error("Error Handling Audio Message", e);
 			}
-			else
-			{
-				player= new SongcastPlayerJavaSound();
-				setAudioInformation(msg.getAudioInformation());
-				player.createSoundLine(audioInformation);
-			}
-			msg = null;
-		}		
+		}
 	}
-	
-	private void setAudioInformation(AudioInformation ai)
-	{
+
+	private void setAudioInformation(AudioInformation ai) {
 		audioInformation = ai;
-		try
-		{
+		try {
 			TrackInfo info = new TrackInfo();
 			info.setBitDepth(ai.getBitDepth());
 			info.setCodec(ai.getCodec());
@@ -63,10 +61,43 @@ public class OHUMessageAudioHandler extends SimpleChannelInboundHandler<OHUMessa
 			if (ev != null) {
 				PlayManager.getInstance().updateTrackInfo(ev);
 			}
+		} catch (Exception e) {
+
 		}
-		catch(Exception e)
-		{
-			
+	}
+
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		log.error(cause);
+		ctx.close();
+	}
+
+	@Override
+	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+		log.debug("Channel Registered: " + ctx.name());
+		super.channelRegistered(ctx);
+	}
+
+	@Override
+	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		log.debug("Channel Actvie: " + ctx.name());
+		super.channelActive(ctx);
+	}
+
+	@Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+		log.debug("Channel Inactive: " + ctx.name());
+		super.channelInactive(ctx);
+	};
+
+	@Override
+	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+		log.debug("Channel Unregistered: " + ctx.name());
+		if (player != null) {
+			PlayManager.getInstance().setStatus("Stopped", "SONGCAST");
+			player.stop();
+			player = null;
 		}
+		super.channelUnregistered(ctx);
 	}
 }

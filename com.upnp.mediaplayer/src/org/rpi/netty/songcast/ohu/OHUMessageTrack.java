@@ -1,11 +1,7 @@
 package org.rpi.netty.songcast.ohu;
 
-import org.apache.log4j.Logger;
-import org.rpi.channel.ChannelSongcast;
-import org.rpi.player.PlayManager;
-import org.rpi.player.events.EventUpdateTrackMetaText;
-
 import io.netty.buffer.ByteBuf;
+import org.apache.log4j.Logger;
 
 //Offset    Bytes                   Desc
 //0         4                       Sequence
@@ -23,7 +19,7 @@ public class OHUMessageTrack extends OHUMessage {
 	private String metaData = "";
 
 	public OHUMessageTrack(ByteBuf buf) {
-		super.setData(buf);
+		super.setData(buf.retain());
 		try {
 			sequence = buf.getInt(8);
 			int url_length = buf.getInt(12);
@@ -88,9 +84,11 @@ public class OHUMessageTrack extends OHUMessage {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
+		sb.append("OHUMessageTrack");
+		sb.append("\r\n");
 		sb.append("URI: " + uri);
 		sb.append("\r\n");
-		sb.append("MetaDate: " + metaData);
+		sb.append("MetaData: " + metaData);
 		return sb.toString();
 	}
 

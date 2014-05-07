@@ -12,6 +12,15 @@ public class OHUMessageMetaTextHandler extends SimpleChannelInboundHandler<OHUMe
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, OHUMessageMetaText msg) throws Exception {
 		log.debug("MetaText");
+		try {
+			if(msg instanceof OHUMessageMetaText)
+			{
+				OHUMessageMetaText meta_text = (OHUMessageMetaText)msg;
+				log.debug(meta_text.toString());
+			}
+		} catch (Exception e) {
+			log.error("Error Releasing MetaText ByteBuf");
+		}
 	}
 	
 	@Override
