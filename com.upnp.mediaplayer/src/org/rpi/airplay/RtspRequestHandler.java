@@ -199,7 +199,15 @@ public class RtspRequestHandler extends ChannelInboundHandlerAdapter implements 
 			// String clientInstance = request.headers().get("DACP-ID");
 			clientInstance = request.headers().get("DACP-ID");
 			if (org.rpi.utils.Utils.isEmpty(clientInstance)) {
-				throw new RuntimeException("No Client Instance given");
+				//throw new RuntimeException("No Client Instance given");
+				try
+				{
+				clientInstance = RaopSessionManager.getFirstSession();
+				}
+				catch(Exception e )
+				{
+					log.error("Did not get DACP_ID, attempted to get first session id",e);
+				}
 			}
 
 			HttpMethod method = request.getMethod();

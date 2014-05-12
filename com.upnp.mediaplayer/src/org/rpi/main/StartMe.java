@@ -32,7 +32,7 @@ public class StartMe {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//ResourceLeakDetector.setLevel(Level.PARANOID);
+		// ResourceLeakDetector.setLevel(Level.PARANOID);
 		Config.getInstance();
 		boolean bInput = false;
 		for (String s : args) {
@@ -71,19 +71,18 @@ public class StartMe {
 			try {
 				Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
 				List<String> endsWith = Config.getInstance().getJavaSoundcardSuffix();
+				boolean bFoundSoundCard = false;
 				for (int cnt = 0; cnt < mixerInfo.length; cnt++) {
 					String mixer = mixerInfo[cnt].getName().trim();
 					log.info("'" + mixer + "'");
-					for (String endWith : endsWith) {
-						if (mixer.trim().toUpperCase().endsWith(endWith.trim().toUpperCase())) {
-							Config.getInstance().setJavaSoundcardName(mixer.trim());
+					if (!bFoundSoundCard) {
+						for (String endWith : endsWith) {
+							if (mixer.trim().toUpperCase().endsWith(endWith.trim().toUpperCase())) {
+								Config.getInstance().setJavaSoundcardName(mixer.trim());
+								bFoundSoundCard = true;
+							}
 						}
 					}
-					// if(mixer.trim().toUpperCase().endsWith("[PLUGHW:0,0]")||mixer.toUpperCase().trim().contains("PRIMARY SOUND DRIVER"))
-					// {
-					// log.debug("Setting Audio Device: " + mixer);
-					// //setAudioDevice(mixer);
-					// }
 				}
 			} catch (Exception e) {
 				log.error("Error getting Audio Devices");

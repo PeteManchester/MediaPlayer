@@ -2,8 +2,8 @@ package org.rpi.netty.songcast.ohu;
 
 import io.netty.buffer.ByteBuf;
 
-import org.apache.log4j.Logger;
-import org.rpi.songcast.core.AudioInformation;
+import org.rpi.java.sound.AudioPacket;
+import org.scratchpad.songcast.core.AudioInformation;
 
 //Offset    Bytes                   Desc
 //0         1                       Msg Header Bytes (without the codec name)
@@ -25,26 +25,42 @@ import org.rpi.songcast.core.AudioInformation;
 //50        n                       Codec Name
 //50 + n    Msg Total Bytes - Msg Header Bytes - Code Name Bytes (Sample data in big endian, channels interleaved, packed)
 
-public class OHUMessageAudio extends OHUMessage {
+public class OHUMessageAudio extends OHUMessage implements AudioPacket {
 	private AudioInformation ai = null;
-	private byte[] audio ;
+	private byte[] audio;
+	private int frameNumber = 0;
+	private long time_to_play = 0;
+	private int attempts = 0;
+	private int length = 0;
 
 	public OHUMessageAudio(ByteBuf buf) {
 		super.setData(buf.retain());
 		int headerLength = buf.getByte(8) & ~0x80;
 		int sampleCount = buf.getShort(10);
-		int frameNumber = buf.getInt(13);
+		frameNumber = buf.getInt(12);
 		int latency = buf.getInt(20);
 		int iSampleRate = buf.getInt(44);
 		int bitRate = buf.getInt(48);
 		int iBitDepth = buf.getByte(54) & ~0x80;
-		int channels = buf.getByte(55) & ~0x80;		
+		int channels = buf.getByte(55) & ~0x80;
 		int codecNameLength = buf.getByte(57) & ~0x80;
-		
-		if(bitRate>0)
-		{
+		if (bitRate > 0) {
 			bitRate = bitRate / 1000;
 		}
+		long time = System.currentTimeMillis();
+		if (latency > 0) {
+			try {
+				if (iSampleRate == 0) {
+					iSampleRate = 44100;
+				}
+				long res = latency / iSampleRate;
+				res = res * 1000;
+				res = res / 256;
+				time += res;
+			} catch (Exception e) {
+			}
+		}
+		setTimeToPlay(time);
 
 		int soundStart = 8 + headerLength + codecNameLength;
 		int soundEnd = -99;
@@ -57,9 +73,10 @@ public class OHUMessageAudio extends OHUMessage {
 			sCodec = new String(codec, "UTF-8");
 		} catch (Exception e) {
 
-		}	
+		}
 		audio = (new byte[soundLength]);
-		buf.getBytes(soundStart,audio,0,soundLength);
+		length = soundLength;
+		buf.getBytes(soundStart, audio, 0, soundLength);
 		setAudioInformation(new AudioInformation(iSampleRate, bitRate, iBitDepth, channels, sCodec, soundLength, sampleCount));
 	}
 
@@ -71,7 +88,8 @@ public class OHUMessageAudio extends OHUMessage {
 	}
 
 	/**
-	 * @param ai the ai to set
+	 * @param ai
+	 *            the ai to set
 	 */
 	private void setAudioInformation(AudioInformation ai) {
 		this.ai = ai;
@@ -82,5 +100,58 @@ public class OHUMessageAudio extends OHUMessage {
 	 */
 	public byte[] getAudio() {
 		return audio;
+	}
+
+	@Override
+	public String toString() {
+		return "OHUMessageAudio";
+	}
+
+	/**
+	 * @return the frameNumber
+	 */
+	public int getFrameNumber() {
+		return frameNumber;
+	}
+
+	/**
+	 * @return the time_to_play
+	 */
+	public long getTimeToPlay() {
+		return time_to_play;
+	}
+
+	/**
+	 * @param time_to_play
+	 *            the time_to_play to set
+	 */
+	private void setTimeToPlay(long time_to_play) {
+		this.time_to_play = time_to_play;
+	}
+
+	/**
+	 * Increase the Number of attempts.
+	 */
+	@Override
+	public void incAttempts() {
+		attempts++;
+	}
+
+	/**
+	 * Has this Event expired
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean expired() {
+		if (attempts > 500) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public int getLength() {
+		return length;
 	}
 }

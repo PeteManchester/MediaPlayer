@@ -6,8 +6,17 @@ package org.rpi.airplay;
  *
  */
 import java.net.InetAddress;
+
 import org.apache.log4j.Logger;
+import org.rpi.config.Config;
+import org.rpi.java.sound.IJavaSoundPlayer;
+import org.rpi.java.sound.JavaSoundPlayerBasic;
+import org.rpi.java.sound.JavaSoundPlayerLatency;
+import org.rpi.mplayer.TrackInfo;
 import org.rpi.player.PlayManager;
+import org.rpi.player.events.EventUpdateTrackInfo;
+import org.scratchpad.songcast.core.AudioInformation;
+import org.scratchpad.songcast.ohm.SourceTimer;
 
 /**
  * Main class that listen for new packets.
@@ -25,8 +34,13 @@ public class AudioServer {
 	public static final int MAX_PACKET = 2048; // Also in UDPListener (possible
 
 	
-	private AudioEventQueue queue = null;
-	private Thread threadMessageQueue = null;
+	private IJavaSoundPlayer player = null;
+	private Thread threadPlayer = null;
+	
+	private SourceTimer timer = null;
+	private Thread timerThread = null;
+	
+	
 
 	// client address
 	private InetAddress rtpClient;
@@ -52,11 +66,12 @@ public class AudioServer {
 
 	public void stop() {
 		log.debug("Stop AudioServer");
-		if(queue !=null)
+		stopTimer();
+		if(player !=null)
 		{
-			queue.stop();
+			player.stop();
 		}
-		threadMessageQueue = null;
+		threadPlayer = null;
 		
 		if(control !=null)
 		{
@@ -79,10 +94,30 @@ public class AudioServer {
 	 * Opens the sockets and begin listening
 	 */
 	private void initRTP() {
-		queue = new AudioEventQueue(session);
-		threadMessageQueue = new Thread(queue, "AudioEventQueue");
-		threadMessageQueue.start();		
-		control = new AudioChannel(session.getLocalAddress(), session.getRemoteAddress(),session.getControlPort(),queue);
+		AudioInformation audioInf = new AudioInformation(44100, 48, 16, 2, "ALAC", 0, 0);		
+		if (Config.getInstance().isSongcastLatencyEnabled()) {
+			// With Latency
+			player = new JavaSoundPlayerLatency();
+			threadPlayer = new Thread(player, "SongcastPlayerJavaSoundLatency");
+		} else {
+			player = new JavaSoundPlayerBasic();
+			threadPlayer = new Thread(player, "SongcastPlayerJavaSound");
+		}
+		player.createSoundLine(audioInf);
+		threadPlayer.start();	
+		TrackInfo info = new TrackInfo();
+		info.setBitDepth(audioInf.getBitDepth());
+		info.setCodec(audioInf.getCodec());
+		info.setBitrate(audioInf.getBitRate());
+		info.setSampleRate((long) audioInf.getSampleRate());
+		info.setDuration(0);
+		EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
+		ev.setTrackInfo(info);
+		if (ev != null) {
+			PlayManager.getInstance().updateTrackInfo(ev);
+		}			
+		control = new AudioChannel(session.getLocalAddress(), session.getRemoteAddress(),session.getControlPort(),player);
+		startTimer();
 	}
 
 
@@ -90,7 +125,23 @@ public class AudioServer {
 	 * Flush the audioBuffer
 	 */
 	public void flush() {
-		queue.clear();
+		player.clear();
+	}
+	
+	private void startTimer() {
+		timer = new SourceTimer();
+		timerThread = new Thread(timer, "SongcastTimer");
+		timerThread.start();
+	}
+	
+	private void stopTimer() {
+		if (timer != null) {
+			timer.setRun(false);
+			timer = null;
+		}
+		if (timerThread != null) {
+			timerThread = null;
+		}
 	}
 
 }

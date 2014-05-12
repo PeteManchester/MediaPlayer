@@ -8,6 +8,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.local.LocalAddress;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.DatagramPacket;
@@ -21,8 +22,8 @@ import java.net.NetworkInterface;
 
 import org.apache.log4j.Logger;
 import org.rpi.player.PlayManager;
-import org.rpi.songcast.ohm.OHMRequestLeave;
-import org.rpi.songcast.ohz.OHZRequestJoin;
+import org.scratchpad.songcast.ohm.OHMRequestLeave;
+import org.scratchpad.songcast.ohz.OHZRequestJoin;
 
 public class OHZConnector {
 
@@ -39,7 +40,7 @@ public class OHZConnector {
 	private InetSocketAddress localInetSocket = null;
 	
 	private DatagramChannel ch = null;
-	private EventLoopGroup group = new NioEventLoopGroup();
+	private EventLoopGroup group = new NioEventLoopGroup(1);
 
 	public OHZConnector(String uri, String zoneID, InetAddress localInetAddr) {
 		log.debug("Creating OHZConnector: " + uri + " " + zoneID);
@@ -81,7 +82,7 @@ public class OHZConnector {
 			b.option(ChannelOption.IP_MULTICAST_TTL, 255);
 			b.option(ChannelOption.IP_MULTICAST_IF, nic);
 
-			b.handler(new OHZChannelInitializer());
+			b.handler(new OHZChannelInitializer(localInetAddr));
 			log.debug("Am I Logged on as ROOT: " + PlatformDependent.isRoot());
 			ch = (DatagramChannel) b.bind(localInetSocket).sync().channel();
 			if (remoteInetAddr.isMulticastAddress()) {

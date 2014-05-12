@@ -2,42 +2,46 @@ package org.rpi.airplay;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.rpi.java.sound.IJavaSoundPlayer;
 
 
 public class AudioChannel {
 
 	private Logger log = Logger.getLogger(this.getClass());
 	EventLoopGroup workerGroup = new NioEventLoopGroup(1);
-	Bootstrap bootstrap = new Bootstrap();
+	Bootstrap b = new Bootstrap();
 	ChannelFuture channel = null;
 
 	
 
-	public AudioChannel(InetSocketAddress local, InetSocketAddress remote, int remotePort, AudioEventQueue audioQueue) {
+	public AudioChannel(InetSocketAddress local, InetSocketAddress remote, int remotePort, IJavaSoundPlayer audioQueue) {
 		initialize(local, remote, remotePort, audioQueue);
 	}
 
-	private void initialize(InetSocketAddress local, InetSocketAddress remote, int remotePort, AudioEventQueue audioQueue) {
+	private void initialize(InetSocketAddress local, InetSocketAddress remote, int remotePort, IJavaSoundPlayer audioQueue) {
 		try {
-			bootstrap.group(workerGroup);
-			bootstrap.channel(NioDatagramChannel.class);
-			bootstrap.handler(new AudioChannelPipelineFactory(audioQueue));
+			b.group(workerGroup);
+			b.channel(NioDatagramChannel.class);
+			b.option(ChannelOption.SO_REUSEADDR, true);
+			b.option(ChannelOption.TCP_NODELAY, true);
+			//b.option(ChannelOption.SO_KEEPALIVE, true);
+			b.handler(new AirPlayAudioChannelInitializer(audioQueue));
 			InetSocketAddress localAddr = new InetSocketAddress(local.getAddress().getHostAddress(), remotePort);
 			InetSocketAddress remoteAddr = new InetSocketAddress(remote.getAddress().getHostAddress(), 0);
 			log.debug("LocalAddress: " + localAddr.toString());
-			channel = bootstrap.bind(localAddr);
+			channel = b.bind(localAddr);
 			if (remote != null) {
 				log.debug("RemoteAddress: " + remoteAddr.toString());
-				bootstrap.connect(remoteAddr);
+				b.connect(remoteAddr);
 			}
 		} catch (Exception e) {
 			log.error(e);

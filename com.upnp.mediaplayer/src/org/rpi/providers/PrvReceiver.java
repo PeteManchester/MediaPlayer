@@ -5,7 +5,6 @@ import java.net.NetworkInterface;
 import java.util.Enumeration;
 import java.util.Observable;
 import java.util.Observer;
-
 import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
@@ -16,9 +15,7 @@ import org.rpi.config.Config;
 import org.rpi.netty.songcast.ohz.OHZConnector;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
-import org.rpi.player.events.EventPlayListStatusChanged;
 import org.rpi.player.events.EventReceiverStatusChanged;
-import org.rpi.songcast.ohz.OHZManager;
 import org.rpi.utils.Utils;
 
 public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDisposableDevice, Observer {

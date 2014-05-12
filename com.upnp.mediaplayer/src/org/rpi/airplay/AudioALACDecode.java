@@ -4,15 +4,16 @@ package org.rpi.airplay;
  * Used to decode an ALAC byte array
  */
 
-import java.util.List;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.rpi.alacdecoder.AlacDecodeUtils;
 import org.rpi.alacdecoder.AlacFile;
+import org.rpi.java.sound.IJavaSoundPlayer;
 
 public class AudioALACDecode extends MessageToMessageDecoder<ByteBuf> {
 
@@ -20,9 +21,9 @@ public class AudioALACDecode extends MessageToMessageDecoder<ByteBuf> {
 	private AlacFile alac;
 	private int frame_size = 0;
 	private int[] outbuffer;
-	private AudioEventQueue audioQueue = null;
+	private IJavaSoundPlayer audioQueue = null;
 
-	public AudioALACDecode(AudioEventQueue audioQueue) {
+	public AudioALACDecode(IJavaSoundPlayer audioQueue) {
 		AudioSession session = AudioSessionHolder.getInstance().getSession();
 		alac = session.getAlac();
 		frame_size = session.getFrameSize();
@@ -45,9 +46,10 @@ public class AudioALACDecode extends MessageToMessageDecoder<ByteBuf> {
 				input[j++] = (byte) (outbuffer[ic] >> 8);
 				input[j++] = (byte) (outbuffer[ic]);
 			}
-			
+			AirPlayPacket packet = new AirPlayPacket();
+			packet.setAudio(input);
 			if (audioQueue != null) {
-				audioQueue.put(input);
+				audioQueue.put(packet);
 			}
 			buffer.release();
 			// Return a byte array
@@ -62,5 +64,29 @@ public class AudioALACDecode extends MessageToMessageDecoder<ByteBuf> {
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 		log.error(cause);
 		ctx.close();
+	}
+	
+	@Override	
+	public void channelRegistered(ChannelHandlerContext ctx) throws Exception{
+		log.debug("Channel Registered: " + ctx.name());
+		super.channelRegistered(ctx);
+	}
+
+	@Override
+	public void channelActive( ChannelHandlerContext ctx) throws Exception {
+		log.debug("Channel Actvie: " + ctx.name());
+		super.channelActive(ctx);
+	}
+
+	@Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+		log.debug("Channel Inactive: " + ctx.name());
+		super.channelInactive(ctx);
+	};
+
+	@Override
+	public void channelUnregistered(ChannelHandlerContext ctx ) throws Exception {
+		log.debug("Channel Unregistered: " + ctx.name());
+		super.channelUnregistered(ctx);
 	}
 }

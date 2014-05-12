@@ -22,8 +22,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventTimeUpdate;
-import org.rpi.songcast.ohm.OHMRequestJoin;
-import org.rpi.songcast.ohm.OHMRequestListen;
+import org.scratchpad.songcast.ohm.OHMRequestJoin;
+import org.scratchpad.songcast.ohm.OHMRequestListen;
 
 public class OHUConnector {
 
@@ -40,11 +40,12 @@ public class OHUConnector {
 	private InetAddress localInetAddr = null;
 	private InetSocketAddress localInetSocket = null;
 
-	private EventLoopGroup group = new NioEventLoopGroup(1);	
+	private EventLoopGroup group = new NioEventLoopGroup(1);
 	private OHMRequestListen listen = null;
 
 	private DatagramChannel ch = null;
 	private long started = System.nanoTime();
+	private boolean isMulticast = false;
 
 	public OHUConnector(String uri, String zoneID, InetAddress localInetAddr) {
 		int lastColon = uri.lastIndexOf(":");
@@ -66,6 +67,7 @@ public class OHUConnector {
 	public void run() throws Exception {
 
 		try {
+			PlayManager.getInstance().setStatus("Playing", "SONGCAST");
 			remoteInetSocket = new InetSocketAddress(remoteInetAddr, remotePort);
 			localInetSocket = new InetSocketAddress(remotePort);
 			NetworkInterface nic = NetworkInterface.getByInetAddress(localInetAddr);
@@ -80,37 +82,43 @@ public class OHUConnector {
 			});
 			b.option(ChannelOption.SO_BROADCAST, true);
 			b.option(ChannelOption.SO_REUSEADDR, true);
-			b.option(ChannelOption.IP_MULTICAST_LOOP_DISABLED, true);
-			b.option(ChannelOption.SO_RCVBUF, 2 * 1024);
-			b.option(ChannelOption.IP_MULTICAST_TTL, 255);
-			b.option(ChannelOption.IP_MULTICAST_IF, nic);
+			b.option(ChannelOption.IP_MULTICAST_LOOP_DISABLED, false);
+			//b.option(ChannelOption.SO_RCVBUF, 4 * 1024);
+			//b.option(ChannelOption.IP_MULTICAST_TTL, 255);
+			//b.option(ChannelOption.IP_MULTICAST_IF, nic);
 			b.handler(new OHUChannelInitializer());
 
 			ch = (DatagramChannel) b.bind(localInetSocket).sync().channel();
-			if (remoteInetAddr.isMulticastAddress()) {
-				ChannelFuture future = ch.joinGroup(remoteInetSocket,nic);
+			isMulticast = remoteInetAddr.isMulticastAddress();
+			if (isMulticast) {
+				ChannelFuture future = ch.joinGroup(remoteInetSocket, nic);
 				log.debug("Result of Join: " + future.toString());
 			}
-
 			OHMRequestJoin join = new OHMRequestJoin(zoneID);
 			ByteBuf buffer = Unpooled.copiedBuffer(join.data);
 			DatagramPacket packet = new DatagramPacket(buffer, remoteInetSocket, localInetSocket);
 			sendMessage(packet);
-			PlayManager.getInstance().setStatus("Playing","SONGCAST");
+
 			group.scheduleAtFixedRate(new Runnable() {
 
 				@Override
 				public void run() {
-					ByteBuf lBuffer = Unpooled.copiedBuffer(listen.data);
-					DatagramPacket pListen = new DatagramPacket(lBuffer, remoteInetSocket, localInetSocket);
-					sendMessage(pListen);
+					if (!isMulticast) {
+						try {
+							ByteBuf lBuffer = Unpooled.copiedBuffer(listen.data);
+							DatagramPacket pListen = new DatagramPacket(lBuffer, remoteInetSocket, localInetSocket);
+							sendMessage(pListen);
+						} catch (Exception e) {
+							log.error("Error Sending Listen", e);
+						}
+					}
 					try {
 						long now = System.nanoTime();
 						long time = (now - started) / 1000000000;
 						if (time >= 0) {
-							 EventTimeUpdate e = new EventTimeUpdate();
-							 e.setTime(time);
-							 PlayManager.getInstance().updateTime(e);
+							EventTimeUpdate e = new EventTimeUpdate();
+							e.setTime(time);
+							PlayManager.getInstance().updateTime(e);
 						}
 					} catch (Exception e) {
 
@@ -127,6 +135,7 @@ public class OHUConnector {
 
 	private void sendMessage(DatagramPacket packet) {
 		try {
+			// log.debug("SendMessage");
 			ch.writeAndFlush(packet).sync();
 		} catch (Exception e) {
 			log.error("Error Listen Keep Alive", e);

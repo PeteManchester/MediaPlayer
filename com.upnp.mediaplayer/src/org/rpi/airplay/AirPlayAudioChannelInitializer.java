@@ -3,17 +3,16 @@ package org.rpi.airplay;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
+import org.rpi.java.sound.IJavaSoundPlayer;
 
 
 
 
-public class AudioChannelPipelineFactory extends ChannelInitializer<NioDatagramChannel> {
+public class AirPlayAudioChannelInitializer extends ChannelInitializer<NioDatagramChannel> {
 	
-	private AudioEventQueue audioQueue = null;
+	private IJavaSoundPlayer audioQueue = null;
 	
-	public AudioChannelPipelineFactory(AudioEventQueue audioQueue)
+	public AirPlayAudioChannelInitializer(IJavaSoundPlayer audioQueue)
 	{
 		this.audioQueue = audioQueue;
 	}

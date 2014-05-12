@@ -1,5 +1,6 @@
 package org.rpi.web.rest;
 
+import java.net.URLEncoder;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -31,6 +32,8 @@ public class PlayerStatus implements Observer {
 	private String space = " ";
 	private String comma = ",";
 
+	private String performer = "";
+
 	public static PlayerStatus getInstance() {
 		if (instance == null) {
 			instance = new PlayerStatus();
@@ -54,10 +57,15 @@ public class PlayerStatus implements Observer {
 			if (track != null) {
 				album_title = track.getAlbum();
 				artist = track.getArtist();
+				performer  = track.getPerformer();
 				album_artist = track.getAlbumArtist();
 				title = track.getTitle();
 				image_uri = track.getAlbumArtUri();
 				track_duration = track.getDuration();
+				if(track_duration > 0)
+				{
+					track_duration = track_duration/1000;
+				}
 				genre = track.getGenre();
 			} else {
 
@@ -78,16 +86,21 @@ public class PlayerStatus implements Observer {
 	}
 
 	public synchronized String getJSON() {
+		
+		if(performer.equalsIgnoreCase(""))
+		{
+			performer = album_artist;
+		}
 		StringBuilder sb = new StringBuilder();
 		try {
 			sb.append("{");
-			sb.append(q + "album_title" + q + colon + space + q + album_title + q);
-			sb.append(comma + q + "artist" + q + colon + space + q + artist + q);
-			sb.append(comma + q + "album_artist" + q + colon + space + q + album_artist + q);
-			sb.append(comma + q + "title" + q + colon + space + q + title + q);
-			sb.append(comma + q + "image_uri" + q + colon + space + q + image_uri + q);
+			sb.append(q + "album_title" + q + colon + space + q + cleanString(album_title) + q);
+			sb.append(comma + q + "artist" + q + colon + space + q + cleanString(artist) + q);
+			sb.append(comma + q + "album_artist" + q + colon + space + q + cleanString(performer) + q);
+			sb.append(comma + q + "title" + q + colon + space + q + cleanString(title) + q);
+			sb.append(comma + q + "image_uri" + q + colon + space + q + cleanString(image_uri) + q);
 			sb.append(comma + q + "track_duration" + q + colon + space + q + track_duration + q);
-			sb.append(comma + q + "genre" + q + colon + space + q + genre + q);
+			sb.append(comma + q + "genre" + q + colon + space + q + cleanString(genre) + q);
 			sb.append(comma + q + "time_played" + q + colon + space + q + time_played + q);
 			sb.append("}");
 			// log.debug(sb.toString());
@@ -95,6 +108,11 @@ public class PlayerStatus implements Observer {
 			log.error("Error getJSON", e);
 		}
 		return sb.toString();
+	}
+	
+	private String cleanString(String value)
+	{
+		return value.replace("\"","'");
 	}
 
 }

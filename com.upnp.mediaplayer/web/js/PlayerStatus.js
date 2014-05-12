@@ -38,14 +38,10 @@ function checkStatus() {
 		type : 'GET',
 		url : '/myapp/player/getStatus',
 		success : function(data) {
-			//alert(data);
-			$("#title").val(decode(data.title));
-			$("#album_title").val(decode(data.album_title));
-			$("#album_artist").val(decode(data.album_artist));
-			$("#time_played").val(secondstotime(decode(data.time_played)));
-			$("#image_uri").attr("src",data.image_uri);
-			
-			
+			$('#status-table tr').remove();
+			$('#status-table > tbody:last').append('<tr> <th>Artist</th> <td class="title">'+ data.album_artist + '</a></td> <th>Album</th> <td class="title">'	+ data.album_title + '</a></td> <th>Title</th> <td class="title">'	+ data.title + '</a></td> </tr>');
+			$('#status-table > tbody:last').append('<tr> <th>Time</th> <td class="title">'	+ secondstotime(data.time_played) + '</a></td> <th>Time</th> <td class="title">'	+ secondstotime(data.track_duration) + '</a></td> </tr>');
+			$("#image_uri").attr("src",data.image_uri);	
 		},
 		error : function(result, errorThrown) {
 			message('Error CheckStatus: ' +  errorThrown)

@@ -14,7 +14,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
-import org.rpi.songcast.ohm.OHMEventTrack;
+import org.scratchpad.songcast.ohm.OHMEventTrack;
 
 public class OHUSlaveForwarder extends SimpleChannelInboundHandler<OHUMessage> {
 
@@ -27,15 +27,17 @@ public class OHUSlaveForwarder extends SimpleChannelInboundHandler<OHUMessage> {
 			// Don't send Slave messages to the Slaves..
 			OHUMessageSlave slave = (OHUMessageSlave) msg;
 			endpoints = slave.getEndpoints();
-			//msg.getData().release();
+			// msg.getData().release();
 		} else {
-			for (Slave sl : endpoints.values()) {
-				try {
-					InetSocketAddress toAddress = sl.getRemoteAddress();
-					DatagramPacket packet = new DatagramPacket(msg.getData().retain(), toAddress);
-					ctx.channel().writeAndFlush(packet).sync();
-				} catch (Exception e) {
-					log.error("Error forwarding to SlaveEndpoint", e);
+			if (endpoints.size() > 0) {
+				for (Slave sl : endpoints.values()) {
+					try {
+						InetSocketAddress toAddress = sl.getRemoteAddress();
+						DatagramPacket packet = new DatagramPacket(msg.getData().retain(), toAddress);
+						ctx.channel().writeAndFlush(packet);
+					} catch (Exception e) {
+						log.error("Error forwarding to SlaveEndpoint", e);
+					}
 				}
 			}
 		}

@@ -3,17 +3,13 @@ package org.rpi.airplay;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-
 import org.apache.log4j.Logger;
 
 public class AudioChannelRequestHandler extends ChannelInboundHandlerAdapter{
 
-	//private AudioEventQueue audioQueue = null;
-	private Logger log = Logger.getLogger(this.getClass());
-
+	private Logger log = Logger.getLogger(this.getClass());	
 
 	public AudioChannelRequestHandler() {
-		//this.audioQueue = audioQueue;
 	}
 	
 
@@ -34,7 +30,6 @@ public class AudioChannelRequestHandler extends ChannelInboundHandlerAdapter{
 	
 	@Override	
 	public void channelRegistered(ChannelHandlerContext ctx) throws Exception{
-		String name = ctx.name();
 		log.debug("AudioChannel Registered: " + ctx.name());
 		super.channelRegistered(ctx);
 	}
@@ -56,4 +51,5 @@ public class AudioChannelRequestHandler extends ChannelInboundHandlerAdapter{
 		log.debug("AudioChannel Unregistered: " + ctx.name());
 		super.channelUnregistered(ctx);
 	}
+
 }

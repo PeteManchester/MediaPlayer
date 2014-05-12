@@ -10,17 +10,24 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 import org.apache.log4j.Logger;
+import org.rpi.config.Config;
+import org.rpi.java.sound.IJavaSoundPlayer;
+import org.rpi.java.sound.JavaSoundPlayerBasic;
+import org.rpi.java.sound.JavaSoundPlayerLatency;
 import org.rpi.mplayer.TrackInfo;
-import org.rpi.netty.songcast.ohz.SongcastPlayerJavaSound;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventUpdateTrackInfo;
-import org.rpi.songcast.core.AudioInformation;
+import org.scratchpad.songcast.core.AudioInformation;
+import org.scratchpad.songcast.core.SongcastPlayerJSLatency;
+import org.scratchpad.songcast.core.SongcastPlayerJavaSound;
 
 public class OHUMessageAudioHandler extends SimpleChannelInboundHandler<OHUMessageAudio> {
 
 	private Logger log = Logger.getLogger(this.getClass());
-	private SongcastPlayerJavaSound player = null;
+	private IJavaSoundPlayer player = null;
 	private AudioInformation audioInformation = null;
+	private Thread threadPlayer = null;
+	private int lastFrameNumber = 0;
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, OHUMessageAudio msg) throws Exception {
@@ -34,11 +41,25 @@ public class OHUMessageAudioHandler extends SimpleChannelInboundHandler<OHUMessa
 					}
 					ai = null;
 					player.put(msg);
+					if (msg.getFrameNumber() - lastFrameNumber != 1) {
+						log.debug("Missed a Frame: " + msg.getFrameNumber() + " LastFrameNumber: " + lastFrameNumber + " " + ((msg.getFrameNumber() - lastFrameNumber)-1));
+					}
+					lastFrameNumber = msg.getFrameNumber();
 				} else {
-					player = new SongcastPlayerJavaSound();
+					if (Config.getInstance().isSongcastLatencyEnabled()) {
+						// With Latency
+						player = new JavaSoundPlayerLatency();
+						threadPlayer = new Thread(player, "SongcastPlayerJavaSoundLatency");
+					} else {
+						player = new JavaSoundPlayerBasic();
+						threadPlayer = new Thread(player, "SongcastPlayerJavaSound");
+					}
+					threadPlayer = new Thread(player, "SongcastPlayerJavaSound");
+					threadPlayer.start();
 					setAudioInformation(msg.getAudioInformation());
 					player.createSoundLine(audioInformation);
 					player.put(msg);
+					lastFrameNumber = msg.getFrameNumber();
 				}
 				// msg.getData().release();
 			} catch (Exception e) {
@@ -97,6 +118,9 @@ public class OHUMessageAudioHandler extends SimpleChannelInboundHandler<OHUMessa
 			PlayManager.getInstance().setStatus("Stopped", "SONGCAST");
 			player.stop();
 			player = null;
+		}
+		if (threadPlayer != null) {
+			threadPlayer = null;
 		}
 		super.channelUnregistered(ctx);
 	}

@@ -51,4 +51,10 @@ public class OHUMessageSlave extends OHUMessage {
 	public ConcurrentHashMap<String, Slave> getEndpoints() {
 		return endpoints;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return "OHUMessageSlave";
+	}
 }

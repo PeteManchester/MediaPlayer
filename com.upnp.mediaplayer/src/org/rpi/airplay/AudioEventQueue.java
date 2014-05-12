@@ -16,9 +16,9 @@ import org.rpi.config.Config;
 import org.rpi.mplayer.TrackInfo;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventUpdateTrackInfo;
-import org.rpi.songcast.core.AudioInformation;
-import org.rpi.songcast.ohm.SourceTimer;
 import org.rpi.utils.Utils;
+import org.scratchpad.songcast.core.AudioInformation;
+import org.scratchpad.songcast.ohm.SourceTimer;
 
 public class AudioEventQueue implements Runnable, Observer {
 	private Logger log = Logger.getLogger(this.getClass());

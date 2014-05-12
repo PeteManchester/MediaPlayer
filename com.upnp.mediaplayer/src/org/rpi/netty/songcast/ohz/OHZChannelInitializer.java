@@ -1,5 +1,7 @@
 package org.rpi.netty.songcast.ohz;
 
+import java.net.InetAddress;
+
 import org.apache.log4j.Logger;
 
 import io.netty.channel.ChannelInitializer;
@@ -13,6 +15,12 @@ import io.netty.handler.logging.LoggingHandler;
 public class OHZChannelInitializer extends ChannelInitializer<NioDatagramChannel> {
 
 	private Logger log = Logger.getLogger(this.getClass());
+	private InetAddress localInetAddr = null;
+	
+	public OHZChannelInitializer(InetAddress localInetAddr)
+	{
+		this.localInetAddr = localInetAddr;
+	}
 
 	@Override
 	protected void initChannel(NioDatagramChannel ch) throws Exception {
@@ -21,7 +29,7 @@ public class OHZChannelInitializer extends ChannelInitializer<NioDatagramChannel
 			ChannelPipeline p = ch.pipeline();
 			p.addLast(new LoggingHandler(LogLevel.DEBUG));
 			p.addLast("OHZDecoder", new OHZMessageDecoder());
-			p.addLast("OHZRequestHandler", new OHZRequestHandler());
+			p.addLast("OHZRequestHandler", new OHZRequestHandler(localInetAddr));
 			p.addLast("OHZTest", new OHZTest());
 			log.debug("End of OHZChannelInitializer");
 		} catch (Exception e) {

@@ -1,4 +1,6 @@
-package org.rpi.netty.songcast.ohz;
+package org.rpi.java.sound;
+
+import java.util.Properties;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -6,9 +8,11 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
 
 import org.apache.log4j.Logger;
-import org.rpi.netty.songcast.ohu.OHUMessageAudio;
-import org.rpi.songcast.core.AudioInformation;
-public class SongcastPlayerJavaSound {
+import org.rpi.config.Config;
+import org.rpi.utils.Utils;
+import org.scratchpad.songcast.core.AudioInformation;
+
+public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer {
 
 	private Logger log = Logger.getLogger(this.getClass());
 	private boolean run = true;
@@ -20,12 +24,12 @@ public class SongcastPlayerJavaSound {
 
 	private boolean bWrite = false;
 
-	public SongcastPlayerJavaSound() {
-
+	public JavaSoundPlayerBasic() {
 	}
 
 	public void createSoundLine(AudioInformation audioInf) {
 		try {
+			setAudioDevice();
 			bWrite = false;// Stop trying to write to the SoundLine
 			if (soundLine != null) {
 				close();
@@ -49,14 +53,13 @@ public class SongcastPlayerJavaSound {
 			if (soundLine != null) {
 				bWrite = false;
 				soundLine.close();
-				soundLine = null;				
+				soundLine = null;
 			}
 		} catch (Exception e) {
 			log.error("Error Closing Stream", e);
 		}
 
 	}
-
 
 	private void sleep(int value) {
 		try {
@@ -66,26 +69,20 @@ public class SongcastPlayerJavaSound {
 		}
 	}
 
-	//@Override
-	public void play() {
-
-	}
-
-	//@Override
+	// @Override
 	public void stop() {
 		run = false;
 		close();
 	}
 
-	public void put(OHUMessageAudio event) {
-		if (!bWrite)
-		{
-			event=null;
+	public void put(AudioPacket event) {
+		if (!bWrite) {
+			event = null;
 			return;
 		}
 		try {
 			if (soundLine != null) {
-				soundLine.write(event.getAudio(), 0, event.getAudio().length);
+				soundLine.write(event.getAudio(), 0, event.getLength());
 				event = null;
 			}
 		} catch (Exception e) {
@@ -93,4 +90,28 @@ public class SongcastPlayerJavaSound {
 		}
 
 	}
+
+	@Override
+	public void run() {
+		while (run) {
+			sleep(100);
+		}
+	}
+
+	/**
+	 * Used to set the Songcast Audio Device
+	 */
+	private void setAudioDevice() {
+		Properties props = System.getProperties();
+		String name = Config.getInstance().getJavaSoundcardName();
+		if (!Utils.isEmpty(name)) {
+			props.setProperty("javax.sound.sampled.SourceDataLine", name);
+			log.warn("###Setting Sound Card Name: " + name);
+		}
+	}
+
+	@Override
+	public void clear() {
+	}
+
 }
