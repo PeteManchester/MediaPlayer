@@ -24,7 +24,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer {
 
 	private boolean bWrite = false;
 
-	private Vector<AudioPacket> mWorkQueue = new Vector<AudioPacket>();
+	private Vector<IAudioPacket> mWorkQueue = new Vector<IAudioPacket>();
 
 	@Override
 	public void createSoundLine(AudioInformation audioInf) {
@@ -70,7 +70,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer {
 		}
 	}
 
-	private void addData(AudioPacket packet) {
+	private void addData(IAudioPacket packet) {
 
 		if (!bWrite)
 			return;
@@ -90,8 +90,8 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer {
 	/**
 	 * Get the first object out of the queue. Return null if the queue is empty.
 	 */
-	public synchronized AudioPacket get() {
-		AudioPacket object = peek();
+	public synchronized IAudioPacket get() {
+		IAudioPacket object = peek();
 		if (object != null)
 			mWorkQueue.removeElementAt(0);
 		return object;
@@ -100,7 +100,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer {
 	/**
 	 * Peek to see if something is available.
 	 */
-	public AudioPacket peek() {
+	public IAudioPacket peek() {
 		if (isEmpty())
 			return null;
 		return mWorkQueue.elementAt(0);
@@ -111,7 +111,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer {
 	}
 
 	@Override
-	public void put(AudioPacket event) {
+	public void put(IAudioPacket event) {
 		try {
 			mWorkQueue.addElement(event);
 		} catch (Exception e) {
@@ -142,7 +142,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer {
 		while (run) {
 			if (!isEmpty()) {
 				try {
-					AudioPacket audio = get();
+					IAudioPacket audio = get();
 					while (audio.getTimeToPlay() > System.currentTimeMillis()) {
 						if (audio.expired()) {
 							break;

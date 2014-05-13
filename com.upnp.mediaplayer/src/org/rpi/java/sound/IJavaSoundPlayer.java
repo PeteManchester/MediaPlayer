@@ -6,7 +6,7 @@ public interface IJavaSoundPlayer extends Runnable {
 	
 	public void createSoundLine(AudioInformation audioInf);
 	
-	public void put(AudioPacket event);
+	public void put(IAudioPacket event);
 	
 	public void clear();
 	

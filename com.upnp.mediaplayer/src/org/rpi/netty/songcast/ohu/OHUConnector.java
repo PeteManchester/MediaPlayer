@@ -13,17 +13,14 @@ import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.InternetProtocolFamily;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.log4j.Logger;
+import org.rpi.netty.songcast.ohz.OHZLeaveRequest;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventTimeUpdate;
-import org.scratchpad.songcast.ohm.OHMRequestJoin;
-import org.scratchpad.songcast.ohm.OHMRequestListen;
 
 public class OHUConnector {
 
@@ -41,7 +38,7 @@ public class OHUConnector {
 	private InetSocketAddress localInetSocket = null;
 
 	private EventLoopGroup group = new NioEventLoopGroup(1);
-	private OHMRequestListen listen = null;
+	private OHURequestListen listen = null;
 
 	private DatagramChannel ch = null;
 	private long started = System.nanoTime();
@@ -61,7 +58,7 @@ public class OHUConnector {
 		this.localInetAddr = localInetAddr;
 		remotePort = Integer.parseInt(sPort);
 		this.zoneID = zoneID;
-		listen = new OHMRequestListen(zoneID);
+		listen = new OHURequestListen();
 	}
 
 	public void run() throws Exception {
@@ -94,9 +91,9 @@ public class OHUConnector {
 				ChannelFuture future = ch.joinGroup(remoteInetSocket, nic);
 				log.debug("Result of Join: " + future.toString());
 			}
-			OHMRequestJoin join = new OHMRequestJoin(zoneID);
-			ByteBuf buffer = Unpooled.copiedBuffer(join.data);
-			DatagramPacket packet = new DatagramPacket(buffer, remoteInetSocket, localInetSocket);
+			OHURequestJoin join = new OHURequestJoin();
+			//ByteBuf buffer = Unpooled.copiedBuffer(join.data);
+			DatagramPacket packet = new DatagramPacket(join.getBuffer(), remoteInetSocket, localInetSocket);
 			sendMessage(packet);
 
 			group.scheduleAtFixedRate(new Runnable() {
@@ -105,8 +102,8 @@ public class OHUConnector {
 				public void run() {
 					if (!isMulticast) {
 						try {
-							ByteBuf lBuffer = Unpooled.copiedBuffer(listen.data);
-							DatagramPacket pListen = new DatagramPacket(lBuffer, remoteInetSocket, localInetSocket);
+							//ByteBuf lBuffer = Unpooled.copiedBuffer(listen.data);
+							DatagramPacket pListen = new DatagramPacket(listen.getBuffer().retain(), remoteInetSocket, localInetSocket);
 							sendMessage(pListen);
 						} catch (Exception e) {
 							log.error("Error Sending Listen", e);
@@ -143,8 +140,22 @@ public class OHUConnector {
 	}
 
 	public void stop() {
+
 		try {
 			if (ch != null) {
+				try
+				{
+					OHZLeaveRequest leave = new OHZLeaveRequest();
+					ByteBuf buffer = Unpooled.copiedBuffer(leave.getBuffer());
+					DatagramPacket packet = new DatagramPacket(buffer, remoteInetSocket, localInetSocket);
+					log.debug("Sending : " + packet.toString());
+					ch.writeAndFlush(packet).sync();
+					log.debug("Sent Leave Message");
+				}
+				catch(Exception e)
+				{
+					log.error("Error Sending Leave", e);
+				}
 				try {
 					ch.close();
 				} catch (Exception e) {

@@ -2,7 +2,7 @@ package org.rpi.java.sound;
 
 import org.scratchpad.songcast.core.AudioInformation;
 
-public interface AudioPacket {	
+public interface IAudioPacket {	
 
 	public AudioInformation getAudioInformation() ;
 

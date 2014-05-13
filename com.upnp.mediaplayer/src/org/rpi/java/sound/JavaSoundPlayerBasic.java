@@ -75,7 +75,7 @@ public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer {
 		close();
 	}
 
-	public void put(AudioPacket event) {
+	public void put(IAudioPacket event) {
 		if (!bWrite) {
 			event = null;
 			return;

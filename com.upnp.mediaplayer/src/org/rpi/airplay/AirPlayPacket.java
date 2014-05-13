@@ -1,9 +1,9 @@
 package org.rpi.airplay;
 
-import org.rpi.java.sound.AudioPacket;
+import org.rpi.java.sound.IAudioPacket;
 import org.scratchpad.songcast.core.AudioInformation;
 
-public class AirPlayPacket implements AudioPacket {
+public class AirPlayPacket implements IAudioPacket {
 	
 	private byte[] audio;
 	private int attempts = 0;

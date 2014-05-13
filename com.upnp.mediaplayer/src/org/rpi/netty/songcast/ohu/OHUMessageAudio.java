@@ -2,7 +2,7 @@ package org.rpi.netty.songcast.ohu;
 
 import io.netty.buffer.ByteBuf;
 
-import org.rpi.java.sound.AudioPacket;
+import org.rpi.java.sound.IAudioPacket;
 import org.scratchpad.songcast.core.AudioInformation;
 
 //Offset    Bytes                   Desc
@@ -25,7 +25,7 @@ import org.scratchpad.songcast.core.AudioInformation;
 //50        n                       Codec Name
 //50 + n    Msg Total Bytes - Msg Header Bytes - Code Name Bytes (Sample data in big endian, channels interleaved, packed)
 
-public class OHUMessageAudio extends OHUMessage implements AudioPacket {
+public class OHUMessageAudio extends OHUMessage implements IAudioPacket {
 	private AudioInformation ai = null;
 	private byte[] audio;
 	private int frameNumber = 0;
