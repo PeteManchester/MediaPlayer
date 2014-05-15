@@ -8,12 +8,17 @@ package org.rpi.netty.songcast.ohu;
 import java.nio.charset.Charset;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.rpi.player.PlayManager;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageDecoder;
 
 public class OHUMessageDecoder extends MessageToMessageDecoder<DatagramPacket> {
+	
+	private Logger log = Logger.getLogger(this.getClass());
 
 	@Override
 	protected void decode(ChannelHandlerContext ctx, DatagramPacket msg, List<Object> out) throws Exception {
@@ -39,12 +44,40 @@ public class OHUMessageDecoder extends MessageToMessageDecoder<DatagramPacket> {
 				out.add(message);
 				break;
 			default:
-				System.out.println("Unknown Message: " + buf.toString(Charset.forName("utf-8")));
-				//message = new OHUMessage();
-				//message.setData(buf.retain());
+				log.info("Unknown Message: " + buf.toString(Charset.forName("utf-8")));
 				break;
 			}
 			
 		}
+	}
+	
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		log.error(cause);
+		//ctx.close();
+	}
+	
+	@Override
+	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+		log.debug("Channel Registered: " + ctx.name());
+		super.channelRegistered(ctx);
+	}
+
+	@Override
+	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		log.debug("Channel Actvie: " + ctx.name());
+		super.channelActive(ctx);
+	}
+
+	@Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+		log.debug("Channel Inactive: " + ctx.name());
+		super.channelInactive(ctx);
+	};
+
+	@Override
+	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+		log.debug("Channel Unregistered: " + ctx.name());
+		super.channelUnregistered(ctx);
 	}
 }

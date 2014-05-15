@@ -18,9 +18,6 @@ import org.rpi.mplayer.TrackInfo;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventUpdateTrackInfo;
 import org.scratchpad.songcast.core.AudioInformation;
-import org.scratchpad.songcast.core.SongcastPlayerJSLatency;
-import org.scratchpad.songcast.core.SongcastPlayerJavaSound;
-
 public class OHUMessageAudioHandler extends SimpleChannelInboundHandler<OHUMessageAudio> {
 
 	private Logger log = Logger.getLogger(this.getClass());

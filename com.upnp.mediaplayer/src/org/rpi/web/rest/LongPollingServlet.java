@@ -42,7 +42,10 @@ package org.rpi.web.rest;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -52,13 +55,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.glassfish.grizzly.comet.CometContext;
 import org.glassfish.grizzly.comet.CometEngine;
+import org.rpi.channel.ChannelBase;
+import org.rpi.player.PlayManager;
+import org.rpi.player.events.EventBase;
+import org.rpi.player.events.EventTrackChanged;
+import org.rpi.player.events.EventUpdateTrackMetaText;
 
-public class LongPollingServlet extends HttpServlet {
+public class LongPollingServlet extends HttpServlet implements Observer {
 
-	final AtomicInteger counter = new AtomicInteger();
 	private static final long serialVersionUID = 1L;
 
 	private String contextPath = null;
+	
+	private String title = "No Title";
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -70,23 +79,58 @@ public class LongPollingServlet extends HttpServlet {
 		CometEngine engine = CometEngine.getEngine();
 		CometContext cometContext = engine.register(contextPath);
 		cometContext.setExpirationDelay(5 * 30 * 1000);
+		PlayManager.getInstance().observeInfoEvents(this);
 	}
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		CometEngine engine = CometEngine.getEngine();
 		CometContext<HttpServletResponse> context = engine.getCometContext(contextPath);
-		final int hash = context.addCometHandler(new CounterHandler(res, counter));
+		final int hash = context.addCometHandler(new CounterHandler(res));
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		counter.incrementAndGet();
 		CometContext<HttpServletResponse> context = CometEngine.getEngine().getCometContext(contextPath);
 		context.notify(null);
-
 		PrintWriter writer = res.getWriter();
-		writer.write("success");
+		writer.write("{\"counter\":\"" + title + "\" }");
 		writer.flush();
+	}
+
+	@Override
+	public void update(Observable o, Object e) {
+		EventBase base = (EventBase) e;
+		switch (base.getType()) {
+		case EVENTTRACKCHANGED:
+			EventTrackChanged etc = (EventTrackChanged) e;
+			ChannelBase track = etc.getTrack();
+			if (track != null) {
+				try {
+					CometContext<HttpServletResponse> context = CometEngine.getEngine().getCometContext(contextPath);
+					context.addAttribute("Test", track.getTitle());
+					title = track.getTitle();
+					context.notify(null);
+				} catch (Exception ex) {
+
+				}
+			} else {
+
+			}
+
+			break;
+		case EVENTUPDATETRACKMETATEXT:
+			EventUpdateTrackMetaText et = (EventUpdateTrackMetaText) e;
+			try {
+				title = et.getTitle();
+				CometContext<HttpServletResponse> context = CometEngine.getEngine().getCometContext(contextPath);
+				context.addAttribute("Test", et.getTitle());
+				context.notify(null);
+			} catch (Exception ex) {
+
+			}
+			break;
+		}
+
 	}
 }

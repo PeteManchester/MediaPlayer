@@ -51,30 +51,27 @@ import org.glassfish.grizzly.comet.DefaultCometHandler;
 public class CounterHandler extends DefaultCometHandler<HttpServletResponse> {
 
     private HttpServletResponse httpResponse;
-    private AtomicInteger counter;
+    private String result = "Empty";
 
-    CounterHandler(HttpServletResponse httpResponse, final AtomicInteger counter) {
+    CounterHandler(HttpServletResponse httpResponse) {
         this.httpResponse = httpResponse;
-        this.counter = counter;
     }
 
     public void onEvent(CometEvent event) throws IOException {
         if (CometEvent.Type.NOTIFY == event.getType()) {
-            httpResponse.addHeader("X-JSON", "{\"counter\":" + counter.get() + " }");
-
+        	result = (String)event.getCometContext().getAttribute("Test");
+            //httpResponse.addHeader("X-JSON", "{\"counter\":\"" + result + "\" }");
             PrintWriter writer = httpResponse.getWriter();
-            writer.write("success");
+            writer.write("{\"counter\":\"" + result + "\" }");
             writer.flush();
-
             event.getCometContext().resumeCometHandler(this);
         }
     }
 
     public void onInterrupt(CometEvent event) throws IOException {
-        httpResponse.addHeader("X-JSON", "{\"counter\":" + counter.get() + " }");
-
+    	//httpResponse.addHeader("X-JSON", "{\"counter\":\"" + result + "\" }");
         PrintWriter writer = httpResponse.getWriter();
-        writer.write("success");
+        //writer.println("{\"counter\":\"" + result + "\" }");
         writer.flush();
     }
 }

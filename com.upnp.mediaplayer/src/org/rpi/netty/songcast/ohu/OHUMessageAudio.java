@@ -76,8 +76,14 @@ public class OHUMessageAudio extends OHUMessage implements IAudioPacket {
 		}
 		audio = (new byte[soundLength]);
 		length = soundLength;
-		buf.getBytes(soundStart, audio, 0, soundLength);
-		setAudioInformation(new AudioInformation(iSampleRate, bitRate, iBitDepth, channels, sCodec, soundLength, sampleCount));
+		if (buf.readableBytes() >= soundStart + soundLength) {
+			buf.getBytes(soundStart, audio, 0, soundLength);
+			setAudioInformation(new AudioInformation(iSampleRate, bitRate, iBitDepth, channels, sCodec, soundLength, sampleCount));
+		}
+		else
+		{
+			System.out.println("Bufer was too small: " + soundStart + soundLength);
+		}
 	}
 
 	/**
