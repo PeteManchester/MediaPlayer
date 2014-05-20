@@ -238,6 +238,10 @@ function checkStatusConfig() {
 							decode(data.airplay_enabled));
 					$("#aiplayerRecevier").slider("refresh");
 					
+					$("#airplay_latency_enabled").val(
+							decode(data.airplay_latency_enabled));
+					$("#airplay_latency_enabled").slider("refresh");
+					
 					$("#airplay_port").val(decode(data.airplay_port));
 				},
 				error : function(result,errorThrown) {
@@ -300,6 +304,8 @@ function updateConfig() {
 		config_json.web_server_enabled = $("#web_server_enabled").val();
 		
 		config_json.airplay_enabled = $("#airplay_enabled").val();
+		
+		config_json.airplay_latency_enabled = $("#airplay_latency_enabled").val();
 		
 		config_json.airplay_port = $("#airplay_port").val();
 		

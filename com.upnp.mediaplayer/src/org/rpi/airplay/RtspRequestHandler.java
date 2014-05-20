@@ -215,7 +215,7 @@ public class RtspRequestHandler extends ChannelInboundHandlerAdapter implements 
 				response.headers().add("Public", "ANNOUNCE, SETUP, RECORD, PAUSE, FLUSH, TEARDOWN, OPTIONS, GET_PARAMETER, SET_PARAMETER");
 				// log.debug("OPTIONS \r\n" + request.toString() + content);
 			} else if (RtspMethods.ANNOUNCE.equals(method)) {
-				log.debug("ANNOUNCE \r\n" + request.toString() + content);
+				log.debug("ANNOUNCE \r\n" + request.toString() + content + "\r\n");
 				disconnectChannel = false;
 				bAnnounced = true;
 				String client_name = "iTunes";
@@ -225,7 +225,7 @@ public class RtspRequestHandler extends ChannelInboundHandlerAdapter implements 
 				 ChannelAirPlay channel = new ChannelAirPlay("", metaData, 1, client_name,Config.getInstance().getResourceURIPrefix()+"org/rpi/image/AirPlay.png");
 				 PlayManager.getInstance().playAirPlayer(channel);
 			} else if (RtspMethods.SETUP.equals(method)) {
-				log.debug("SETUP \r\n" + request.toString() + content);
+				log.debug("SETUP \r\n" + request.toString() + content + "\r\n");
 				disconnectChannel = false;
 				AudioSession session = RaopSessionManager.getSession(clientInstance);
 				if (session == null) {
@@ -243,15 +243,15 @@ public class RtspRequestHandler extends ChannelInboundHandlerAdapter implements 
 				 ev.setArtist("AirPlay");
 				 PlayManager.getInstance().updateTrackInfo(ev);
 				response.headers().add("Transport", request.headers().get("Transport") + ";server_port=" + session.getControlPort());
-				log.debug("SetUp Response: " + response.toString());
+				log.debug("SetUp Response: " + response.toString() + "\r\n");
 			} else if (RtspMethods.RECORD.equals(method)) {
-				log.debug("RECORD \r\n" + request.toString() + content);
+				log.debug("RECORD \r\n" + request.toString() + content + "\r\n");
 				// ignore
 			} else if ("FLUSH".equalsIgnoreCase(method.name())) {
-				log.debug("FLUSH \r\n" + request.toString() + content);
+				log.debug("FLUSH \r\n" + request.toString() + content + "\r\n");
 				audioServer.flush();
 			} else if (RtspMethods.TEARDOWN.equals(method)) {
-				log.debug("TEARDOWN \r\n" + request.toString() + content);
+				log.debug("TEARDOWN \r\n" + request.toString() + content + "\r\n");
 				tearDown();
 				response.headers().set("Connection", "close");
 				ctx.writeAndFlush(response);
@@ -259,14 +259,14 @@ public class RtspRequestHandler extends ChannelInboundHandlerAdapter implements 
 				ctx.disconnect();
 				PlayManager.getInstance().setStatus("Stopped", "AIRPLAY");
 			} else if (RtspMethods.SET_PARAMETER.equals(method)) {
-				log.debug("SETPARAMTER: \r\n" + request.toString() + "\r\n" + content);
+				log.debug("SETPARAMTER: \r\n" + request.toString() + "\r\n" + content + "\r\n");
 				// String content = request.getContent().toString(Charset.forName("UTF-8"));
 			} else if (RtspMethods.GET_PARAMETER.equals(method)) {
-				log.debug("GET_PARAMETER");
+				log.debug("GET_PARAMETER" + "\r\n");
 			} else if ("DENIED".equalsIgnoreCase(method.name())) {
 				log.debug("DENIED");
 			} else {
-				log.info("Unknown RSTPMethod: " + method.name());
+				log.info("Unknown RSTPMethod: " + method.name() + "\r\n");
 			}
 
 			boolean keepAlive = isKeepAlive(request);

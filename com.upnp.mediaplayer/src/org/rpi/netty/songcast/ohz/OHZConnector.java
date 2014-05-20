@@ -73,9 +73,9 @@ public class OHZConnector {
 			b.option(ChannelOption.SO_BROADCAST, true);
 			b.option(ChannelOption.SO_REUSEADDR, true);
 			b.option(ChannelOption.IP_MULTICAST_LOOP_DISABLED, false);
-			b.option(ChannelOption.SO_RCVBUF, 2048);
-			b.option(ChannelOption.IP_MULTICAST_TTL, 255);
-			b.option(ChannelOption.IP_MULTICAST_IF, nic);
+			//b.option(ChannelOption.SO_RCVBUF, 2048);
+			//b.option(ChannelOption.IP_MULTICAST_TTL, 255);
+			//b.option(ChannelOption.IP_MULTICAST_IF, nic);
 
 			b.handler(new OHZChannelInitializer(localInetAddr));
 			log.debug("Am I Logged on as ROOT: " + PlatformDependent.isRoot());

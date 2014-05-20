@@ -95,7 +95,7 @@ public class AudioServer {
 	 */
 	private void initRTP() {
 		AudioInformation audioInf = new AudioInformation(44100, 48, 16, 2, "ALAC", 0, 0);		
-		if (Config.getInstance().isSongcastLatencyEnabled()) {
+		if (Config.getInstance().isAirPlayLatencyEnabled()) {
 			// With Latency
 			player = new JavaSoundPlayerLatency();
 			threadPlayer = new Thread(player, "SongcastPlayerJavaSoundLatency");

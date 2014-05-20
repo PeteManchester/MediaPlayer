@@ -25,6 +25,8 @@ public class AudioDecrpyt extends MessageToMessageDecoder<DatagramPacket> {
 	private SecretKey m_aesKey = null;
 
 	private IvParameterSpec paramSpec = null;
+	
+	private int last_sequence = 0;
 
 	public AudioDecrpyt() {
 		initAES();
@@ -50,6 +52,14 @@ public class AudioDecrpyt extends MessageToMessageDecoder<DatagramPacket> {
 			int type = buffer.getByte(1) & ~0x80;
 			if (type == 0x60 || type == 0x56) { // audio data / resend
 				int audio_size = msg.content().readableBytes();
+				int sequence = buffer.getUnsignedShort(2);
+				if(sequence - last_sequence !=1)
+				{
+					log.debug("Missed a Frame: " + sequence +  " Last Frame: " + last_sequence + "     " + ((sequence - last_sequence)-1)); 
+				}
+				last_sequence = sequence;
+				long time_stamp = buffer.getUnsignedInt(4);
+				//log.debug(sequence + " " + time_stamp);
 				int off = 12;
 				if (type == 0x56) {
 					off += 4;

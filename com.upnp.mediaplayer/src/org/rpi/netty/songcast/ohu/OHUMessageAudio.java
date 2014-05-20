@@ -82,7 +82,7 @@ public class OHUMessageAudio extends OHUMessage implements IAudioPacket {
 		}
 		else
 		{
-			System.out.println("Bufer was too small: " + soundStart + soundLength);
+			System.out.println("Bufer was too small: " + (soundStart + soundLength + " BufferSize: " + buf.readableBytes()));
 		}
 	}
 

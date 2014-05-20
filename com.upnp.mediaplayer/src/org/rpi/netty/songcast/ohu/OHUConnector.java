@@ -8,15 +8,18 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.FixedRecvByteBufAllocator;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.InternetProtocolFamily;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.util.concurrent.TimeUnit;
+
 import org.apache.log4j.Logger;
 import org.rpi.netty.songcast.ohz.OHZLeaveRequest;
 import org.rpi.player.PlayManager;
@@ -80,7 +83,8 @@ public class OHUConnector {
 			b.option(ChannelOption.SO_BROADCAST, true);
 			b.option(ChannelOption.SO_REUSEADDR, true);
 			b.option(ChannelOption.IP_MULTICAST_LOOP_DISABLED, false);
-			b.option(ChannelOption.SO_RCVBUF, 2884);
+			//b.option(ChannelOption.SO_RCVBUF, 3 * 1024);
+			b.option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator( 1024 * 5 ));
 			//b.option(ChannelOption.IP_MULTICAST_TTL, 255);
 			//b.option(ChannelOption.IP_MULTICAST_IF, nic);
 			b.handler(new OHUChannelInitializer());
