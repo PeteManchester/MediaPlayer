@@ -47,7 +47,7 @@ import org.rpi.radio.ChannelReaderJSON;
 import org.rpi.sources.Source;
 import org.rpi.sources.SourceReader;
 import org.rpi.utils.NetworkUtils;
-import org.rpi.web.rest.PlayerStatus;
+import org.rpi.web.longpolling.PlayerStatus;
 
 public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessageListener, Observer {
 

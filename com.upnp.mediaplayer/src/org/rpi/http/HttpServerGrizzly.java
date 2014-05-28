@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.logging.Level;
+
 import org.apache.log4j.Logger;
 import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.comet.CometAddOn;
@@ -14,7 +15,7 @@ import org.glassfish.grizzly.servlet.ServletRegistration;
 import org.glassfish.grizzly.servlet.WebappContext;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.rpi.web.rest.LongPollingServlet;
+import org.rpi.web.longpolling.LongPollingServlet;
 
 //http://localhost:8090/MainPage.html
 

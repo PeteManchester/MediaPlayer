@@ -5,6 +5,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.rpi.web.longpolling.PlayerStatus;
+
 @Path("player")
 public class PlayStatus {
 	@Path("getStatus")

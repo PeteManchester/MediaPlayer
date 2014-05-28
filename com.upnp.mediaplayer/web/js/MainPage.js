@@ -234,9 +234,9 @@ function checkStatusConfig() {
 					//$("#tunein_username").val(
 					//		decode(data.radio_tunein_username));
 					
-					$("#aiplayerRecevier").val(
+					$("#airplay_enabled").val(
 							decode(data.airplay_enabled));
-					$("#aiplayerRecevier").slider("refresh");
+					$("#airplay_enabled").slider("refresh");
 					
 					$("#airplay_latency_enabled").val(
 							decode(data.airplay_latency_enabled));
@@ -367,6 +367,10 @@ function checkStatus() {
 					'<tr> <th>CPU Time</th> <td class="title">' + data.cpu_time
 							+ '</a></td> </tr>');
 			$("#textarea").val(decode(data.log_events));
+			$("#textarea").prop('readonly', true);
+			//Nudge the textarea to resize..
+			$('#textarea').trigger('keyup');
+			//$('textarea').css({'height': 'auto'});
 
 		},
 		error : function(result, errorThrown) {
