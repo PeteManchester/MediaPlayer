@@ -31,7 +31,7 @@ public class HttpServerGrizzly {
 	boolean run = true;
 	private HttpServer server = null;
 
-	public static final String QUERY_PATH = "/grizzly-comet-counter/long_polling";
+	public static final String QUERY_PATH = "/grizzly-comet/playerstatus";
 
 	public HttpServerGrizzly(String port) {
 		if (port == null || port.equalsIgnoreCase("")) {
@@ -49,9 +49,9 @@ public class HttpServerGrizzly {
 		handler.setFileCacheEnabled(false);
 		server.getServerConfiguration().addHttpHandler(handler);
 
-		final WebappContext ctx = new WebappContext("Counter", "/grizzly-comet-counter");
-		final ServletRegistration servletRegistration = ctx.addServlet("LongPollingServlet", LongPollingServlet.class);
-		servletRegistration.addMapping("/long_polling");
+		final WebappContext ctx = new WebappContext("Coment", "/grizzly-comet");
+		final ServletRegistration servletRegistration = ctx.addServlet("PlayerStatus", LongPollingServlet.class);
+		servletRegistration.addMapping("/playerstatus");
 		ctx.deploy(server);
 
 		final Collection<NetworkListener> listeners = server.getListeners();

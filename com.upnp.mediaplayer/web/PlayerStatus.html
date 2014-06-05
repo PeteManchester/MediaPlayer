@@ -2,7 +2,7 @@
 <html>
 <head>
 <title>MediaPlayer Status Page</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 <link rel="stylesheet" href="js/jquery/jquery.mobile-1.4.2.css" />
 <script src="js/jquery/jquery-2.1.0.min.js"></script>
 <script src="js/jquery/jquery.mobile-1.4.2.min.js"></script>
@@ -10,7 +10,7 @@
 <script src="js/Common.js"></script>
 <style>
 <
-style type ="text/css">#text {
+style type ="text /css">#text {
 	height: yourheightinpx;
 }
 
@@ -23,11 +23,7 @@ style type ="text/css">#text {
 
 </head>
 <body>
-
-
-
-
-	<div data-role="page" id="status">
+	<div data-role="page" id="PlayerStatus">
 		<div data-role="header" data-id="header1" data-position="fixed">
 			<h1 id="header">
 				<img id="image_portrait" src="./images/mediaplayer240.png"
@@ -35,90 +31,78 @@ style type ="text/css">#text {
 				Player Status
 			</h1>
 			<br>
-			<div data-role="navbar">
-				<ul>
-					<li><a href="PlayerStatus.html" data-transition="slide">Status</a></li>
-				</ul>
-			</div>
-			<!-- /navbar -->
 		</div>
-		<!-- /header -->
 
-		<div data-role="content" id="text" height="100%">
+		<div role="main" class="ui-content">
+			<div data-role="tabs">
+				<div data-role="navbar">
+					<ul>
+						<li><a href="#details" id='iddetails' class="ui-btn-active"	data-theme="a" data-ajax="false">Details</a></li>
+						<li><a href="#albumart" id='idalbumart' data-theme="a"	data-ajax="false">AlbumArt</a></li>
+						<li><a href="#lyrics" id='idlyrics' data-theme="a" data-ajax="false">Lyrics</a></li>
+						<li><a href="#artistinfo" id='idartistinfo' data-theme="a"	data-ajax="false">Artist Info</a></li>
+					</ul>
+				</div>
 
-			<form>
-				<table data-role="table" id="status-table" data-mode="reflow"
-					class="ui-responsive">
-					<thead>
-						<tr>
-							<th style="width: 50%" data-priority="1"></th>
-							<th style="width: 50%"></th>
-						</tr>
-					</thead>
-					<tbody>
-					</tbody>
-				</table>
-				<div class="ui-grid-a">
-					<div class="ui-block-a" style="width: 30%;">
-						<img id="image_uri" src="./images/mediaplayer240.png"
-							style="width: 100%;" />
+				<div id="details" class="ui-content">
+					<table data-role="table" id="status-table" data-mode="reflow"
+						class="ui-responsive">
+						<thead>
+							<tr>
+								<th style="width: 50%" data-priority="1"></th>
+								<th style="width: 50%"></th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+
+					<div class="ui-grid-a">
+						<div class="ui-block-a" style="width: 30%;">
+							<img id="image_uri" src="./images/mediaplayer240.png"
+								style="width: 100%;" />
+						</div>
 					</div>
-			</form>
+				</div>
+
+				<div id="albumart" class="ui-content">
+					<div id="content" class="ui-block-a">
+						<img id="album_image_uri" src="./images/mediaplayer240.png"	 />
+					</div>
+				</div>
+
+				<div id="lyrics" class="ui-content">
+					<input name="title" id="title" value="" data-clear-btn="true">
+					<label for="textarea"></label>
+					<textarea name="textarea" id="textarea"></textarea>
+				</div>
+
+				<div id="artistinfo" class="ui-content">
+					<textarea name="textarea_artist" id="textarea_artist"></textarea>
+
+						<div class="ui-grid-a">
+						<div class="ui-block-a" align="right" >
+						<label for="image_echonest">Powered by  <a href="http://the.echonest.com/" id='echonest' >The Echo Nest</a></label> 
+						</div>
+						<!-- 
+						<div class="ui-block-b" align="left" >
+							<img id="image_echonests" src="./images/echonest.png" style="width:60px;"    />
+						</div>
+						-->
+						</div>
+
+				</div>
+			</div>
 		</div>
-
-
-
-
 
 		<!-- /content -->
-
-
-
 
 		<div data-role="footer" class="footer-docs" data-theme="c">
 			<p class="jqm-version"></p>
 			<p>&copy; 2014 Pete Hoyle</p>
 		</div>
-
-		<div data-role="panel" id="leftpanel1" data-position="left"
-			data-display="reveal" data-dismissible="true" data-theme="a">
-
-			<h3>Control</h3>
-
-			<h4>MediaPlayer</h4>
-			<div data-role="content" id="mediaplayer">
-				<fieldset data-role="controlgroup" data-mini="true"
-					data-inline="true">
-					<input type="button" id="Stops" name="Stops" data-mini="true"
-						value="Stop" />
-					<p>
-						<input type="button" id="Restarts" name="Restarts"
-							data-mini="true" value="Restart" />
-					<p>
-				</fieldset>
-				<p>
-				<h4>OS</h4>
-				<fieldset data-role="controlgroupOS" data-mini="true"
-					data-inline="true">
-
-					<input type="button" id="Reboots" name="Reboots" data-mini="true"
-						value="Reboot" />
-					<p>
-						<input type="button" id="Shutdowns" name="Shutdowns"
-							data-mini="true" value="Shutdown" />
-					<p>
-				</fieldset>
-			</div>
-			<a href="#demo-links" data-rel="close" data-role="button"
-				data-theme="a" data-icon="delete" data-inline="true"
-				data-mini="true">Close panel</a>
-
-		</div>
-		<!-- /leftpanel1 -->
-
-
 	</div>
-	<!-- /page -->
+
 
 </body>
 </html>

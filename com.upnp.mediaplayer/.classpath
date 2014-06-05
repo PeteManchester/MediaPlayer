@@ -15,5 +15,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/joda"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/netty"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jericho"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/echopass"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

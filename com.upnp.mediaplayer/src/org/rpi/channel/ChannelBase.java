@@ -386,6 +386,10 @@ public class ChannelBase {
 
     public String getDate()
     {
+    	if(date==null)
+    	{
+    		return "";
+    	}
         return date;
     }
 
