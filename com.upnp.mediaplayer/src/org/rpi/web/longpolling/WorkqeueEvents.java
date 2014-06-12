@@ -62,12 +62,25 @@ public class WorkqeueEvents implements Runnable {
 		this.contextPath = contextPath;
 		ChannelBase track = PlayManager.getInstance().getCurrentTrack();
 		if (track != null) {
+			this.track = track;
 			title = track.getTitle();
-			artist = track.getPerformer();
+			String artist = track.getArtist();
+			if (Utils.isEmpty(artist)) {
+				artist = track.getPerformer();
+			}
+			this.artist = artist;
+			year = track.getDate();
+			image_url = track.getAlbumArtUri();
 		} else {
+
+		}
+		try {
 			TrackInfo info = new TrackInfo(track, artist, title);
 			setJson(info.getJSON());
+		} catch (Exception e) {
+			log.error(e);
 		}
+
 	}
 
 	private void sleep(int value) {

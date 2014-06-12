@@ -71,8 +71,6 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 	private PlayManager iPlayer = PlayManager.getInstance();
 
-	// private int iCount = 0;
-
 	// private PluginManager pm = null;
 
 	/***
@@ -437,9 +435,9 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 	private void updateRadioList() {
 		try {
-			ChannelReaderJSON cr = new ChannelReaderJSON();
-			iRadio.addChannels(cr.getChannels());
-			// iCount = cr.getCount();
+			//ChannelReaderJSON cr = new ChannelReaderJSON();
+			//iRadio.addChannels(cr.getChannels());
+			iRadio.getChannels();
 		} catch (Exception e) {
 			log.error("Error Reading Radio Channels");
 		}

@@ -16,6 +16,7 @@ import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventFinishedCurrentTrack;
 import org.rpi.player.events.EventStatusChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
+import org.rpi.radio.parsers.FileParser;
 
 public class MPlayer extends Observable   implements IPlayer, Observer  {
 
@@ -53,7 +54,8 @@ public class MPlayer extends Observable   implements IPlayer, Observer  {
 		this.bMute = mute;
 		current_track = track;
 		log.info("Starting to playTrack Id: " + uniqueId + " " + track.getFullDetails());
-		String url = track.getUri();
+		//String url = track.getUri();
+		String url = checkURL(track.getUri());
 		try {
 			initProcess(url);
 		} catch (Exception e) {
@@ -379,6 +381,11 @@ public class MPlayer extends Observable   implements IPlayer, Observer  {
 	public void update(Observable o, Object evt) {
 		EventBase e = (EventBase)evt;
 		fireEvent(e);
+	}
+	
+	private String checkURL(String url) {
+		FileParser fp = new FileParser();
+		return fp.getURL(url);
 	}
 
 

@@ -75,6 +75,12 @@
 			</fileset>
 		</scp>
 		
+		<echo>Sending to ${server_name} Copying to web dir</echo>
+		<scp remoteTodir="root:root@${server_name}:/home/pi/mediaplayer/web" trust="yes" sftp="true">
+			<fileset dir="${basedir}/web">
+			</fileset>
+		</scp>
+		
 		
 				
 		<echo>Sending to ${server_name} Starting mediaplayer</echo>

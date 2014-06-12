@@ -20,6 +20,7 @@ public class ASHXParser {
 	private static Logger log = Logger.getLogger(M3UParser.class);
 	
 	public LinkedList<String> getStreamingUrl(String url) {
+		log.debug("Get URLs from : " + url);
 		LinkedList<String> murls = new LinkedList<String>();
 		try {
 			return getStreamingUrl(getConnection(url));

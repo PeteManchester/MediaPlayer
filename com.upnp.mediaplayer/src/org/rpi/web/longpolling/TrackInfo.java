@@ -72,7 +72,7 @@ public class TrackInfo {
 		StringBuffer sb = new StringBuffer();
 		sb.append("{");
 		sb.append(nl);
-		sb.append(q + "details" + q + colon + space + q + artist + " " + title + " " + year + q);
+		sb.append(q + "details" + q + colon + space + q + cleanString(artist) + " " + cleanString(title) + " " + year + q);
 		sb.append(nl);
 		sb.append(comma + q + "album_title" + q + colon + space + q + cleanString(album_title) + q);
 		sb.append(nl);
@@ -82,7 +82,7 @@ public class TrackInfo {
 		sb.append(nl);
 		sb.append(comma + q + "title" + q + colon + space + q + cleanString(title) + q);
 		sb.append(nl);
-		sb.append(comma + q + "image_uri" + q + colon + space + q + cleanString(image_url) + q);
+		sb.append(comma + q + "image_uri" + q + colon + space + q + image_url + q);
 		sb.append(nl);
 		sb.append(comma + q + "track_duration" + q + colon + space + q + track_duration + q);
 		sb.append(nl);
@@ -99,7 +99,16 @@ public class TrackInfo {
 	}
 
 	private String cleanString(String value) {
-		return value.replace("\"", "'");
+		value =  value.replace("\"", "'");
+		try
+		{
+			return URLEncoder.encode(value,"UTF-8");
+		}
+		catch(Exception e)
+		{
+			
+		}
+		return value;
 	}
 
 	public void setTimePlayed(long time_played) {

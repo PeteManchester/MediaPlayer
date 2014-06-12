@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgRadio1;
+import org.rpi.channel.ChannelPlayList;
 import org.rpi.channel.ChannelRadio;
 import org.rpi.config.Config;
 import org.rpi.player.PlayManager;
@@ -16,6 +17,7 @@ import org.rpi.radio.parsers.ASHXParser;
 import org.rpi.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
@@ -31,6 +33,9 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 
 	private List<ChannelRadio> channels = new ArrayList<ChannelRadio>();
 	private int current_channel = -99;
+	private long last_updated = 0;
+
+	private String radio_list = "";
 
 	// "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='6000' nrAudioChannels='2' protocolInfo='http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01'>http://cast.secureradiocast.co.uk:8004/;stream.mp3</res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>http://www.mediauk.com/logos/100/226.png</upnp:albumArtURI></item></DIDL-Lite>";
 	// private String metaData =
@@ -85,7 +90,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 		log.debug("Start of AddRadioChannels");
 		this.channels = channels;
 		UpdateIdArray();
-		propertiesLock();		
+		propertiesLock();
 		setPropertyIdArray(array);
 		setPropertyChannelsMax(channels.size());
 		propertiesUnlock();
@@ -155,17 +160,42 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	@Override
 	protected String readList(IDvInvocation paramIDvInvocation, String arg1) {
 		log.debug("ReadList: " + arg1 + Utils.getLogText(paramIDvInvocation));
-		getChannels();
+		//if ((System.currentTimeMillis() - last_updated) > 30000) {
+		//	int i = 0;
+			getChannels();
+			// log.debug("ReadList");
+			// StringBuilder sb = new StringBuilder();
+			// sb.append("<ChannelList>");
+			// for (ChannelRadio c : channels) {
+			// i++;
+			// sb.append(c.getFull_text());
+			// }
+			// sb.append("</ChannelList>");
+			// log.debug("ReadList Contains : " + i);
+			// radio_list = sb.toString();
+		//	last_updated = System.currentTimeMillis();
+		//}
+		// getList(arg1);
+		// log.debug("Return RadioList");
+		return getList(arg1);
+	}
+
+	private String getList(String ids) {
 		int i = 0;
-		log.debug("ReadList");
+		HashMap<String, String> trackIds = new HashMap<String, String>();
+		for (String key : ids.split(" ")) {
+			trackIds.put(key, key);
+		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("<ChannelList>");
-		for (ChannelRadio c : channels) {
-			i++;
-			sb.append(c.getFull_text());
+		for (ChannelRadio t : channels) {
+			if (trackIds.containsKey("" + t.getId())) {
+				i++;
+				sb.append(t.getFullText());
+			}
 		}
 		sb.append("</ChannelList>");
-		log.debug("ReadList Contains : " + i);
+		log.debug("ReadList Contains : " + i + "  " + sb.toString());
 		return sb.toString();
 	}
 
@@ -245,6 +275,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 		log.debug("Play Found the Channel: " + current_channel);
 		ASHXParser parser = new ASHXParser();
 		if (c.getUri().toLowerCase().contains("opml.radiotime.com")) {
+			log.debug("Radio URL contains 'opml.radiotime.com' Get the Correct URL: " + c.getUri());
 			LinkedList<String> ashxURLs = parser.getStreamingUrl(c.getUri());
 			if (ashxURLs.size() > 0) {
 				c.setUri(ashxURLs.get(0));
@@ -336,8 +367,12 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	}
 
 	public void getChannels() {
-		ChannelReaderJSON cr = new ChannelReaderJSON();
-		addChannels(cr.getChannels());
+		if ((System.currentTimeMillis() - last_updated) > 30000) {
+			int i = 0;
+			ChannelReaderJSON cr = new ChannelReaderJSON();
+			addChannels(cr.getChannels());
+			last_updated = System.currentTimeMillis();
+		}
 	}
 
 }

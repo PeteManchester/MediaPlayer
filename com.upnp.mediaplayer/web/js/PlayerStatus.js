@@ -103,11 +103,11 @@ function setDisplay(text) {
 		$('#status-table tr').remove();
 		$('#status-table').css("font-weight", "normal");
 		$('#status-table > tbody:last').append(
-				'<tr> <th>Artist:</th> <td class="title">' + data.artist
+				'<tr> <th>Artist:</th> <td class="title">' + decode(data.artist)
 						+ '</a></td> <th>Album:</th> <td class="title">'
-						+ data.album_title
+						+ decode(data.album_title)
 						+ '</a></td> <th>Title:</th> <td class="title">'
-						+ data.title + '</a></td> </tr>');
+						+ decode(data.title) + '</a></td> </tr>');
 		$('#status-table > tbody:last').append(
 				'<tr> <th>Time:</th> <td class="title">'
 						+ secondstotime(data.time_played)
