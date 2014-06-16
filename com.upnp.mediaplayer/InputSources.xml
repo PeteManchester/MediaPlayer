@@ -14,25 +14,25 @@
 
 	<Source>
 		<name>Laptop</name>
-		<type>Custom</type>
+		<type>Analog</type>
 		<GPIO_PIN>5</GPIO_PIN>
 	</Source>
 
 	<Source>
 		<name>Home PC</name>
-		<type>Custom</type>
+		<type>Analog</type>
 		<GPIO_PIN>6</GPIO_PIN>
 	</Source>
 
 	<Source>
 		<name>iPod</name>
-		<type>Custom</type>
+		<type>Analog</type>
 		<GPIO_PIN>7</GPIO_PIN>
 	</Source>
 
 	<Source>
 		<name>DAB Radio</name>
-		<type>Custom</type>
+		<type>Analog</type>
 		<GPIO_PIN>8</GPIO_PIN>
 	</Source>
 	
@@ -44,7 +44,7 @@
 	
 	<Source>
 	    <name>AirPlay</name>
-	    <type>AirPlay</type>
+	    <type>NetAux</type>
 	    <GPIO_PIN>9</GPIO_PIN>
 	</Source>
 

@@ -9,13 +9,13 @@ import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
+import org.rpi.java.sound.AudioInformation;
 import org.rpi.java.sound.IJavaSoundPlayer;
 import org.rpi.java.sound.JavaSoundPlayerBasic;
 import org.rpi.java.sound.JavaSoundPlayerLatency;
 import org.rpi.mplayer.TrackInfo;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventUpdateTrackInfo;
-import org.scratchpad.songcast.core.AudioInformation;
 import org.scratchpad.songcast.ohm.SourceTimer;
 
 /**
