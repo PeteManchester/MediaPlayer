@@ -2,8 +2,6 @@ package org.rpi.airplay;
 
 import java.io.ByteArrayOutputStream;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 
 import org.rpi.utils.Base64;
 import org.rpi.utils.SecUtils;

@@ -1,10 +1,16 @@
 package org.rpi.providers;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+
 import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgRadio1;
-import org.rpi.channel.ChannelPlayList;
 import org.rpi.channel.ChannelRadio;
 import org.rpi.config.Config;
 import org.rpi.player.PlayManager;
@@ -15,13 +21,6 @@ import org.rpi.player.events.EventRadioStatusChanged;
 import org.rpi.radio.ChannelReaderJSON;
 import org.rpi.radio.parsers.ASHXParser;
 import org.rpi.utils.Utils;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 
 public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer, IDisposableDevice {
 
@@ -35,7 +34,6 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	private int current_channel = -99;
 	private long last_updated = 0;
 
-	private String radio_list = "";
 
 	// "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='6000' nrAudioChannels='2' protocolInfo='http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01'>http://cast.secureradiocast.co.uk:8004/;stream.mp3</res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>http://www.mediauk.com/logos/100/226.png</upnp:albumArtURI></item></DIDL-Lite>";
 	// private String metaData =
@@ -87,14 +85,15 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	 * @param channels
 	 */
 	public void addChannels(List<ChannelRadio> channels) {
-		log.debug("Start of AddRadioChannels");
-		this.channels = channels;
-		UpdateIdArray();
+		log.debug("Start of AddRadioChannels");	
 		propertiesLock();
+		this.channels = channels;
+		array = UpdateIdArray();
 		setPropertyIdArray(array);
 		setPropertyChannelsMax(channels.size());
 		propertiesUnlock();
 		log.debug("Added Radio Channels: " + channels.size());
+		last_updated = System.currentTimeMillis();
 	}
 
 	protected Channel channel(IDvInvocation paramIDvInvocation) {
@@ -154,29 +153,13 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 		log.debug("SetChannel" + Utils.getLogText(paramIDvInvocation));
 		ChannelRadio channel = new ChannelRadio(uri, metadata, 2, "");
 		channels.add(channel);
-		UpdateIdArray();
+		array = UpdateIdArray();
 	}
 
 	@Override
 	protected String readList(IDvInvocation paramIDvInvocation, String arg1) {
 		log.debug("ReadList: " + arg1 + Utils.getLogText(paramIDvInvocation));
-		//if ((System.currentTimeMillis() - last_updated) > 30000) {
-		//	int i = 0;
-			getChannels();
-			// log.debug("ReadList");
-			// StringBuilder sb = new StringBuilder();
-			// sb.append("<ChannelList>");
-			// for (ChannelRadio c : channels) {
-			// i++;
-			// sb.append(c.getFull_text());
-			// }
-			// sb.append("</ChannelList>");
-			// log.debug("ReadList Contains : " + i);
-			// radio_list = sb.toString();
-		//	last_updated = System.currentTimeMillis();
-		//}
-		// getList(arg1);
-		// log.debug("Return RadioList");
+		getChannels();
 		return getList(arg1);
 	}
 
@@ -289,12 +272,11 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	 * Add the 32 bit binary string to a long string Split the 32 bit binary
 	 * long string 4 bytes (8bits) And add to a byte array
 	 */
-	private void UpdateIdArray() {
+	private byte[] UpdateIdArray() {
 		log.debug("Start of UpdateIdArray Radio");
 		int size = channels.size() * 4;
 		StringBuilder sb = new StringBuilder();
 		byte[] bytes = new byte[size];
-		int intValue = 1;
 		for (ChannelRadio c : channels) {
 			try {
 				String binValue = Integer.toBinaryString(c.getId());
@@ -303,7 +285,6 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 			} catch (Exception e) {
 				log.error(e);
 			}
-			intValue++;
 		}
 		// Now we have a big long string of binary, chop it up and get the
 		// bytes for the byte array..
@@ -318,9 +299,9 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 			// byte b = Byte.parseByte(sByte, 2);
 			bytes[i] = sens;
 		}
-		array = bytes;
+		
 		log.debug("End of UpdateIdArray Radio");
-		// setPropertyIdArray(bytes);
+		return bytes;
 	}
 
 	private String padLeft(String str, int length, char padChar) {
@@ -368,10 +349,14 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 
 	public void getChannels() {
 		if ((System.currentTimeMillis() - last_updated) > 30000) {
-			int i = 0;
-			ChannelReaderJSON cr = new ChannelReaderJSON();
-			addChannels(cr.getChannels());
-			last_updated = System.currentTimeMillis();
+			try {
+				ChannelReaderJSON cr = new ChannelReaderJSON(this);
+				last_updated = System.currentTimeMillis();
+				Thread threadRadio = new Thread(cr, "RadioGetter");
+				threadRadio.start();
+			} catch (Exception e) {
+				log.error(e);
+			}
 		}
 	}
 

@@ -6,6 +6,11 @@
 		<GPIO_PIN>9</GPIO_PIN>
 	</Source>
 	<Source>
+	    <name>Default</name>
+	    <type>UpnpAv</type>
+	    <visible>false</visible>
+	</Source>
+	<Source>
 		<name>Radio</name>
 		<type>Radio</type>
 		<GPIO_PIN>9</GPIO_PIN>
@@ -45,6 +50,7 @@
 	<Source>
 	    <name>AirPlay</name>
 	    <type>NetAux</type>
+	    <visible>false</visible>
 	    <GPIO_PIN>9</GPIO_PIN>
 	</Source>
 

@@ -41,6 +41,7 @@ import org.rpi.providers.PrvProduct;
 import org.rpi.providers.PrvRadio;
 import org.rpi.providers.PrvReceiver;
 import org.rpi.providers.PrvRenderingControl;
+import org.rpi.providers.PrvSongcast;
 import org.rpi.providers.PrvTime;
 import org.rpi.providers.PrvVolume;
 import org.rpi.radio.ChannelReaderJSON;
@@ -65,6 +66,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	private PrvReceiver iReceiver = null;
 	private PrvAVTransport iAVTransport = null;
 	private PrvRenderingControl iRenderingControl = null;
+	private PrvSongcast iSongcastSender = null;
 	private HttpServerGrizzly httpServer = null;
 
 	private AirPlayThread airplay = null;
@@ -128,6 +130,8 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			iAVTransport = new PrvAVTransport(iDevice);
 			iRenderingControl = new PrvRenderingControl(iDevice);
 		}
+		
+		iSongcastSender = new PrvSongcast(iDevice);
 
 		// updateRadioList();
 
@@ -135,23 +139,25 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			SourceReader sr = new SourceReader();
 			ConcurrentHashMap<String, Source> sources = sr.getSources();
 			if (sources.size() == 0) {
-				Source playlist = new Source("PlayList", "Playlist", "-99");
+				Source playlist = new Source("PlayList", "Playlist", "-99", true);
 				sources.put(playlist.getName(), playlist);
-				Source radio = new Source("Radio", "Radio", "-99");
+				Source radio = new Source("Radio", "Radio", "-99", true);
 				sources.put(radio.getName(), radio);
 				if (Config.getInstance().isMediaplayerEnableReceiver()) {
-					Source reciever = new Source("Receiver", "Receiver", "-99");
+					Source reciever = new Source("Receiver", "Receiver", "-99", true);
 					sources.put(reciever.getName(), reciever);
 				}
-				Source airplay = new Source("AirPlay", "AirPlay", "-99");
+				Source airplay = new Source("AirPlay", "NetAux", "-99", false);
 				sources.put(airplay.getName(), airplay);
+				Source upnp = new Source(friendly_name, "UpnpAv", "-99", false);
+				sources.put(friendly_name, upnp);
 			}
 			PluginGateWay.getInstance().setSources(sources);
 			PluginGateWay.getInstance().setDefaultSourcePin(sr.getDefaultPin());
 			for (String key : sources.keySet()) {
 				Source s = sources.get(key);
 				log.debug("Adding Source: " + s.toString());
-				iProduct.addSource(Config.getInstance().getMediaplayerFriendlyName(), s.getName(), s.getType(), true);
+				iProduct.addSource(Config.getInstance().getMediaplayerFriendlyName(), s.getName(), s.getType(), s.isVisible());
 			}
 			iProduct.updateCurrentSource();
 
@@ -172,10 +178,15 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		if (Config.getInstance().getMediaplayerStartupVolume() >= 0) {
 			log.debug("Setting Startup Volume: " + Config.getInstance().getMediaplayerStartupVolume());
 			PlayManager.getInstance().setVolume(Config.getInstance().getMediaplayerStartupVolume());
-		}
-		else
-		{
+		} else {
 			PlayManager.getInstance().setVolume(100);
+		}
+		
+		try {
+			//Force a updateRadioList to enable Kazoo to find Radio Stations..
+			updateRadioList();
+		} catch (Exception e) {
+			log.error("Problem with getting Radio List");
 		}
 
 		if (Config.getInstance().isAirPlayEnabled()) {
@@ -183,6 +194,8 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			airplay = new AirPlayThread(Config.getInstance().getMediaplayerFriendlyName());
 			airplay.start();
 		}
+
+
 
 		PlayerStatus.getInstance();
 		OSManager.getInstance().loadPlugins();
@@ -342,6 +355,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		this.disposeDevice(iReceiver);
 		this.disposeDevice(iAVTransport);
 		this.disposeDevice(iRenderingControl);
+		this.disposeDevice(iSongcastSender);
 
 		if (lib != null) {
 			try {
@@ -435,8 +449,8 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 	private void updateRadioList() {
 		try {
-			//ChannelReaderJSON cr = new ChannelReaderJSON();
-			//iRadio.addChannels(cr.getChannels());
+			// ChannelReaderJSON cr = new ChannelReaderJSON();
+			// iRadio.addChannels(cr.getChannels());
 			iRadio.getChannels();
 		} catch (Exception e) {
 			log.error("Error Reading Radio Channels");

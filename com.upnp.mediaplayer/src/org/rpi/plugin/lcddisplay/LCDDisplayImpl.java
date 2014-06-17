@@ -213,7 +213,9 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 		case EVENTTIMEUPDATED:
 			try {
 				EventTimeUpdate etime = (EventTimeUpdate) e;
-				mTime = ConvertTime(etime.getTime());
+				if (mTime != null) {
+					mTime = ConvertTime(etime.getTime());
+				}
 				// updateVolume();
 				scroller.updateValues("[TIME]", mTime);
 			} catch (Exception ex) {

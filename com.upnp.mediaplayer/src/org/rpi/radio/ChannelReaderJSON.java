@@ -28,6 +28,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Logger;
 import org.rpi.channel.ChannelRadio;
 import org.rpi.config.Config;
+import org.rpi.providers.PrvRadio;
 import org.rpi.utils.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -35,7 +36,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-public class ChannelReaderJSON {
+public class ChannelReaderJSON implements Runnable {
 
 	private Logger log = Logger.getLogger(this.getClass());
 
@@ -43,11 +44,17 @@ public class ChannelReaderJSON {
 
 	private List<ChannelRadio> channels = new ArrayList<ChannelRadio>();
 
-	public List<ChannelRadio> getChannels() {
+	private PrvRadio prvRadio = null;
 
-		getAllChannels();
-		return channels;
+	public ChannelReaderJSON(PrvRadio prvRadio) {
+		this.prvRadio = prvRadio;
 	}
+
+	// public List<ChannelRadio> getChannels() {
+	//
+	// getAllChannels();
+	// //return channels;
+	// }
 
 	private void getAllChannels() {
 		try {
@@ -60,7 +67,7 @@ public class ChannelReaderJSON {
 				String url = "http://opml.radiotime.com/Browse.ashx?c=presets&partnerid=" + partnerId + "&username=" + Config.getInstance().getRadioTuneinUsername() + "&render=json";
 				getJsonFromURL(url);
 			}
-
+			prvRadio.addChannels(channels);
 		} catch (Exception e) {
 			log.error("Error Getting Channels", e);
 		}
@@ -150,8 +157,8 @@ public class ChannelReaderJSON {
 				} else {
 					boolean bType = object.containsKey("type");
 					boolean bItem = object.containsKey("item");
-					if (bType && bItem) {//Probably a ListenLive
-						if (object.getString("type").toLowerCase().equalsIgnoreCase("link") && object.getString("item").equalsIgnoreCase("show")) {				
+					if (bType && bItem) {// Probably a ListenLive
+						if (object.getString("type").toLowerCase().equalsIgnoreCase("link") && object.getString("item").equalsIgnoreCase("show")) {
 							String url = object.getString("URL");
 							log.debug("Get Shows: " + url);
 							// int temp = getIntFromString(object,
@@ -347,6 +354,15 @@ public class ChannelReaderJSON {
 			log.error("Error Creating XML Doc", e);
 		}
 		return res;
+	}
+
+	@Override
+	public void run() {
+		try {
+			getAllChannels();
+		} catch (Exception e) {
+			log.error(e);
+		}
 	}
 
 }

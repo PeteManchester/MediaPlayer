@@ -11,6 +11,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
+import org.rpi.utils.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -21,6 +22,7 @@ public class SourceReader {
 	private Logger log = Logger.getLogger(this.getClass());
 	private ConcurrentHashMap<String, Source> sources = new ConcurrentHashMap<String, Source>();
 	private String default_pin = "";
+	private boolean visible = true;
 
 	public SourceReader() {
 		readSources();
@@ -48,22 +50,30 @@ public class SourceReader {
 				String name = null;
 				String type = null;
 				String GPIO_PIN = "";
+				boolean visible = true;
 
 				Node channel = listOfChannels.item(s);
 				if (channel.getNodeType() == Node.ELEMENT_NODE) {
 					Element element = (Element) channel;
 					name = getElement(element, "name");
 					type = getElement(element, "type");
+					try {
+						String vis = getElement(element, "visible");
+						if (!Utils.isEmpty(vis)) {
+							visible = Boolean.parseBoolean(vis);
+						}
+					} catch (Exception e) {
+
+					}
 					GPIO_PIN = getElement(element, "GPIO_PIN");
-					Source source = new Source(name, type, GPIO_PIN);
+					Source source = new Source(name, type, GPIO_PIN, visible);
 					if (type.equalsIgnoreCase("RECEIVER")) {
 						if (!Config.getInstance().isMediaplayerEnableReceiver()) {
 							addToSource = false;
 						}
-					}else if (type.equalsIgnoreCase("UPNP"))
-					{
-						if(!Config.getInstance().isMediaplayerEnableAVTransport())
-						{
+					} else if (type.equalsIgnoreCase("UPNP")) {
+						source.setVisible(false);
+						if (!Config.getInstance().isMediaplayerEnableAVTransport()) {
 							addToSource = false;
 						}
 					}
