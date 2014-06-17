@@ -38,6 +38,9 @@ Display info about the currently playing track, providing info such as lyrics an
 And if using the AlarmClock plugin you can also set a sleep timer from the web page.
 
 ![](http://i.imgur.com/olsOZBr.png)
+
+![](http://i.imgur.com/sg5hXFX.png)
+
 ![](http://i.imgur.com/2J1CLQZ.png)
 
 The MediaPlayer is easily extentable via [Plugins](https://github.com/PeteManchester/MediaPlayer/wiki).
