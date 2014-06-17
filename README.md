@@ -27,8 +27,8 @@ We support the following UPnP and OpenHome Functionality:
 
 Also supported is Apples AirPlay Receiver.  
 
-We are currently implementing a http-daemon to make it possible to configure and
-control the whole application via a web-interface.
+We have implementing a http-daemon to make it possible to configure and
+control the whole application via a web-interface. There is also a web interface that will display info about the currently playing track, providing info such as lyrics and info about the artist.
 
 
 
