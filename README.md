@@ -7,7 +7,7 @@ template: home
 A fully open-source java project that uses the [OpenHome API](http://www.openhome.org/wiki/Oh:Overview) to
 implement a UPNP Media Renderer.
 
-The MediaPlayer is java based and so will work on a wide range of Operating Systems without the need to provide different install packages or recompile the code.  
+The MediaPlayer is Java based and so will work on a wide range of Operating Systems without the need to provide different install packages or recompile the code.  
 
 ## Features
 
