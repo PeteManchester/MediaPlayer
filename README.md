@@ -7,6 +7,8 @@ template: home
 A fully open-source java project that uses the [OpenHome API](http://www.openhome.org/wiki/Oh:Overview) to
 implement a UPNP Media Renderer.
 
+The MediaPlayer is java based and so will work on a wide range of Operating Systems without the need to provide different install packages or recompile the code.  
+
 ## Features
 
 MediaPlayer provides a large support of OpenHome specific devices as well as
@@ -25,10 +27,15 @@ We support the following UPnP and OpenHome Functionality:
 * [Radio](http://www.openhome.org/wiki/Av:Developer:RadioService)
 * [SongCast](http://www.linn.co.uk/software#songcast)
 
-Also supported is Apples AirPlay Receiver.  
+Also supported is Apples AirPlay Receiver. 
 
-We have implementing a http-daemon to make it possible to configure and
-control the whole application via a web-interface. There is also a web interface that will display info about the currently playing track, providing info such as lyrics and info about the artist.
+
+
+We have implementing a http-daemon to make it possible to:  
+Configure and control the whole application via a web-interface. 
+View the last 50 log events.
+Display info about the currently playing track, providing info such as lyrics and info about the artist.
+And if using the AlarmClock plugin you can also set a sleep timer from the web page.
 
 
 
