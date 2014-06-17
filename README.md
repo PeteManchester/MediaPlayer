@@ -37,7 +37,7 @@ View the last 50 log events.
 Display info about the currently playing track, providing info such as lyrics and info about the artist.
 And if using the AlarmClock plugin you can also set a sleep timer from the web page.
 
-![](http://i.imgur.com/DPVST6T.jpg)  
+
 
 The MediaPlayer is easily extentable via [Plugins](https://github.com/PeteManchester/MediaPlayer/wiki).
 Right now, we have the following Plugins:
@@ -47,6 +47,10 @@ Right now, we have the following Plugins:
 * [LCDDisplay](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-Display)
 * [Fullscreen](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-Fullscreen)
 * [LIRCIntegration](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-LIRCIntegration)
+* 
+
+LCDDisplay Plugin  
+![](http://i.imgur.com/DPVST6T.jpg)  
 
 ##Wiki
 We have a [Wiki](https://github.com/PeteManchester/MediaPlayer/wiki) where you can find the documentation
