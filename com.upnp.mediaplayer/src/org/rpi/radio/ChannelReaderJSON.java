@@ -169,7 +169,7 @@ public class ChannelReaderJSON implements Runnable {
 							String url = getString(object, "URL");
 							url = tidyURL(url);
 							String image = getString(object, "image");
-							String preset_id = getString(object, "preset_id");
+							String preset_id = getString(object, "guide_id");
 							preset_id = preset_id.replaceAll("[^0-9]+", "");
 							String item = getString(object, "item");
 							boolean icy_reverse = getBoolean(object, "icy_reverse", false);
