@@ -104,7 +104,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		iDevice.setAttribute("Upnp.IconList", this.constructIconList(iDeviceName));
 
 		// iDevice.setAttribute("Upnp.Domain", "openhome-org");
-		iDevice.setAttribute("Upnp.Domain", "schemas-upnp-org");
+		iDevice.setAttribute("Upnp.Domain", "upnp.org");
 		iDevice.setAttribute("Upnp.Type", "MediaRenderer");
 		iDevice.setAttribute("Upnp.Version", "1");
 		iDevice.setAttribute("Upnp.FriendlyName", Config.getInstance().getMediaplayerFriendlyName());
