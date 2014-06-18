@@ -10,7 +10,7 @@ import java.util.Observable;
  *
  */
 
-public class ObservsableTime extends Observable {
+public class ObservableTime extends Observable {
 	
 	/**
 	 * Let the Observers know something has changed..

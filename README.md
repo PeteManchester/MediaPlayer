@@ -30,9 +30,7 @@ Also supported is Apples AirPlay Receiver.
 We are currently implementing a http-daemon to make it possible to configure and
 control the whole application via a web-interface.
 
-
-
-The MediaPlayer is easily extentable via [Plugins](https://github.com/PeteManchester/MediaPlayer/wiki).
+The MediaPlayer is easily extendable via [Plugins](https://github.com/PeteManchester/MediaPlayer/wiki).
 Right now, we have the following Plugins:
 
 * [AlarmClock](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-AlarmClock)
@@ -41,7 +39,8 @@ Right now, we have the following Plugins:
 * [Fullscreen](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-Fullscreen)
 * [LIRCIntegration](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-LIRCIntegration)
 
-##Wiki
+## Wiki
+
 We have a [Wiki](https://github.com/PeteManchester/MediaPlayer/wiki) where you can find the documentation
 
 ## Installation Instructions

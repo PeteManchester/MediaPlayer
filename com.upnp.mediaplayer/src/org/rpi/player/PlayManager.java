@@ -3,7 +3,6 @@ package org.rpi.player;
 import java.util.Collections;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -36,13 +35,8 @@ import org.rpi.player.events.EventTimeUpdate;
 import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.player.events.EventVolumeChanged;
-import org.rpi.player.observers.ObservableAVTransport;
-import org.rpi.player.observers.ObservableInfo;
-import org.rpi.player.observers.ObservablePlayList;
-import org.rpi.player.observers.ObservableProduct;
-import org.rpi.player.observers.ObservableRadio;
-import org.rpi.player.observers.ObservableVolume;
-import org.rpi.player.observers.ObservsableTime;
+import org.rpi.player.observers.*;
+import org.rpi.player.observers.ObservableTime;
 
 public class PlayManager implements Observer {
 
@@ -65,7 +59,7 @@ public class PlayManager implements Observer {
 	private boolean bExternalVolume = false;
 
 	// Observable Classes
-	private ObservsableTime obsvTime = new ObservsableTime();
+	private ObservableTime obsvTime = new ObservableTime();
 	private ObservableInfo obsvInfo = new ObservableInfo();
 	private ObservableVolume obsvVolume = new ObservableVolume();
 	private ObservableRadio obsvRadio = new ObservableRadio();
@@ -572,7 +566,7 @@ public class PlayManager implements Observer {
 	/**
 	 * Play an AirPlay channel
 	 * 
-	 * @param channel
+	 * @param track
 	 */
 	public void playAirPlayer(ChannelAirPlay track) {
 		log.debug("Playing AirPlay Server. Stop Playing current Track");
