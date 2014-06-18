@@ -2,8 +2,8 @@ package org.rpi.songcast.ohu;
 
 import io.netty.buffer.ByteBuf;
 
+import org.rpi.java.sound.AudioInformation;
 import org.rpi.java.sound.IAudioPacket;
-import org.scratchpad.songcast.core.AudioInformation;
 
 //Offset    Bytes                   Desc
 //0         1                       Msg Header Bytes (without the codec name)

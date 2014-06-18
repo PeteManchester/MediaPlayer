@@ -1,15 +1,23 @@
 package org.rpi.utils;
 
 import org.apache.log4j.Logger;
-import org.bouncycastle.openssl.PEMReader;
+//import org.bouncycastle.openssl.PEMReader;
+
+import org.bouncycastle.openssl.PEMKeyPair;
+import org.bouncycastle.openssl.PEMParser;
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
+import org.bouncycastle.util.io.pem.PemObject;
+import org.bouncycastle.util.io.pem.PemReader;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.security.KeyPair;
+import java.security.PrivateKey;
 
 public class SecUtils {
 
@@ -55,24 +63,40 @@ public class SecUtils {
 	 */
 	public static byte[] encryptRSA(byte[] array) {
 		LOGGER.debug("Start of EncryptRSA");
+		PEMParser pemReader = null;
 		try {
 			// Security.addProvider(new BouncyCastleProvider());
 			LOGGER.debug("Create pemReader");
-			PEMReader pemReader = new PEMReader(new StringReader(key));
+			pemReader = new PEMParser(new StringReader(key));
 			LOGGER.debug("Create pemReader");
 			LOGGER.debug("ReadObject");
-			KeyPair pObj = (KeyPair) pemReader.readObject();
+
+			PEMKeyPair pObj = (PEMKeyPair) pemReader.readObject();
+			//PemObject pObj = pemReader.readPemObject();
+			JcaPEMKeyConverter convert = new JcaPEMKeyConverter();
+			PrivateKey key = convert.getPrivateKey(pObj.getPrivateKeyInfo());
 
 			// Encrypt
 			LOGGER.debug("getInstancer");
 			Cipher cipher = Cipher.getInstance("RSA/NONE/PKCS1Padding");
 			LOGGER.debug("Cipher");
-			cipher.init(Cipher.ENCRYPT_MODE, pObj.getPrivate());
+			cipher.init(Cipher.ENCRYPT_MODE,key);
 			LOGGER.debug("End of EncryptRSA");
 			return cipher.doFinal(array);
+			
 
 		} catch (Exception e) {
 			LOGGER.error(e);
+		}finally
+		{
+			if(pemReader !=null)
+			{
+				try {
+					pemReader.close();
+				} catch (Exception e) {
+
+				}
+			}
 		}
 
 		return null;
@@ -86,20 +110,34 @@ public class SecUtils {
 	 */
 	public static byte[] decryptRSA(byte[] array) {
 		LOGGER.debug("Start of decryptRSA");
+		PEMParser pemReader = null;
 		try {
 
 			// La clef RSA
-			PEMReader pemReader = new PEMReader(new StringReader(key));
-			KeyPair pObj = (KeyPair) pemReader.readObject();
+			pemReader = new PEMParser(new StringReader(key));
+			PEMKeyPair pObj = (PEMKeyPair) pemReader.readObject();
 
+			JcaPEMKeyConverter convert = new JcaPEMKeyConverter();
+			PrivateKey key = convert.getPrivateKey(pObj.getPrivateKeyInfo());
 			// Encrypt
 			Cipher cipher = Cipher.getInstance("RSA/NONE/OAEPPadding");
-			cipher.init(Cipher.DECRYPT_MODE, pObj.getPrivate());
+			cipher.init(Cipher.DECRYPT_MODE, key);
 			LOGGER.debug("End of decryptRSA");
 			return cipher.doFinal(array);
 
 		} catch (Exception e) {
 			LOGGER.error(e);
+		}
+		finally
+		{
+			if(pemReader !=null)
+			{
+				try {
+					pemReader.close();
+				} catch (Exception e) {
+
+				}
+			}
 		}
 
 		return null;

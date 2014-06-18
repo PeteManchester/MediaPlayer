@@ -1,6 +1,5 @@
 package org.rpi.java.sound;
 
-import org.scratchpad.songcast.core.AudioInformation;
 
 public interface IAudioPacket {	
 

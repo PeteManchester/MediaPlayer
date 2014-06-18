@@ -11,13 +11,13 @@ import io.netty.channel.SimpleChannelInboundHandler;
 
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
+import org.rpi.java.sound.AudioInformation;
 import org.rpi.java.sound.IJavaSoundPlayer;
 import org.rpi.java.sound.JavaSoundPlayerBasic;
 import org.rpi.java.sound.JavaSoundPlayerLatency;
 import org.rpi.mplayer.TrackInfo;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventUpdateTrackInfo;
-import org.scratchpad.songcast.core.AudioInformation;
 public class OHUMessageAudioHandler extends SimpleChannelInboundHandler<OHUMessageAudio> {
 
 	private Logger log = Logger.getLogger(this.getClass());

@@ -11,7 +11,6 @@ import javax.sound.sampled.SourceDataLine;
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
 import org.rpi.utils.Utils;
-import org.scratchpad.songcast.core.AudioInformation;
 
 public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer {
 	private Logger log = Logger.getLogger(this.getClass());

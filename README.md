@@ -7,6 +7,8 @@ template: home
 A fully open-source java project that uses the [OpenHome API](http://www.openhome.org/wiki/Oh:Overview) to
 implement a UPNP Media Renderer.
 
+The MediaPlayer is Java based and so will work on a wide range of hardware and Operating Systems without the need to provide different install packages or recompile the code.  
+
 ## Features
 
 MediaPlayer provides a large support of OpenHome specific devices as well as
@@ -25,12 +27,23 @@ We support the following UPnP and OpenHome Functionality:
 * [Radio](http://www.openhome.org/wiki/Av:Developer:RadioService)
 * [SongCast](http://www.linn.co.uk/software#songcast)
 
-Also supported is Apples AirPlay Receiver.  
+Also supported is Apples AirPlay Receiver. 
 
-We are currently implementing a http-daemon to make it possible to configure and
-control the whole application via a web-interface.
+We have implemented a http-daemon to make it possible to:  
+
+* Configure and control the whole application via a web-interface. 
+* View the last 50 log events.
+* Display info about the currently playing track, providing info such as lyrics and info about the artist.
+* And if using the AlarmClock plugin you can also set a sleep timer from the web page.
+
+![](http://i.imgur.com/2J1CLQZ.png)
+
+![](http://i.imgur.com/sg5hXFX.png)
+
+![](http://i.imgur.com/olsOZBr.png)
 
 The MediaPlayer is easily extendable via [Plugins](https://github.com/PeteManchester/MediaPlayer/wiki).
+
 Right now, we have the following Plugins:
 
 * [AlarmClock](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-AlarmClock)
@@ -38,6 +51,9 @@ Right now, we have the following Plugins:
 * [LCDDisplay](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-Display)
 * [Fullscreen](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-Fullscreen)
 * [LIRCIntegration](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-LIRCIntegration)
+* LCDDisplay Plugin
+  
+![](http://i.imgur.com/DPVST6T.jpg)  
 
 ## Wiki
 
