@@ -9,6 +9,7 @@
 
     <fileset id="extern_libs" dir="${lib_dir}">
         <include name="plugins/imgscalr-lib-4.2.jar"/>
+        <include name="plugins/joda-time-2.3.jar"/>
     </fileset>
 
     <target name="post_build_plugin">
