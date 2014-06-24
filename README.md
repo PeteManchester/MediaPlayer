@@ -51,7 +51,9 @@ Right now, we have the following Plugins:
 * [LCDDisplay](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-Display)
 * [Fullscreen](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-Fullscreen)
 * [LIRCIntegration](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-LIRCIntegration)
-* LCDDisplay Plugin
+
+
+LCDDisplay Plugin
   
 ![](http://i.imgur.com/DPVST6T.jpg)  
 
