@@ -48,12 +48,10 @@ Right now, we have the following Plugins:
 
 * [AlarmClock](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-AlarmClock)
 * [LastFM](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-LastFM)
-* [LCDDisplay](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-Display)
 * [Fullscreen](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-Fullscreen)
 * [LIRCIntegration](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-LIRCIntegration)
+* [LCDDisplay](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-Display)
 
-
-LCDDisplay Plugin
   
 ![](http://i.imgur.com/DPVST6T.jpg)  
 
