@@ -8,6 +8,12 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class OHUMessageSlaveHandler extends SimpleChannelInboundHandler<OHUMessageSlave> {
 
 	private Logger log = Logger.getLogger(this.getClass());
+	private OHUChannelInitializer initializer = null;
+	
+	public OHUMessageSlaveHandler(OHUChannelInitializer initializer)
+	{
+		this.initializer = initializer;
+	}
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, OHUMessageSlave msg) throws Exception {

@@ -489,6 +489,10 @@ public class ChannelBase {
     }
 
     private String addString(String original, String addString) {
+    	if(cleanArtistString(original).equalsIgnoreCase(addString))
+    	{
+    		return original;
+    	}
         return original + addString.trim() + personSeparator;
     }
 

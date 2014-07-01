@@ -162,6 +162,19 @@ public class NetworkUtils {
         return toHexString(getMacAddress());
     }
     
+    public static String getIPAddress()
+    {
+    	try {
+            InetAddress iAddress = InetAddress.getLocalHost();
+            String addr = iAddress.getHostAddress();
+            // String canonicalHostName = iAddress.getCanonicalHostName();
+            return addr;
+        } catch (Exception e) {
+            log.error("Error Getting IPAddress: ", e);
+        }
+    	return "127.0.0.1";
+    }
+    
     public static String getNICName(String displayName)
     {
     	String res = "";

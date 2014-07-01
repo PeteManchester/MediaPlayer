@@ -33,7 +33,7 @@ public class OHUMessageAudio extends OHUMessage implements IAudioPacket {
 	private int attempts = 0;
 	private int length = 0;
 
-	public OHUMessageAudio(ByteBuf buf) {
+	public OHUMessageAudio(ByteBuf buf,boolean hasSlaves) {
 		super.setData(buf.retain());
 		int headerLength = buf.getByte(8) & ~0x80;
 		int sampleCount = buf.getShort(10);
@@ -59,6 +59,11 @@ public class OHUMessageAudio extends OHUMessage implements IAudioPacket {
 				time += res;
 			} catch (Exception e) {
 			}
+		}
+		if(hasSlaves)
+		{
+			//Add some latency if we are fowarding to other songcast receivers.
+			time += 150;
 		}
 		setTimeToPlay(time);
 

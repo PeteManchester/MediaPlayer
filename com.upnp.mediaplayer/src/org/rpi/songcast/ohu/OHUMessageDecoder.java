@@ -19,6 +19,12 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 public class OHUMessageDecoder extends MessageToMessageDecoder<DatagramPacket> {
 	
 	private Logger log = Logger.getLogger(this.getClass());
+	private OHUChannelInitializer initializer = null;
+	
+	public OHUMessageDecoder(OHUChannelInitializer initializer)
+	{
+		this.initializer = initializer;
+	}
 
 	@Override
 	protected void decode(ChannelHandlerContext ctx, DatagramPacket msg, List<Object> out) throws Exception {
@@ -28,7 +34,7 @@ public class OHUMessageDecoder extends MessageToMessageDecoder<DatagramPacket> {
 			OHUMessage message = null;
 			switch (type) {
 			case 3:// Audio
-				message = new OHUMessageAudio(buf);
+				message = new OHUMessageAudio(buf,initializer.hasSlaves());
 				out.add(message);
 				break;
 			case 4:// Track

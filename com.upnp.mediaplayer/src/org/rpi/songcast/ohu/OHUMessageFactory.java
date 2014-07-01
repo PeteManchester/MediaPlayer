@@ -2,6 +2,7 @@ package org.rpi.songcast.ohu;
 
 /**
  * Factory to create our OHUMessage from the ByteBuf
+ * Not used because it seemed to cause a bottle neck!!
  */
 
 import java.nio.charset.Charset;
@@ -20,7 +21,7 @@ public class OHUMessageFactory {
 		switch(type)
 		{
 		case 3://Audio
-			OHUMessageAudio audio = new OHUMessageAudio(buf);
+			OHUMessageAudio audio = new OHUMessageAudio(buf,true);
 			return audio;
 		case 4://Track
 			log.debug("Track Message: " + buf.toString(Charset.defaultCharset()));

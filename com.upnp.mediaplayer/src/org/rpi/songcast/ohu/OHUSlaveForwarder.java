@@ -14,12 +14,16 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
-import org.scratchpad.songcast.ohm.OHMEventTrack;
 
 public class OHUSlaveForwarder extends SimpleChannelInboundHandler<OHUMessage> {
 
 	private Logger log = Logger.getLogger(this.getClass());
 	private ConcurrentHashMap<String, Slave> endpoints = new ConcurrentHashMap<String, Slave>();
+	private OHUChannelInitializer initializer = null;
+	public OHUSlaveForwarder(OHUChannelInitializer initializer)
+	{
+		this.initializer = initializer;
+	}
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, OHUMessage msg) throws Exception {
@@ -27,6 +31,7 @@ public class OHUSlaveForwarder extends SimpleChannelInboundHandler<OHUMessage> {
 			// Don't send Slave messages to the Slaves..
 			OHUMessageSlave slave = (OHUMessageSlave) msg;
 			endpoints = slave.getEndpoints();
+			initializer.setEndpoints(endpoints);
 			// msg.getData().release();
 		} else {
 			if (endpoints.size() > 0) {
