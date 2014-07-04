@@ -63,7 +63,7 @@ public class OHUMessageAudio extends OHUMessage implements IAudioPacket {
 		if(hasSlaves)
 		{
 			//Add some latency if we are fowarding to other songcast receivers.
-			time += 150;
+			time += 150 ;
 		}
 		setTimeToPlay(time);
 

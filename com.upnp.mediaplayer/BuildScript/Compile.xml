@@ -13,6 +13,9 @@
 	    <copy todir="${basedir}/bin/mediaplayer_lib/ohNet/windows/x86">
 		<fileset dir="${basedir}/lib/native/windows/x86"/>
 		</copy>
+	    <copy todir="${basedir}/bin/mediaplayer_lib/ohNet/windows/x64">
+		<fileset dir="${basedir}/lib/native/windows/x64"/>
+		</copy>
 	</target>    
     
 </project>
