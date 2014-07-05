@@ -16,7 +16,6 @@ import org.rpi.java.sound.JavaSoundPlayerLatency;
 import org.rpi.mplayer.TrackInfo;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventUpdateTrackInfo;
-import org.scratchpad.songcast.ohm.SourceTimer;
 
 /**
  * Main class that listen for new packets.

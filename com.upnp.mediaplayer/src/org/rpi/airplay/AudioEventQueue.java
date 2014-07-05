@@ -11,14 +11,12 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
 
 import org.apache.log4j.Logger;
-import org.rpi.alacdecoder.AlacFile;
 import org.rpi.config.Config;
 import org.rpi.java.sound.AudioInformation;
 import org.rpi.mplayer.TrackInfo;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventUpdateTrackInfo;
 import org.rpi.utils.Utils;
-import org.scratchpad.songcast.ohm.SourceTimer;
 
 public class AudioEventQueue implements Runnable, Observer {
 	private Logger log = Logger.getLogger(this.getClass());
