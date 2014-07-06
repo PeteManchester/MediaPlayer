@@ -260,6 +260,10 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 	@Override
 	protected void setNextAVTransportURI(IDvInvocation paramIDvInvocation, long paramLong, String paramString1, String paramString2) {
 		log.debug("SetNexAVTransport: " + paramLong + " " + paramString1 + " " + paramString2 + Utils.getLogText(paramIDvInvocation));
+		String next_uri = paramString1;
+		String next_metadata = paramString2;
+		ChannelBase c = new ChannelBase(next_uri, next_metadata, 0);
+		PlayManager.getInstance().setNextTrack(c);
 	}
 
 	@Override
