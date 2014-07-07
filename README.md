@@ -108,6 +108,10 @@ MediaPlayer is made possible due to the support of the following great human bei
         <td>Markus M May</td>
         <td>OSManager, LastFM Plugin, Fullscreen Plugin, this webpage</td>
       </tr>
+      <tr>
+      <td>Marcello</td>
+      <td>Added support for setNextAVTransportURI in AVTransport service<td>
+      </tr>
     </tbody>
   </table>
 </div>
