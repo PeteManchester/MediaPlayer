@@ -110,7 +110,7 @@ MediaPlayer is made possible due to the support of the following great human bei
       </tr>
       <tr>
       <td>Marcello</td>
-      <td>Added support for setNextAVTransportURI in AVTransport service<td>
+      <td>Added support for setNextAVTransportURI in AVTransport service</td>
       </tr>
     </tbody>
   </table>
