@@ -1,1 +1,56 @@
-<TrackList><Entry><Id>2</Id><Uri>http://192.168.1.205:26125/content/c2/b16/f44100/d80451-co8754.mp3</Uri><Metadata>&#60;DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"&#62;&#60;item&#62;&#60;dc:title xmlns:dc="http://purl.org/dc/elements/1.1/"&#62; 2.   Lively Up Yourself&#60;/dc:title&#62;&#60;upnp:class xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;object.item.audioItem.musicTrack&#60;/upnp:class&#62;&#60;upnp:albumArtURI xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;http://192.168.1.205:26125/aa/43809/3760552418/cover.jpg?size=0&#60;/upnp:albumArtURI&#62;&#60;upnp:album xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;Lively Up Yourself -Lee Perry Set&#60;/upnp:album&#62;&#60;upnp:artist xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;Bob Marley&#60;/upnp:artist&#62;&#60;upnp:artist xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;Bob Marley&#60;/upnp:artist&#62;&#60;/item&#62;&#60;/DIDL-Lite&#62;</Metadata></Entry><Entry><Id>1</Id><Uri>http://192.168.1.205:26125/content/c2/b16/f44100/d80450-co8754.mp3</Uri><Metadata>&#60;DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"&#62;&#60;item&#62;&#60;dc:title xmlns:dc="http://purl.org/dc/elements/1.1/"&#62; 2.   Soul Shakedown Party&#60;/dc:title&#62;&#60;upnp:class xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;object.item.audioItem.musicTrack&#60;/upnp:class&#62;&#60;upnp:albumArtURI xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;http://192.168.1.205:26125/aa/43809/3760552418/cover.jpg?size=0&#60;/upnp:albumArtURI&#62;&#60;upnp:album xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;Lively Up Yourself -Lee Perry Set&#60;/upnp:album&#62;&#60;upnp:artist xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;Bob Marley&#60;/upnp:artist&#62;&#60;upnp:artist xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;Bob Marley&#60;/upnp:artist&#62;&#60;/item&#62;&#60;/DIDL-Lite&#62;</Metadata></Entry><Entry><Id>3</Id><Uri>http://192.168.1.205:26125/content/c2/b16/f44100/d80452-co8754.mp3</Uri><Metadata>&#60;DIDL-Lite xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"&#62;&#60;item&#62;&#60;dc:title xmlns:dc="http://purl.org/dc/elements/1.1/"&#62; 2.   Riding High&#60;/dc:title&#62;&#60;upnp:class xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;object.item.audioItem.musicTrack&#60;/upnp:class&#62;&#60;upnp:albumArtURI xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;http://192.168.1.205:26125/aa/43809/3760552418/cover.jpg?size=0&#60;/upnp:albumArtURI&#62;&#60;upnp:album xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;Lively Up Yourself -Lee Perry Set&#60;/upnp:album&#62;&#60;upnp:artist xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;Bob Marley&#60;/upnp:artist&#62;&#60;upnp:artist xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;Bob Marley&#60;/upnp:artist&#62;&#60;/item&#62;&#60;/DIDL-Lite&#62;</Metadata></Entry></TrackList>
+<TrackList>
+	<Entry>
+		<Id>2</Id>
+		<Uri>http://192.168.1.205:26125/content/c2/b16/f44100/d80451-co8754.mp3
+		</Uri>
+		<Metadata>&#60;DIDL-Lite
+			xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"&#62;&#60;item&#62;&#60;dc:title
+			xmlns:dc="http://purl.org/dc/elements/1.1/"&#62; 2. Lively Up
+			Yourself&#60;/dc:title&#62;&#60;upnp:class
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;object.item.audioItem.musicTrack&#60;/upnp:class&#62;&#60;upnp:albumArtURI
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;http://192.168.1.205:26125/aa/43809/3760552418/cover.jpg?size=0&#60;/upnp:albumArtURI&#62;&#60;upnp:album
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;Lively Up
+			Yourself -Lee Perry Set&#60;/upnp:album&#62;&#60;upnp:artist
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;Bob
+			Marley&#60;/upnp:artist&#62;&#60;upnp:artist
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;Bob
+			Marley&#60;/upnp:artist&#62;&#60;/item&#62;&#60;/DIDL-Lite&#62;
+		</Metadata>
+	</Entry>
+	<Entry>
+		<Id>1</Id>
+		<Uri>http://192.168.1.205:26125/content/c2/b16/f44100/d80450-co8754.mp3
+		</Uri>
+		<Metadata>&#60;DIDL-Lite
+			xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"&#62;&#60;item&#62;&#60;dc:title
+			xmlns:dc="http://purl.org/dc/elements/1.1/"&#62; 2. Soul Shakedown
+			Party&#60;/dc:title&#62;&#60;upnp:class
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;object.item.audioItem.musicTrack&#60;/upnp:class&#62;&#60;upnp:albumArtURI
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;http://192.168.1.205:26125/aa/43809/3760552418/cover.jpg?size=0&#60;/upnp:albumArtURI&#62;&#60;upnp:album
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;Lively Up
+			Yourself -Lee Perry Set&#60;/upnp:album&#62;&#60;upnp:artist
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;Bob
+			Marley&#60;/upnp:artist&#62;&#60;upnp:artist
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;Bob
+			Marley&#60;/upnp:artist&#62;&#60;/item&#62;&#60;/DIDL-Lite&#62;
+		</Metadata>
+	</Entry>
+	<Entry>
+		<Id>3</Id>
+		<Uri>http://192.168.1.205:26125/content/c2/b16/f44100/d80452-co8754.mp3
+		</Uri>
+		<Metadata>&#60;DIDL-Lite
+			xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/"&#62;&#60;item&#62;&#60;dc:title
+			xmlns:dc="http://purl.org/dc/elements/1.1/"&#62; 2. Riding
+			High&#60;/dc:title&#62;&#60;upnp:class
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;object.item.audioItem.musicTrack&#60;/upnp:class&#62;&#60;upnp:albumArtURI
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;http://192.168.1.205:26125/aa/43809/3760552418/cover.jpg?size=0&#60;/upnp:albumArtURI&#62;&#60;upnp:album
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;Lively Up
+			Yourself -Lee Perry Set&#60;/upnp:album&#62;&#60;upnp:artist
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;Bob
+			Marley&#60;/upnp:artist&#62;&#60;upnp:artist
+			xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/"&#62;Bob
+			Marley&#60;/upnp:artist&#62;&#60;/item&#62;&#60;/DIDL-Lite&#62;
+		</Metadata>
+	</Entry>
+</TrackList>
