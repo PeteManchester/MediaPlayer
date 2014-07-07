@@ -121,6 +121,17 @@ public class PlayManager implements Observer {
 			mPlayer.playThis(t, v, bMute);
 		}
 	}
+	
+	/**
+	 * Set the Next Track to be played
+	 * 
+	 * @param t
+	 */
+	public synchronized void setNextTrack(ChannelBase c)
+	{
+		log.debug("Set Next AV Track :  " + c.getUri());
+		mPlayer.preLoadTrack(c);
+	}
 
 	/**
 	 * Get the Next Track when not in shuffle Mode
