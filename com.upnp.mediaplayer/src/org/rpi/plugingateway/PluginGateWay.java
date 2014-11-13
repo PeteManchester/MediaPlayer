@@ -21,6 +21,7 @@ public class PluginGateWay extends Observable {
 
 	private SimpleDevice simpleDevice = null;
 	private String default_pin = "";
+	private String standbyPin = "";
 
 	public static PluginGateWay getInstance() {
 		if (instance == null) {
@@ -101,6 +102,16 @@ public class PluginGateWay extends Observable {
 		return default_pin;
 	}
 	
+	public void setStandbyPin(String standbyPin) {
+		this.standbyPin = standbyPin;
+		
+	}
+	
+	public String getStandbyPin()
+	{
+		return standbyPin;
+	}
+	
 	
 	public String setSleepTimer(String value)
 	{
@@ -155,8 +166,6 @@ public class PluginGateWay extends Observable {
 		 }
 		return "";
 	}
-	
-	
 }
 
 

@@ -9,7 +9,10 @@ import net.xeoh.plugins.base.annotations.events.Shutdown;
 
 import org.apache.log4j.Logger;
 import org.rpi.os.OSManager;
+import org.rpi.player.PlayManager;
+import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventSourceChanged;
+import org.rpi.player.events.EventStandbyChanged;
 import org.rpi.plugingateway.PluginGateWay;
 import org.rpi.sources.Source;
 
@@ -25,35 +28,61 @@ public class InputSourcesImpl implements InputSourcesInterface, Observer {
 	private Logger log = Logger.getLogger(this.getClass());
 	private ConcurrentHashMap<String, Source> sources = new ConcurrentHashMap<String, Source>();
 	private String default_pin = "";
+	private String standby_pin = "";
 	private GpioController gpio = null;
 	private ConcurrentHashMap<String, GpioPinDigitalOutput> pins = new ConcurrentHashMap<String, GpioPinDigitalOutput>();
+	private boolean standby_state = false;
 
 	public InputSourcesImpl() {
 		// getSources();
 		initPi4J();
 		sources = PluginGateWay.getInstance().getSources();
 		default_pin = PluginGateWay.getInstance().getDefaultSourcePin();
+		standby_pin = PluginGateWay.getInstance().getStandbyPin();
+		log.debug("StandbyPIn: " + standby_pin);
 		createPins();
 		String name = PluginGateWay.getInstance().getSourceName();
 		updateSource(name);
+		standby_state = PlayManager.getInstance().isStandby();
+		updateStandbyState(standby_state);
 		PluginGateWay.getInstance().addObserver(this);
+		PlayManager.getInstance().observeProductEvents(this);
 	}
 
 	private void createPins() {
 		if (gpio == null)
 			return;
-		if(!default_pin.equalsIgnoreCase(""))
-		{
+		if (!default_pin.equalsIgnoreCase("")) {
 			log.debug("Creating Default_Pin: " + default_pin);
 			Pin pin_number = createPin(default_pin);
 			if (pin_number != null) {
-				GpioPinDigitalOutput pin = gpio.provisionDigitalOutputPin(pin_number, // PIN
-						// NUMBER
+				GpioPinDigitalOutput pin = gpio.provisionDigitalOutputPin(pin_number, // PIN NUMBER
 						"default_pin", // PIN FRIENDLY NAME (optional)
 						PinState.LOW); // PIN STARTUP STATE (optional)
 				pins.put(default_pin, pin);
 			}
 		}
+		else
+		{
+			log.debug("Default Pin was not Set");
+		}
+		
+		if(!standby_pin.equalsIgnoreCase(""))
+		{
+			log.debug("Creating Standby_Pin: " + standby_pin);
+			Pin pin_number = createPin(standby_pin);
+			if (pin_number != null) {
+				GpioPinDigitalOutput pin = gpio.provisionDigitalOutputPin(pin_number, // PIN NUMBER
+						"standby_pin", // PIN FRIENDLY NAME (optional)
+						PinState.LOW); // PIN STARTUP STATE (optional)
+				pins.put(standby_pin, pin);
+			}
+		}
+		else
+		{
+			log.debug("Standby Pin was not Set");
+		}
+		
 		log.debug("Creating Pins from Sources");
 		for (String key : sources.keySet()) {
 			Source s = sources.get(key);
@@ -83,23 +112,46 @@ public class InputSourcesImpl implements InputSourcesInterface, Observer {
 
 	@Override
 	public void update(Observable o, Object event) {
-		if (event instanceof EventSourceChanged) {
+
+		EventBase base = (EventBase) event;
+		switch (base.getType()) {
+		case EVENTSOURCECHANGED:
 			EventSourceChanged es = (EventSourceChanged) event;
 			String name = es.getName();
+			String source_type = es.getSourceType();
+			if (source_type.equalsIgnoreCase("ANALOG")) {
+				log.debug("Analog Source Selected, attempt to Stop Playback");
+				PlayManager.getInstance().stop();
+			}
 			log.debug("Source Changed: " + name);
 			updateSource(name);
+			break;
+		case EVENTSTANDBYCHANGED:
+			EventStandbyChanged esb = (EventStandbyChanged) event;
+			log.debug("Standby: " + esb.isStandby());
+			updateStandbyState(esb.isStandby());
+			break;
 		}
-
 	}
 	
-	private void updateSource(String name)
-	{
+	private void updateStandbyState(boolean standby_state)
+	{ 	
+		this.standby_state = standby_state;
+		updateStandbyPin(standby_state);
+	}
+
+	private void updateSource(String name) {
+		if(standby_state )
+		{
+			log.debug("In Standby, do not update Sources");
+			return;
+		}
 		if (gpio == null)
 			return;
 		if (sources.containsKey(name)) {
 			try {
-				log.debug("Changed Source ClearPins");
-				clearLEDS();
+				log.debug("Changed Source ClearPins: " + name);
+				clearLEDS(false);
 				Source source = sources.get(name);
 				log.debug("Source PIN: " + source.getGPIO_PIN());
 				if (pins.containsKey(source.getGPIO_PIN())) {
@@ -113,15 +165,33 @@ public class InputSourcesImpl implements InputSourcesInterface, Observer {
 			}
 		} else {
 			log.debug("Not A CustomSource Change Input to PIN: " + default_pin);
-			try
-			{
-			clearLEDS();
-			GpioPinDigitalOutput pin = pins.get(default_pin);
-			pin.high();		
+			try {
+				clearLEDS(false);
+				GpioPinDigitalOutput pin = pins.get(default_pin);
+				pin.high();
+			} catch (Exception e) {
+				log.error("Error Making Default Pin High", e);
 			}
-			catch(Exception e )
-			{
-				log.error("Error Making Default Pin High",e);
+		}
+	}
+
+	private void updateStandbyPin(boolean standby) {
+		if (!standby_pin.equalsIgnoreCase("")) {
+			log.debug("Update Standby Pin: " + standby_pin + " Standby State: " + standby);
+			if (standby) {
+				log.debug("Now in Standby State, take all pins low");
+				clearLEDS(true);
+			} else {
+				try {
+					log.debug("Out of Standby take Pin: " + standby_pin + " High");
+					GpioPinDigitalOutput pin = pins.get(standby_pin);
+					pin.high();
+					String source_name = PluginGateWay.getInstance().getSourceName();
+					log.debug("Out of Standby, Set Source: " + source_name);
+					updateSource(source_name);
+				} catch (Exception e) {
+					log.error("Error Taking StandbyPin High ", e);
+				}
 			}
 		}
 	}
@@ -181,22 +251,29 @@ public class InputSourcesImpl implements InputSourcesInterface, Observer {
 	@Shutdown
 	public void bye() {
 		log.debug("ShutDown Called");
-		clearLEDS();
+		clearLEDS(true);
 	}
 
-	private void clearLEDS() {
+	private void clearLEDS(boolean clearStandbyPin) {
 		if (gpio == null)
 			return;
-		//if(!default_pin.equalsIgnoreCase(""))
-		//{
-		//	log.debug("Make Default Pin: " + default_pin + " Low");
-		//	GpioPinDigitalOutput pin = pins.get(key);
-		//	pin.low();
-		//}
+		// if(!default_pin.equalsIgnoreCase(""))
+		// {
+		// log.debug("Make Default Pin: " + default_pin + " Low");
+		// GpioPinDigitalOutput pin = pins.get(key);
+		// pin.low();
+		// }
 		for (String key : pins.keySet()) {
-			log.debug("Make Pin: " + key + " Low");
-			GpioPinDigitalOutput pin = pins.get(key);
-			pin.low();
+			if ((key.equalsIgnoreCase(standby_pin)) && !clearStandbyPin) {
+				log.debug("Don't Clear StandbyPin");
+			} else {
+				log.debug("Make Pin: " + key + " Low");
+				try {
+					GpioPinDigitalOutput pin = pins.get(key);
+					pin.low();
+				} catch (Exception e) {
+				}
+			}
 		}
 	}
 

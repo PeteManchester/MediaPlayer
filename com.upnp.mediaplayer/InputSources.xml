@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Sources default_pin="6">
+<Sources default_pin="7" standby_pin="16">
 	<Source>
 		<name>PlayList</name>
 		<type>Playlist</type>
@@ -26,7 +26,7 @@
 	<Source>
 		<name>Home PC</name>
 		<type>Analog</type>
-		<GPIO_PIN>6</GPIO_PIN>
+		<GPIO_PIN>7</GPIO_PIN>
 	</Source>
 
 	<Source>

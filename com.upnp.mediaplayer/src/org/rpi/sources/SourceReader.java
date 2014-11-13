@@ -22,6 +22,7 @@ public class SourceReader {
 	private Logger log = Logger.getLogger(this.getClass());
 	private ConcurrentHashMap<String, Source> sources = new ConcurrentHashMap<String, Source>();
 	private String default_pin = "";
+	private String standby_pin = "";
 	private boolean visible = true;
 
 	public SourceReader() {
@@ -41,9 +42,10 @@ public class SourceReader {
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			Document doc = builder.parse(new File("InputSources.xml"));
 			NodeList listOfChannels = doc.getElementsByTagName("Source");
-			String ex_columns = "/Sources/@default_pin";
+			String sDefaultPin = "/Sources/@default_pin";
 			XPath xPath = XPathFactory.newInstance().newXPath();
-			setDefaultPin(xPath.compile(ex_columns).evaluate(doc));
+			setDefaultPin(xPath.compile(sDefaultPin).evaluate(doc));
+			setStandbyPin(xPath.compile("/Sources/@standby_pin").evaluate(doc));
 			int i = 1;
 			for (int s = 0; s < listOfChannels.getLength(); s++) {
 				boolean addToSource = true;
@@ -133,5 +135,22 @@ public class SourceReader {
 	private void setDefaultPin(String default_pin) {
 		this.default_pin = default_pin;
 	}
+	
+	/**
+	 * @return the standby_pin
+	 */
+	public String getStandbyPin() {
+		return standby_pin;
+	}
+
+	/**
+	 * @param standby_pin the standby_pin to set
+	 */
+	private void setStandbyPin(String standby_pin) {
+		this.standby_pin = standby_pin;
+	}
+
+
+	
 
 }

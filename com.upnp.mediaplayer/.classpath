@@ -4,16 +4,16 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre7"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jspf"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/pi4j"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ohNet"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/airplay"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/netty"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/echonest"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/grizzly"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/log4j"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/json"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/quartz"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/airplay"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Log4J"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/echopass"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Grizzly"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/javaxjson"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Quartz"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jehrico"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/lastfm"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/lastFM"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/fullscreen"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ohNet"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

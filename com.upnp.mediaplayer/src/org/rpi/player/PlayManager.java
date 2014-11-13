@@ -105,6 +105,11 @@ public class PlayManager implements Observer {
 	 */
 	private void playThis(ChannelBase t) {
 		if (t != null) {
+			if(standby)
+			{
+				log.debug("We are playing a Channel, take out of Standby");
+				setStandby(false);
+			}
 			if (current_track instanceof ChannelSongcast) {
 				EventStopSongcast ev = new EventStopSongcast();
 				obsvSongcast.notifyChange(ev);
