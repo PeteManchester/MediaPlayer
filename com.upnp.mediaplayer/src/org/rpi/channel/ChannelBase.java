@@ -62,10 +62,12 @@ public class ChannelBase {
 
     public ChannelBase(String uri, String metadata, int id) {
         // long startTime = System.nanoTime();
-        setUri(uri);
+    	log.debug(metadata);
+    	setUri(uri);
         setMetadata(metadata);
         setId(id);
         full_text = getXmlString();
+        
         if (!metadata.equalsIgnoreCase("")) {
             getTrackDetails();
             setFullDetails();
@@ -316,6 +318,7 @@ public class ChannelBase {
             Document doc = getDocument();//
             Node node = doc.getFirstChild();
             Node item = node.getFirstChild();
+            log.debug(item.toString());
             NodeList childs = item.getChildNodes();
             for (int i = 0; i < childs.getLength(); i++) {
                 Node n = childs.item(i);
@@ -344,7 +347,10 @@ public class ChannelBase {
                         }
                     }
                     else {
-                        setArtist(n.getTextContent());
+                    	if(this.artist.length()==0)
+                    	{
+                    		setArtist(n.getTextContent());
+                    	}
                     }
                 }
                 else if ("dc:date".equals(n.getNodeName())) {
