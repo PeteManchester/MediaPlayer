@@ -75,7 +75,8 @@
   function shutdownOS()
   {
 	  var JSONObject= {
-	      "command":"sudo shutdown -y -g0"
+	      //"command":"sudo shutdown -y -g0"
+			"command":"sudo poweroff"
 	  };
 	  
 	  $.ajax({  

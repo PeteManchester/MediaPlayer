@@ -62,7 +62,6 @@ public class ChannelBase {
 
     public ChannelBase(String uri, String metadata, int id) {
         // long startTime = System.nanoTime();
-    	log.debug(metadata);
     	setUri(uri);
         setMetadata(metadata);
         setId(id);
@@ -110,6 +109,7 @@ public class ChannelBase {
     }
 
     public String getMetadata() {
+    	
         return metadata;
     }
 
@@ -118,7 +118,15 @@ public class ChannelBase {
     }
 
     private void setMetadata(String metadata) {
-        this.metadata = metadata;
+    	String original = "<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\">";
+    	String replace = "<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dlna=\"urn:schemas-dlna-org:metadata-1-0/\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\">";
+    	
+    	//String test = "<DIDL-Lite xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" xmlns:dlna=\"urn:schemas-dlna-org:metadata-1-0/\"><item id=\"d86410-co23709\" parentID=\"co23709\" restricted=\"0\"><dc:title>  6   Heart and Soul</dc:title><dc:creator>Joy Division</dc:creator><dc:date>1980-01-01T00:00:00Z</dc:date><upnp:artist role=\"AlbumArtist\">Joy Division</upnp:artist><upnp:artist role=\"Composer\">Bernard Albrecht</upnp:artist><upnp:artist role=\"Composer\">Ian Curtis</upnp:artist><upnp:artist role=\"Composer\">Peter Hook</upnp:artist><upnp:artist role=\"Composer\">Stephen Morris</upnp:artist><upnp:artist role=\"Performer\">Joy Division</upnp:artist><upnp:album>Closer</upnp:album><upnp:genre>Pop/Rock</upnp:genre><upnp:albumArtURI dlna:profileID=\"JPEG_TN\">http://192.168.1.205:26125/aa/138547/1659915372/cover.jpg?size=0</upnp:albumArtURI><upnp:originalTrackNumber>6</upnp:originalTrackNumber><res duration=\"0:05:51.000\" size=\"37025157\" bitrate=\"176400\" bitsPerSample=\"16\" sampleFrequency=\"44100\" nrAudioChannels=\"2\" protocolInfo=\"http-get:*:audio/x-flac:DLNA.ORG_PN=;DLNA.ORG_OP=01\">http://192.168.1.205:26125/content/c2/b16/f44100/d86410-co23709.flac</res><res duration=\"0:05:51.000\" size=\"62010464\" bitrate=\"176400\" bitsPerSample=\"16\" sampleFrequency=\"44100\" nrAudioChannels=\"2\" protocolInfo=\"http-get:*:audio/wav:DLNA.ORG_PN=WAV;DLNA.ORG_OP=01\">http://192.168.1.205:26125/content/c2/b16/f44100/d86410-co23709.forced.wav</res><res duration=\"0:05:51.000\" size=\"62010420\" bitrate=\"176400\" bitsPerSample=\"16\" sampleFrequency=\"44100\" nrAudioChannels=\"2\" protocolInfo=\"http-get:*:audio/L16:DLNA.ORG_PN=LPCM;DLNA.ORG_OP=01;DLNA.ORG_CI=1\">http://192.168.1.205:26125/content/c2/b16/f44100/d86410-co23709.forced.l16</res><res duration=\"0:05:51.000\" size=\"37025157\" bitrate=\"176400\" bitsPerSample=\"16\" sampleFrequency=\"44100\" nrAudioChannels=\"2\" protocolInfo=\"http-get:*:audio/x-flac:DLNA.ORG_PN=;DLNA.ORG_OP=01\">http://192.168.1.205:26125/content/c2/b16/f44100/d86410-co23709.flac</res><upnp:class>object.item.audioItem.musicTrack</upnp:class></item></DIDL-Lite>";
+        //metadata = metadata.replace(original, replace);
+    	String rItem = "<item id=\"d5112915403826242371-co533\" parentID=\"co533\" restricted=\"0\">";
+    	String oItem = "<item>";
+    	metadata = metadata.replace(oItem, rItem);
+    	this.metadata = metadata;
     }
 
     public int getId() {
@@ -315,10 +323,10 @@ public class ChannelBase {
 
     public void getTrackDetails() {
         try {
+        	log.debug(metadata);
             Document doc = getDocument();//
             Node node = doc.getFirstChild();
             Node item = node.getFirstChild();
-            log.debug(item.toString());
             NodeList childs = item.getChildNodes();
             for (int i = 0; i < childs.getLength(); i++) {
                 Node n = childs.item(i);
@@ -448,7 +456,11 @@ public class ChannelBase {
     }
 
     public String getArtist() {
-        return this.cleanArtistString(this.artist);
+    	if(!artist.equalsIgnoreCase(""))
+    	{
+    		return this.cleanArtistString(this.artist);
+    	}
+    	return getAlbumArtist();    		
     }
 
     public void setArtist(String artist) {
