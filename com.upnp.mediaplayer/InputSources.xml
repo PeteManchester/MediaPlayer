@@ -42,6 +42,14 @@
 	</Source>
 	
 	<Source>
+		<name>Spotify</name>
+		<type>Analog</type>
+		<GPIO_PIN>9</GPIO_PIN>
+		<START_SCRIPT>sudo service squeezelite start</START_SCRIPT>
+		<STOP_SCRIPT>sudo service squeezelite stop</STOP_SCRIPT>
+	</Source>
+	
+	<Source>
 	    <name>Receiver</name>
 	    <type>Receiver</type>
 	    <GPIO_PIN>9</GPIO_PIN>

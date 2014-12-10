@@ -69,6 +69,22 @@ public class SourceReader {
 					}
 					GPIO_PIN = getElement(element, "GPIO_PIN");
 					Source source = new Source(name, type, GPIO_PIN, visible);
+					String start_script = getElement(element,"START_SCRIPT");
+					if(start_script !=null )
+					{
+						if(!start_script.equalsIgnoreCase(""))
+						{
+							source.setStartScript(start_script);
+						}
+					}
+					String stop_script = getElement(element, "STOP_SCRIPT");
+					if(stop_script !=null )
+					{
+						if(!stop_script.equalsIgnoreCase(""))
+						{
+							source.setStopScript(stop_script);
+						}
+					}
 					if (type.equalsIgnoreCase("RECEIVER")) {
 						if (!Config.getInstance().isMediaplayerEnableReceiver()) {
 							addToSource = false;

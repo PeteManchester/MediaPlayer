@@ -4,7 +4,9 @@ public class Source {
 	private String name;
 	private String type;
 	private String GPIO_PIN;
-	private boolean visible = true;;
+	private String start_script = null;
+	private String stop_script = null;
+	private boolean visible = true;
 	public Source(String name, String type, String GPIO_PIN,boolean visible) {
 		this.name = name;
 		this.type = type;
@@ -45,6 +47,30 @@ public class Source {
 	 */
 	public void setVisible(boolean visible) {
 		this.visible = visible;
+	}
+	/**
+	 * @return the start_script
+	 */
+	public String getStartScript() {
+		return start_script;
+	}
+	/**
+	 * @param start_script the start_script to set
+	 */
+	public void setStartScript(String start_script) {
+		this.start_script = start_script;
+	}
+	/**
+	 * @return the stop_script
+	 */
+	public String getStopScript() {
+		return stop_script;
+	}
+	/**
+	 * @param stop_script the stop_script to set
+	 */
+	public void setStopScript(String stop_script) {
+		this.stop_script = stop_script;
 	}
 
 }

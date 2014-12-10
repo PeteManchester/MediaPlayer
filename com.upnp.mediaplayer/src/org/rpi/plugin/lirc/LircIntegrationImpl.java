@@ -18,6 +18,7 @@ import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventSourceChanged;
 import org.rpi.player.events.EventStandbyChanged;
 import org.rpi.plugingateway.PluginGateWay;
+import org.rpi.sources.Source;
 import org.rpi.utils.XMLUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -71,6 +72,8 @@ public class LircIntegrationImpl implements LircIntegrationInterface, Observer {
 			} else {
 				log.debug("Could Not Find Command for SourceChanged@" + name);
 			}
+			sendStopCommand(name);
+			sendStartCommand(name);
 			break;
 		case EVENTSTANDBYCHANGED:
 			EventStandbyChanged esb = (EventStandbyChanged) event;
@@ -140,6 +143,46 @@ public class LircIntegrationImpl implements LircIntegrationInterface, Observer {
 		if (wq != null) {
 			wq.clear();
 			wq = null;
+		}
+	}
+	
+	private void sendStartCommand(String name)
+	{
+		ConcurrentHashMap<String, Source> sources =  PluginGateWay.getInstance().getSources();
+		for(String s : sources.keySet())
+		{
+			if(s.equalsIgnoreCase(name))
+			{
+				Source source = sources.get(s);
+				if(source !=null)
+				{
+					if(source.getStartScript() !=null)
+					{
+						log.debug("Source Changed, run StartScript: " + source.getStartScript());
+						wq.put(source.getStartScript());
+					}
+				}
+			}
+		}
+	}
+	
+	private void sendStopCommand(String name)
+	{
+		ConcurrentHashMap<String, Source> sources =  PluginGateWay.getInstance().getSources();
+		for(String s : sources.keySet())
+		{
+			if(!s.equalsIgnoreCase(name))
+			{
+				Source source = sources.get(s);
+				if(source !=null)
+				{
+					if(source.getStopScript() !=null)
+					{
+						log.debug("Source Changed, run StopScript: " + source.getStopScript());
+						wq.put(source.getStopScript());
+					}
+				}
+			}
 		}
 	}
 
