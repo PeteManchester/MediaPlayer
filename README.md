@@ -85,7 +85,7 @@ MediaPlayer supports the following UPNP devices:
 
 # Contributors
 
-MediaPlayer is made possible due to the support of the following great human beings.
+MediaPlayer is made possible due to the support of the following people.
 
 <div class="table-responsive">
   <table class="table table-striped table-condensed">
@@ -111,6 +111,10 @@ MediaPlayer is made possible due to the support of the following great human bei
       <tr>
       <td>Marcello</td>
       <td>Added support for setNextAVTransportURI in AVTransport service</td>
+      </tr>
+      <tr>
+      <td>Guus</td>
+      <td>Design ideas, beta testing, proof reading and display wiring diagram</td>
       </tr>
     </tbody>
   </table>
