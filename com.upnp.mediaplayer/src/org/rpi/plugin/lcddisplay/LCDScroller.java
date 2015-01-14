@@ -55,6 +55,7 @@ public class LCDScroller extends Thread {
 		updateValues("[FULL_DETAILS]", "");
 		updateValues("[ALBUM]", "");
 		updateValues("[ARTIST]", "");
+		updateValues("[PERFORMER]", "");
 		updateValues("[TRACK]", "");
 		updateValues("[TITLE]", "");
 		updateValues("[COMPOSER]", "");

@@ -29,3 +29,4 @@ Added 'icy_reverse' attribute to RadioList.xml, allows ICY title and artist to b
 When a track is played whilst in standby, we now come out of standby. 
 If an analog source is selected whilst a track is playing the track is stopped
 If in standby no input source pins are high
+14 January 2015 - For Radio Channel set album name to the station name, then if we get ICYINFO all info is available

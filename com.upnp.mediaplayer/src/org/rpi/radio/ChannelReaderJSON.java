@@ -40,8 +40,8 @@ public class ChannelReaderJSON implements Runnable {
 
 	private Logger log = Logger.getLogger(this.getClass());
 
-	private String metaData = "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:artist role='Performer' xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:artist><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='' nrAudioChannels='' protocolInfo='http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01'></res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:albumArtURI></item></DIDL-Lite>";
-
+	//private String metaData = "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:artist role='Performer' xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:artist><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='' nrAudioChannels='' protocolInfo='http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01'></res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:albumArtURI></item></DIDL-Lite>";
+	private String metaData = "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:artist role='Performer' xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:artist><upnp:album xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'/><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='' nrAudioChannels='' protocolInfo='http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01'></res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:albumArtURI></item></DIDL-Lite>";
 	private List<ChannelRadio> channels = new ArrayList<ChannelRadio>();
 
 	private PrvRadio prvRadio = null;
@@ -299,7 +299,7 @@ public class ChannelReaderJSON implements Runnable {
 			// channel.setPresetNumber(preset_number);
 			channel.setICYReverse(icy_reverse);
 		}
-
+		log.info("Channel Name (For AlarmClock Config: '" + name+"'");
 		channels.add(channel);
 		log.debug("Added Channel: " + channel.getId() + " - " + channel.getUri() + " " + channel.getFullDetails());
 
@@ -328,8 +328,6 @@ public class ChannelReaderJSON implements Runnable {
 			NamedNodeMap attts = item.getAttributes();
 			Node nid = attts.getNamedItem("id");
 			nid.setTextContent(name);
-			// log.debug("Item Child Nodes " +
-			// item.getChildNodes().getLength());
 			NodeList childs = item.getChildNodes();
 			for (int i = 0; i < childs.getLength(); i++) {
 				Node n = childs.item(i);
@@ -341,7 +339,10 @@ public class ChannelReaderJSON implements Runnable {
 					n.setTextContent(url);
 				} else if (n.getNodeName() == "upnp:albumArtURI") {
 					n.setTextContent(image);
-				} else if (n.getNodeName() == "upnp:artist") {
+				//} else if (n.getNodeName() == "upnp:artist") {
+				//	n.setTextContent(name);
+				} else if (n.getNodeName() =="upnp:album")
+				{
 					n.setTextContent(name);
 				}
 			}

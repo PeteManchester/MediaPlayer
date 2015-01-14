@@ -215,7 +215,10 @@ public class ChannelBase {
                 if (n.getNodeName() == "dc:title") {
                     n.setTextContent(full_title);
                     log.info("ICY INFO Replacing dc:title: " + full_title);
-                    break;
+                }else if(n.getNodeName() == "upnp:artist")
+                {
+                   n.setTextContent(artist);
+                   log.info("ICY INFO Replacing dc:artist: " + artist);
                 }
             }
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
@@ -476,7 +479,12 @@ public class ChannelBase {
     }
 
     public String getPerformer() {
-        return this.cleanArtistString(this.performer);
+    	String value = this.performer;
+    	if(value==null || value.equalsIgnoreCase(""))
+    	{
+    		value = this.artist;
+    	}
+        return this.cleanArtistString(value);
     }
 
     public void setPerformer(String performer) {

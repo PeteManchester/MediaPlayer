@@ -15,7 +15,6 @@ import net.xeoh.plugins.base.annotations.events.Shutdown;
 
 import org.apache.log4j.Logger;
 import org.rpi.channel.ChannelBase;
-import org.rpi.channel.ChannelPlayList;
 import org.rpi.os.OSManager;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
@@ -159,6 +158,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 					// 0);
 					scroller.updateValues("[TITLE]", et.getTitle());
 					scroller.updateValues("[ARTIST]", et.getArtist());
+					scroller.updateValues("[PERFORMER]", et.getArtist());
 				}
 			} catch (Exception ex) {
 				log.error("UpdateMetaData", ex);
@@ -169,7 +169,10 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 				EventVolumeChanged ev = (EventVolumeChanged) e;
 				mVolume = ev.getVolume();
 				// updateVolume();
-				scroller.updateValues("[VOLUME]", "" + mVolume);
+				if(scroller !=null)
+				{
+					scroller.updateValues("[VOLUME]", "" + mVolume);
+				}
 			} catch (Exception ex) {
 				log.error("VolumeChanged", ex);
 			}
@@ -181,9 +184,15 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 					log.debug("MuteStateChanged: " + em.isMute());
 					isMute = em.isMute();
 					if (em.isMute()) {
-						scroller.updateValues("[VOLUME]", "Mute");
+						if(scroller !=null)
+						{
+							scroller.updateValues("[VOLUME]", "Mute");
+						}
 					} else {
-						scroller.updateValues("[VOLUME]", "" + mVolume);
+						if(scroller !=null)
+						{
+							scroller.updateValues("[VOLUME]", "" + mVolume);
+						}
 					}
 				} catch (Exception ex) {
 					log.error("MuteChanged", ex);
@@ -196,16 +205,25 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 				scroller.setReset();
 				String sStandby = "false";
 				if (es.isStandby()) {
-					scroller.setStandBy(true);
+					if(scroller !=null)
+					{
+						scroller.setStandBy(true);
+					}
 					sStandby = "true";
 				} else {
-					scroller.setStandBy(false);
+					if(scroller !=null)
+					{
+						scroller.setStandBy(false);
+					}
 					try {
 					} catch (Exception ex) {
 
 					}
 				}
-				scroller.updateValues("[STANDBY", sStandby);
+				if(scroller !=null)
+				{
+					scroller.updateValues("[STANDBY", sStandby);
+				}
 			} catch (Exception ex) {
 				log.error("StandbyChanged", ex);
 			}
@@ -217,7 +235,10 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 					mTime = ConvertTime(etime.getTime());
 				}
 				// updateVolume();
+				if(scroller !=null)
+				{
 				scroller.updateValues("[TIME]", mTime);
+				}
 			} catch (Exception ex) {
 				log.error("TimeUpdated", ex);
 			}
