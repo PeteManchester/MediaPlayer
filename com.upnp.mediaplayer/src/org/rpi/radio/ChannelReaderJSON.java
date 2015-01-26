@@ -275,11 +275,11 @@ public class ChannelReaderJSON implements Runnable {
 		try {
 			id = Integer.parseInt(preset_id);
 		} catch (Exception e) {
-			log.debug("Could Not Parse ChannelID: " + preset_id);
+			log.debug("Could Not  Parse ChannelID: " + preset_id);
 		}
 
 		ChannelRadio channel = null;
-		ChannelRadio oldChannel = null;
+		ChannelRadio oldChannel = null ;
 		for (ChannelRadio ch : channels) {
 			if (name.equalsIgnoreCase(ch.getName()) && item.equalsIgnoreCase("station")) {
 				channel = new ChannelRadio(url, m, id, name);

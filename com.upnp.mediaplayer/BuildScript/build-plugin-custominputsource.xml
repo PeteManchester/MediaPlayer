@@ -8,7 +8,7 @@
     <import file="../ant-common.xml"/>
 
     <fileset id="extern_libs" dir="${lib_dir}">
-        <include name="core/pi4j-core-0.0.5.jar"/>
+        <include name="core/pi4j-core.jar"/>
     </fileset>
 
 </project>

@@ -74,6 +74,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 			scroller.setReset();
 			if (lcdHandle != -1) {
 				scroller.setLCDHandle(lcdHandle);
+				scroller.reset();
 				scroller.start();
 				// welcomeMessage();
 			}

@@ -68,7 +68,8 @@ public class LCDScroller extends Thread {
 			try {
 				if (isReset()) {
 					if (lcdHandle != -1) {
-						Lcd.lcdClear(lcdHandle);
+						log.info("###LCD Clear");
+						Lcd.lcdClear(lcdHandle);					
 					}
 					for(int i=0;i<LCD_ROWS;i++)
 					{
@@ -158,6 +159,35 @@ public class LCDScroller extends Thread {
 	 */
 	public void setLCDHandle(int lcdHandle) {
 		this.lcdHandle = lcdHandle;
+	}
+	
+	public void powerOffDisplay()
+	{
+		try
+		{
+			byte b = (byte)0x08;
+			log.info("Power Off " + b);
+			Lcd.lcdPutchar(lcdHandle, b);
+		}
+		catch(Exception e)
+		{
+			log.error("Error PowerOffDisplay",e);
+		}
+	}
+	
+	
+	public void setCharacterMode()
+	{
+		try
+		{
+			byte b = (byte)0x17;
+			log.info("setCharacterMode " + b);
+			Lcd.lcdPutchar(lcdHandle, b);
+		}
+		catch(Exception e)
+		{
+			log.error("Error SetCharacterCode",e);
+		}
 	}
 
 	/***
@@ -315,5 +345,23 @@ public class LCDScroller extends Thread {
 			i++;
 		}
 
+	}
+
+	/**
+	 * Reset the Display using Power Off, Clear, Power On, avoid displaying garbase after a restart..
+	 */
+	public void reset() {
+		if (lcdHandle != -1) {
+
+			log.info("###LCD OFF");			
+			Lcd.lcdDisplay(lcdHandle, 0);
+
+			log.info("###LCD Clear");
+			Lcd.lcdClear(lcdHandle);
+
+			log.info("###LCD ON");
+			Lcd.lcdDisplay(lcdHandle, 1);
+
+		}		
 	}
 }
