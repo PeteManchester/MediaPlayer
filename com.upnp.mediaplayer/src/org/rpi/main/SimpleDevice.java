@@ -35,6 +35,7 @@ import org.rpi.plugingateway.PluginGateWay;
 import org.rpi.providers.IDisposableDevice;
 import org.rpi.providers.PrvAVTransport;
 import org.rpi.providers.PrvConnectionManager;
+import org.rpi.providers.PrvCredentials;
 import org.rpi.providers.PrvInfo;
 import org.rpi.providers.PrvPlayList;
 import org.rpi.providers.PrvProduct;
@@ -67,6 +68,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	private PrvAVTransport iAVTransport = null;
 	private PrvRenderingControl iRenderingControl = null;
 	private PrvSongcast iSongcastSender = null;
+	private PrvCredentials iCredentials = null;
 	private HttpServerGrizzly httpServer = null;
 
 	private AirPlayThread airplay = null;
@@ -132,7 +134,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		}
 		
 		iSongcastSender = new PrvSongcast(iDevice);
-
+		iCredentials = new PrvCredentials(iDevice);
 		// updateRadioList();
 
 		try {
@@ -357,6 +359,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		this.disposeDevice(iAVTransport);
 		this.disposeDevice(iRenderingControl);
 		this.disposeDevice(iSongcastSender);
+		this.disposeDevice(iCredentials);
 
 		if (lib != null) {
 			try {

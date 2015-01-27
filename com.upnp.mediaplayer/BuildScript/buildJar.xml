@@ -17,7 +17,7 @@
 		<jar destfile="${buildbetamediaplayer}/mediaplayer.jar" update="false">
 			<manifest>
 				<attribute name="Main-Class" value="org.rpi.main.StartMe" />
-				<attribute name="Class-Path" value=". mediaplayer_lib/ohnet-Pete.jar mediaplayer_lib/log4j-1.2.16.jar mediaplayer_lib/jspf.core-1.0.2.jar mediaplayer_lib/pi4j-core.jar" />
+				<attribute name="Class-Path" value=". mediaplayer_lib/ohnet.jar mediaplayer_lib/ohnet-generated.jar mediaplayer_lib/log4j-1.2.16.jar mediaplayer_lib/jspf.core-1.0.2.jar mediaplayer_lib/pi4j-core.jar" />
 			</manifest>
 			<fileset dir="${basedir}/bin">
 				<exclude name="**/plugin/**" />
@@ -25,7 +25,9 @@
 		</jar>
 		<delete dir="${buildbetamediaplayer}/mediaplayer_lib" />
 		<mkdir dir="${buildbetamediaplayer}/mediaplayer_lib" />
-		<copy file="${beta_libs_jar}/ohnet-Pete.jar" todir="${buildbetamediaplayer}/mediaplayer_lib" />
+		<!-- copy file="${beta_libs_jar}/ohnet-Pete.jar" todir="${buildbetamediaplayer}/mediaplayer_lib" /-->
+		<copy file="${beta_libs_jar}/ohnet.jar" todir="${buildbetamediaplayer}/mediaplayer_lib" />
+		<copy file="${beta_libs_jar}/ohnet-generated.jar" todir="${buildbetamediaplayer}/mediaplayer_lib" />
 		<copy file="C:/Keep/Repository/java/log4j/log4j/1.2.16/apache-log4j-1.2.16/log4j-1.2.16.jar" todir="${buildbetamediaplayer}/mediaplayer_lib" />
 		<copy file="C:/Keep/Repository/java/jspf/dist/jspf.core-1.0.2.jar" todir="${buildbetamediaplayer}/mediaplayer_lib" />
 		<copy todir="${buildbetamediaplayer}/mediaplayer_lib/ohNet">
@@ -97,7 +99,9 @@
 		</scp>
 		<scp file="root:root@rpistudy.local:/home/pi/ohNet/Build/Obj/Posix/Release/org" trust="yes" sftp="true" todir="${beta_libs_jar}/classes/org">
 		</scp>
-		<zip destfile="${beta_libs_jar}/ohnet-Pete.jar" basedir="${beta_libs_jar}/classes" update="true" />
+		<!--zip destfile="${beta_libs_jar}/ohnet-Pete.jar" basedir="${beta_libs_jar}/classes" update="true" /-->
+		<zip destfile="${beta_libs_jar}/ohnet.jar" basedir="${beta_libs_jar}/classes" update="true" />
+		<zip destfile="${beta_libs_jar}/ohnet-generated.jar" basedir="${beta_libs_jar}/classes" update="true" />
 		<delete dir="${beta_libs_jar}/classes" />
 	</target>
 
@@ -107,7 +111,9 @@
 		</scp>
 		<scp file="root:root@rpi-softfloat.local:/home/pi/ohNet/Build/Obj/Posix/Release/org" trust="yes" sftp="true" todir="${beta_libs_jar}/classes/org">
 		</scp>
-		<zip destfile="${beta_libs_jar}/ohnet-Pete.jar" basedir="${beta_libs_jar}/classes" update="true" />
+		<!--zip destfile="${beta_libs_jar}/ohnet-Pete.jar" basedir="${beta_libs_jar}/classes" update="true" /-->
+		<zip destfile="${beta_libs_jar}/ohnet.jar" basedir="${beta_libs_jar}/classes" update="true" />
+		<zip destfile="${beta_libs_jar}/ohnet-generated.jar" basedir="${beta_libs_jar}/classes" update="true" />
 		<delete dir="${beta_libs_jar}/classes" />
 	</target>
 
