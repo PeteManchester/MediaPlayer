@@ -65,7 +65,7 @@ public class WorkqeueEvents implements Runnable {
 			this.track = track;
 			title = track.getTitle();
 			String artist = track.getArtist();
-			if (Utils.isEmpty(artist)) {
+			if (Utils.isEmpty(artist)||artist.equalsIgnoreCase("VARIOUS ARTISTS")) {
 				artist = track.getPerformer();
 			}
 			this.artist = artist;
@@ -152,7 +152,7 @@ public class WorkqeueEvents implements Runnable {
 							try {
 								setTitle(track.getTitle());
 								String artist = track.getArtist();
-								if (Utils.isEmpty(artist)) {
+								if (Utils.isEmpty(artist)||artist.equalsIgnoreCase("VARIOUS ARTISTS")) {
 									artist = track.getPerformer();
 								}
 								setArtist(artist);

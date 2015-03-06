@@ -49,6 +49,7 @@ public class ChannelBase {
     private String full_text = "";
     private String date = "";
     private boolean icy_reverse = false;
+    private boolean keep_url = false;
     private String albumArtUri = "";
     private String genre = "";
 
@@ -593,5 +594,19 @@ public class ChannelBase {
     public void setDuration(Long duration) {
         this.duration = duration;
     }
+
+	/**
+	 * @return the keep_url
+	 */
+	public boolean isKeepURL() {
+		return keep_url;
+	}
+
+	/**
+	 * @param keep_url the keep_url to set
+	 */
+	public void setKeepURL(boolean keep_url) {
+		this.keep_url = keep_url;
+	}
 
 }

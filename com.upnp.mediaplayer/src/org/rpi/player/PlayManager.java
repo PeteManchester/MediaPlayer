@@ -586,6 +586,11 @@ public class PlayManager implements Observer {
 	 */
 	public void playAirPlayer(ChannelAirPlay track) {
 		log.debug("Playing AirPlay Server. Stop Playing current Track");
+		if(standby)
+		{
+			log.debug("We are playing the AirPlayChannel, take out of Standby");
+			setStandby(false);
+		}
 		if (mPlayer.isPlaying()) {
 			mPlayer.stop();
 		}

@@ -30,3 +30,5 @@ When a track is played whilst in standby, we now come out of standby.
 If an analog source is selected whilst a track is playing the track is stopped
 If in standby no input source pins are high
 14 January 2015 - For Radio Channel set album name to the station name, then if we get ICYINFO all info is available
+28 February 2015 Updated Netty libs to v4.0.25 and Bouncy Castle libs to v1.51
+06 March 2015 Improved Airplay code and added metadata.

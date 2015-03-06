@@ -18,12 +18,9 @@ import java.security.Security;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.rpi.config.Config;
 import org.rpi.utils.NetworkUtils;
 import org.rpi.utils.SecUtils;
 import org.rpi.utils.Utils;
@@ -43,8 +40,8 @@ public class AirPlayThread extends Thread {
 	private String password;
 	private byte[] hwAddr = null;
 	
-	private EventLoopGroup group = new NioEventLoopGroup();
-	private EventLoopGroup workerGroup = new NioEventLoopGroup(2);
+	private EventLoopGroup group = new NioEventLoopGroup(1);
+	private EventLoopGroup workerGroup = new NioEventLoopGroup(1);
 
 	// private static ChannelGroup s_allChannels = new DefaultChannelGroup();
 

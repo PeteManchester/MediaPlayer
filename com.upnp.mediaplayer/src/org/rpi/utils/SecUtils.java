@@ -62,13 +62,13 @@ public class SecUtils {
 	 * @return encrypted data
 	 */
 	public static byte[] encryptRSA(byte[] array) {
-		LOGGER.debug("Start of EncryptRSA");
+		LOGGER.info("Start of EncryptRSA");
 		PEMParser pemReader = null;
 		try {
 			// Security.addProvider(new BouncyCastleProvider());
 			LOGGER.debug("Create pemReader");
 			pemReader = new PEMParser(new StringReader(key));
-			LOGGER.debug("Create pemReader");
+			LOGGER.debug("Created pemReader");
 			LOGGER.debug("ReadObject");
 
 			PEMKeyPair pObj = (PEMKeyPair) pemReader.readObject();
@@ -81,7 +81,7 @@ public class SecUtils {
 			Cipher cipher = Cipher.getInstance("RSA/NONE/PKCS1Padding");
 			LOGGER.debug("Cipher");
 			cipher.init(Cipher.ENCRYPT_MODE,key);
-			LOGGER.debug("End of EncryptRSA");
+			LOGGER.info("End of EncryptRSA");
 			return cipher.doFinal(array);
 			
 

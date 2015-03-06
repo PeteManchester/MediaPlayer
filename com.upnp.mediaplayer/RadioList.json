@@ -8,9 +8,7 @@
             "element": "outline",
             "text": "Shows (2)",
             "key": "shows",
-            "children": [
-
-            ]
+            "children": []
         },
         {
             "element": "outline",
@@ -21,13 +19,76 @@
                     "element": "outline",
                     "type": "audio",
                     "text": "96.2 | Revolution96.2 (Rock)",
-                    "URL": "http://opml.radiotime.com/Tune.ashx?id=s45508",                   
+                    "URL": "http://opml.radiotime.com/Tune.ashx?id=s45508",
                     "image": "http://d1i6vahw24eb07.cloudfront.net/s45508q.png",
                     "item": "station",
-                    "guide_id": "s45508",
+                    "preset_id": "s45508",
                     "icy_reverse": true
                 }
             ]
+        },
+        {
+            "element": "outline",
+            "type": "audio",
+            "text": "89.1 | BBC Radio 2 (Adult Contemporary)",
+            "URL": "http://192.168.1.205:9790/minimstreamer/*/R2/http/a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/high/ak/bbc_radio_two.m3u8",
+            "bitrate": "128",
+            "reliability": "99",
+            "guide_id": "s24940",
+            "subtext": "Steve Wright in the Afternoon",
+            "genre_id": "g3",
+            "formats": "mp3",
+            "show_id": "p423",
+            "item": "station",
+            "image": "http://d1i6vahw24eb07.cloudfront.net/s24940q.png",
+            "current_track": "Steve Wright in the Afternoon",
+            "now_playing_id": "s24940",
+            "preset_number": "12",
+            "preset_id": "s24940",
+            "keep_url": true,
+            "is_preset": "true"
+        },
+        {
+            "element": "outline",
+            "type": "audio",
+            "text": "91.3 | BBC Radio 3 (Classical)",
+            "URL": "http://192.168.1.205:9790/minimstreamer/*/R3/http/a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high/ak/bbc_radio_three.m3u8",
+            "bitrate": "128",
+            "reliability": "99",
+            "guide_id": "s24941",
+            "subtext": "Afternoon on 3",
+            "genre_id": "g5",
+            "formats": "mp3",
+            "show_id": "p38675",
+            "item": "station",
+            "image": "http://d1i6vahw24eb07.cloudfront.net/s24941q.png",
+            "current_track": "Afternoon on 3",
+            "now_playing_id": "s24941",
+            "preset_number": "13",
+            "preset_id": "s24941",
+            "keep_url": true,
+            "is_preset": "true"
+        },
+        {
+            "element": "outline",
+            "type": "audio",
+            "text": "95.1 | BBC Manchester (Community)",
+            "URL": "http://192.168.1.205:9790/minimstreamer/*/MN/http/a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high/llnw/bbc_radio_manchester.m3u8",
+            "bitrate": "48",
+            "reliability": "98",
+            "guide_id": "s18214",
+            "subtext": "Mike Shaftsssss",
+            "genre_id": "g249",
+            "formats": "wma",
+            "show_id": "p182033",
+            "item": "station",
+            "image": "http://d1i6vahw24eb07.cloudfront.net/s18214q.png",
+            "current_track": "Mike Shaftssssss",
+            "now_playing_id": "s18214",
+            "preset_number": "21",
+            "preset_id": "s18214",
+            "keep_url": true,
+            "is_preset": true
         }
     ]
 }

@@ -33,6 +33,10 @@ sudo update-alternatives --install "/usr/bin/java" "java" "/opt/java/jdk1.7.0_40
 sudo update-alternatives --set java /opt/java/jdk1.7.0_40/bin/java
 JAVA_HOME="/opt/java/jdk1.7.0_40"
 
+Or 
+
+sudo apt-get install oracle-java7-jdk
+
 Sound out of Audio Jack
 sudo amixer cset numid=3 1
 cd /opt/vc/src/hello_pi/hello_audio

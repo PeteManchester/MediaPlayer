@@ -29,7 +29,7 @@ public class PrvSongcast extends DvProviderAvOpenhomeOrgSender1 implements  IDis
 		setPropertyAudio(true);
 		setPropertyMetadata(meta_data);
 		setPropertyPresentationUrl("");
-		setPropertyStatus("Ready");
+		setPropertyStatus("Sending");
 		
 		enableActionAttributes();
 		enableActionAudio();

@@ -40,6 +40,8 @@ public class BonjourEmitter {
 		txtRec.put("et", "0,1");
 		txtRec.put("cn", "0,1");
 		txtRec.put("vn", "3");
+		txtRec.put("md", "0,2");
+		//txtRec.put("txtvers", "1");
 
 		// Il faut un serial bidon pour se connecter
 		if (identifier == null) {

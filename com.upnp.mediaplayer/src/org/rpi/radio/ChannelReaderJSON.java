@@ -173,6 +173,7 @@ public class ChannelReaderJSON implements Runnable {
 							preset_id = preset_id.replaceAll("[^0-9]+", "");
 							String item = getString(object, "item");
 							boolean icy_reverse = getBoolean(object, "icy_reverse", false);
+							boolean keep_url = getBoolean(object,"keep_url", false);
 							// pres_number = getIntFromString(object,
 							// "preset_number", pres_number);
 							// if(pres_number <=0)
@@ -183,7 +184,7 @@ public class ChannelReaderJSON implements Runnable {
 							// {
 							// preset_number = pres_number;
 							// }
-							addChannel(text, url, image, icy_reverse, preset_id, item);
+							addChannel(text, url, image, icy_reverse, preset_id, item,keep_url);
 						}
 					}
 				}
@@ -268,7 +269,7 @@ public class ChannelReaderJSON implements Runnable {
 	 * @param preset_id
 	 * @param item
 	 */
-	private void addChannel(String name, String url, String image, boolean icy_reverse, String preset_id, String item) {
+	private void addChannel(String name, String url, String image, boolean icy_reverse, String preset_id, String item,boolean keep_url) {
 
 		String m = createMetaData(name, url, image);
 		int id = channels.size() + 1;
@@ -282,8 +283,19 @@ public class ChannelReaderJSON implements Runnable {
 		ChannelRadio oldChannel = null ;
 		for (ChannelRadio ch : channels) {
 			if (name.equalsIgnoreCase(ch.getName()) && item.equalsIgnoreCase("station")) {
+				if(ch.isKeepURL())
+				{
+					m = createMetaData(name, ch.getUri(), image);
+					url = ch.getUri();
+				}
 				channel = new ChannelRadio(url, m, id, name);
 				channel.setICYReverse(ch.isICYReverse());
+				if(ch.isKeepURL())
+				{
+					log.debug("Channel " + ch.getName()  +" to keep URL from Config File: " + ch.getUri());
+					channel.setUri(ch.getUri());
+					channel.setKeepURL(ch.isKeepURL());
+				}
 				oldChannel = ch;
 				log.debug("Updated Channel: " + channel.getId() + " - " + channel.getUri() + " " + channel.getFullDetails());
 				break;
@@ -298,6 +310,7 @@ public class ChannelReaderJSON implements Runnable {
 			channel = new ChannelRadio(url, m, id, name);
 			// channel.setPresetNumber(preset_number);
 			channel.setICYReverse(icy_reverse);
+			channel.setKeepURL(keep_url);
 		}
 		log.info("Channel Name (For AlarmClock Config: '" + name+"'");
 		channels.add(channel);
