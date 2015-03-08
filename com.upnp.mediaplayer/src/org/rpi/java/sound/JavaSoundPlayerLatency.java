@@ -1,5 +1,7 @@
 package org.rpi.java.sound;
 
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -10,9 +12,14 @@ import javax.sound.sampled.SourceDataLine;
 
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
+import org.rpi.player.PlayManager;
+import org.rpi.player.events.EventBase;
+import org.rpi.player.events.EventMuteChanged;
+import org.rpi.player.events.EventVolumeChanged;
+import org.rpi.player.observers.ObservableVolume;
 import org.rpi.utils.Utils;
 
-public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer {
+public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Observer {
 	private Logger log = Logger.getLogger(this.getClass());
 	private boolean run = true;
 
@@ -24,6 +31,18 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer {
 	private boolean bWrite = false;
 
 	private Vector<IAudioPacket> mWorkQueue = new Vector<IAudioPacket>();
+
+	private double volume = 0;
+	private boolean bMute = false;;
+
+	public JavaSoundPlayerLatency() {
+		volume = (double) PlayManager.getInstance().getVolume();
+		if (volume != 0) {
+			volume = volume / 100;
+		}
+		bMute = PlayManager.getInstance().getMute();
+		PlayManager.getInstance().observeVolumeEvents(this);
+	}
 
 	@Override
 	public void createSoundLine(AudioInformation audioInf) {
@@ -75,7 +94,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer {
 			return;
 		try {
 			if (soundLine != null) {
-				soundLine.write(packet.getAudio(), 0, packet.getLength());
+				soundLine.write(changeVolume(packet), 0, packet.getLength());
 			}
 		} catch (Exception e) {
 			int length = -99;
@@ -84,6 +103,28 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer {
 			}
 			log.error("Error Writing Data, Data Length: " + length, e);
 		}
+	}
+
+	private byte[] changeVolume(IAudioPacket packet) {
+		if (volume >= 100) {
+			return packet.getAudio();
+		}
+		byte[] audio = packet.getAudio();
+
+		for (int i = 0; i < audio.length; i++) {
+			try {
+				double d = (double) ((int) audio[i]);
+				d = d * volume;
+				if(bMute)
+				{
+					d = 0;
+				}
+				audio[i] = (byte) ((int) d);
+			} catch (Exception e) {
+				log.error(e);
+			}
+		}
+		return audio;
 	}
 
 	/**
@@ -117,7 +158,6 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer {
 			log.error(e.getMessage(), e);
 		}
 	}
-	
 
 	@Override
 	public void stop() {
@@ -168,6 +208,37 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer {
 		if (!Utils.isEmpty(name)) {
 			props.setProperty("javax.sound.sampled.SourceDataLine", name);
 			log.warn("###Setting Sound Card Name: " + name);
+		}
+	}
+
+	@Override
+	public void update(Observable o, Object obj) {
+		EventBase e = (EventBase) obj;
+		switch (e.getType()) {
+		case EVENTVOLUMECHANGED:
+			EventVolumeChanged ev = (EventVolumeChanged) e;
+			try {
+				volume = (double) ev.getVolume();
+				if (volume != 0) {
+					volume = volume / 100;
+				}
+			} catch (Exception ex) {
+				log.error(ex);
+			}
+
+		case EVENTMUTECHANGED:
+			if (o instanceof ObservableVolume) {
+				try {
+					if(e instanceof EventMuteChanged)
+					{
+					EventMuteChanged evmc = (EventMuteChanged) e;
+					bMute = evmc.isMute();
+					}
+				} catch (Exception ex) {
+					log.error(e);
+				}
+			}
+			break;
 		}
 	}
 

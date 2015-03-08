@@ -40,7 +40,7 @@ public class AirPlayThread extends Thread {
 	private String password;
 	private byte[] hwAddr = null;
 	
-	private EventLoopGroup group = new NioEventLoopGroup(1);
+	private EventLoopGroup group = new NioEventLoopGroup();
 	private EventLoopGroup workerGroup = new NioEventLoopGroup(1);
 
 	// private static ChannelGroup s_allChannels = new DefaultChannelGroup();

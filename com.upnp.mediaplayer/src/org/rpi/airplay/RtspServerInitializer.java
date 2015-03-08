@@ -7,6 +7,8 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.rtsp.RtspRequestDecoder;
 import io.netty.handler.codec.rtsp.RtspResponseEncoder;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 public class RtspServerInitializer extends ChannelInitializer<NioSocketChannel> {
 
