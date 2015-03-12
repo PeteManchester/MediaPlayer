@@ -1,5 +1,6 @@
 package org.rpi.java.sound;
 
+import java.math.BigInteger;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
@@ -32,11 +33,13 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 
 	private Vector<IAudioPacket> mWorkQueue = new Vector<IAudioPacket>();
 
-	private double volume = 0;
-	private boolean bMute = false;;
+	private float volume = 0;
+	private boolean bMute = false;
+
+	private int bitDepth = 16;
 
 	public JavaSoundPlayerLatency() {
-		volume = (double) PlayManager.getInstance().getVolume();
+		volume = (float) PlayManager.getInstance().getVolume();
 		if (volume != 0) {
 			volume = volume / 100;
 		}
@@ -53,6 +56,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 				close();
 			}
 			log.debug("Creating Audio Format: " + audioInf.toString());
+			bitDepth = audioInf.getBitDepth();
 			audioFormat = new AudioFormat(audioInf.getSampleRate(), audioInf.getBitDepth(), audioInf.getChannels(), audioInf.isSigned(), audioInf.isBigEndian());
 			info = new DataLine.Info(SourceDataLine.class, audioFormat, 16000);
 			if (soundLine == null) {
@@ -90,11 +94,23 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 
 	private void addData(IAudioPacket packet) {
 
-		if (!bWrite)
+		if (!bWrite ||bMute)
 			return;
 		try {
 			if (soundLine != null) {
-				soundLine.write(changeVolume(packet), 0, packet.getLength());
+				switch (bitDepth) {
+				case 16:
+					soundLine.write(changeVolume16Bit(packet), 0, packet.getLength());
+					break;
+				
+				case 24:
+					soundLine.write(changeVolume24Bit(packet), 0, packet.getLength());
+					break;
+				case 32:
+					soundLine.write(changeVolume32Bit(packet), 0, packet.getLength());
+					break;
+				}
+					
 			}
 		} catch (Exception e) {
 			int length = -99;
@@ -105,24 +121,107 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		}
 	}
 
-	private byte[] changeVolume(IAudioPacket packet) {
-		if (volume >= 100) {
+	/*
+	 * Change the Volume of a 16 bit sample
+	 */
+	private byte[] changeVolume16Bit(IAudioPacket packet) {
+		if (volume >= 1) {
 			return packet.getAudio();
 		}
 		byte[] audio = packet.getAudio();
 
-		for (int i = 0; i < audio.length; i++) {
-			try {
-				double d = (double) ((int) audio[i]);
-				d = d * volume;
-				if(bMute)
-				{
-					d = 0;
-				}
-				audio[i] = (byte) ((int) d);
-			} catch (Exception e) {
-				log.error(e);
-			}
+		for (int i = 0; i < audio.length; i += 2) {
+			// convert byte pair to int
+			short buf1 = audio[i];
+			short buf2 = audio[i + 1];
+
+			buf1 = (short) ((buf1 & 0xff) << 8);
+			buf2 = (short) (buf2 & 0xff);
+
+			short res = (short) (buf1 | buf2);
+			res = (short) (res * volume);
+
+			// convert back
+			audio[i + 1] = (byte) res;
+			audio[i] = (byte) (res >> 8);
+		}
+		return audio;
+	}
+	
+	
+	private byte[] changeVolumeTest16Bit(IAudioPacket packet) {
+		if (volume >= 1) {
+			return packet.getAudio();
+		}
+		byte[] audio = packet.getAudio();
+
+		for (int i = 0; i < audio.length; i += 2) {
+			// convert byte pair to int
+			byte[] data = new byte[2];
+			data[0] = audio[i+0];
+			data[1] = audio[i+1];
+
+			BigInteger big = new BigInteger(data);
+			float res = big.floatValue();
+			res = res * volume;
+			int ress = (int)res;
+			// convert back
+			audio[i+0] = (byte) ((ress & 0x0000FF00) >> 8);
+			audio[i+1] = (byte) ((ress & 0x000000FF) >> 0);
+		}
+		return audio;
+	}
+
+	/*
+	 * Change the Volume of a 24 bit sample
+	 */
+	private byte[] changeVolume24Bit(IAudioPacket packet) {
+		if (volume >= 1) {
+			return packet.getAudio();
+		}
+		byte[] audio = packet.getAudio();
+
+		for (int i = 0; i < audio.length; i += 3) {
+			// convert byte pair to int
+			byte[] data = new byte[3];
+			data[0] = audio[i+0];
+			data[1] = audio[i+1];
+			data[2] = audio[i+2];
+			BigInteger big = new BigInteger(data);
+			float res = big.floatValue();
+			res = res * volume;
+			int ress = (int)res;
+			// convert back
+			audio[i+0] = (byte) ((ress & 0x00FF0000) >> 16);
+			audio[i+1] = (byte) ((ress & 0x0000FF00) >> 8);
+			audio[i+2] = (byte) ((ress & 0x000000FF) >> 0);
+
+		}
+		return audio;
+	}
+	
+	/*
+	 * Change the Volume of a 32 bit sample
+	 */
+	private byte[] changeVolume32Bit(IAudioPacket packet) {
+		if (volume >= 1) {
+			return packet.getAudio();
+		}
+		byte[] audio = packet.getAudio();
+
+		for (int i = 0; i < audio.length; i += 4) {
+			byte[] data = new byte[4];
+			BigInteger big = new BigInteger(data);
+			float  res = big.floatValue();
+			res = res * volume;
+			int ress = (int)res;
+
+			// convert back
+			audio[i+0] = (byte) ((ress & 0xFF000000) >> 24);
+			audio[i+0] = (byte) ((ress & 0x00FF0000) >> 16);
+			audio[i+1] = (byte) ((ress & 0x0000FF00) >> 8);
+			audio[i+3] = (byte) ((ress & 0x000000FF) >> 0);
+
 		}
 		return audio;
 	}
@@ -218,7 +317,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		case EVENTVOLUMECHANGED:
 			EventVolumeChanged ev = (EventVolumeChanged) e;
 			try {
-				volume = (double) ev.getVolume();
+				volume = (float) ev.getVolume();
 				if (volume != 0) {
 					volume = volume / 100;
 				}
@@ -229,10 +328,9 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		case EVENTMUTECHANGED:
 			if (o instanceof ObservableVolume) {
 				try {
-					if(e instanceof EventMuteChanged)
-					{
-					EventMuteChanged evmc = (EventMuteChanged) e;
-					bMute = evmc.isMute();
+					if (e instanceof EventMuteChanged) {
+						EventMuteChanged evmc = (EventMuteChanged) e;
+						bMute = evmc.isMute();
 					}
 				} catch (Exception ex) {
 					log.error(e);
