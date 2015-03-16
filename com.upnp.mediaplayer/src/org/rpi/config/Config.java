@@ -30,7 +30,7 @@ import org.rpi.log.MemoryAppender;
 import org.rpi.utils.Utils;
 
 enum Props {
-	MEDIAPLAYER_FRIENDLY_NAME("mediaplayer_friendly_name"), MEDIAPLAYER_PLAYER("mediaplayer_player"), MEDIAPLAYER_PLAYLIST_MAX("mediaplayer_playlist_max"), MEDIAPLAYER_ENABLE_AVTRANSPORT("mediaplayer_enable_avTransport"), MEDIAPLAYER_ENABLE_RECEIVER("mediaplayer_enable_receiver"), MEDIAPLAYER_STARTUP_VOLUME("mediaplayer_startup_volume"), MEDIAPLAYER_MAX_VOLUME("mediaplayer_max_volume"), MEDIAPLAYER_SAVE_LOCAL_PLAYLIST("mediaplayer_save_local_playlist"), MPLAYER_PLAY_DEFINITIONS("mplayer_play_definitions"), MPLAYER_PATH("mplayer_path"), MPLAYER_CACHE_SIZE("mplayer_cache_size"), MPLAYER_CACHE_MIN("mplayer_cache_min"), MPD_HOST("mpd_host"), MPD_PORT("mpd_port"), MPD_PRELOAD_TIMER("mpd_preload_timer"), LOG_FILE_NAME("log_file_name"), LOG_FILE_LEVEL("log_file_level"), LOG_CONSOLE_LEVEL("log_console_level"), OPENHOME_PORT("openhome_port"), OPENHOME_LOG_LEVEL("openhome_log_level"), JAVA_SOUNDCARD_SUFFIX("java_soundcard_suffix"), SONGCAST_LATENCY_ENABLED("songcast_latency_enabled"), RADIO_TUNEIN_USERNAME("radio_tunein_username"), RADIO_TUNEIN_PARTNERID("radio_tunein_partnerid"), WEB_SERVER_PORT("web_server_port"), WEB_SERVER_ENABLED("web_server_enabled"), AIRPLAY_ENABLED("airplay_enabled"), AIRPLAY_LATENCY_ENABLED("airplay_latency_enabled"),AIRPLAY_PORT("airplay_port");
+	MEDIAPLAYER_FRIENDLY_NAME("mediaplayer_friendly_name"), MEDIAPLAYER_PLAYER("mediaplayer_player"), MEDIAPLAYER_PLAYLIST_MAX("mediaplayer_playlist_max"), MEDIAPLAYER_ENABLE_AVTRANSPORT("mediaplayer_enable_avTransport"), MEDIAPLAYER_ENABLE_RECEIVER("mediaplayer_enable_receiver"), MEDIAPLAYER_STARTUP_VOLUME("mediaplayer_startup_volume"), MEDIAPLAYER_MAX_VOLUME("mediaplayer_max_volume"), MEDIAPLAYER_SAVE_LOCAL_PLAYLIST("mediaplayer_save_local_playlist"), MPLAYER_PLAY_DEFINITIONS("mplayer_play_definitions"), MPLAYER_PATH("mplayer_path"), MPLAYER_CACHE_SIZE("mplayer_cache_size"), MPLAYER_CACHE_MIN("mplayer_cache_min"), MPD_HOST("mpd_host"), MPD_PORT("mpd_port"), MPD_PRELOAD_TIMER("mpd_preload_timer"), LOG_FILE_NAME("log_file_name"), LOG_FILE_LEVEL("log_file_level"), LOG_CONSOLE_LEVEL("log_console_level"), OPENHOME_PORT("openhome_port"), OPENHOME_LOG_LEVEL("openhome_log_level"), JAVA_SOUNDCARD_SUFFIX("java_soundcard_suffix"),JAVA_SOUND_SOFTWARE_MIXER_ENABLED("java_sound_software_mixer_enabled") ,SONGCAST_LATENCY_ENABLED("songcast_latency_enabled"), RADIO_TUNEIN_USERNAME("radio_tunein_username"), RADIO_TUNEIN_PARTNERID("radio_tunein_partnerid"), WEB_SERVER_PORT("web_server_port"), WEB_SERVER_ENABLED("web_server_enabled"), AIRPLAY_ENABLED("airplay_enabled"), AIRPLAY_LATENCY_ENABLED("airplay_latency_enabled"),AIRPLAY_PORT("airplay_port");
 
 	private final String stringValue;
 
@@ -45,7 +45,7 @@ enum Props {
 
 public class Config {
 
-	private String version = "0.0.8.6";
+	private String version = "0.0.8.7";
 
 	private Logger log = Logger.getLogger(this.getClass());
 
@@ -54,6 +54,8 @@ public class Config {
 	private String resourceURIPrefix = "";
 
 	private String java_soundcard_name = "";
+	
+	private boolean java_sound_software_mixer_enabled = false;
 
 	private static Properties pr = null;
 
@@ -798,5 +800,19 @@ public class Config {
 		}
 		return text;
 	}
+
+	/**
+	 * @return the java_sound_software_mixer_enabled
+	 */
+	public boolean isSoftwareMixerEnabled() {
+		return getValueBool(Props.JAVA_SOUND_SOFTWARE_MIXER_ENABLED, false);
+	}
+
+//	/**
+//	 * @param java_sound_software_mixer_enabled the java_sound_software_mixer_enabled to set
+//	 */
+//	public void setSoftwareMixerEnabled(boolean java_sound_software_mixer_enabled) {
+//		this.java_sound_software_mixer_enabled = java_sound_software_mixer_enabled;
+//	}
 
 }

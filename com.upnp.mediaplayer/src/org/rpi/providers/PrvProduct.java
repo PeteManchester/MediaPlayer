@@ -24,7 +24,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	// "<SourceList><Source><Name>Playlist</Name><Type>Playlist</Type><Visible>1</Visible></Source><Source><Name>Receiver</Name><Type>Receiver</Type><Visible>1</Visible></Source><Source><Name>Radio</Name><Type>Radio</Type><Visible>1</Visible></Source></SourceList>";
 	private String iSourceXml = "";
 	// private boolean standby = true;
-	private String attributes = "Info Time Volume Sender Credentials";
+	private String attributes = "Info Time Volume Sender Receiver Credentials";
 	// private String attributes = "";
 	private String man_name = "Java Inc";
 	private String man_info = "Developed in Java using OpenHome";

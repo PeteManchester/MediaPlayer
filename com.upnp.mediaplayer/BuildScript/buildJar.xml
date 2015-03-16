@@ -52,6 +52,12 @@
 			<param name="server_name" value="rpibedroom.local" />
 		</antcall>
 	</target>
+	
+		<target name="deployPi2">
+		<antcall target="CopyFilesToRaspi">
+			<param name="server_name" value="rpipi2.local" />
+		</antcall>
+	</target>
 
 	<target name="deploySoftFloat">
 		<antcall target="CopyFilesToRaspi">

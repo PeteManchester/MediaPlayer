@@ -220,6 +220,10 @@ function checkStatusConfig() {
 
 					$("#java_soundcard_suffix").val(
 							decode(data.java_soundcard_suffix));
+					
+					$("#java_sound_software_mixer_enabled").val(
+							decode(data.java_sound_software_mixer_enabled));
+					$("#java_sound_software_mixer_enabled").slider("refresh");
 
 					$("#songcast_latency").val(
 							decode(data.songcast_latency_enabled));
@@ -294,6 +298,8 @@ function updateConfig() {
 		config_json.openhome_port = $("#openhome_port").val();
 
 		config_json.java_soundcard_suffix = $("#java_soundcard_suffix").val();
+		
+		config_json.java_sound_software_mixer_enabled = $("#java_sound_software_mixer_enabled").val();
 
 		config_json.songcast_latency_enabled = $("#songcast_latency").val();
 
