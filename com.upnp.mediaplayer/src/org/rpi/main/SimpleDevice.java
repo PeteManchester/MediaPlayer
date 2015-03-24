@@ -175,7 +175,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		if (Config.getInstance().isWebWerverEnabled()) {
 			httpServer = new HttpServerGrizzly(Config.getInstance().getWebServerPort());
 		} else {
-			log.warn("HTTP Daemon is set to false, not starting");
+			log.fatal("HTTP Daemon is set to false, not starting");
 		}
 
 		if (Config.getInstance().getMediaplayerStartupVolume() >= 0) {

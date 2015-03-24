@@ -28,7 +28,7 @@ public class AudioDecrpyt extends MessageToMessageDecoder<DatagramPacket> {
 
 	private int last_sequence = 0;
 
-	private double start_count = 0;
+	private int start_count = 0;
 
 	public AudioDecrpyt() {
 		initAES();
@@ -53,7 +53,6 @@ public class AudioDecrpyt extends MessageToMessageDecoder<DatagramPacket> {
 			ByteBuf buffer = msg.content();
 			int type = buffer.getByte(1) & ~0x80;
 			if (type == 0x60 || type == 0x56) { // audio data / resend
-
 				int audio_size = msg.content().readableBytes();
 				int sequence = buffer.getUnsignedShort(2);
 				if (sequence - last_sequence != 1) {
@@ -67,6 +66,13 @@ public class AudioDecrpyt extends MessageToMessageDecoder<DatagramPacket> {
 					off += 4;
 				}
 				audio_size -= off;
+				// Return a ChannelBuffer
+				if (start_count < 233) {
+					start_count++;
+					ByteBuf test = Unpooled.buffer(audio_size, audio_size);
+					out.add(test.retain());
+					return;
+				}
 				ByteBuf audio = Unpooled.buffer(audio_size, audio_size);
 				// ByteBuf audio = ByteBufAllocator.DEFAULT.buffer(audio_size,
 				// audio_size);
@@ -78,15 +84,8 @@ public class AudioDecrpyt extends MessageToMessageDecoder<DatagramPacket> {
 					block = cipher.update(block);
 					audio.setBytes(i, block);
 				}
-				// Return a ChannelBuffer
-				if (start_count < 233) {
-					start_count++;
-					ByteBuf test = Unpooled.buffer(audio_size, audio_size);
-					out.add(test.retain());
-					log.debug("Waiting");
-				} else {
-					out.add(audio.retain());
-				}
+				out.add(audio.retain());
+				
 			}
 		} catch (Exception e) {
 			log.error("Error Decrypt Audio", e);

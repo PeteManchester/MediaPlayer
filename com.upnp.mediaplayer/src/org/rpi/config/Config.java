@@ -18,12 +18,10 @@ import java.util.TreeSet;
 
 import javax.json.JsonObject;
 
-import org.apache.log4j.Appender;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 import org.apache.log4j.RollingFileAppender;
 import org.rpi.log.CustomPatternLayout;
 import org.rpi.log.MemoryAppender;
@@ -54,8 +52,6 @@ public class Config {
 	private String resourceURIPrefix = "";
 
 	private String java_soundcard_name = "";
-	
-	private boolean java_sound_software_mixer_enabled = false;
 
 	private static Properties pr = null;
 
@@ -69,8 +65,23 @@ public class Config {
 		if (instance == null) {
 			instance = new Config();
 			instance.ConfigureLogging();
+			instance.printAppProperties();
 		}
 		return instance;
+	}
+	
+	private void printAppProperties()
+	{
+		if(log !=null)
+		{
+			log.fatal("###Start of app.properties###");
+			for(String key :pr.stringPropertyNames())
+			{
+				String value = pr.getProperty(key);
+				log.fatal("'" + key + "' : '" + value + "'" );
+			}
+			log.fatal("###End of app.properties####");
+		}
 	}
 
 	private Config() {
@@ -807,12 +818,5 @@ public class Config {
 	public boolean isSoftwareMixerEnabled() {
 		return getValueBool(Props.JAVA_SOUND_SOFTWARE_MIXER_ENABLED, false);
 	}
-
-//	/**
-//	 * @param java_sound_software_mixer_enabled the java_sound_software_mixer_enabled to set
-//	 */
-//	public void setSoftwareMixerEnabled(boolean java_sound_software_mixer_enabled) {
-//		this.java_sound_software_mixer_enabled = java_sound_software_mixer_enabled;
-//	}
 
 }

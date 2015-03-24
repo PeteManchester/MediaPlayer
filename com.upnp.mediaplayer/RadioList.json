@@ -30,6 +30,18 @@
         {
             "element": "outline",
             "type": "audio",
+            "text": "Nieuws",
+            "URL": "http://download.streampower.be/vrt/radio1/11_11niws-snip_hi.mp3",
+            "guide_id": "u27",
+            "item": "url",
+            "image": "http://d1i6vahw24eb07.cloudfront.net/s0q.png",
+            "preset_number": "23",
+            "preset_id": "u27",
+            "is_preset": "true"
+        },
+        {
+            "element": "outline",
+            "type": "audio",
             "text": "89.1 | BBC Radio 2 (Adult Contemporary)",
             "URL": "http://192.168.1.205:9790/minimstreamer/*/R2/http/a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/high/ak/bbc_radio_two.m3u8",
             "bitrate": "128",

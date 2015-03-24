@@ -147,24 +147,24 @@ public class StartMe {
 	 * Print out the System Properties.
 	 */
 	private static void printSystemProperties() {
-		log.warn("#####Start of System Properties#########");
+		log.fatal("#####Start of System Properties#########");
 		Properties pr = System.getProperties();
 		TreeSet propKeys = new TreeSet(pr.keySet());
 		for (Iterator it = propKeys.iterator(); it.hasNext();) {
 			String key = (String) it.next();
-			log.warn("" + key + "=" + pr.get(key));
+			log.fatal("" + key + "=" + pr.get(key));
 		}
-		log.warn("#####End of System Properties#########");
-		log.warn("");
+		log.fatal("#####End of System Properties#########");
+		log.fatal("");
 		Map<String, String> variables = System.getenv();
-		log.warn("#####Start of System Variables#########");
+		log.fatal("#####Start of System Variables#########");
 		for (Map.Entry<String, String> entry : variables.entrySet()) {
 			String name = entry.getKey();
 			String value = entry.getValue();
-			log.warn(name + "=" + value);
+			log.fatal(name + "=" + value);
 		}
-		log.warn("#####End of System Variables#########");
-		log.warn("");
+		log.fatal("#####End of System Variables#########");
+		log.fatal("");
 	}
 
 	/**
@@ -175,7 +175,7 @@ public class StartMe {
 		String name = Config.getInstance().getJavaSoundcardName();
 		if (!Utils.isEmpty(name)) {
 			props.setProperty("javax.sound.sampled.SourceDataLine", name);
-			log.warn("###Setting Sound Card Name: " + name);
+			log.fatal("###Setting Sound Card Name: " + name);
 		}
 	}
 
