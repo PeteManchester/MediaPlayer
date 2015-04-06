@@ -247,6 +247,12 @@ function checkStatusConfig() {
 					$("#airplay_latency_enabled").slider("refresh");
 					
 					$("#airplay_port").val(decode(data.airplay_port));
+					
+					$("#airplay_audio_start_delay").val(
+							decode(data.airplay_audio_start_delay));
+					$("#airplay_audio_start_delay").slider("refresh");
+					
+					
 				},
 				error : function(result,errorThrown) {
 					message('Error CheckSleepConfig: ' + errorThrown);
@@ -314,6 +320,8 @@ function updateConfig() {
 		config_json.airplay_latency_enabled = $("#airplay_latency_enabled").val();
 		
 		config_json.airplay_port = $("#airplay_port").val();
+		
+		config_json.airplay_audio_start_delay = $("#airplay_audio_start_delay").val();
 		
 		
 		$.ajax({

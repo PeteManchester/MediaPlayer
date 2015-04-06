@@ -9,12 +9,16 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageDecoder;
+
 import java.util.List;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
 import org.apache.log4j.Logger;
+import org.rpi.config.Config;
 
 public class AudioDecrpyt extends MessageToMessageDecoder<DatagramPacket> {
 
@@ -29,9 +33,13 @@ public class AudioDecrpyt extends MessageToMessageDecoder<DatagramPacket> {
 	private int last_sequence = 0;
 
 	private int start_count = 0;
+	
+	private boolean delay_start_audio = false;
+
 
 	public AudioDecrpyt() {
 		initAES();
+		delay_start_audio = Config.getInstance().isAirPlayStartAudioDelayEnabled();
 	}
 
 	/**
@@ -66,9 +74,10 @@ public class AudioDecrpyt extends MessageToMessageDecoder<DatagramPacket> {
 					off += 4;
 				}
 				audio_size -= off;
-				// Return a ChannelBuffer
-				if (start_count < 233) {
+				//Delay the start of playing Airplay whilst the CPU recovers after decryption routines, not need for Pi2..				
+				if (delay_start_audio && start_count < 233) {
 					start_count++;
+					//log.fatal("Pausing AirPlay");
 					ByteBuf test = Unpooled.buffer(audio_size, audio_size);
 					out.add(test.retain());
 					return;
