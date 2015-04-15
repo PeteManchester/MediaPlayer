@@ -1,0 +1,27 @@
+
+{
+    "alarms":[
+        {
+            "enabled":true,
+            "name":"On",
+            "type":"playlist",
+            "time":"00 40 16 ? * 2-6",
+            "volume":100,
+            "channel":"BBC Radio 2"
+        },
+        {
+            "enabled":true,
+            "name":"Off",
+            "type":"Off",
+            "time":"00 11 17 * * ?"
+        },
+        {
+            "enabled":true,
+            "name":"Sweeny!!",
+            "type":"playlist",
+            "time":"00 05 17 ? * 2-6",
+            "volume":100,
+            "channel":"BBC Radio Manchester"
+        }
+    ]
+}

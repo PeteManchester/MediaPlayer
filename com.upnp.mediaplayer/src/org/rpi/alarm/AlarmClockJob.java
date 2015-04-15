@@ -1,4 +1,4 @@
-package org.rpi.plugin.alarmclock;
+package org.rpi.alarm;
 
 import org.apache.log4j.Logger;
 import org.quartz.Job;

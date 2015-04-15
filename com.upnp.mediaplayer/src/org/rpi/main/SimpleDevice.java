@@ -25,6 +25,7 @@ import org.openhome.net.device.IDvDeviceListener;
 import org.openhome.net.device.IResourceManager;
 import org.openhome.net.device.IResourceWriter;
 import org.rpi.airplay.AirPlayThread;
+import org.rpi.alarm.Alarm;
 import org.rpi.config.Config;
 import org.rpi.http.HttpServerGrizzly;
 import org.rpi.os.OSManager;
@@ -201,6 +202,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 
 		PlayerStatus.getInstance();
+		Alarm.getInstance();
 		OSManager.getInstance().loadPlugins();
 	}
 
