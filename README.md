@@ -102,7 +102,7 @@ MediaPlayer is made possible due to the support of the following people.
       </tr>
       <tr>
         <td>Ian Grant</td>
-        <td>Service Scripts</td>
+        <td>Service Scripts, Songcast repair mechanism</td>
       </tr>
       <tr>
         <td>Markus M May</td>
