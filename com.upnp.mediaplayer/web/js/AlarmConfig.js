@@ -33,10 +33,10 @@ $(document).on(
 							success : function(msg) {
 								initialValue = value;
 								checkUpdateButton(value);
-								message('Update Config Result: ' + msg);
+								message('Update Alarm Result: ' + msg);
 							},
 							error : function(jqXHR, textStatus, errorThrown) {
-								message('Error UpdateConfig: ' + textStatus
+								message('Error Update Alarm: ' + textStatus
 										+ ' ' + errorThrown);
 							}
 						});

@@ -3,11 +3,35 @@
     "alarms":[
         {
             "enabled":true,
-            "name":"On",
-            "type":"playlist",
-            "time":"00 40 16 ? * 2-6",
+            "name":"Beswick",
+            "type":"radio",
+            "time":"00 30 07 ? * 2-6",
+            "volume":80,
+            "channel":"95.1 | BBC Manchester (Community)"
+        },
+        {
+            "enabled":true,
+            "name":"Sweeney",
+            "type":"radio",
+            "time":"00 58 08 ? * 2-6",
             "volume":100,
-            "channel":"BBC Radio 2"
+            "channel":"95.1 | BBC Manchester (Community)"
+        },
+        {
+            "enabled":true,
+            "name":"After Sweeney",
+            "type":"radio",
+            "time":"00 04 12 ? * 2-6",
+            "volume":100,
+            "channel":"105.8 | Absolute Radio (Adult Contemporary)"
+        },
+        {
+            "enabled":true,
+            "name":"NewsBeat",
+            "type":"radio",
+            "time":"00 45 12 ? * 2-6",
+            "volume":100,
+            "channel":"98.8 | BBC Radio 1 (Top 40/Pop)"
         },
         {
             "enabled":true,
@@ -17,11 +41,11 @@
         },
         {
             "enabled":true,
-            "name":"Sweeny!!",
+            "name":"After NewsBeat",
             "type":"playlist",
-            "time":"00 05 17 ? * 2-6",
+            "time":"00 03 13 ? * 2-6",
             "volume":100,
-            "channel":"BBC Radio Manchester"
+            "shuffle":false
         }
     ]
 }

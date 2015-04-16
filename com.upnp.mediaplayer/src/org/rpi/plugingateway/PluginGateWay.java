@@ -4,6 +4,7 @@ import java.util.Observable;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
+import org.rpi.alarm.Alarm;
 import org.rpi.config.Config;
 import org.rpi.main.SimpleDevice;
 import org.rpi.os.OSManager;
@@ -112,59 +113,74 @@ public class PluginGateWay extends Observable {
 		return standbyPin;
 	}
 	
-	
+	/**
+	 * SetSleepTimer
+	 * @param value
+	 * @return
+	 */
 	public String setSleepTimer(String value)
 	{
 		try
 		{
-			AlarmClockInterface alarm = OSManager.getInstance().getPlugin();
-			if(alarm !=null)
-			{
-				 return alarm.createSleepTimer(value);
-			}
+//			AlarmClockInterface alarm = OSManager.getInstance().getPlugin();
+//			if(alarm !=null)
+//			{
+//				 return alarm.createSleepTimer(value);
+//			}
+			return Alarm.getInstance().createSleepTimer(value);
 		}
 		 catch(Exception e)
 		 {
 			 log.error("Error Setting SleepTimer: ", e) ;
 			 return "Error: " + e.getMessage();
 		 }
-		return "";
+		//return "";
 	}
 	
+	/**
+	 * CancelSleepTimer
+	 * @return
+	 */
 	public String cancelSleepTimer()
 	{
 		try
 		{
-			AlarmClockInterface alarm = OSManager.getInstance().getPlugin();
-			if(alarm !=null)
-			{
-				 return alarm.cancelSleepTimer();
-			}
+//			AlarmClockInterface alarm = OSManager.getInstance().getPlugin();
+//			if(alarm !=null)
+//			{
+//				 return alarm.cancelSleepTimer();
+//			}
+			return Alarm.getInstance().cancelSleepTimer();
 		}
 		 catch(Exception e)
 		 {
 			 log.error("Error Cancelling SleepTimer: ", e) ;
 			 return "Error: " + e.getMessage();
 		 }
-		return "";
+		//return "";
 	}
 	
+	/**
+	 * GetSleepTimer
+	 * @return
+	 */
 	public String getSleepTimer()
 	{
 		try
 		{
-			AlarmClockInterface alarm = OSManager.getInstance().getPlugin();
-			if(alarm !=null)
-			{
-				 return alarm.getSleepTimer();
-			}
+//			AlarmClockInterface alarm = OSManager.getInstance().getPlugin();
+//			if(alarm !=null)
+//			{
+//				 return alarm.getSleepTimer();
+//			}
+			return Alarm.getInstance().getSleepTimer();
 		}
 		 catch(Exception e)
 		 {
 			 log.error("Error Getting SleepTimer: ", e) ;
 			 return "Error: " + e.getMessage();
 		 }
-		return "";
+		//return "";
 	}
 }
 

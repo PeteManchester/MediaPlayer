@@ -118,7 +118,7 @@ public class Alarm {
 						channel = object.getString("channel");
 					}
 					if (object.containsKey("shuffle")) {
-						shuffle = object.getBoolean("Shuffle");
+						shuffle = object.getBoolean("shuffle");
 					}
 					if (enabled) {
 						createSchedule(name, time, type, channel, "" + volume, String.valueOf(shuffle));
@@ -161,6 +161,9 @@ public class Alarm {
 		}
 	}
 
+	/**
+	 * Clear all schedules except for Sleep timer
+	 */
 	public void clearSchedule() {
 		log.debug("Clearing Schedules");
 		try {
@@ -188,6 +191,11 @@ public class Alarm {
 		}
 	}
 
+	/**
+	 * Create a Sleep Timer
+	 * @param value
+	 * @return
+	 */
 	public String createSleepTimer(String value) {
 		String name = "Sleep";
 		String volume = "";
@@ -235,6 +243,10 @@ public class Alarm {
 		}
 	}
 
+	/**
+	 * Cancel Sleep Timer
+	 * @return
+	 */
 	public String cancelSleepTimer() {
 		String name = "Sleep";
 		try {
@@ -250,6 +262,10 @@ public class Alarm {
 		return "OK";
 	}
 
+	/**
+	 * Get the Sleep Timer
+	 * @return
+	 */
 	public String getSleepTimer() {
 		String name = "Sleep";
 		Calendar cal = Calendar.getInstance();
