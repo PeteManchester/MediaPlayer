@@ -38,6 +38,113 @@ public class MediaPlayerRest {
 		return sb.toString();
 	}
 	
+	@Path("nextTrack")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String nextTrack()
+	{
+		log.debug("Setting NextTrack: ");
+		StringBuilder sb = new StringBuilder();
+		try {
+			PlayManager.getInstance().nextTrack();
+			sb.append("OK");
+		} catch (Exception e) {
+			sb.append("ERROR: " + e.getMessage());
+			log.error("Error creating Status JSON",e);
+		}
+		return sb.toString();
+	}
+	
+	@Path("previousTrack")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String previousTrack()
+	{
+		log.debug("Setting PreviousTrack: ");
+		StringBuilder sb = new StringBuilder();
+		try {
+			PlayManager.getInstance().previousTrack();
+			sb.append("OK");
+		} catch (Exception e) {
+			sb.append("ERROR: " + e.getMessage());
+			log.error("Error creating Status JSON",e);
+		}
+		return sb.toString();
+	}
+	
+	@Path("stopTrack")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String stopTrack()
+	{
+		log.debug("Setting StopTrack: ");
+		StringBuilder sb = new StringBuilder();
+		try {
+			PlayManager.getInstance().stop();
+			sb.append("OK");
+		} catch (Exception e) {
+			sb.append("ERROR: " + e.getMessage());
+			log.error("Error creating Status JSON",e);
+		}
+		return sb.toString();
+	}
+	
+	@Path("incVolume")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String incVolume()
+	{
+		log.debug("IncVolume: ");
+		StringBuilder sb = new StringBuilder();
+		try {
+			PlayManager.getInstance().incVolume();
+			sb.append("OK");
+		} catch (Exception e) {
+			sb.append("ERROR: " + e.getMessage());
+			log.error("Error creating Status JSON",e);
+		}
+		return sb.toString();
+	}
+	
+	@Path("decVolume")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String decVolume()
+	{
+		log.debug("Decreace Volume: ");
+		StringBuilder sb = new StringBuilder();
+		try {
+			PlayManager.getInstance().decVolume();
+			sb.append("OK");
+		} catch (Exception e) {
+			sb.append("ERROR: " + e.getMessage());
+			log.error("Error creating Status JSON",e);
+		}
+		return sb.toString();
+	}
+	
+	@Path("muteVolume")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String muteVolume(@QueryParam("value") String value)
+	{
+		log.debug("Mute Volume: ");
+		StringBuilder sb = new StringBuilder();
+		try {
+			boolean mute = false;
+			if(value.equalsIgnoreCase("TRUE"))
+			{
+				mute = true;
+			}
+			PlayManager.getInstance().setMute(mute);
+			sb.append("OK");
+		} catch (Exception e) {
+			sb.append("ERROR: " + e.getMessage());
+			log.error("Error creating Status JSON",e);
+		}
+		return sb.toString();
+	}
+	
 	@Path("getStandbyMode")
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
@@ -47,6 +154,40 @@ public class MediaPlayerRest {
 		StringBuilder sb = new StringBuilder();
 		try {			
 			sb.append(PlayManager.getInstance().isStandby());
+		} catch (Exception e) {
+			sb.append("ERROR: " + e.getMessage());
+			log.error("Error creating Status JSON",e);
+		}
+		return sb.toString();
+	}
+	
+	
+	@Path("help")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getHelp()
+	{
+		log.debug("Setting PreviousTrack: ");
+		StringBuilder sb = new StringBuilder();
+		try {
+			sb.append("Help for MediaPlayer Commands");
+			sb.append(System.getProperty("line.separator"));
+			sb.append("'setStandbyMode?value=<true or false>' - Set the StandyMode");
+			sb.append(System.getProperty("line.separator"));
+			sb.append("'getStandbyMode' - Get the Current StandbyMode");
+			sb.append(System.getProperty("line.separator"));
+			sb.append("'nextTrack' - Play the Next Track in Playlist");
+			sb.append(System.getProperty("line.separator"));
+			sb.append("'previousTrack' - Play the Previous Track, if track has played for more than 5 secs current track is started again");
+			sb.append(System.getProperty("line.separator"));
+			sb.append("'stopTrack' - Stop the Current Track");
+			sb.append(System.getProperty("line.separator"));
+			sb.append("'incVolume' - Increace the Volume");
+			sb.append(System.getProperty("line.separator"));
+			sb.append("'incVolume' - Decrease the Volume");
+			sb.append(System.getProperty("line.separator"));
+			sb.append("'muteVolume?value=<true or false>' - Mute the Volume");
+			
 		} catch (Exception e) {
 			sb.append("ERROR: " + e.getMessage());
 			log.error("Error creating Status JSON",e);
