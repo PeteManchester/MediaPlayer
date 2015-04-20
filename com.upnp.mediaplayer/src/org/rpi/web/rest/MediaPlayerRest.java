@@ -182,9 +182,9 @@ public class MediaPlayerRest {
 			sb.append(System.getProperty("line.separator"));
 			sb.append("'stopTrack' - Stop the Current Track");
 			sb.append(System.getProperty("line.separator"));
-			sb.append("'incVolume' - Increace the Volume");
+			sb.append("'incVolume' - Increase the Volume");
 			sb.append(System.getProperty("line.separator"));
-			sb.append("'incVolume' - Decrease the Volume");
+			sb.append("'decVolume' - Decrease the Volume");
 			sb.append(System.getProperty("line.separator"));
 			sb.append("'muteVolume?value=<true or false>' - Mute the Volume");
 			
