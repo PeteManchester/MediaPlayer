@@ -50,8 +50,10 @@ public class Pi4JManager {
 	 * 
 	 */
 	public void dispose() {
+		log.debug("Attempt to displose Pi4J");
 		if (gpio != null) {
 			try {
+				log.debug("Attempt to Shutdown Pi4J");
 				gpio.shutdown();
 			} catch (Exception e) {
 				log.error("Error Closing Pi4J",e);

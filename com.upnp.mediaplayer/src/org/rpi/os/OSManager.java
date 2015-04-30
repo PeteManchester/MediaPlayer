@@ -39,10 +39,10 @@ public class OSManager {
 	protected OSManager() {
 		log.debug("Initializing OSManager");
 		setJavaPath();
-		if (isRaspi()) {
-			log.debug("This is a Raspi so Attempt to initialize Pi4J");
+		//if (isRaspi()) {
+		//	log.debug("This is a Raspi so Attempt to initialize Pi4J");
 			// initPi4J();
-		}
+		//}
 	}
 
 	// private void initPi4J()
