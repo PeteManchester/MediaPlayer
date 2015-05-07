@@ -11,8 +11,10 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
 
 import org.apache.log4j.Logger;
+import org.rpi.channel.ChannelAirPlay;
 import org.rpi.config.Config;
 import org.rpi.player.PlayManager;
+import org.rpi.player.events.EventAirplayVolumeChanged;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventMuteChanged;
 import org.rpi.player.events.EventVolumeChanged;
@@ -32,15 +34,26 @@ public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer, Observe
 	private boolean bWrite = false;
 	
 	private float volume = 0;
+	private long airplayVolume = 0;
+	private long mastervolume = 0;
 	private boolean bMute = false;
 	private boolean sotware_mixer_enabled = false;
+	private boolean isAirplay = false;
 	
 	private int bitDepth = 16;
 
 	public JavaSoundPlayerBasic() {
-		volume = setVolume((int) PlayManager.getInstance().getVolume());		
+		mastervolume = PlayManager.getInstance().getVolume();
+		airplayVolume = PlayManager.getInstance().getAirplayVolume();
+		volume = calculateVolume();
+		setVolume((int)volume);
 		bMute = PlayManager.getInstance().getMute();
 		PlayManager.getInstance().observeVolumeEvents(this);
+		PlayManager.getInstance().observeAirplayVolumeEvents(this);
+		if(PlayManager.getInstance().getCurrentTrack() instanceof ChannelAirPlay )
+		{
+			isAirplay = true;
+		}
 	}
 
 	public void createSoundLine(AudioInformation audioInf) {
@@ -124,7 +137,10 @@ public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer, Observe
 	 */
 	private byte[] changeVolume16Bit(IAudioPacket packet) {
 		if (volume >= 1 ||!sotware_mixer_enabled) {
-			return packet.getAudio();
+			if(!isAirplay)
+			{
+				return packet.getAudio();
+			}
 		}
 		byte[] audio = packet.getAudio();
 
@@ -254,11 +270,24 @@ public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer, Observe
 		case EVENTVOLUMECHANGED:
 			EventVolumeChanged ev = (EventVolumeChanged) e;
 			try {
-				volume = setVolume((int) ev.getVolume());
+				mastervolume = ev.getVolume();
+				volume = setVolume((int) calculateVolume());
 			} catch (Exception ex) {
 				log.error(ex);
 			}
-
+			break;
+		case EVENTAIRPLAYVOLUMECHANGED:
+			EventAirplayVolumeChanged eva = (EventAirplayVolumeChanged) e;
+			try
+			{
+				airplayVolume = eva.getVolume();
+				volume = setVolume((int) calculateVolume());
+			}
+			catch(Exception ex)
+			{
+				log.error(ex);
+			}
+			break;
 		case EVENTMUTECHANGED:
 			if (o instanceof ObservableVolume) {
 				try {
@@ -273,6 +302,31 @@ public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer, Observe
 			}
 			break;
 		}
+	}
+	
+	private long calculateVolume()
+	{ 
+		if(!isAirplay)
+		{
+			return mastervolume;
+		}
+		
+		if(!sotware_mixer_enabled)
+		{
+			return airplayVolume;
+		}
+		
+		long res = mastervolume - (100 - airplayVolume);
+		if(res < 0 )
+		{
+			res = 0;
+		}
+		if(res > 100)
+		{
+			res = 100;
+		}
+		log.debug("masterVolume: " + mastervolume + " airplayVolume: " + airplayVolume +" volume: " + volume);
+		return res;
 	}
 	
 	/*

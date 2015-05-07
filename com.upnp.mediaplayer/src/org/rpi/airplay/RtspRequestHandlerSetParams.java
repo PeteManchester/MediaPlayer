@@ -77,7 +77,7 @@ public class RtspRequestHandlerSetParams extends SimpleChannelInboundHandler<Ful
 							iVol = 100;
 						if (iVol < 0)
 							iVol = 0;
-						PlayManager.getInstance().setVolume(iVol);
+						PlayManager.getInstance().setAirplayVolume(iVol);
 					} catch (Exception ex) {
 						log.error(ex);
 					}
