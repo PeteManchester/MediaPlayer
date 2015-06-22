@@ -46,7 +46,7 @@ public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer, Observe
 		mastervolume = PlayManager.getInstance().getVolume();
 		airplayVolume = PlayManager.getInstance().getAirplayVolume();
 		volume = calculateVolume();
-		setVolume((int)volume);
+		setVolume(volume);
 		bMute = PlayManager.getInstance().getMute();
 		PlayManager.getInstance().observeVolumeEvents(this);
 		PlayManager.getInstance().observeAirplayVolumeEvents(this);
@@ -63,6 +63,7 @@ public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer, Observe
 			if (soundLine != null) {
 				close();
 			}
+			//audioInf.setBitDepth(8);
 			log.debug("Creating Audio Format: " + audioInf.toString());
 			bitDepth = audioInf.getBitDepth();
 			sotware_mixer_enabled = Config.getInstance().isSoftwareMixerEnabled();
@@ -114,6 +115,9 @@ public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer, Observe
 		try {
 			if (soundLine != null) {
 				switch (bitDepth) {
+				case 8:
+					byte[] array = change16BitTo8Bit(packet);
+					soundLine.write(array, 0, packet.getLength()/2);
 				case 16:
 					soundLine.write(changeVolume16Bit(packet), 0, packet.getLength());
 					break;
@@ -130,6 +134,43 @@ public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer, Observe
 			log.error("Error Writing Data", e);
 		}
 
+	}
+	
+	private byte[] change16BitTo8Bit(IAudioPacket packet)
+	{
+		byte[] audio = packet.getAudio();
+		int len = audio.length;
+		byte[] bit = new byte[len/2];
+		int tempint;
+		
+		for (int i=1, j=0; i<len; i+=2, j++){
+			//tempint = ((int) audio[i]);// ^ 0x00000080;
+			//bit[j] = (byte) tempint; 
+			bit[j] = (byte)(audio[i] );
+		     
+
+		}
+		//byte[] audio = packet.getAudio();
+//		int length = audio.length/2;
+//		byte[] bit = new byte[length];
+//		int iCount = 0;
+//		for (int i = 0; i < audio.length; i += 2) {
+//			// convert byte pair to int
+//			short buf1 = audio[i];
+//			short buf2 = audio[i + 1];
+//
+//			buf1 = (short) ((buf1 & 0xff) << 8);
+//			buf2 = (short) (buf2 & 0xff);
+//
+//			short res = (short) (buf1 | buf2);
+//			//res = (short) (res * volume);
+//			//log.debug("insert in Array: " + iCount + " Value: " + res +" Length: " + audio.length);
+//			// convert back
+//			int why = res >>8;
+//			bit[iCount] = (byte)(why);
+//			iCount++;
+//		}
+		return audio;
 	}
 	
 	/*
@@ -271,7 +312,7 @@ public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer, Observe
 			EventVolumeChanged ev = (EventVolumeChanged) e;
 			try {
 				mastervolume = ev.getVolume();
-				volume = setVolume((int) calculateVolume());
+				volume = setVolume( calculateVolume());
 			} catch (Exception ex) {
 				log.error(ex);
 			}
@@ -281,7 +322,7 @@ public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer, Observe
 			try
 			{
 				airplayVolume = eva.getVolume();
-				volume = setVolume((int) calculateVolume());
+				volume = setVolume( calculateVolume());
 			}
 			catch(Exception ex)
 			{
@@ -329,12 +370,30 @@ public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer, Observe
 		return res;
 	}
 	
+	
+	private float setVolumeTAN(double v)
+	{
+		v = v -20;
+		double res = Math.tan(v/100.0);
+		if(res > 1)
+		{
+			res = 1;
+		}
+		if(res < 0)
+		{
+			res = 0;
+		}
+		log.debug("Volume: " + v +" Converted to : " + res);
+		return (float)res;
+	}
+	
 	/*
 	 * Because the volume isn't linear, fudge the values a bit.
 	 * How I wish I had listened in my maths class when they were talking about logarithms!!
 	 */
-	private float setVolume(int v)
+	private float setVolume(double vv)
 	{
+		int v = (int)vv;
 		float res = 100;
 		switch(v)
 		{

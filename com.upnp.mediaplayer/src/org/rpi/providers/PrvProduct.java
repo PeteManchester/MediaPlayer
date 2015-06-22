@@ -255,7 +255,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	@Override
 	protected void setSourceIndexByName(IDvInvocation paramIDvInvocation, String paramString) {
 		log.debug("SetSourceIndexByName: " + paramString + Utils.getLogText(paramIDvInvocation));
-		setSourceByname(paramString);
+		 setSourceByname(paramString);
 	}
 
 	public void updateStandby(boolean standby) {
@@ -273,14 +273,21 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 		setPropertySourceIndex(paramLong);
 	}
 
-	public synchronized void setSourceByname(String name) {
+	/**
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public synchronized String setSourceByname(String name) {
 		long count = 0;
 		for (Source source : sources) {
 			if (source.getName().equalsIgnoreCase(name)) {
 				setPropertySourceIndex(count);
+				return "OK";
 			}
 			count++;
 		}
+		return "Not Found: " + name;
 	}
 
 	@Override

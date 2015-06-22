@@ -1,14 +1,9 @@
 package org.rpi.providers;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import org.apache.log4j.Logger;
-import org.openhome.net.device.ActionDisabledError;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgCredentials1;
-import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgCredentials1.Get;
 import org.rpi.utils.Utils;
 
 public class PrvCredentials extends DvProviderAvOpenhomeOrgCredentials1 implements  IDisposableDevice {
@@ -27,7 +22,7 @@ public class PrvCredentials extends DvProviderAvOpenhomeOrgCredentials1 implemen
 		
 		setPropertyPublicKey("Test");
 		setPropertySequenceNumber(0);
-		setPropertyIds("1");
+		setPropertyIds("tidalhifi.com");
 		
 		enableActionGetIds();
 		enableActionGetPublicKey();
@@ -59,7 +54,8 @@ public class PrvCredentials extends DvProviderAvOpenhomeOrgCredentials1 implemen
 	@Override
 	protected Get get(IDvInvocation paramIDvInvocation, String paramString) {
 		log.debug("get" + Utils.getLogText(paramIDvInvocation));
-		return new Get(paramString, null, false, paramString, paramString);
+		byte[] password = new byte[]{17};
+		return new Get("UserName", password, true, "Status", "Data");
 	}
 
 	@Override

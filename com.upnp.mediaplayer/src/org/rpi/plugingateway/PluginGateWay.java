@@ -94,6 +94,15 @@ public class PluginGateWay extends Observable {
 	private void setSourceName(String source_name) {
 		this.source_name = source_name;
 	}
+	
+	/**
+	 * Used to set the Source Name
+	 * @param source_name
+	 */
+	public String setSourceByname(String source_name)
+	{
+		return simpleDevice.getProduct().setSourceByname(source_name);
+	}
 
 	public void setDefaultSourcePin(String default_pin) {
 		this.default_pin = default_pin;

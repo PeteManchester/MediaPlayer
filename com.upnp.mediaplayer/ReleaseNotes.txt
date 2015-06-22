@@ -34,3 +34,4 @@ If in standby no input source pins are high
 06 March 2015 Improved Airplay code and added metadata support.
 1 April 2015 Added option to enable Airplay Audio Start Delay (airplay_audio_start_delay), not needed on the Pi2, but on the original Pis the CPU is stressed with the decryption routine and so the audio start was very distorted.
 30 April 2015 Upgraded Pi4J library and recompiled
+22 June 2015 Added Restful interface to changeSource   'http://localhost:8088/myapp/mediaplayer/changeSource?value=Laptop'

@@ -5,8 +5,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
 import org.apache.log4j.Logger;
 import org.rpi.player.PlayManager;
+import org.rpi.plugingateway.PluginGateWay;
 
 
 @Path("mediaplayer")
@@ -161,6 +163,23 @@ public class MediaPlayerRest {
 		return sb.toString();
 	}
 	
+	@Path("changeSource")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String changeSource(@QueryParam("value") String source_name)
+	{
+		log.debug("Change Source: " + source_name);
+		StringBuilder sb = new StringBuilder();
+		try {
+			String res = PluginGateWay.getInstance().setSourceByname(source_name);
+			sb.append(res);
+		} catch (Exception e) {
+			sb.append("ERROR: " + e.getMessage());
+			log.error("Error creating Status JSON",e);
+		}
+		return sb.toString();
+	}
+	
 	
 	@Path("help")
 	@GET
@@ -187,6 +206,8 @@ public class MediaPlayerRest {
 			sb.append("'decVolume' - Decrease the Volume");
 			sb.append(System.getProperty("line.separator"));
 			sb.append("'muteVolume?value=<true or false>' - Mute the Volume");
+			sb.append(System.getProperty("line.separator"));
+			sb.append("'changeSource?value=<name of source>' - Change the Source");
 			
 		} catch (Exception e) {
 			sb.append("ERROR: " + e.getMessage());
