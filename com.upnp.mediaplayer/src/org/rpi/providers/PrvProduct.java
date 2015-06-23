@@ -225,12 +225,21 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	@Override
 	protected void setSourceIndex(IDvInvocation paramIDvInvocation, long paramLong) {
 		log.debug("SetSourceIndex: " + paramLong + Utils.getLogText(paramIDvInvocation));
-		Source source = sources.get((int) paramLong);
+		changeSourceIndex(paramLong);
+
+	}
+	
+	/**
+	 * Private method to change the Source Index and fire an event
+	 * @param index
+	 */
+	private void changeSourceIndex(long index)
+	{
+		Source source = sources.get((int) index);
 		String name = source.getName();
 		log.debug("Source Selected: " + name);
-		setPropertySourceIndex(paramLong);
+		setPropertySourceIndex(index);
 		PluginGateWay.getInstance().setSourceId(name,source.getType());
-
 	}
 
 	@Override
@@ -270,7 +279,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	 * @param paramLong
 	 */
 	public synchronized void setSourceId(long paramLong) {
-		setPropertySourceIndex(paramLong);
+		changeSourceIndex(paramLong);
 	}
 
 	/**
@@ -282,7 +291,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 		long count = 0;
 		for (Source source : sources) {
 			if (source.getName().equalsIgnoreCase(name)) {
-				setPropertySourceIndex(count);
+				changeSourceIndex(count);
 				return "OK";
 			}
 			count++;
@@ -300,7 +309,8 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 			break;
 		case EVENTSOURCECHANGED:
 			EventSourceChanged es = (EventSourceChanged) e;
-			setSourceByname(es.getName());
+			//setSourceByname(es.getName());
+			break;
 		} 
 
 	}
@@ -314,6 +324,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 			Source source = sources.get((int) source_index);
 			String name = source.getName();
 			log.debug("Source Selected: " + name);
+			//FireEvent From PluginGateway ???
 			PluginGateWay.getInstance().setSourceId(name,source.getType());
 		} catch (Exception e) {
 			log.error(e);

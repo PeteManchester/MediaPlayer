@@ -205,7 +205,8 @@ public class RtspRequestHandler_OLD extends ChannelInboundHandlerAdapter impleme
 				session.setRemoteAddress((InetSocketAddress) ctx.channel().remoteAddress());
 				audioServer = new AudioServer(session);
 				PlayManager.getInstance().setStatus("Playing", "AIRPLAY");
-				PluginGateWay.getInstance().setSourceId("AirPlay", "AirPlay");
+				//PluginGateWay.getInstance().setSourceId("AirPlay", "AirPlay");
+				PluginGateWay.getInstance().setSourceByname("AirPlay");
 				EventUpdateTrackMetaText ev = new EventUpdateTrackMetaText();
 				ev.setTitle(client_name);
 				ev.setArtist("AirPlay");
