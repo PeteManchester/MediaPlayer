@@ -70,7 +70,7 @@ public class PlayManager implements Observer {
 	private ObservableAVTransport obsvAVTransport = new ObservableAVTransport();
 	private ObservableSongcast obsvSongcast = new ObservableSongcast();
 	private ObservableAirPlay obsvAirPlay = new ObservableAirPlay();
-	private String status = "";
+	private String status = "Stopped";
 
 	private static PlayManager instance = null;
 
@@ -433,6 +433,36 @@ public class PlayManager implements Observer {
 	 */
 	public synchronized ChannelBase getCurrentTrack() {
 		return current_track;
+	}
+	
+	/**
+	 * getCurrentSource
+	 * @return
+	 */
+	public String getCurrentTrackAsString()
+	{
+		String res = "UNKNOWN";
+		if(current_track ==null)
+		{
+			return "NONE";
+		}
+		if(current_track instanceof ChannelPlayList)
+		{
+			return "PLAYLIST";
+		}
+		else if (current_track instanceof ChannelAirPlay)
+		{
+			return "AIRPLAY";
+		}
+		else if (current_track instanceof ChannelRadio)
+		{
+			return "RADIO";
+		}
+		else if (current_track instanceof ChannelSongcast)
+		{
+			return "SONGCAST";
+		}
+		return res;
 	}
 
 	/**
@@ -891,6 +921,15 @@ public class PlayManager implements Observer {
 			evr.setStatus(status);
 			obsvPlayList.notifyChange(evr);
 		}
+	}
+	
+	/**
+	 * getPlayerStatus
+	 * @return
+	 */
+	public String getPlayerStatus()
+	{
+		return status;
 	}
 
 	/***

@@ -91,6 +91,42 @@ public class MediaPlayerRest {
 		return sb.toString();
 	}
 	
+	@Path("pauseTrack")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String pauseTrack()
+	{
+		log.debug("Setting PauseTrack: ");
+		StringBuilder sb = new StringBuilder();
+		try {
+			PlayManager.getInstance().pause();
+			sb.append("OK");
+		} catch (Exception e) {
+			sb.append("ERROR: " + e.getMessage());
+			log.error("Error creating Status JSON",e);
+		}
+		return sb.toString();
+	}
+	
+	@Path("playTrack")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String playTrack()
+	{
+		log.debug("Setting PlayTrack: ");
+		StringBuilder sb = new StringBuilder();
+		try {
+			PlayManager.getInstance().play();
+			sb.append("OK");
+		} catch (Exception e) {
+			sb.append("ERROR: " + e.getMessage());
+			log.error("Error creating Status JSON",e);
+		}
+		return sb.toString();
+	}
+	
+	
+	
 	@Path("incVolume")
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
@@ -181,6 +217,39 @@ public class MediaPlayerRest {
 	}
 	
 	
+	@Path("getPlayerStatus")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getPlayerStatus()
+	{
+		log.debug("Get PlayerStatus: " );
+		StringBuilder sb = new StringBuilder();
+		try {			
+			sb.append(PlayManager.getInstance().getPlayerStatus());
+		} catch (Exception e) {
+			sb.append("ERROR: " + e.getMessage());
+			log.error("Error creating Status JSON",e);
+		}
+		return sb.toString();
+	}
+	
+	@Path("getSourceName")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getSourceName()
+	{
+		log.debug("Get SourceName: " );
+		StringBuilder sb = new StringBuilder();
+		try {			
+			sb.append(PluginGateWay.getInstance().getSourceName());
+		} catch (Exception e) {
+			sb.append("ERROR: " + e.getMessage());
+			log.error("Error creating Status JSON",e);
+		}
+		return sb.toString();
+	}
+	
+	
 	@Path("help")
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
@@ -201,6 +270,10 @@ public class MediaPlayerRest {
 			sb.append(System.getProperty("line.separator"));
 			sb.append("'stopTrack' - Stop the Current Track");
 			sb.append(System.getProperty("line.separator"));
+			sb.append("'pauseTrack' - Pauses the Current Track");
+			sb.append(System.getProperty("line.separator"));
+			sb.append("'playTrack' - Plays the Current Track, if Paused will resume, if track not playing will attempt to play Next Track ");
+			sb.append(System.getProperty("line.separator"));
 			sb.append("'incVolume' - Increase the Volume");
 			sb.append(System.getProperty("line.separator"));
 			sb.append("'decVolume' - Decrease the Volume");
@@ -208,7 +281,10 @@ public class MediaPlayerRest {
 			sb.append("'muteVolume?value=<true or false>' - Mute the Volume");
 			sb.append(System.getProperty("line.separator"));
 			sb.append("'changeSource?value=<name of source>' - Change the Source");
-			
+			sb.append(System.getProperty("line.separator"));
+			sb.append("'getSourceName' - Source Name");
+			sb.append(System.getProperty("line.separator"));
+			sb.append("'getPlayerStatus' - Current Status of the Player");			
 		} catch (Exception e) {
 			sb.append("ERROR: " + e.getMessage());
 			log.error("Error creating Status JSON",e);
