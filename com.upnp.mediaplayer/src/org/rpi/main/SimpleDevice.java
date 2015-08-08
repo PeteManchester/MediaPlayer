@@ -46,7 +46,6 @@ import org.rpi.providers.PrvRenderingControl;
 import org.rpi.providers.PrvSongcast;
 import org.rpi.providers.PrvTime;
 import org.rpi.providers.PrvVolume;
-import org.rpi.radio.ChannelReaderJSON;
 import org.rpi.sources.Source;
 import org.rpi.sources.SourceReader;
 import org.rpi.utils.NetworkUtils;

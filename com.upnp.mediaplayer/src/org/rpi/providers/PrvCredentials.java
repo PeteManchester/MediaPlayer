@@ -75,6 +75,12 @@ public class PrvCredentials extends DvProviderAvOpenhomeOrgCredentials1 implemen
 	@Override
 	protected void clear(IDvInvocation paramIDvInvocation, String paramString) {
 		log.debug("clear" + Utils.getLogText(paramIDvInvocation));
+		if(credentials.containsKey(paramString))
+		{
+			credentials.remove(paramString);
+		}
+		iPropertySequenceNumber++;
+		setPropertySequenceNumber(iPropertySequenceNumber);
 	}
 
 	@Override

@@ -72,7 +72,7 @@
     </target>
 
     <target name="compile" depends="init" description="compiles all sources using the correct classpath">
-        <javac srcdir="src" classpathref="classpath" destdir="${classes_dir}" debug="on"/>
+        <javac srcdir="src" classpathref="classpath" destdir="${classes_dir}" debug="on" includeantruntime="false"/>
         <copy todir="${release_lib_dir}">
             <path refid="classpath_core"/>
         </copy>
@@ -84,7 +84,7 @@
 
         <echo>Classpath is ${classpathProp}</echo>
 
-        <javac srcdir="tests" classpathref="test_classpath" destdir="${test_classes_dir}" debug="on"/>
+        <javac srcdir="tests" classpathref="test_classpath" destdir="${test_classes_dir}" debug="on" includeantruntime="false"/>
     </target>
 
     <target name="tests" depends="tests_compile" description="runs all testcases">
