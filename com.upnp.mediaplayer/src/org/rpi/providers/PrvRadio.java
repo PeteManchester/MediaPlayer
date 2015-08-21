@@ -269,7 +269,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 
 	/***
 	 * Iterate all tracks, and create a 32 bit binary number from the track Id.
-	 * Add the 32 bit binary string to a long string Split the 32 bit binary
+	 * Add the 32 bit binary string to a long string. Split the 32 bit binary
 	 * long string 4 bytes (8bits) And add to a byte array
 	 */
 	private byte[] UpdateIdArray() {
@@ -280,7 +280,9 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 		for (ChannelRadio c : channels) {
 			try {
 				String binValue = Integer.toBinaryString(c.getId());
+				//log.debug("Radio: " + c.getId());
 				binValue = padLeft(binValue, 32, '0');
+				//log.debug("Value " + c.getId() + " Bin Value: " + binValue);
 				sb.append(binValue);
 			} catch (Exception e) {
 				log.error(e);
@@ -295,8 +297,9 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 			int index = 8 * i;
 			String sByte = myBytes.substring(index, index + 8);
 			Integer x = Integer.parseInt(sByte, 2);
+			//log.debug("Integer: " + x + " Bin: " + sByte);
 			Byte sens = (byte) x.intValue();
-			// byte b = Byte.parseByte(sByte, 2);
+			//log.debug("Integer: " + x + " Bin: " + sByte + " Byte: " + sens);
 			bytes[i] = sens;
 		}
 		
