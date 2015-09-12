@@ -126,6 +126,23 @@ public class MediaPlayerRest {
 	}
 	
 	
+	@Path("setVolume")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String setVolume(@QueryParam("value") long value)
+	{
+		log.debug("SetVolume: " + value);
+		StringBuilder sb = new StringBuilder();
+		try {
+			PlayManager.getInstance().setVolume(value);
+			sb.append("OK");
+		} catch (Exception e) {
+			sb.append("ERROR: " + e.getMessage());
+			log.error("Error creating Status JSON",e);
+		}
+		return sb.toString();
+	}
+	
 	
 	@Path("incVolume")
 	@GET
@@ -273,6 +290,8 @@ public class MediaPlayerRest {
 			sb.append("'pauseTrack' - Pauses the Current Track");
 			sb.append(System.getProperty("line.separator"));
 			sb.append("'playTrack' - Plays the Current Track, if Paused will resume, if track not playing will attempt to play Next Track ");
+			sb.append(System.getProperty("line.separator"));
+			sb.append("'setVolume?value=<x>' - Set the Volume, value between 0 and 100");
 			sb.append(System.getProperty("line.separator"));
 			sb.append("'incVolume' - Increase the Volume");
 			sb.append(System.getProperty("line.separator"));
