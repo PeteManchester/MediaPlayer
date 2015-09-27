@@ -252,6 +252,10 @@ function checkStatusConfig() {
 							decode(data.airplay_audio_start_delay));
 					$("#airplay_audio_start_delay").slider("refresh");
 					
+					$("#airplay_master_volume_enabled").val(
+							decode(data.airplay_master_volume_enabled));
+					$("#airplay_master_volume_enabled").slider("refresh");
+					
 					
 				},
 				error : function(result,errorThrown) {
@@ -322,6 +326,9 @@ function updateConfig() {
 		config_json.airplay_port = $("#airplay_port").val();
 		
 		config_json.airplay_audio_start_delay = $("#airplay_audio_start_delay").val();
+		
+		config_json.airplay_master_volume_enabled = $("#airplay_master_volume_enabled").val();
+		
 		
 		
 		$.ajax({

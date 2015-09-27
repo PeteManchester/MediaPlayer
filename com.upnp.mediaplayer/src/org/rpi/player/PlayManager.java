@@ -729,6 +729,10 @@ public class PlayManager implements Observer {
 		EventAirplayVolumeChanged ev = new EventAirplayVolumeChanged();
 		ev.setVolume(volume);
 		obsvAirplayVolume.notifyChange(ev);
+		if(Config.getInstance().isAirPlayMasterVolumeEnabled())
+		{
+			setVolume(volume);
+		}
 	}
 
 	/**

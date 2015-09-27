@@ -52,8 +52,8 @@ public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer, Observe
 		PlayManager.getInstance().observeAirplayVolumeEvents(this);
 		if(PlayManager.getInstance().getCurrentTrack() instanceof ChannelAirPlay )
 		{
-			isAirplay = true;
-		}
+			isAirplay = !(Config.getInstance().isAirPlayMasterVolumeEnabled());			
+		}		
 	}
 
 	public void createSoundLine(AudioInformation audioInf) {
@@ -323,6 +323,7 @@ public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer, Observe
 			{
 				airplayVolume = eva.getVolume();
 				volume = setVolume( calculateVolume());
+				//volume = setVolume( airplayVolume);
 			}
 			catch(Exception ex)
 			{
@@ -385,6 +386,12 @@ public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer, Observe
 		}
 		log.debug("Volume: " + v +" Converted to : " + res);
 		return (float)res;
+	}
+	
+	private float setVolumeTest(double v)
+	{
+		PlayManager.getInstance().setVolume((long)v);
+		return (float)v;
 	}
 	
 	/*

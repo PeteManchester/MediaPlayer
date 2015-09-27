@@ -55,8 +55,8 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		PlayManager.getInstance().observeAirplayVolumeEvents(this);
 		if(PlayManager.getInstance().getCurrentTrack() instanceof ChannelAirPlay )
 		{
-			isAirplay = true;
-		}
+			isAirplay = !(Config.getInstance().isAirPlayMasterVolumeEnabled());			
+		}	
 	}
 
 	@Override
@@ -392,12 +392,14 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		return res;
 	}
 	
+
 	/*
 	 * Because the volume isn't linear, fudge the values a bit.
 	 * How I wish I had listened in my maths class when they were talking about logarithms!!
 	 */
-	private float setVolume(int v)
+	private float setVolume(double vv)
 	{
+		int v = (int)vv;
 		float res = 100;
 		switch(v)
 		{
