@@ -180,7 +180,7 @@ public class ChannelReaderJSON implements Runnable {
 						if (object.getString("type").toLowerCase().equalsIgnoreCase("link") && object.getString("item").equalsIgnoreCase("show")) {
 							String url = object.getString("URL");
 							log.debug("Get Shows: " + url);
-							getJsonFromURL(url + "&render=json");
+							getJsonFromURL(url + "&render=json" + "&c=pbrowse");
 						} else if (object.getString("type").equalsIgnoreCase("audio") || object.getString("item").equalsIgnoreCase("url") || object.getString("item").equalsIgnoreCase("topic")) {
 							String text = getString(object, "text");
 							String url = getString(object, "URL");
@@ -235,7 +235,7 @@ public class ChannelReaderJSON implements Runnable {
 							log.debug("Get Shows: " + url);
 							// int temp = getIntFromString(object,
 							// "preset_number");
-							getJsonFromURL(url + "&render=json");
+							getJsonFromURL(url + "&render=json" + "&c=pbrowse");
 						} else if (object.getString("type").equalsIgnoreCase("audio") || object.getString("item").equalsIgnoreCase("url") || object.getString("item").equalsIgnoreCase("topic")) {
 							String text = getString(object, "text");
 							String url = getString(object, "URL");
@@ -256,7 +256,7 @@ public class ChannelReaderJSON implements Runnable {
 							// {
 							// preset_number = pres_number;
 							// }
-							addChannel(text, url, image, icy_reverse, preset_id, item, keep_url);
+							addChannel(text, url + "&c=ebrowse", image, icy_reverse, preset_id, item, keep_url);
 						}
 					}
 				}
