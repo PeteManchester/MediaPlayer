@@ -7,10 +7,12 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -26,6 +28,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
+import org.glassfish.grizzly.http.util.URLDecoder;
 import org.rpi.channel.ChannelRadio;
 import org.rpi.config.Config;
 import org.rpi.providers.PrvRadio;
@@ -40,7 +43,8 @@ public class ChannelReaderJSON implements Runnable {
 
 	private Logger log = Logger.getLogger(this.getClass());
 
-	//private String metaData = "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:artist role='Performer' xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:artist><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='' nrAudioChannels='' protocolInfo='http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01'></res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:albumArtURI></item></DIDL-Lite>";
+	// private String metaData =
+	// "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:artist role='Performer' xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:artist><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='' nrAudioChannels='' protocolInfo='http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01'></res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:albumArtURI></item></DIDL-Lite>";
 	private String metaData = "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:artist role='Performer' xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:artist><upnp:album xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'/><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='' nrAudioChannels='' protocolInfo='http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01'></res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:albumArtURI></item></DIDL-Lite>";
 	private List<ChannelRadio> channels = new ArrayList<ChannelRadio>();
 
@@ -64,7 +68,12 @@ public class ChannelReaderJSON implements Runnable {
 				log.debug("TuneIn PartnerId not configured, do not attempt to load TuneIn stations");
 
 			} else {
-				String url = "http://opml.radiotime.com/Browse.ashx?c=presets&partnerid=" + partnerId + "&username=" + Config.getInstance().getRadioTuneinUsername() + "&render=json";
+				// String url =
+				// "http://opml.radiotime.com/Browse.ashx?c=presets&partnerid="
+				// + partnerId + "&username=" +
+				// Config.getInstance().getRadioTuneinUsername() +
+				// "&render=json";
+				String url = "http://opml.radiotime.com/Browse.ashx?&c=presets&options=recurse:tuneShows&partnerid=" + partnerId + "&username=" + Config.getInstance().getRadioTuneinUsername() + "&render=json";
 				getJsonFromURL(url);
 			}
 			prvRadio.addChannels(channels);
@@ -132,6 +141,69 @@ public class ChannelReaderJSON implements Runnable {
 	}
 
 	private void getStations(JsonArray array) {
+		ListIterator l = array.listIterator();
+		while (l.hasNext()) {
+			JsonObject object = (JsonObject) l.next();
+			boolean bType = object.containsKey("type");// Standard Station
+			boolean bKey = object.containsKey("key");// If key=topics it's an// ondemand
+			String type = "";
+			String key = "";
+			if(bType)
+			{
+				type = object.getString("type");
+			}
+			if(bKey)
+			{
+				key = object.getString("key");
+			}
+			if (bType || bKey) {
+				if (type.equalsIgnoreCase("container")) {
+					if (type.equalsIgnoreCase("container")) {
+						JsonArray children = object.getJsonArray("children");
+						{
+							if (children != null) {
+								getStations(children);
+							}
+						}
+					}
+				} else if (key.equalsIgnoreCase("topics")) {
+					//OnDemand
+					JsonArray children = object.getJsonArray("children");
+					{
+						if (children != null) {
+							getStations(children);
+						}
+					}
+				} else {
+					boolean bItem = object.containsKey("item");
+					if (bType && bItem) {// Probably a ListenLive
+						if (object.getString("type").toLowerCase().equalsIgnoreCase("link") && object.getString("item").equalsIgnoreCase("show")) {
+							String url = object.getString("URL");
+							log.debug("Get Shows: " + url);
+							getJsonFromURL(url + "&render=json");
+						} else if (object.getString("type").equalsIgnoreCase("audio") || object.getString("item").equalsIgnoreCase("url") || object.getString("item").equalsIgnoreCase("topic")) {
+							String text = getString(object, "text");
+							String url = getString(object, "URL");
+							url = tidyURL(url);
+							String image = getString(object, "image");
+							String preset_id = getString(object, "guide_id");
+							preset_id = preset_id.replaceAll("[^0-9]+", "");
+							String item = getString(object, "item");
+							boolean icy_reverse = getBoolean(object, "icy_reverse", false);
+							boolean keep_url = getBoolean(object, "keep_url", false);
+
+							addChannel(text, url, image, icy_reverse, preset_id, item, keep_url);
+						}
+					}
+				}
+			}
+
+		}
+	}
+
+	private void getStationsOLD(JsonArray array) {
+		// JsonArray arr = array.getJsonArray(1);
+
 		for (JsonValue jsonValue : array) {
 			if (jsonValue.getValueType() == ValueType.OBJECT) {
 				JsonObject object = (JsonObject) jsonValue;
@@ -173,7 +245,7 @@ public class ChannelReaderJSON implements Runnable {
 							preset_id = preset_id.replaceAll("[^0-9]+", "");
 							String item = getString(object, "item");
 							boolean icy_reverse = getBoolean(object, "icy_reverse", false);
-							boolean keep_url = getBoolean(object,"keep_url", false);
+							boolean keep_url = getBoolean(object, "keep_url", false);
 							// pres_number = getIntFromString(object,
 							// "preset_number", pres_number);
 							// if(pres_number <=0)
@@ -184,7 +256,7 @@ public class ChannelReaderJSON implements Runnable {
 							// {
 							// preset_number = pres_number;
 							// }
-							addChannel(text, url, image, icy_reverse, preset_id, item,keep_url);
+							addChannel(text, url, image, icy_reverse, preset_id, item, keep_url);
 						}
 					}
 				}
@@ -269,7 +341,7 @@ public class ChannelReaderJSON implements Runnable {
 	 * @param preset_id
 	 * @param item
 	 */
-	private void addChannel(String name, String url, String image, boolean icy_reverse, String preset_id, String item,boolean keep_url) {
+	private void addChannel(String name, String url, String image, boolean icy_reverse, String preset_id, String item, boolean keep_url) {
 
 		String m = createMetaData(name, url, image);
 		int id = channels.size() + 1;
@@ -280,19 +352,17 @@ public class ChannelReaderJSON implements Runnable {
 		}
 
 		ChannelRadio channel = null;
-		ChannelRadio oldChannel = null ;
+		ChannelRadio oldChannel = null;
 		for (ChannelRadio ch : channels) {
 			if (name.equalsIgnoreCase(ch.getName()) && item.equalsIgnoreCase("station")) {
-				if(ch.isKeepURL())
-				{
+				if (ch.isKeepURL()) {
 					m = createMetaData(name, ch.getUri(), image);
 					url = ch.getUri();
 				}
 				channel = new ChannelRadio(url, m, id, name);
 				channel.setICYReverse(ch.isICYReverse());
-				if(ch.isKeepURL())
-				{
-					log.debug("Channel " + ch.getName()  +" to keep URL from Config File: " + ch.getUri());
+				if (ch.isKeepURL()) {
+					log.debug("Channel " + ch.getName() + " to keep URL from Config File: " + ch.getUri());
 					channel.setUri(ch.getUri());
 					channel.setKeepURL(ch.isKeepURL());
 				}
@@ -312,7 +382,7 @@ public class ChannelReaderJSON implements Runnable {
 			channel.setICYReverse(icy_reverse);
 			channel.setKeepURL(keep_url);
 		}
-		log.info("Channel Name (For AlarmClock Config: '" + name+"'");
+		log.info("Channel Name (For AlarmClock Config: '" + name + "'");
 		channels.add(channel);
 		log.debug("Added Channel: " + channel.getId() + " - " + channel.getUri() + " " + channel.getFullDetails());
 
@@ -352,10 +422,9 @@ public class ChannelReaderJSON implements Runnable {
 					n.setTextContent(url);
 				} else if (n.getNodeName() == "upnp:albumArtURI") {
 					n.setTextContent(image);
-				//} else if (n.getNodeName() == "upnp:artist") {
-				//	n.setTextContent(name);
-				} else if (n.getNodeName() =="upnp:album")
-				{
+					// } else if (n.getNodeName() == "upnp:artist") {
+					// n.setTextContent(name);
+				} else if (n.getNodeName() == "upnp:album") {
 					n.setTextContent(name);
 				}
 			}
