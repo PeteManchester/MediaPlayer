@@ -13,6 +13,7 @@ public class TestParsers {
 		//pls.getStreamingUrl("http://radio.linnrecords.com/cast/tunein.php/linnjazz/playlist.pls");
 		M3UParser m3u = new M3UParser();
 		//m3u.getStreamingUrl("http://media-ice.musicradio.com/CapitalManchesterMP3.m3u");
+		m3u.getStreamingUrl("http://opml.radiotime.com/Tune.ashx?id=t101185768&sid=p220075&formats=mp3");
 		//ASXParser asx = new ASXParser();
 		//asx.getStreamingUrl("http://bbc.co.uk/radio/listen/live/bbcmanchester.asx");
 		FileParser asx = new FileParser();
@@ -26,7 +27,7 @@ public class TestParsers {
 		//asx.getURL("http://streamb.wgbh.org:8004/");
 		//asx.getURL("http://streaming.radionz.co.nz/concert-mbr");
 		//asx.getURL("http://www.voanews.com/wm/live/radiodeewa.asx");
-		asx.getURL("http://192.168.1.205:26125/content/c2/b16/f44100/d87996-co122.flac");
+		//asx.getURL("http://192.168.1.205:26125/content/c2/b16/f44100/d87996-co122.flac");
 		
 	}
 

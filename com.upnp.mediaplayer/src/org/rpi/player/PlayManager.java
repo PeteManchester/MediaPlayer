@@ -24,6 +24,8 @@ import org.rpi.player.events.EventPlayListPlayingTrackID;
 import org.rpi.player.events.EventPlayListStatusChanged;
 import org.rpi.player.events.EventPlayListUpdateShuffle;
 import org.rpi.player.events.EventRadioPlayName;
+import org.rpi.player.events.EventRadioPlayNext;
+import org.rpi.player.events.EventRadioPlayPrevious;
 import org.rpi.player.events.EventRadioPlayingTrackID;
 import org.rpi.player.events.EventRadioStatusChanged;
 import org.rpi.player.events.EventReceiverStatusChanged;
@@ -648,6 +650,24 @@ public class PlayManager implements Observer {
 		EventRadioPlayName ev = new EventRadioPlayName();
 		ev.setName(name);
 		obsvRadio.notifyChange(ev);
+	}
+	
+	/**
+	 * 
+	 */
+	public synchronized void radioNextChannel()
+	{
+		EventRadioPlayNext erpn = new EventRadioPlayNext();
+		obsvRadio.notifyChange(erpn);
+	}
+	
+	/**
+	 * 
+	 */
+	public synchronized void radioPreviousChannel()
+	{
+		EventRadioPlayPrevious erpp = new EventRadioPlayPrevious();
+		obsvRadio.notifyChange(erpp);
 	}
 
 	/***

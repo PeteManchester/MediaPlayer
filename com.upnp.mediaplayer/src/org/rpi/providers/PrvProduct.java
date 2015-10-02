@@ -35,7 +35,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	private String model_url = "";
 	private String model_image = "";
 	private String prod_room = friendly_name;
-	private String prod_name = "Java MediaPlayer";
+	private String prod_name = "SoftPlayer";
 	private String prod_info = "Developed by Pete";
 	private String prod_url = "";
 	private String prod_image = "";

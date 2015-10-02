@@ -73,7 +73,7 @@ public class ChannelReaderJSON implements Runnable {
 				// + partnerId + "&username=" +
 				// Config.getInstance().getRadioTuneinUsername() +
 				// "&render=json";
-				String url = "http://opml.radiotime.com/Browse.ashx?&c=presets&options=recurse:tuneShows&partnerid=" + partnerId + "&username=" + Config.getInstance().getRadioTuneinUsername() + "&render=json";
+				String url = "http://opml.radiotime.com/Browse.ashx?&c=presets&options=recurse:tuneShows&partnerid=" + partnerId + "&username=" + Config.getInstance().getRadioTuneinUsername() +  "&formats=mp3" + "&render=json";
 				getJsonFromURL(url);
 			}
 			prvRadio.addChannels(channels);

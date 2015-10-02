@@ -34,7 +34,6 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	private int current_channel = -99;
 	private long last_updated = 0;
 
-
 	// "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='6000' nrAudioChannels='2' protocolInfo='http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01'>http://cast.secureradiocast.co.uk:8004/;stream.mp3</res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>http://www.mediauk.com/logos/100/226.png</upnp:albumArtURI></item></DIDL-Lite>";
 	// private String metaData =
 	// "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='' nrAudioChannels='' protocolInfo=''></res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:albumArtURI></item></DIDL-Lite>";
@@ -85,7 +84,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	 * @param channels
 	 */
 	public void addChannels(List<ChannelRadio> channels) {
-		log.debug("Start of AddRadioChannels");	
+		log.debug("Start of AddRadioChannels");
 		propertiesLock();
 		this.channels = channels;
 		array = UpdateIdArray();
@@ -248,6 +247,53 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 		}
 	}
 
+	private void playNext() {
+		if (channels.size() < 1) {
+			return;
+		}
+		if (current_channel < 0) {
+
+			playChannel(channels.get(0));
+			return;
+		}
+		int i = 0;
+		for (ChannelRadio c : channels) {
+			if (current_channel == c.getId()) {
+				break;
+			}
+			i++;
+		}
+		if(channels.size()<=i+1)
+		{
+			return;
+		}
+		ChannelRadio cr = channels.get(i + 1);
+		playChannel(cr);
+	}
+
+	private void playPrevious() {
+		if (channels.size() < 1) {
+			return;
+		}
+		if (current_channel < 0) {
+			playChannel(channels.get(0));
+		}
+		int i = 0;
+		for (ChannelRadio c : channels) {
+			if (current_channel == c.getId()) {
+				break;
+			}
+			i++;
+		}
+		if (i - 1 < 0) {
+			return;
+		}
+
+		ChannelRadio cr = channels.get(i - 1);
+		playChannel(cr);
+
+	}
+
 	/**
 	 * Play the Channel
 	 * 
@@ -280,9 +326,9 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 		for (ChannelRadio c : channels) {
 			try {
 				String binValue = Integer.toBinaryString(c.getId());
-				//log.debug("Radio: " + c.getId());
+				// log.debug("Radio: " + c.getId());
 				binValue = padLeft(binValue, 32, '0');
-				//log.debug("Value " + c.getId() + " Bin Value: " + binValue);
+				// log.debug("Value " + c.getId() + " Bin Value: " + binValue);
 				sb.append(binValue);
 			} catch (Exception e) {
 				log.error(e);
@@ -297,12 +343,12 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 			int index = 8 * i;
 			String sByte = myBytes.substring(index, index + 8);
 			Integer x = Integer.parseInt(sByte, 2);
-			//log.debug("Integer: " + x + " Bin: " + sByte);
+			// log.debug("Integer: " + x + " Bin: " + sByte);
 			Byte sens = (byte) x.intValue();
-			//log.debug("Integer: " + x + " Bin: " + sByte + " Byte: " + sens);
+			// log.debug("Integer: " + x + " Bin: " + sByte + " Byte: " + sens);
 			bytes[i] = sens;
 		}
-		
+
 		log.debug("End of UpdateIdArray Radio");
 		return bytes;
 	}
@@ -342,6 +388,13 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 		case EVENTRADIOPLAYNAME:
 			EventRadioPlayName ern = (EventRadioPlayName) e;
 			getChannelByName(ern.getName());
+			break;
+		case EVENTRADIOPLAYNEXT:
+			playNext();
+			break;
+		case EVENTRADIOPLAYPREVIOUS:
+			playPrevious();
+			break;
 		}
 	}
 
