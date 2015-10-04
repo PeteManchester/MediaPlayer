@@ -35,7 +35,7 @@ public class AlarmFileUtils {
 		try {
 			reader = new FileReader(fileName);
 		} catch (FileNotFoundException e) {
-			log.error("Cannot find RadioList.json", e);
+			log.error("Cannot find Alarm.json", e);
 			// Bail out here is we can't find the file
 			return null;
 		}
@@ -50,7 +50,7 @@ public class AlarmFileUtils {
 			jsonReader.close();
 			return array;
 		} catch (Exception e) {
-			log.error("Error Reading RadioList.json from given reader", e);
+			log.error("Error Reading Alarm.json from given reader", e);
 		}
 		return null;
 	}
