@@ -162,19 +162,39 @@ public class ChannelReaderJSON implements Runnable {
 						JsonArray children = object.getJsonArray("children");
 						{
 							if (children != null) {
+								log.debug("Get Container Children");
 								getStations(children);
 							}
 						}
 					}
-				} else if (key.equalsIgnoreCase("topics")) {
+				} if (key.equalsIgnoreCase("topics")) {
 					//OnDemand
 					JsonArray children = object.getJsonArray("children");
 					{
 						if (children != null) {
+							log.debug("Get Topics Children");
 							getStations(children);
 						}
 					}
-				} else {
+				} if(key.equalsIgnoreCase("presetURLs"))
+				{
+					JsonArray children = object.getJsonArray("children");
+					if(children !=null)
+					{
+						log.debug("Get PresetURLs Children");
+						getStations(children);
+					}
+				}	
+				if(key.equalsIgnoreCase("stations"))
+				{
+					JsonArray children = object.getJsonArray("children");
+					if(children !=null)
+					{
+						log.debug("Get Stations Children");
+						getStations(children);
+					}
+				}
+				//else {
 					boolean bItem = object.containsKey("item");
 					if (bType && bItem) {// Probably a ListenLive
 						if (object.getString("type").toLowerCase().equalsIgnoreCase("link") && object.getString("item").equalsIgnoreCase("show")) {
@@ -194,7 +214,7 @@ public class ChannelReaderJSON implements Runnable {
 
 							addChannel(text, url, image, icy_reverse, preset_id, item, keep_url);
 						}
-					}
+					//}
 				}
 			}
 
