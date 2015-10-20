@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,7 +27,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
-import org.glassfish.grizzly.http.util.URLDecoder;
 import org.rpi.channel.ChannelRadio;
 import org.rpi.config.Config;
 import org.rpi.providers.PrvRadio;
@@ -73,8 +71,8 @@ public class ChannelReaderJSON implements Runnable {
 				// + partnerId + "&username=" +
 				// Config.getInstance().getRadioTuneinUsername() +
 				// "&render=json";
-				//String url = "http://opml.radiotime.com/Browse.ashx?&c=presets&options=recurse:tuneShows&partnerid=" + partnerId + "&username=" + Config.getInstance().getRadioTuneinUsername() +  "&formats=mp3" + "&render=json";
-				String url = "http://opml.radiotime.com/Browse.ashx?&c=presets&options=recurse:tuneShows&partnerid=" + partnerId + "&username=" + Config.getInstance().getRadioTuneinUsername()  + "&render=json" + "&formats=mp3,wma,aac,wmvideo,ogg,hls";
+				String url = "http://opml.radiotime.com/Browse.ashx?&c=presets&options=recurse:tuneShows&partnerid=" + partnerId + "&username=" + Config.getInstance().getRadioTuneinUsername() +  "&formats=mp3,wma,wmvideo,ogg,hls" + "&render=json";
+				//String url = "http://opml.radiotime.com/Browse.ashx?&c=presets&options=recurse:tuneShows&partnerid=" + partnerId + "&username=" + Config.getInstance().getRadioTuneinUsername()  + "&render=json" + "&formats=mp3,wma,aac,wmvideo,ogg,hls";
 				getJsonFromURL(url);
 			}
 			prvRadio.addChannels(channels);

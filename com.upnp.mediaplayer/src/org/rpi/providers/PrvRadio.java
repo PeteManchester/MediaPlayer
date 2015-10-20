@@ -158,7 +158,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	@Override
 	protected String readList(IDvInvocation paramIDvInvocation, String arg1) {
 		log.debug("ReadList: " + arg1 + Utils.getLogText(paramIDvInvocation));
-		//getChannels();
+		getChannels();
 		return getList(arg1);
 	}
 
