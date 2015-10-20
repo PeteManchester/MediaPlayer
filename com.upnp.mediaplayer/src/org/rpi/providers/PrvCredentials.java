@@ -1,27 +1,16 @@
 package org.rpi.providers;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
 import java.security.AccessController;
-import java.security.Key;
-import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.X509EncodedKeySpec;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.crypto.Cipher;
-import javax.xml.bind.DatatypeConverter;
 
 import org.apache.log4j.Logger;
 import org.bouncycastle.util.encoders.Base64;
-import org.bouncycastle.util.io.pem.PemObject;
-import org.bouncycastle.util.io.pem.PemWriter;
 //import org.bouncycastle.util.encoders.Base64;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
@@ -29,18 +18,17 @@ import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgCredentials1;
 import org.rpi.credentials.CredentialInfo;
 import org.rpi.utils.Utils;
 
-import sun.misc.BASE64Decoder;
 import sun.security.action.GetPropertyAction;
 
 public class PrvCredentials extends DvProviderAvOpenhomeOrgCredentials1 implements IDisposableDevice {
 
 	private Logger log = Logger.getLogger(PrvCredentials.class);
-	private String iPropertyIds = "tidalhifi.com qobuz.com";
+	//private String iPropertyIds = "tidalhifi.com qobuz.com tunein.com";
+	private String iPropertyIds = "tunein.com";
 	private String iPropertyPublicKey = "MyPublicKey";
 	private PublicKey publicKey = null;
 	private PrivateKey privateKey = null;
 
-	// Tidal Token P5Xbeo5LFvESeDy6
 
 	private int iPropertySequenceNumber = 0;
 

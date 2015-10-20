@@ -24,7 +24,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	// "<SourceList><Source><Name>Playlist</Name><Type>Playlist</Type><Visible>1</Visible></Source><Source><Name>Receiver</Name><Type>Receiver</Type><Visible>1</Visible></Source><Source><Name>Radio</Name><Type>Radio</Type><Visible>1</Visible></Source></SourceList>";
 	private String iSourceXml = "";
 	// private boolean standby = true;
-	private String attributes = "Info Time Volume Receiver Sender Credentials";
+	private String attributes = "Info Time Volume Receiver Sender";
 	// private String attributes = "";
 	private String man_name = "Java Inc";
 	private String man_info = "Developed in Java using OpenHome";
@@ -35,7 +35,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	private String model_url = "";
 	private String model_image = "";
 	private String prod_room = friendly_name;
-	private String prod_name = "SoftPlayer";
+	private String prod_name = "Java MediaPlayer";
 	private String prod_info = "Developed by Pete";
 	private String prod_url = "";
 	private String prod_image = "";

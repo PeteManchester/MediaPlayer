@@ -37,7 +37,8 @@ public class PrvReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDi
 		enablePropertyUri();
 
 		setPropertyMetadata("");
-		setPropertyProtocolInfo(Config.getInstance().getProtocolInfo());
+		//setPropertyProtocolInfo(Config.getInstance().getProtocolInfo());
+		setPropertyProtocolInfo("ohz:*:*:*,ohm:*:*:*,ohu:*.*.*");
 		setPropertyTransportState("Stopped");
 		setPropertyUri("");
 
