@@ -8,6 +8,9 @@ import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.log4j.Logger;
+import org.openhome.net.controlpoint.ProxyError;
+import org.openhome.net.core.ErrorGeneral;
+import org.openhome.net.device.ActionError;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgRadio1;
@@ -191,8 +194,9 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 				return t.getMetadata();
 			}
 		}	
-		log.debug("Read: " + id + " Could Not Find Radio Channel : ");
-		return "";
+		log.debug("Read: " + id + " Could Not Find Radio Channel");
+		ActionError ae = new ActionError("Id not found", 800);
+		throw ae;
 	}
 
 	@Override
