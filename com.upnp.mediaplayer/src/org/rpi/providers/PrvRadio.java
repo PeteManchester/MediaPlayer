@@ -184,8 +184,15 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	@Override
 	protected String read(IDvInvocation paramIDvInvocation, long id) {
 		log.debug("Read: " + id + Utils.getLogText(paramIDvInvocation));
-		ChannelRadio c = channels.get((int) id);
-		return c.getMetadata();
+		getChannels();
+		for (ChannelRadio t : channels) {
+			if (id == t.getId()) {
+				log.debug("Read: " + id + " Returning : " + t.getFullText());
+				return t.getMetadata();
+			}
+		}	
+		log.debug("Read: " + id + " Could Not Find Radio Channel : ");
+		return "";
 	}
 
 	@Override
