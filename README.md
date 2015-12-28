@@ -1,7 +1,3 @@
----
-template: home
----
-
 # MediaPlayer - Java Based Open Home UPnP Media Renderer
 
 A fully open-source java project that uses the [OpenHome API](http://www.openhome.org/wiki/Oh:Overview) to
@@ -27,7 +23,7 @@ We support the following UPnP and OpenHome Functionality:
 * [Radio](http://www.openhome.org/wiki/Av:Developer:RadioService)
 * [SongCast](http://www.linn.co.uk/software#songcast)
 
-Also supported is Apples AirPlay Receiver. 
+Also supported is Apple's AirPlay Receiver. 
 
 We have implemented a http-daemon to make it possible to:  
 
@@ -73,10 +69,12 @@ MediaPlayer supports the following UPNP devices:
 
 * [Asset UPNP](http://www.dbpoweramp.com/asset-upnp-dlna.htm)
 * [MinimServer](http://minimserver.com/)
+* [ReadyMedia] (http://sourceforge.net/projects/minidlna/) - formerly miniDLNA
 
 ### Control Points
 
 * Kinsky
+* Kazoo
 * Assent Control
 * PlugPlayer
 * eLyric
@@ -130,7 +128,7 @@ https://github.com/PeteManchester/MediaPlayer/issues?state=open
 
 If you appreciate the Java MediaPlayer please support:
 
-[Linn] (http://www.linn.co.uk/) Who produce top end Audio equipment whilst providing OpenSource Software. They also have their own record label. 
+[Linn] (http://www.linn.co.uk/) who produce top end Audio equipment whilst providing OpenSource Software. They also have their own record label. 
 
 [OpenHome] (http://www.openhome.org/wiki/OhNet) Who provide the ohNet API on which this MediaPlayer is based and who have provided great support whilst I have been developing the MediaPlayer.
 
