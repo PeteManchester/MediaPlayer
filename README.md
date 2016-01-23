@@ -1,13 +1,15 @@
-# MediaPlayer - Java Based Open Home UPnP Media Renderer
+# VertexPlayer - Java Based Open Home UPnP Media Renderer
+
+Based on MediaPlayer by PeteManchester
 
 A fully open-source java project that uses the [OpenHome API](http://www.openhome.org/wiki/Oh:Overview) to
 implement a UPNP Media Renderer.
 
-The MediaPlayer is Java based and so will work on a wide range of hardware and Operating Systems without the need to provide different install packages or recompile the code.  
+VertexPlayer is Java based and so will work on a wide range of hardware and Operating Systems without the need to provide different install packages or recompile the code.  
 
 ## Features
 
-MediaPlayer provides a large support of OpenHome specific devices as well as
+VertexPlayer provides a large support of OpenHome specific devices as well as
 standard UPnP devices.
 
 To playback Media files, [mplayer](http://www.mplayerhq.hu/)
@@ -130,5 +132,5 @@ If you appreciate the Java MediaPlayer please support:
 
 [Linn] (http://www.linn.co.uk/) who produce top end Audio equipment whilst providing OpenSource Software. They also have their own record label. 
 
-[OpenHome] (http://www.openhome.org/wiki/OhNet) Who provide the ohNet API on which this MediaPlayer is based and who have provided great support whilst I have been developing the MediaPlayer.
+[OpenHome] (http://www.openhome.org/wiki/OhNet) Who provide the ohNet API on which this VertexPlayer is based and who have provided great support whilst I have been developing the VertexPlayer.
 
