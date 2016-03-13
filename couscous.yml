@@ -1,7 +1,0 @@
-baseUrl: http://andrum99.github.io/MediaPlayer
-
-directory: website
-
-exclude:
-  - com.upnp.mediaplayer
-
