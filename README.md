@@ -1,25 +1,23 @@
----
-template: home
----
+# VertexPlayer - Java Based Open Home UPnP Media Renderer
 
-# MediaPlayer - Java Based Open Home UPnP Media Renderer
+Based on VertexPlayer by PeteManchester
 
 A fully open-source java project that uses the [OpenHome API](http://www.openhome.org/wiki/Oh:Overview) to
 implement a UPNP Media Renderer.
 
-The MediaPlayer is Java based and so will work on a wide range of hardware and Operating Systems without the need to provide different install packages or recompile the code.  
+VertexPlayer is Java based and so will work on a wide range of hardware and Operating Systems without the need to provide different install packages or recompile the code.  
 
 ## Features
 
-MediaPlayer provides a large support of OpenHome specific devices as well as
+VertexPlayer provides a large support of OpenHome specific devices as well as
 standard UPnP devices.
 
 To playback Media files, [mplayer](http://www.mplayerhq.hu/)
 as well as [mpd](http://www.musicpd.org/) is used (based on your choice, this is
-[configurable](https://github.com/PeteManchester/MediaPlayer/wiki/MediaPlayer-Options)).
+[configurable](https://github.com/PeteManchester/VertexPlayer/wiki/VertexPlayer-Options)).
 
-The combination of OpenHome as well as mpd does allow MediaPlayer to provide gapless
-playback (yes, gapless, for beneath 0€ ;-)).
+The combination of OpenHome with mpd allows VertexPlayer to provide gapless
+playback.
 
 We support the following UPnP and OpenHome Functionality:
 
@@ -27,7 +25,7 @@ We support the following UPnP and OpenHome Functionality:
 * [Radio](http://www.openhome.org/wiki/Av:Developer:RadioService)
 * [SongCast](http://www.linn.co.uk/software#songcast)
 
-Also supported is Apples AirPlay Receiver. 
+Also supported is Apple's AirPlay Receiver. 
 
 We have implemented a http-daemon to make it possible to:  
 
@@ -42,41 +40,43 @@ We have implemented a http-daemon to make it possible to:
 
 ![](http://i.imgur.com/olsOZBr.png)
 
-The MediaPlayer is easily extendable via [Plugins](https://github.com/PeteManchester/MediaPlayer/wiki).
+The VertexPlayer is easily extendable via [Plugins](https://github.com/PeteManchester/VertexPlayer/wiki).
 
 Right now, we have the following Plugins:
 
-* [AlarmClock](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-AlarmClock)
-* [LastFM](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-LastFM)
-* [Fullscreen](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-Fullscreen)
-* [LIRCIntegration](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-LIRCIntegration)
-* [LCDDisplay](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-Display)
+* [AlarmClock](https://github.com/PeteManchester/VertexPlayer/wiki/Plugins-AlarmClock)
+* [LastFM](https://github.com/PeteManchester/VertexPlayer/wiki/Plugins-LastFM)
+* [Fullscreen](https://github.com/PeteManchester/VertexPlayer/wiki/Plugins-Fullscreen)
+* [LIRCIntegration](https://github.com/PeteManchester/VertexPlayer/wiki/Plugins-LIRCIntegration)
+* [LCDDisplay](https://github.com/PeteManchester/VertexPlayer/wiki/Plugins-Display)
 
   
 ![](http://i.imgur.com/DPVST6T.jpg)  
 
 ## Wiki
 
-We have a [Wiki](https://github.com/PeteManchester/MediaPlayer/wiki) where you can find the documentation
+We have a [Wiki](https://github.com/PeteManchester/VertexPlayer/wiki) where you can find the documentation
 
 ## Installation Instructions
 
-* [Raspberry Pi / Debian](https://github.com/PeteManchester/MediaPlayer/wiki/Install-Raspberry-Pi)
-* [Raspberry Pi / ArchLinux](/MediaPlayer/docs/archlinux-setup.html)
-* [Fullscreen Plugin / ArchLinux](/MediaPlayer/docs/fullscreen-setup.html)
+* [Raspberry Pi / Debian](https://github.com/PeteManchester/VertexPlayer/wiki/Install-Raspberry-Pi)
+* [Raspberry Pi / ArchLinux](/VertexPlayer/docs/archlinux-setup.html)
+* [Fullscreen Plugin / ArchLinux](/VertexPlayer/docs/fullscreen-setup.html)
 
 ## UPnP Support
 
-MediaPlayer supports the following UPNP devices:
+VertexPlayer supports the following UPNP devices:
 
 ### Media Servers
 
 * [Asset UPNP](http://www.dbpoweramp.com/asset-upnp-dlna.htm)
 * [MinimServer](http://minimserver.com/)
+* [ReadyMedia] (http://sourceforge.net/projects/minidlna/) - formerly miniDLNA
 
 ### Control Points
 
 * Kinsky
+* Kazoo
 * Assent Control
 * PlugPlayer
 * eLyric
@@ -85,7 +85,7 @@ MediaPlayer supports the following UPNP devices:
 
 # Contributors
 
-MediaPlayer is made possible due to the support of the following people.
+VertexPlayer is made possible due to the support of the following people.
 
 <div class="table-responsive">
   <table class="table table-striped table-condensed">
@@ -126,11 +126,11 @@ If you are interested, we always welcome feedback or suggestions or if you want 
 
 Feedback and suggestions can be submitted here:
 
-https://github.com/PeteManchester/MediaPlayer/issues?state=open
+https://github.com/PeteManchester/VertexPlayer/issues?state=open
 
-If you appreciate the Java MediaPlayer please support:
+If you appreciate the Java VertexPlayer please support:
 
-[Linn] (http://www.linn.co.uk/) Who produce top end Audio equipment whilst providing OpenSource Software. They also have their own record label. 
+[Linn] (http://www.linn.co.uk/) who produce top end Audio equipment whilst providing OpenSource Software. They also have their own record label. 
 
-[OpenHome] (http://www.openhome.org/wiki/OhNet) Who provide the ohNet API on which this MediaPlayer is based and who have provided great support whilst I have been developing the MediaPlayer.
+[OpenHome] (http://www.openhome.org/wiki/OhNet) Who provide the ohNet API on which this VertexPlayer is based and who have provided great support whilst I have been developing the VertexPlayer.
 

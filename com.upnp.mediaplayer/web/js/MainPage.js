@@ -235,8 +235,8 @@ function checkStatusConfig() {
 							decode(data.web_server_enabled));
 					$("#web_server_enabled").slider("refresh");
 
-					//$("#tunein_username").val(
-					//		decode(data.radio_tunein_username));
+					$("#tunein_username").val(
+							decode(data.radio_tunein_username));
 					
 					$("#airplay_enabled").val(
 							decode(data.airplay_enabled));

@@ -1,0 +1,232 @@
+{
+    "head": {
+        "title": "Favorites",
+        "status": "200"
+    },
+    "body": [
+        {
+            "element": "outline",
+            "text": "Shows",
+            "key": "shows",
+            "children": [
+            ]
+        },
+        {
+            "element": "outline",
+            "text": "Stations",
+            "key": "stations",
+            "children": [
+				{
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "BBC Radio 1",
+                    "URL": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio1_mf_p",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s24939q.png",
+                    "item": "station",
+                    "preset_id": "s24939",
+                    "icy_reverse": true
+                },
+				{
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "BBC Radio 1 Xtra",
+                    "URL": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio1xtra_mf_p",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s20277q.png",
+                    "item": "station",
+                    "preset_id": "s20277",
+                    "icy_reverse": true
+                },
+				{
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "BBC Radio 2",
+                    "URL": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio2_mf_p",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s24940q.png",
+                    "item": "station",
+                    "preset_id": "s24940",
+                    "icy_reverse": true
+                },
+				{
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "BBC Radio 3",
+                    "URL": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio3_mf_p",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s24941q.png",
+                    "item": "station",
+                    "preset_id": "s24941",
+                    "icy_reverse": true
+                },
+				{
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "BBC Radio 4",
+                    "URL": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio4fm_mf_p",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s50577q.png",
+                    "item": "station",
+                    "preset_id": "s20277",
+                    "icy_reverse": true
+                },
+				{
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "BBC Radio 4 Extra",
+                    "URL": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio4extra_mf_p",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s6839q.png",
+                    "item": "station",
+                    "preset_id": "s6839",
+                    "icy_reverse": true
+                },
+				{
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "BBC Radio 5 Live",
+                    "URL": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio5live_mf_p",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s24943q.png",
+                    "item": "station",
+                    "preset_id": "s24943",
+                    "icy_reverse": true
+                },
+				{
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "BBC Radio 5 Live Extra",
+                    "URL": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_radio5extra_mf_p",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s50459q.png",
+                    "item": "station",
+                    "preset_id": "s50459",
+                    "icy_reverse": true
+                },
+				{
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "BBC Radio 6 Music",
+                    "URL": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_6music_mf_p",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s44491q.png",
+                    "item": "station",
+                    "preset_id": "s44491",
+                    "icy_reverse": true
+                },
+				{
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "BBC Radio Nan Gaidheal",
+                    "URL": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_nangaidheal_mf_p",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s37553q.png",
+                    "item": "station",
+                    "preset_id": "s37553",
+                    "icy_reverse": true
+                },
+				{
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "BBC Radio Scotland",
+                    "URL": "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_scotlandfm_mf_p",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s46554q.png",
+                    "item": "station",
+                    "preset_id": "s46554",
+                    "icy_reverse": true
+                },
+				{
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "Capital",
+                    "URL": "http://media-the.musicradio.com:80/CapitalEdinburghMP3",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s86682q.png",
+                    "item": "station",
+                    "preset_id": "s86682",
+                    "icy_reverse": true
+                },
+				{
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "Classic FM",
+                    "URL": "http://media-the.musicradio.com:80/ClassicFMMP3",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s8439q.png",
+                    "item": "station",
+                    "preset_id": "s8439",
+                    "icy_reverse": true
+                },
+				{
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "Clyde 1",
+                    "URL": "http://icy-e-bl-03-gos.sharp-stream.com:8000/clyde1.mp3",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s24968q.png",
+                    "item": "station",
+                    "preset_id": "s24968",
+                    "icy_reverse": true
+                },
+                {
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "Forth 1",
+                    "URL": "http://icy-e-bl-05-cr.sharp-stream.com:8000/forth1.mp3",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s6954q.png",
+                    "item": "station",
+                    "preset_id": "s6954",
+                    "icy_reverse": true
+                },
+				{
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "Forth 2",
+                    "URL": "http://icy-e-bl-09-boh.sharp-stream.com:8000/forth2.mp3",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s6955q.png",
+                    "item": "station",
+                    "preset_id": "s6955",
+                    "icy_reverse": true
+                },
+				{
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "Forth 3",
+                    "URL": "http://icy-e-bl-02-gos.sharp-stream.com:8000/forth3.mp3",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s239332q.png",
+                    "item": "station",
+                    "preset_id": "s239332",
+                    "icy_reverse": true
+                },
+				{
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "Kingdom FM",
+                    "URL": "http://stream8.considerit.co.uk:80/kingdomfm64.mp3",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s45514q.png",
+                    "item": "station",
+                    "preset_id": "s45514",
+                    "icy_reverse": true
+                },
+				{
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "Kiss",
+                    "URL": "http://icy-e-ba-07-boh.sharp-stream.com:8000/kissnational.mp3",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s6004q.png",
+                    "item": "station",
+                    "preset_id": "s6004",
+                    "icy_reverse": true
+                },
+				{
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "Smooth Radio",
+                    "URL": "http://media-the.musicradio.com:80/SmoothScotlandMP3",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s45545q.png",
+                    "item": "station",
+                    "preset_id": "s45545",
+                    "icy_reverse": true
+                },
+				{
+                    "element": "outline",
+                    "type": "audio",
+                    "text": "Tay FM",
+                    "URL": "http://icy-e-bz-09-boh.sharp-stream.com:8000/tayfm.mp3",
+                    "image": "http://cdn-radiotime-logos.tunein.com/s45512q.png",
+                    "item": "station",
+                    "preset_id": "s45512",
+                    "icy_reverse": true
+                }
+            ]
+        }
+    ]
+}
