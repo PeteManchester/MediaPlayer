@@ -39,6 +39,7 @@ import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.player.events.EventVolumeChanged;
 import org.rpi.player.observers.*;
+import org.rpi.plugingateway.PluginGateWay;
 
 public class PlayManager implements Observer {
 
@@ -121,6 +122,16 @@ public class PlayManager implements Observer {
 			if (current_track instanceof ChannelAirPlay) {
 				EventAirPlayerStop eva = new EventAirPlayerStop();
 				obsvAirPlay.notifyChange(eva);
+			}
+			
+			if(t instanceof ChannelPlayList)
+			{
+				PluginGateWay.getInstance().setSourceByname("Playlist");
+			}
+			
+			if(t instanceof ChannelRadio)
+			{
+				PluginGateWay.getInstance().setSourceByname("Radio");
 			}
 
 			current_track = t;

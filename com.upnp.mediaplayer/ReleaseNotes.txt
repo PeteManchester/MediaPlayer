@@ -36,3 +36,4 @@ If in standby no input source pins are high
 30 April 2015 Upgraded Pi4J library and recompiled
 22 June 2015 Added Restful interface to changeSource   'http://localhost:8088/myapp/mediaplayer/changeSource?value=Laptop'
 28 Sept 2015 Added config option 'airplay_master_volume_enabled'. If 'true' changing the AirPlay volume will update the master volume, if set to false changing the AirPlay volume will only change the Airplay volume and not update the Master Volume.
+16 March 2016 v0.0.8.9 Added new functionality to set the source when using Bubble DS.
