@@ -245,6 +245,24 @@ public class InputSourcesImpl implements InputSourcesInterface, Observer {
 			return RaspiPin.GPIO_19;
 		if (number.equalsIgnoreCase("20"))
 			return RaspiPin.GPIO_20;
+		if (number.equalsIgnoreCase("21"))
+			return RaspiPin.GPIO_21;
+		if (number.equalsIgnoreCase("22"))
+			return RaspiPin.GPIO_22;
+		if (number.equalsIgnoreCase("23"))
+			return RaspiPin.GPIO_23;
+		if (number.equalsIgnoreCase("24"))
+			return RaspiPin.GPIO_24;
+		if (number.equalsIgnoreCase("25"))
+			return RaspiPin.GPIO_25;
+		if (number.equalsIgnoreCase("26"))
+			return RaspiPin.GPIO_26;
+		if (number.equalsIgnoreCase("27"))
+			return RaspiPin.GPIO_27;
+		if (number.equalsIgnoreCase("28"))
+			return RaspiPin.GPIO_28;
+		if (number.equalsIgnoreCase("29"))
+			return RaspiPin.GPIO_29;
 		return null;
 	}
 
