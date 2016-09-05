@@ -275,3 +275,10 @@ irsend SEND_ONCE TEAC_H300 KEY_VOLUMEDOWN
 Songcase wireshark filter
 (ip.addr eq 192.168.1.72 and ip.addr eq 239.255.255.250) 
 
+
+Build script not able to log onto Raspi SSH
+KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1
+sudo /etc/init.d/ssh restart
+http://stackoverflow.com/questions/26424621/algorithm-negotiation-fail-ssh-in-jenkins
+
+

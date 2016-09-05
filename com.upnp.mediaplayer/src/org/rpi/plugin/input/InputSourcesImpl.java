@@ -61,6 +61,7 @@ public class InputSourcesImpl implements InputSourcesInterface, Observer {
 						PinState.LOW); // PIN STARTUP STATE (optional)
 				pins.put(default_pin, pin);
 			}
+
 		}
 		else
 		{
@@ -87,13 +88,19 @@ public class InputSourcesImpl implements InputSourcesInterface, Observer {
 		for (String key : sources.keySet()) {
 			Source s = sources.get(key);
 			if (!pins.containsKey(s.getGPIO_PIN())) {
+				log.debug("Creating PIN: " + s.getGPIO_PIN());
 				Pin pin_number = createPin(s.getGPIO_PIN());
 				if (pin_number != null) {
 					GpioPinDigitalOutput pin = gpio.provisionDigitalOutputPin(pin_number, // PIN
 							// NUMBER
 							s.getName(), // PIN FRIENDLY NAME (optional)
 							PinState.LOW); // PIN STARTUP STATE (optional)
+					log.info("Created PIN: " + s.getGPIO_PIN());
 					pins.put(s.getGPIO_PIN(), pin);
+				}
+				else					
+				{
+					log.info("PIN was not valid PIN: " +s.getGPIO_PIN());
 				}
 			}
 		}
