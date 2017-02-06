@@ -405,10 +405,11 @@ public class WorkqeueEvents implements Runnable {
 		if (artist.equalsIgnoreCase("SOON"))
 			return info;
 		try {
-			JenUttils util = new JenUttils();
+			//JenUttils util = new JenUttils();
+			LastFMUtils util = new LastFMUtils();
 			info = util.searchArtistByName(artist);
-		} catch (EchoNestException e1) {
-			log.error(e1);
+		} catch (Exception e1) {
+			log.error("Error Getting ArtistInfo form EchoNest",e1);
 		}
 		mArtistInfo.put(artist.toUpperCase(), info);
 

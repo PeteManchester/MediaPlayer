@@ -280,5 +280,8 @@ Build script not able to log onto Raspi SSH
 KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1
 sudo /etc/init.d/ssh restart
 http://stackoverflow.com/questions/26424621/algorithm-negotiation-fail-ssh-in-jenkins
+http://stackoverflow.com/questions/21524609/ant-sshexec-failing-with-algorithm-negotitation-fail-error
+
+
 
 
