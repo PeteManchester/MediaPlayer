@@ -94,7 +94,7 @@ public class ChannelReaderJSON implements Runnable {
 			return;
 		}
 
-		this.getJsonFromReader(reader);
+		this.getJsonFromReader(reader,"RadionList.json");
 	}
 
 	/*
@@ -115,18 +115,28 @@ public class ChannelReaderJSON implements Runnable {
 			return;
 		}
 
-		this.getJsonFromReader(reader);
+		this.getJsonFromReader(reader,url);
 	}
 
-	private void getJsonFromReader(Reader reader) {
+	private void getJsonFromReader(Reader reader,String url) {
 		try {
+			log.debug("Attempting to Reader for URL: " + url);
 			JsonReader jsonReader = Json.createReader(reader);
 			JsonObject array = jsonReader.readObject();
 			jsonReader.close();
 			getBody(array);
 		} catch (Exception e) {
+			printReader(reader);
 			log.error("Error Reading RadioList.json from given reader", e);
 		}
+	}
+	
+	private void printReader(Reader reader)
+	{
+		java.util.Scanner s = new java.util.Scanner(reader).useDelimiter("\\A");
+		log.info("####BAD RADIO START");
+	    log.info( s.hasNext() ? s.next() : "");
+	    log.info("####BAD RADIO END");
 	}
 
 	private void getBody(JsonObject array) {

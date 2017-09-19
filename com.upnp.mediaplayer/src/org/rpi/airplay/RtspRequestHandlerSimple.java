@@ -152,7 +152,7 @@ public class RtspRequestHandlerSimple extends SimpleChannelInboundHandler<FullHt
 				AudioSession session = RaopSessionManager.getSession(clientInstance);
 				if (session == null) {
 					// session = new AudioSession(Base64.decode(aesIv),
-					session = new AudioSession(Base64.decode(aesIv), SecUtils.decryptRSA(Base64.decode(rsaAesKey)), fmtp, 0, 0);
+					session = new AudioSession(Base64.decode(aesIv), SecUtils.getInstance().decryptRSA(Base64.decode(rsaAesKey)), fmtp, 0, 0);
 					RaopSessionManager.addSession(clientInstance, session);
 					log.debug("Audio Session being created");
 					AudioSessionHolder.getInstance().setSession(session);
@@ -160,7 +160,7 @@ public class RtspRequestHandlerSimple extends SimpleChannelInboundHandler<FullHt
 					log.debug("Audio Session being updated");
 					session.setAESIV(Base64.decode(aesIv));
 					//
-					session.setAESKEY(SecUtils.decryptRSA(Base64.decode(rsaAesKey)));
+					session.setAESKEY(SecUtils.getInstance().decryptRSA(Base64.decode(rsaAesKey)));
 					session.setFmtp(fmtp);
 					AudioSessionHolder.getInstance().setSession(session);
 				}
@@ -315,7 +315,7 @@ public class RtspRequestHandlerSimple extends SimpleChannelInboundHandler<FullHt
 			}
 
 			// RSA
-			byte[] crypted = SecUtils.encryptRSA(out.toByteArray());
+			byte[] crypted = SecUtils.getInstance().encryptRSA(out.toByteArray());
 
 			// Encode64
 			String ret = Base64.encode(crypted);

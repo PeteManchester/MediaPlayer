@@ -86,7 +86,7 @@ public class Utils {
 			}
 
 			// RSA
-			byte[] crypted = SecUtils.encryptRSA(out.toByteArray());
+			byte[] crypted = SecUtils.getInstance().encryptRSA(out.toByteArray());
 
 			// Encode64
 			String ret = Base64.encode(crypted);

@@ -81,11 +81,12 @@ public class AirPlayThread extends Thread {
 		// very slow the first time it is run and if we run it when we get an
 		// AirPlay connection the connection times out.
 		log.debug("Create BouncyCastleProvider");
-		Security.addProvider(new BouncyCastleProvider());
+		//Security.addProvider(new BouncyCastleProvider());
+		Security.insertProviderAt(new BouncyCastleProvider(),1);
 		log.debug("Created BouncyCastleProvider");
 		log.debug("Initiate an encrypt");
 		byte[] test = new byte[] { (byte) 0xe0, 0x4f, (byte) 0xd0, 0x20, (byte) 0xea, 0x3a, 0x69, 0x10, (byte) 0xa2, (byte) 0xd8, 0x08, 0x00, 0x2b, 0x30, 0x30, (byte) 0x9d };
-		SecUtils.encryptRSA(test);
+		SecUtils.getInstance().encryptRSA(test);
 
 		// int port = 5004;
 		int port = 5004;

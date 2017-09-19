@@ -39,6 +39,7 @@ public class Pi4JManager {
 	private void initPi4J() {
 		try {
 			log.debug("Initialize Pi4J");
+			Thread.sleep(15000);
 			setGpio(GpioFactory.getInstance());
 			log.debug("Initialized Pi4J");
 		} catch (Exception e) {

@@ -222,14 +222,14 @@ public class LastFmPluginImpl implements LastFmPluginInterface, Observer {
             if (!configModel.getConfig().getPassword().startsWith(encryptionPrefix)) {
                 this.clearTextPassword = configModel.getConfig().getPassword();
 
-                String encryptedPassword = SecUtils.encrypt(key, clearTextPassword);
+                String encryptedPassword = SecUtils.getInstance().encrypt(key, clearTextPassword);
 
                 configModel.getConfig().setPassword("ENC:" + encryptedPassword);
                 passwordEncrypted = true;
             }
             else {
                 String encryptedPassword = configModel.getConfig().getPassword().substring(encryptionPrefix.length());
-                this.clearTextPassword = SecUtils.decrypt(key, encryptedPassword);
+                this.clearTextPassword = SecUtils.getInstance().decrypt(key, encryptedPassword);
             }
         }
 
