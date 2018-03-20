@@ -80,6 +80,8 @@ public class PlayerStatus implements Observer {
 			EventTimeUpdate ed = (EventTimeUpdate) evt;
 			time_played = ed.getTime();
 			break;
+		case EVENTVOLUMECHANGED:
+			break;
 		}
 		
 	}
