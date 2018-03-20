@@ -143,11 +143,6 @@ public class ChannelBase {
         try {
             Vector<Node> removeNodes = new Vector<Node>();
             StringBuilder temp = new StringBuilder();
-            // DocumentBuilderFactory factory =
-            // DocumentBuilderFactory.newInstance();
-            // DocumentBuilder builder = factory.newDocumentBuilder();
-            // InputSource insrc = new InputSource(new StringReader(Metadata));
-            // Document doc = builder.parse(insrc);
             Document doc = getDocument();
             Node node = doc.getFirstChild();
             Node item = node.getFirstChild();
@@ -209,8 +204,16 @@ public class ChannelBase {
             full_title = tidyUpString(full_title);
             Document doc = getDocument();
             Node node = doc.getFirstChild();
-            Node item = node.getFirstChild();
-            NodeList childs = item.getChildNodes();
+            NodeList childs = null;
+            for(int i = 0; i < node.getChildNodes().getLength(); i++ )
+            {
+            	Node test = node.getChildNodes().item(i);
+            	if(test.getNodeName().equalsIgnoreCase("ITEM") )
+            	{
+            		childs = test.getChildNodes();
+            		break;
+            	}
+            }
             for (int i = 0; i < childs.getLength(); i++) {
                 Node n = childs.item(i);
                 if (n.getNodeName() == "dc:title") {
@@ -330,8 +333,18 @@ public class ChannelBase {
         	log.debug(metadata);
             Document doc = getDocument();//
             Node node = doc.getFirstChild();
-            Node item = node.getFirstChild();
-            NodeList childs = item.getChildNodes();
+            NodeList childs = null;
+            for(int i = 0; i < node.getChildNodes().getLength(); i++ )
+            {
+            	Node test = node.getChildNodes().item(i);
+            	if(test.getNodeName().equalsIgnoreCase("ITEM") )
+            	{
+            		childs = test.getChildNodes();
+            		break;
+            	}
+            }
+            
+           
             for (int i = 0; i < childs.getLength(); i++) {
                 Node n = childs.item(i);
                 if ("dc:title".equals(n.getNodeName())) {
@@ -396,6 +409,11 @@ public class ChannelBase {
         } catch (Exception e) {
             log.error("Error GetTrackDetails", e);
         }
+    }
+    
+    private void getTrackDetailsKazoo()
+    {
+    	
     }
 
     private void setDate(String date) {

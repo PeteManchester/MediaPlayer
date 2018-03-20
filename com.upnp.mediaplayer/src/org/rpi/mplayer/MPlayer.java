@@ -56,6 +56,7 @@ public class MPlayer extends Observable   implements IPlayer, Observer  {
 		log.info("Starting to playTrack Id: " + uniqueId + " " + track.getFullDetails());
 		//String url = track.getUri();
 		String url = checkURL(track.getUri());
+		log.debug("FileParser Returned: " + url);
 		try {
 			initProcess(url);
 		} catch (Exception e) {

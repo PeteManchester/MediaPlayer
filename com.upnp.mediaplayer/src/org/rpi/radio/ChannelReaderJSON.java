@@ -1,5 +1,6 @@
 package org.rpi.radio;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -119,23 +120,76 @@ public class ChannelReaderJSON implements Runnable {
 	}
 
 	private void getJsonFromReader(Reader reader,String url) {
+		String test = "";
 		try {
-			log.debug("Attempting to Reader for URL: " + url);
-			JsonReader jsonReader = Json.createReader(reader);
+			test = getJSONFromReader(reader);
+			log.debug("####TuneIn. Attempting to Reader for URL: " + url + " \r\n" + test);
+			//JsonReader jsonReader = Json.createReader(reader);
+			JsonReader jsonReader = Json.createReader(new StringReader(test));
 			JsonObject array = jsonReader.readObject();
 			jsonReader.close();
 			getBody(array);
 		} catch (Exception e) {
-			printReader(reader);
-			log.error("Error Reading RadioList.json from given reader", e);
+			log.error("####TuneIn. Error Reading RadioList.json from given reader. " + url + "\r\n #####" + test, e);
+			//printReader(reader);
 		}
 	}
 	
-	private void printReader(Reader reader)
+	
+	private String getJSONFromReader(Reader reader)
 	{
-		java.util.Scanner s = new java.util.Scanner(reader).useDelimiter("\\A");
+		BufferedReader br = null;
+		StringBuilder sb = new StringBuilder();
+		
+		String line;
+		try {
+
+			br = new BufferedReader(reader);
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+			}
+
+		} catch (IOException e) {
+			log.error("Error Printing Reader",e);
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					log.error("Error Printing Reader",e);
+				}
+			}
+		}
+	    return  sb.toString();
+	}
+	
+	private void printReader(Reader reader)
+	{		
+		BufferedReader br = null;
+		StringBuilder sb = new StringBuilder();
+		
+		String line;
+		try {
+
+			br = new BufferedReader(reader);
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+			}
+
+		} catch (IOException e) {
+			log.error("Error Printing Reader",e);
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					log.error("Error Printing Reader",e);
+				}
+			}
+		}		
+		
 		log.info("####BAD RADIO START");
-	    log.info( s.hasNext() ? s.next() : "");
+	    log.info( sb.toString());
 	    log.info("####BAD RADIO END");
 	}
 

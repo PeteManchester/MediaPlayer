@@ -17,18 +17,17 @@ import org.apache.log4j.Logger;
  */
 public class ASHXParser {
 
-	private static Logger log = Logger.getLogger(M3UParser.class);
+	private static Logger log = Logger.getLogger(ASHXParser.class);
 	
 	public LinkedList<String> getStreamingUrl(String url) {
 		log.debug("Get URLs from : " + url);
 		LinkedList<String> murls = new LinkedList<String>();
 		try {
 			return getStreamingUrl(getConnection(url));
-		} catch (MalformedURLException e) {
-			log.error(e);
-		} catch (IOException e) {
-			log.error(e);
-		}
+		} catch (Exception e) {
+			log.error("getStreamtingURL Exception. URL: " + url,e);
+		} 
+		log.debug("Get URLs from : " + url + " Returning: " + murls.size());
 		murls.add(url);
 		return murls;
 	}

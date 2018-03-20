@@ -1,6 +1,5 @@
 package org.rpi.providers;
 
-import java.security.AccessController;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
@@ -17,8 +16,6 @@ import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgCredentials1;
 import org.rpi.credentials.CredentialInfo;
 import org.rpi.utils.Utils;
-
-import sun.security.action.GetPropertyAction;
 
 public class PrvCredentials extends DvProviderAvOpenhomeOrgCredentials1 implements IDisposableDevice {
 
@@ -176,7 +173,10 @@ public class PrvCredentials extends DvProviderAvOpenhomeOrgCredentials1 implemen
 	 */
 	private String getPublicKey() {
 		StringBuffer sb = new StringBuffer();
-		String lineSeparator = ((String) AccessController.doPrivileged(new GetPropertyAction("line.separator")));
+		//String lineSeparator = ((String) AccessController.doPrivileged(new GetPropertyAction("line.separator")));
+		String lineSepartor = System.lineSeparator();
+		String lineSeparator = System.getProperty("line.separator");
+		
 		// String lineSeparator = "\r\n";
 		try {
 			KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");

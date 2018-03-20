@@ -3,6 +3,8 @@ package org.rpi.utils;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
@@ -179,12 +181,21 @@ public class Utils {
 	 * @param duration
 	 * @return
 	 */
+
 	public static long parseDurationString(String duration) {
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 			sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-			Date date = sdf.parse("1970-01-01 " + duration);
-			return date.getTime();
+			Date date = null;
+			try {
+				date = sdf.parse("1970-01-01 " + duration);
+			} catch (Exception e) {
+				duration += ".000";
+				date = sdf.parse("1970-01-01 " + duration);
+			}
+			if (date != null) {
+				return date.getTime();
+			}
 		} catch (Exception e) {
 			log.error("Error Converting HH:mm:ss to millis", e);
 		}

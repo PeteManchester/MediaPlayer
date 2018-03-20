@@ -129,7 +129,18 @@ public class FileParser {
 					{
 						return urls.get(0);
 					}
+				}else if (content_type != null && content_type.contains("VND.APPLE.MPEGURL"))
+				{
+					log.debug("VND.APPLE.MPEGURL, use M3UParser File: " + url);
+					M3UParser m3u = new M3UParser();
+					LinkedList<String> urls = m3u.getStreamingUrl(url);
+					if((urls.size()>0))
+					{
+						log.debug("FileParser Returned: " + urls.get(0));
+						return urls.get(0);
+					}
 				}
+				
 				else
 				{
 					log.warn("##################Could Not Find File Type##########################");
