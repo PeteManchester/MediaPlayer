@@ -1,6 +1,7 @@
 package org.rpi.plugin.lcddisplay;
 
 import java.io.File;
+
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -33,6 +34,23 @@ import org.w3c.dom.NodeList;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.wiringpi.Lcd;
 
+/**
+ * Added Config options for GPIO Pins:
+ * pin_rs     - Default 11
+ * pin_strobe - Default 10
+ * pin_data_1 - Default 0
+ * pin_data_2 - Default 1
+ * pin_data_3 - Default 2
+ * pin_data_4 - Default 3
+ * pin_data_5 - Default 0
+ * pin_data_6 - Default 0
+ * pin_data_7 - Default 0
+ * pin_data_8 - Default 0
+ * 
+ * @author phoyle
+ *
+ */
+
 @PluginImplementation
 public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 
@@ -49,6 +67,17 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 	public ArrayList<RowDefinition> row_definition = new ArrayList<RowDefinition>();
 	public ArrayList<RowDefinition> standby_definition = new ArrayList<RowDefinition>();
 	public int LCD_COLUMNS = 20;
+	public int LCD_PIN_RS = 11;
+	public int LCD_PIN_STROBE = 10;
+	public int LCD_PIN_DATA_1 = 0;
+	public int LCD_PIN_DATA_2 = 1;
+	public int LCD_PIN_DATA_3 = 2;
+	public int LCD_PIN_DATA_4 = 3;
+	public int LCD_PIN_DATA_5 = 0;
+	public int LCD_PIN_DATA_6 = 0;
+	public int LCD_PIN_DATA_7 = 0;
+	public int LCD_PIN_DATA_8 = 0;
+	
 	public final static int LCD_BITS = 4;
 	private int lcdHandle = -1;
 	private long mVolume = 100;
@@ -90,7 +119,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 			gpio = OSManager.getInstance().getGpio();
 			if (null == gpio)
 				throw new IllegalArgumentException("GPIO Not Initialized");
-
+			/*
 			lcdHandle = Lcd.lcdInit(LCD_ROWS, // number of row supported by LCD
 					LCD_COLUMNS, // number of columns supported by LCD
 					LCD_BITS, // number of bits used to communicate to LCD
@@ -105,6 +134,24 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 					0, // LCD data bit 7 (set to 0 if using 4 bit communication)
 					0); // LCD data bit 8 (set to 0 if using 4 bit
 						// communication)
+						 * 
+						 */
+			
+			lcdHandle = Lcd.lcdInit(LCD_ROWS, // number of row supported by LCD
+					LCD_COLUMNS, // number of columns supported by LCD
+					LCD_BITS, // number of bits used to communicate to LCD
+					LCD_PIN_RS, // LCD RS pin
+					LCD_PIN_STROBE, // LCD strobe pin
+					LCD_PIN_DATA_1, // LCD data bit 1
+					LCD_PIN_DATA_2, // LCD data bit 2
+					LCD_PIN_DATA_3, // LCD data bit 3
+					LCD_PIN_DATA_4, // LCD data bit 4
+					LCD_PIN_DATA_5, // LCD data bit 5 (set to 0 if using 4 bit communication)
+					LCD_PIN_DATA_6, // LCD data bit 6 (set to 0 if using 4 bit communication)
+					LCD_PIN_DATA_7, // LCD data bit 7 (set to 0 if using 4 bit communication)
+					LCD_PIN_DATA_8); // LCD data bit 8 (set to 0 if using 4 bit
+						// communication)
+			
 
 			// verify initialization
 			if (lcdHandle == -1) {
@@ -274,6 +321,23 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 		}
 		return "" + lTime;
 	}
+	
+	private int getIntValue(String path, Document doc)
+	{
+		int res = -1;
+		try
+		{
+			XPath xPath = XPathFactory.newInstance().newXPath();
+			String sColumns = xPath.compile(path).evaluate(doc);
+			log.debug("Value of '" + path + "' : " + sColumns);
+			res = Integer.parseInt(sColumns);
+		}
+		catch(Exception e)
+		{
+			log.error("Error, Config Option '" + "' Not Found", e  );
+		}
+		return res;
+	}
 
 	private void getConfig() {
 		try {
@@ -284,7 +348,66 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			Document doc = builder.parse(new File(path + "LCD.xml"));
-
+			
+			int value = getIntValue("/LCD/@columns",doc);
+			if(value >= 0 )
+			{
+				log.info("String LCD Colums: " + value);
+				LCD_COLUMNS = value;
+			}
+			
+			value = getIntValue("/LCD/@pin_rs",doc);
+			if(value >=0)
+			{
+				log.info("String LCD pin_rs: " + value);
+				LCD_PIN_RS = value;
+			}
+			
+			value = getIntValue("/LCD/@pin_strobe",doc);
+			if(value >=0)
+			{
+				log.info("String LCD pin_strobe: " + value);
+				LCD_PIN_RS = value;
+			}
+			
+			for(int i=1; i<=8;i++)
+			{
+				value = getIntValue("/LCD/@pin_data_"+ i,doc);
+				if(value >=0)
+				{
+					log.info("String LCD pin_data_" + i + ": " + value);
+					switch(i)
+					{
+					case 1:
+						LCD_PIN_DATA_1 = value;
+						break;
+					case 2:
+						LCD_PIN_DATA_2 = value;
+						break;
+					case 3:
+						LCD_PIN_DATA_3 = value;
+						break;
+					case 4:
+						LCD_PIN_DATA_4 = value;
+						break;
+					case 5:
+						LCD_PIN_DATA_5 = value;
+						break;
+					case 6:
+						LCD_PIN_DATA_6 = value;
+						break;
+					case 7:
+						LCD_PIN_DATA_7 = value;
+						 break;
+					case 8:
+						LCD_PIN_DATA_8 = value;
+						break;
+					}
+				}
+			}
+		
+			
+			/*
 			try {
 				String ex_columns = "/LCD/@columns";
 				XPath xPath = XPathFactory.newInstance().newXPath();
@@ -294,6 +417,7 @@ public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 			} catch (Exception e) {
 				log.debug("Error getting Number of Columns:", e);
 			}
+			*/
 			NodeList listOfRows = doc.getElementsByTagName("lcdrow");
 			log.debug("Number of Rows: " + listOfRows.getLength());
 			LCD_ROWS = listOfRows.getLength();
