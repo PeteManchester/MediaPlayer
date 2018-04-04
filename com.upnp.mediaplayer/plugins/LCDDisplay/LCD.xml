@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<LCD columns="20" pin_rs="11" pin_strobe="10" pin_data_1="99" pin_data_2="100" pin_data_3="101" pin_data_4="102" pin_data_5="103" pin_data_6="104" pin_data_7="105" pin_data_8="106">
+<LCD columns="20" pin_rs="11" pin_strobe="10" pin_data_1="0" pin_data_2="1" pin_data_3="2" pin_data_4="3" pin_data_5="0" pin_data_6="0" pin_data_7="0" pin_data_8="0">
 
  
     <lcdrow><text> Artist:[PERFORMER] Album:[ALBUM] Title:[TITLE] Composer:[COMPOSER] Conductor:[CONDUCTOR] Year:[DATE{yyyy}]</text></lcdrow>
