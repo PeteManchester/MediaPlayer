@@ -25,7 +25,7 @@ We support the following UPnP and OpenHome Functionality:
 
 * [PlayLists](http://www.openhome.org/wiki/Av:Developer:PlaylistService)
 * [Radio](http://www.openhome.org/wiki/Av:Developer:RadioService)
-* [SongCast](http://www.linn.co.uk/software#songcast)
+* [SongCast (Receiver)](http://www.linn.co.uk/software#songcast)
 
 Also supported is Apples AirPlay Receiver. 
 
