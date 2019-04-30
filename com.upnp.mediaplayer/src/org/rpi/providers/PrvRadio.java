@@ -35,6 +35,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 
 	private List<ChannelRadio> channels = new ArrayList<ChannelRadio>();
 	private int current_channel = -99;
+	private ChannelRadio current_channel_radio = null;
 	private long last_updated = 0;
 
 	// "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='6000' nrAudioChannels='2' protocolInfo='http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01'>http://cast.secureradiocast.co.uk:8004/;stream.mp3</res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>http://www.mediauk.com/logos/100/226.png</upnp:albumArtURI></item></DIDL-Lite>";
@@ -134,6 +135,11 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 			getChannelById();
 		} else {
 			log.debug("Current Channel " + current_channel + " Not Playing..");
+			if(current_channel_radio !=null) {
+				if (current_channel_radio.getId() == current_channel) {
+					playChannel(current_channel_radio);
+				}
+			}
 		}
 	};
 
@@ -152,10 +158,14 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 
 	@Override
 	protected void setChannel(IDvInvocation paramIDvInvocation, String uri, String metadata) {
-		log.debug("SetChannel" + Utils.getLogText(paramIDvInvocation));
-		ChannelRadio channel = new ChannelRadio(uri, metadata, 2, "");
-		channels.add(channel);
-		array = UpdateIdArray();
+		String prefix = paramIDvInvocation.getResourceUriPrefix();
+		String test = paramIDvInvocation.toString();
+		log.debug("SetChannel" + Utils.getLogText(paramIDvInvocation));		
+		//ChannelRadio channel = new ChannelRadio(uri, metadata, 2, "");
+		current_channel_radio = new ChannelRadio(uri,metadata,-99,"");
+		current_channel = -99;
+		//channels.add(channel);
+		//array = UpdateIdArray();
 	}
 
 	@Override

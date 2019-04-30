@@ -92,35 +92,44 @@ public class StartMe {
 		setAudioDevice();
 		log.info("JVM Version: " + System.getProperty("java.version"));
 		printSystemProperties();
-		SimpleDevice sd = new SimpleDevice();
+		try
+		{
+			SimpleDevice sd = new SimpleDevice();
+			sd.attachShutDownHook();
+			if (bInput) {
+
+				BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+				String line = "";
+
+				try {
+					while (line.equalsIgnoreCase("quit") == false) {
+						line = in.readLine();
+					}
+					in.close();
+				} catch (Exception e) {
+					log.error(e.getMessage(), e);
+				}
+			}
+
+			else {
+				while (!stop) {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						log.error("Error", e);
+					}
+				}
+			}
+			System.exit(0);
+		}
+		catch(Exception e)
+		{
+			log.error("PETE!!!!!", e);
+		}
+		
 
 		// loadPlugins();
-		sd.attachShutDownHook();
-		if (bInput) {
-
-			BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-			String line = "";
-
-			try {
-				while (line.equalsIgnoreCase("quit") == false) {
-					line = in.readLine();
-				}
-				in.close();
-			} catch (Exception e) {
-				log.error(e.getMessage(), e);
-			}
-		}
-
-		else {
-			while (!stop) {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					log.error("Error", e);
-				}
-			}
-		}
-		System.exit(0);
+		
 	}
 
 	/***

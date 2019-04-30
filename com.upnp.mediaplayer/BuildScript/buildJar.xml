@@ -38,22 +38,28 @@
 	
 	<target name="deployStudy">
 		<antcall target="CopyFilesToRaspi">
-			<param name="server_name" value="rpistudy.local" />
+			<param name="server_name" value="rpistudy" />
 		</antcall>
 	</target>
 
 	<target name="deployLounge">
 		<antcall target="CopyFilesToRaspi">
-			<param name="server_name" value="rpilounge.local" />
+			<param name="server_name" value="rpilounge" />
 		</antcall>
 	</target>
 	<target name="deployBedroom">
 		<antcall target="CopyFilesToRaspi">
-			<param name="server_name" value="rpibedroom.local" />
+			<param name="server_name" value="rpibedroom" />
 		</antcall>
 	</target>
 	
-		<target name="deployPi2">
+	<target name="deployGarden">
+			<antcall target="CopyFilesToRaspi">
+				<param name="server_name" value="rpigarden" />
+			</antcall>
+	</target>
+	
+	<target name="deployPi2">
 		<antcall target="CopyFilesToRaspi">
 			<param name="server_name" value="rpipi2.local" />
 		</antcall>

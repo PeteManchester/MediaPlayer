@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgVolume1;
+import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgVolume2;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventMuteChanged;
@@ -13,7 +14,7 @@ import org.rpi.utils.Utils;
 import java.util.Observable;
 import java.util.Observer;
 
-public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observer, IDisposableDevice {
+public class PrvVolume extends DvProviderAvOpenhomeOrgVolume2 implements Observer, IDisposableDevice {
 
 	private Logger log = Logger.getLogger(PrvVolume.class);
 
@@ -157,4 +158,5 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume1 implements Observe
     public String getName() {
         return "Volume";
     }
+
 }

@@ -1,9 +1,13 @@
 package org.rpi.providers;
 
+import java.util.Observable;
+import java.util.Observer;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
-import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgProduct1;
+import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgProduct2;
 import org.rpi.config.Config;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
@@ -12,25 +16,24 @@ import org.rpi.player.events.EventStandbyChanged;
 import org.rpi.plugingateway.PluginGateWay;
 import org.rpi.utils.Utils;
 
-import java.util.Observable;
-import java.util.Observer;
-import java.util.concurrent.CopyOnWriteArrayList;
+public class PrvProduct extends DvProviderAvOpenhomeOrgProduct2 implements Observer, IDisposableDevice {
 
-public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Observer, IDisposableDevice {
-
+	
 	private Logger log = Logger.getLogger(PrvProduct.class);
 	private String friendly_name = Config.getInstance().getMediaplayerFriendlyName();
 	// private String iSourceXml =
 	// "<SourceList><Source><Name>Playlist</Name><Type>Playlist</Type><Visible>1</Visible></Source><Source><Name>Receiver</Name><Type>Receiver</Type><Visible>1</Visible></Source><Source><Name>Radio</Name><Type>Radio</Type><Visible>1</Visible></Source></SourceList>";
 	private String iSourceXml = "";
 	// private boolean standby = true;
+	//private String attributes = "Info Credentials Time Volume Receiver Sender App:Config=:59148/Softplayer/index.html App:Config=http://192.168.1.30";
 	private String attributes = "Info Time Volume Receiver Sender";
+	
 	// private String attributes = "";
 	private String man_name = "Java Inc";
 	private String man_info = "Developed in Java using OpenHome";
 	private String man_url = "";
 	private String man_image = "";
-	private String model_name = "Test Model Name";
+	private String model_name = "Music Renderer";
 	private String model_info = "Test Model Info";
 	private String model_url = "";
 	private String model_image = "";
@@ -47,6 +50,13 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	public PrvProduct(DvDevice iDevice) {
 		super(iDevice);
 		log.debug("Creating CustomProduct");
+		
+		String tuneInPartnerID = Config.getInstance().getRadioTuneInPartnerId();
+		if(!Utils.isEmpty(tuneInPartnerID))
+		{
+			log.debug("TuneInPartnerID is not empty, enable the Credentials provider");
+			attributes += " Credentials";
+		}		
 		iPlayer = PlayManager.getInstance();
 		enablePropertyStandby();
 		enablePropertyAttributes();
@@ -66,6 +76,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 		enablePropertySourceIndex();
 		enablePropertySourceCount();
 		enablePropertySourceXml();
+
 
 		setPropertyStandby(PlayManager.getInstance().isStandby());
 		setPropertyAttributes(attributes);
@@ -89,14 +100,16 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 		setPropertySourceIndex(4);
 		setPropertySourceCount(sources.size());
 		setPropertySourceXml(iSourceXml);
-
-		enableActionManufacturer();
+		
+		
+    	enableActionManufacturer();
 		enableActionModel();
 		enableActionProduct();
 		enableActionStandby();
 		enableActionSetStandby();
 		enableActionSourceCount();
 		enableActionSourceXml();
+		enableActionSetSourceBySystemName();
 		enableActionSourceIndex();
 		enableActionSetSourceIndex();
 		enableActionSetSourceIndexByName();
@@ -229,6 +242,11 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 
 	}
 	
+	@Override
+	protected void setSourceBySystemName(IDvInvocation paramIDvInvocation, String name) {
+		log.debug("SetSourceBySystemName: " + name);
+	}
+	
 	/**
 	 * Private method to change the Source Index and fire an event
 	 * @param index
@@ -269,6 +287,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 
 	public void updateStandby(boolean standby) {
 		propertiesLock();
+		log.debug("updateStandby: " + standby);
 		setPropertyStandby(standby);
 		propertiesUnlock();
 	}
@@ -302,6 +321,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	@Override
 	public void update(Observable o, Object arg) {
 		EventBase e = (EventBase) arg;
+		log.debug("update: " + arg);
 		switch (e.getType()) {
 		case EVENTSTANDBYCHANGED:
 			EventStandbyChanged ev = (EventStandbyChanged) e;
@@ -336,4 +356,6 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Obser
 	public String getName() {
 		return "Product";
 	}
+
+
 }
