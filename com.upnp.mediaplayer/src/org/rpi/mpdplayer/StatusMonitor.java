@@ -83,6 +83,7 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 				}
 			}
 			value = res.get("time");
+			//log.debug("Time: " + value);
 			if(value !=null)
 			{
 				String[] splits = value.split(":");
@@ -109,6 +110,7 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 				if (lTime > 0 && lDuration > 0) {
 					if ((lDuration - lTime) < Config.getInstance().getMpdPreloadTimer()) {
 						if (!sentFinishingEvent) {
+							log.debug("Current Track is finishing");
 							EventCurrentTrackFinishing ev = new EventCurrentTrackFinishing();
 							fireEvent(ev);
 							sentFinishingEvent = true;

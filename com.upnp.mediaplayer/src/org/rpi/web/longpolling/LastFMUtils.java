@@ -8,13 +8,15 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
+//import javax.json.Json;
+//import javax.json.JsonArray;
+//import javax.json.JsonObject;
+//import javax.json.JsonReader;
 
 public class LastFMUtils {
 
@@ -78,35 +80,36 @@ public class LastFMUtils {
 
 	private ArtistInfo getBioInfo(String info) {
 		ArtistInfo artistInfo = new ArtistInfo();
-		JsonReader reader = Json.createReader(new StringReader(info));
-		JsonObject jsonObject = reader.readObject();
-		reader.close();
-		if (jsonObject.containsKey("artist")) {
-			JsonObject artist = jsonObject.getJsonObject("artist");
-			if (artist.containsKey("bio")) {
-				JsonObject bio = artist.getJsonObject("bio");
+		//JsonReader reader = Json.createReader(new StringReader(info));
+		//JsonObject jsonObject = reader.readObject();
+		JSONObject jsonObject = new JSONObject(info);
+		//reader.close();
+		if (jsonObject.has("artist")) {
+			JSONObject artist = jsonObject.getJSONObject("artist");
+			if (artist.has("bio")) {
+				JSONObject bio = artist.getJSONObject("bio");
 				//log.debug("Bio: " + bio);
 
-				if (bio.containsKey("content")) {
+				if (bio.has("content")) {
 					String content = bio.getString("content");
 
 					if (!content.equals("")) {
 						artistInfo.setBiography(content);
 					} else {
-						if (bio.containsKey("summary")) {
+						if (bio.has("summary")) {
 							String summary = bio.getString("summary");
 							artistInfo.setBiography(summary);
 						}
 					}
 				}
 			}
-			if (artist.containsKey("image")) {
-				JsonArray images = artist.getJsonArray("image");
+			if (artist.has("image")) {
+				JSONArray images = artist.getJSONArray("image");
 				if (images != null) {
 					for (Object o : images) {
-						if (o instanceof JsonObject) {
-							JsonObject image = (JsonObject) o;
-							if (image.containsKey("size")) {
+						if (o instanceof JSONObject) {
+							JSONObject image = (JSONObject) o;
+							if (image.has("size")) {
 								String size = image.getString("size");
 								String url = image.getString("#text");
 								if (!url.equals("")) {

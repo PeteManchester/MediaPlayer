@@ -284,7 +284,8 @@ public class WorkqeueEvents implements Runnable {
 		try {
 			String mArtist = artist;
 			String mSong = title;
-			String first_part = "http://lyrics.wikia.com/";
+			//String first_part = "http://lyrics.wikia.com/";
+			String first_part = "https://lyrics.fandom.com/";
 			String sURL = first_part + mArtist + ":" + mSong;
 			if (mArtist.equalsIgnoreCase("") || mSong.equalsIgnoreCase("")) {
 
@@ -351,6 +352,7 @@ public class WorkqeueEvents implements Runnable {
 			BufferedReader in = null;
 			try {
 				in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+				
 				String lyrics = "";
 				net.htmlparser.jericho.Source source = new net.htmlparser.jericho.Source(in);
 				List<Element> elements = source.getAllElements("div");
@@ -374,6 +376,7 @@ public class WorkqeueEvents implements Runnable {
 					}
 				}
 			} catch (Exception e) {
+				log.error("Error Get Lytrics: " ,e );
 
 			} finally {
 				if (in != null) {

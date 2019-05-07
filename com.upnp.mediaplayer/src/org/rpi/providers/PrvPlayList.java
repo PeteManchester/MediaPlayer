@@ -11,6 +11,7 @@ import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventPlayListPlayingTrackID;
 import org.rpi.player.events.EventPlayListStatusChanged;
+import org.rpi.player.events.EventPlayListUpdateList;
 import org.rpi.player.events.EventPlayListUpdateShuffle;
 import org.rpi.playlist.PlayListReader;
 import org.rpi.playlist.PlayListWriter;
@@ -161,10 +162,14 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 
 	protected void deleteAll(IDvInvocation paramIDvInvocation) {
 		log.debug("DeleteAll" + Utils.getLogText(paramIDvInvocation));
+		deleteAllTracks();
+	};
+	
+	private void deleteAllTracks() {
 		tracks.clear();
 		UpdateIdArray();
 		iPlayer.deleteAllTracks();
-	};
+	}
 
 	protected void deleteId(IDvInvocation paramIDvInvocation, long iD) {
 		log.debug("DeleteId: " + iD + Utils.getLogText(paramIDvInvocation));
@@ -328,18 +333,10 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 			for (int i = 0; i < numOfBytes; ++i) {
 				int index = 8 * i;
 				String sByte = myBytes.substring(index, index + 8);
-				// try {
-				// log.debug("Byte: " + sByte);
 				Integer x = Integer.parseInt(sByte, 2);
 				Byte sens = (byte) x.intValue();
-				// byte b = Byte.parseByte(sByte, 2);
 				bytes[i] = sens;
-				// } catch (Exception e) {
-				// log.error("Error parseByte: " + sByte , e);
-				// }
-
 			}
-			//log.debug("UpdateIdArray: " + sb.toString());
 			setPropertyIdArray(bytes);
 			if (bUpdateFile) {
 				plw.trigger(tracks);
@@ -437,7 +434,20 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 			EventPlayListUpdateShuffle eps = (EventPlayListUpdateShuffle) e;
 			updateShuffle(eps.isShuffle());
 			break;
+			
+		case EVENTPLAYLISTUPDATELIST:
+			EventPlayListUpdateList epl = (EventPlayListUpdateList) e;
+			log.debug("PETE!!!!!!!!!!!!!!!!!!!!!!!!!Clear Tracks");
+			deleteAllTracks();
+			log.debug("PETE!!!!!!!!!!!!!!!!!!!!!!!!Tracks Clear");
 
+			log.debug("PETE!!!!!!!!!!!!!!!!!!!!!!!!!Set Tracks");
+			this.tracks = (CopyOnWriteArrayList<ChannelPlayList>) epl.getChannels().clone();			
+			UpdateIdArray();
+			log.debug("PETE!!!!!!!!!!!!!!!!!!!!!!!!!Tracks Set");		
+			iPlayer.setTracks(epl.getChannels());	
+			PlayManager.getInstance().play();
+			
 		}
 
 	}

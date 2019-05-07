@@ -16,13 +16,13 @@ import java.util.List;
 import java.util.Properties;
 import java.util.TreeSet;
 
-import javax.json.JsonObject;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.RollingFileAppender;
+import org.json.JSONObject;
 import org.rpi.log.CustomPatternLayout;
 import org.rpi.log.MemoryAppender;
 import org.rpi.utils.Utils;
@@ -752,7 +752,7 @@ public class Config {
 	 * 
 	 * @param configObject
 	 */
-	public void updateConfig(JsonObject configObject) {
+	public void updateConfig(JSONObject configObject) {
 		try {
 			for (String key : configObject.keySet()) {
 				String value = configObject.getString(key);

@@ -1,13 +1,11 @@
 package org.rpi.alarm;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
+/*
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -15,8 +13,11 @@ import javax.json.JsonReader;
 import javax.json.JsonWriter;
 import javax.json.JsonWriterFactory;
 import javax.json.stream.JsonGenerator;
+*/
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class AlarmFileUtils {
 
@@ -30,7 +31,17 @@ public class AlarmFileUtils {
 	/**
 	 * Get a JSON Object from a File
 	 */
-	private JsonObject getJSONFromFile() {
+	private JSONObject getJSONFromFile() {
+		JSONObject array = new JSONObject();
+		String content;
+		try {
+			content = new String(Files.readAllBytes(Paths.get(fileName)));
+			array = new JSONObject(content);
+		} catch (IOException e) {
+			log.error("getJSONFromFile",e);
+		}		
+		return array;
+		/*
 		Reader reader = null;
 		try {
 			reader = new FileReader(fileName);
@@ -41,9 +52,11 @@ public class AlarmFileUtils {
 		}
 
 		return this.getJsonFromReader(reader);
+		*/
 	}
 
-	private JsonObject getJsonFromReader(Reader reader) {
+	/*
+	private JSONObject getJsonFromReader(Reader reader) {
 		try {
 			JsonReader jsonReader = Json.createReader(reader);
 			JsonObject array = jsonReader.readObject();
@@ -54,12 +67,13 @@ public class AlarmFileUtils {
 		}
 		return null;
 	}
+	*/
 
-	public JsonObject getAlarms() {
+	public JSONObject getAlarms() {
 		return getJSONFromFile();
 	}
 
-	private JsonArray getAlarms(JsonObject array) {
+	private JSONArray getAlarms(JSONObject array) {
 
 		boolean enabled = false;
 		String name = "No Name";
@@ -71,14 +85,27 @@ public class AlarmFileUtils {
 
 		if (array == null)
 			return null;
-		if (array.containsKey("alarms")) {
-			JsonArray body = array.getJsonArray("alarms");
+		if (array.has("alarms")) {
+			JSONArray body = array.getJSONArray("alarms");
 			return body;
 		}
 		return null;
 	}
 
-	public void saveJSON(JsonObject array) {
+	public void saveJSON(JSONObject array) {
+		
+		try {
+
+			FileWriter fw = new FileWriter(fileName);
+			String json = array.toString(2);
+			fw.write(json);
+			fw.close();
+
+		} catch (Exception e) {
+			log.error("Error Saving to: " + fileName, e);
+		}
+		
+		/*
 		try {
 			FileWriter sw = new FileWriter(fileName);
 			Map<String, Object> properties = new HashMap<>(1);
@@ -91,9 +118,11 @@ public class AlarmFileUtils {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		*/
 	}
 
-	public String getPrettyString(JsonObject array) {
+	/*
+	public String getPrettyString(JSONObject array) {
 		try {
 			StringWriter sw = new StringWriter(700);
 			Map<String, Object> properties = new HashMap<>(1);
@@ -109,5 +138,6 @@ public class AlarmFileUtils {
 		}
 		return "";
 	}
+	*/
 
 }

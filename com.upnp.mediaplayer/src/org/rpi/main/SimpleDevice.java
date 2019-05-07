@@ -5,21 +5,28 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.URL;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
 
 import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
-import org.bouncycastle.jcajce.provider.config.ProviderConfigurationPermission;
+import org.openhome.net.controlpoint.CpAttribute;
+import org.openhome.net.controlpoint.CpDevice;
+import org.openhome.net.controlpoint.CpDeviceListUpnpServiceType;
+import org.openhome.net.controlpoint.ICpDeviceListListener;
+import org.openhome.net.core.CombinedStack;
 import org.openhome.net.core.DebugLevel;
-import org.openhome.net.core.DeviceStack;
 import org.openhome.net.core.IMessageListener;
 import org.openhome.net.core.InitParams;
 import org.openhome.net.core.Library;
+import org.openhome.net.core.NetworkAdapter;
+import org.openhome.net.core.SubnetList;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.DvDeviceFactory;
 import org.openhome.net.device.IDvDeviceListener;
@@ -28,6 +35,8 @@ import org.openhome.net.device.IResourceWriter;
 import org.rpi.airplay.AirPlayThread;
 import org.rpi.alarm.Alarm;
 import org.rpi.config.Config;
+import org.rpi.controlpoint.DeviceInfo;
+import org.rpi.controlpoint.DeviceManager;
 import org.rpi.http.HttpServerGrizzly;
 import org.rpi.os.OSManager;
 import org.rpi.player.PlayManager;
@@ -36,7 +45,6 @@ import org.rpi.player.events.EventSourceChanged;
 import org.rpi.plugingateway.PluginGateWay;
 import org.rpi.providers.IDisposableDevice;
 import org.rpi.providers.PrvAVTransport;
-import org.rpi.providers.PrvConfig;
 import org.rpi.providers.PrvConnectionManager;
 import org.rpi.providers.PrvCredentials;
 import org.rpi.providers.PrvInfo;
@@ -54,7 +62,7 @@ import org.rpi.sources.SourceReader;
 import org.rpi.utils.NetworkUtils;
 import org.rpi.web.longpolling.PlayerStatus;
 
-public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessageListener, Observer {
+public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessageListener, Observer, ICpDeviceListListener {
 
 	private Logger log = Logger.getLogger(SimpleDevice.class);
 	private DvDevice iDevice = null;
@@ -64,7 +72,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	private PrvVolume iVolume = null;
 	private PrvPlayList iPlayList = null;
 	private PrvProduct iProduct = null;
-	//private PrvConfig iConfig = null;
+	// private PrvConfig iConfig = null;
 	private PrvPins iPins = null;
 	private PrvInfo iInfo = null;
 	private PrvTime iTime = null;
@@ -80,6 +88,8 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 	private PlayManager iPlayer = PlayManager.getInstance();
 
+	private CpDeviceListUpnpServiceType cpDeviceList = null;
+
 	// private PluginManager pm = null;
 
 	/***
@@ -87,8 +97,10 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	 */
 	public SimpleDevice() {
 		initSimpleDevice();
+		// iCPDevice = new CpDeviceImpl();
+		// iCPDevice.initCpDevice();
 	}
-	
+
 	private void initSimpleDevice() {
 		try {
 			PluginGateWay.getInstance().setSimpleDevice(this);
@@ -104,14 +116,31 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			}
 			// initParams.setDvEnableBonjour();
 			initParams.setFatalErrorHandler(this);
+			//initParams.setMsearchTimeSecs(1);
 
 			lib = Library.create(initParams);
 			lib.setDebugLevel(getDebugLevel(Config.getInstance().getOpenhomeLogLevel()));
 
-			DeviceStack ds = lib.startDv();
+			Inet4Address addr = NetworkUtils.getINet4Address();
+
+			CombinedStack ds = lib.startCombined(addr);
+			
+			SubnetList subnetList = new SubnetList();
+			for(int i = 0; i < subnetList.size();i++) {
+				NetworkAdapter nif = subnetList.getSubnet(i);
+				if(nif.getAddress().getHostAddress().equals(addr.getHostAddress())) {
+					lib.setCurrentSubnet(nif);
+					break;
+				}
+			}
+			subnetList.destroy();
+			
+			initControlPoint();
+
 			String friendly_name = Config.getInstance().getMediaplayerFriendlyName().replace(":", " ");
 			String iDeviceName = "device-" + friendly_name + "-" + NetworkUtils.getHostName() + "-MediaRenderer";
-			iDevice = new DvDeviceFactory(ds).createDeviceStandard(iDeviceName, this);
+			iDevice = new DvDeviceFactory(ds.getDeviceStack()).createDeviceStandard(iDeviceName, this);
+			iDevice.getAttribute("");
 			log.debug("Created StandardDevice: " + iDevice.getUdn());
 			iDevice.setAttribute("Upnp.IconList", this.constructIconList(iDeviceName));
 
@@ -123,7 +152,12 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			iDevice.setAttribute("Upnp.Manufacturer", "Made in Manchester");
 			iDevice.setAttribute("Upnp.ModelName", "Open Home Java Renderer: v" + Config.getInstance().getVersion());
 			iDevice.setAttribute("Upnp.ModelDescription", "'We Made History Not Money' - Tony Wilson..");
-			iDevice.setAttribute("Upnp.PresentationUrl", "http://" + NetworkUtils.getIPAddress() + ":" + Config.getInstance().getWebServerPort());
+			iDevice.setAttribute("Upnp.PresentationUrl", "http://" + NetworkUtils.getIPAddress() + ":" + Config.getInstance().getWebServerPort() + "/MainPage.html");
+			
+			
+			// iDevice.setAttribute("Upnp.PresentationUrl",
+			// "http://192.168.1.181:8088/MainPage.html");
+
 			// iDevice.setAttribute("Upnp.IconList" , sb.toString());
 			// iDevice.setAttribute("Upnp.ModelUri", "www.google.co.uk");
 			// iDevice.setAttribute("Upnp.ModelImageUri","http://upload.wikimedia.org/wikipedia/en/thumb/0/04/Joy_Division.JPG/220px-Joy_Division.JPG");
@@ -143,7 +177,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 				iAVTransport = new PrvAVTransport(iDevice);
 				iRenderingControl = new PrvRenderingControl(iDevice);
 			}
-			//iConfig = new PrvConfig(iDevice);
+			// iConfig = new PrvConfig(iDevice);
 			iSongcastSender = new PrvSongcast(iDevice);
 			iCredentials = new PrvCredentials(iDevice);
 			// updateRadioList();
@@ -195,9 +229,10 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			} else {
 				PlayManager.getInstance().setVolume(100);
 			}
-			
+
 			try {
-				//Force a updateRadioList to enable Kazoo to find Radio Stations..
+				// Force a updateRadioList to enable Kazoo to find Radio
+				// Stations..
 				updateRadioList();
 			} catch (Exception e) {
 				log.error("Problem with getting Radio List");
@@ -209,14 +244,28 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 				airplay.start();
 			}
 
-
-
 			PlayerStatus.getInstance();
 			Alarm.getInstance();
 			OSManager.getInstance().loadPlugins();
-		}catch(Exception e) {
-			log.error("PETE!!!!!",e);
+		} catch (Exception e) {
+			log.error("PETE!!!!!", e);
 		}
+	}
+
+	private void initControlPoint() {
+		//CpDeviceListUpnpAll all = new CpDeviceListUpnpAll(this);
+		cpDeviceList = new CpDeviceListUpnpServiceType("upnp.org", "ContentDirectory", 1, this);
+		/*
+		iSem = new Semaphore(1);
+		iSem.acquireUninterruptibly();
+		try {
+			iSem.tryAcquire(30 * 1000, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException ie) {
+			ie.printStackTrace();
+		}
+		*/
+		//CpDeviceListUpnpAll myList = new CpDeviceListUpnpAll(this);
+		//myList.refresh();
 	}
 
 	protected SimpleDevice(boolean test) {
@@ -259,52 +308,52 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		return sb.toString();
 	}
 
-	private int getDebugLevel(String sLevel) {
+	private long getDebugLevel(String sLevel) {
 
 		if (sLevel.equalsIgnoreCase("NONE")) {
-			return DebugLevel.None.ordinal();
+			return DebugLevel.None.longValue();
 		} else if (sLevel.equalsIgnoreCase("TRACE")) {
-			//return DebugLevel.T.ordinal();
+			// return DebugLevel.T.ordinal();
 		} else if (sLevel.equalsIgnoreCase("NETWORK")) {
-			return DebugLevel.Network.ordinal();
+			return DebugLevel.Network.longValue();
 		} else if (sLevel.equalsIgnoreCase("TIMER")) {
-			return DebugLevel.Timer.ordinal();
+			return DebugLevel.Timer.longValue();
 		} else if (sLevel.equalsIgnoreCase("SsdpMulticast")) {
-			return DebugLevel.SsdpMulticast.ordinal();
+			return DebugLevel.SsdpMulticast.longValue();
 		} else if (sLevel.equalsIgnoreCase("SsdpUnicast")) {
-			return DebugLevel.SsdpUnicast.ordinal();
+			return DebugLevel.SsdpUnicast.longValue();
 		} else if (sLevel.equalsIgnoreCase("Http")) {
-			return DebugLevel.Http.ordinal();
+			return DebugLevel.Http.longValue();
 		} else if (sLevel.equalsIgnoreCase("Device")) {
-			return DebugLevel.Device.ordinal();
+			return DebugLevel.Device.longValue();
 		} else if (sLevel.equalsIgnoreCase("XmlFetch")) {
-			return DebugLevel.XmlFetch.ordinal();
+			return DebugLevel.XmlFetch.longValue();
 		} else if (sLevel.equalsIgnoreCase("Service")) {
-			return DebugLevel.Service.ordinal();
+			return DebugLevel.Service.longValue();
 		} else if (sLevel.equalsIgnoreCase("Event")) {
-			return DebugLevel.Event.ordinal();
+			return DebugLevel.Event.longValue();
 		} else if (sLevel.equalsIgnoreCase("Topology")) {
-			//return DebugLevel.Topology.ordinal();
+			// return DebugLevel.Topology.ordinal();
 		} else if (sLevel.equalsIgnoreCase("DvInvocation")) {
-			return DebugLevel.DvInvocation.ordinal();
+			return DebugLevel.DvInvocation.longValue();
 		} else if (sLevel.equalsIgnoreCase("DvInvocation")) {
-			return DebugLevel.DvInvocation.ordinal();
+			return DebugLevel.DvInvocation.longValue();
 		} else if (sLevel.equalsIgnoreCase("DvEvent")) {
-			return DebugLevel.DvEvent.ordinal();
+			return DebugLevel.DvEvent.longValue();
 		} else if (sLevel.equalsIgnoreCase("DvWebSocket")) {
-			return DebugLevel.DvWebSocket.ordinal();
+			return DebugLevel.DvWebSocket.longValue();
 		} else if (sLevel.equalsIgnoreCase("Bonjour")) {
-			return DebugLevel.Bonjour.ordinal();
+			return DebugLevel.Bonjour.longValue();
 		} else if (sLevel.equalsIgnoreCase("DvDevice")) {
-			return DebugLevel.DvDevice.ordinal();
+			return DebugLevel.DvDevice.longValue();
 		} else if (sLevel.equalsIgnoreCase("Error")) {
-			//return DebugLevel.
+			// return DebugLevel.
 		} else if (sLevel.equalsIgnoreCase("All")) {
-			return DebugLevel.All.ordinal();
+			return DebugLevel.All.longValue();
 		} else if (sLevel.equalsIgnoreCase("Verbose")) {
-			return DebugLevel.All.ordinal();
+			return DebugLevel.All.longValue();
 		}
-		return DebugLevel.None.ordinal();
+		return DebugLevel.None.longValue();
 	}
 
 	public void attachShutDownHook() {
@@ -356,6 +405,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			log.info("Destroying device");
 
 			try {
+
 				iDevice.destroy();
 				log.info("Destroyed device");
 			} catch (Exception e) {
@@ -366,7 +416,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		this.disposeDevice(iConnectionManager);
 		this.disposeDevice(iPlayList);
 		this.disposeDevice(iVolume);
-		//this.disposeDevice(iConfig);
+		// this.disposeDevice(iConfig);
 		this.disposeDevice(iPins);
 		this.disposeDevice(iCredentials);
 		this.disposeDevice(iProduct);
@@ -377,11 +427,16 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		this.disposeDevice(iAVTransport);
 		this.disposeDevice(iRenderingControl);
 		this.disposeDevice(iSongcastSender);
-		//this.disposeDevice(iCredentials);
+		// this.disposeDevice(iCredentials);
+		
+		if(this.cpDeviceList != null) {
+			cpDeviceList.destroy();
+		}
 
 		if (lib != null) {
 			try {
 				log.info("Attempting to Close DeviceStack");
+				//lib.abortProcess();
 				lib.close();
 				log.info("Closed DeviceStack");
 			} catch (Exception e) {
@@ -493,4 +548,30 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			break;
 		}
 	}
+
+	@Override
+	public void deviceAdded(CpDevice var1) {
+		synchronized (this) {
+			CpAttribute l = var1.getAttribute("Upnp.DeviceXml");
+			if(l.isAvailable()) {
+				String xml = l.getValue();
+				String udn = var1.getUdn();
+				DeviceInfo di = new DeviceInfo(var1.getUdn(),l.getValue());				
+				if(di.isValid()) {
+					DeviceManager.getInstance().addDevice(udn, di);
+				}
+				log.debug("Added: " +udn + " XML: " + xml);
+			}			
+		}
+	}
+
+	@Override
+	public void deviceRemoved(CpDevice var1) {
+		synchronized (this) {
+			log.debug("Removed: " + var1.getUdn());
+			String udn = var1.getUdn();
+			DeviceManager.getInstance().deleteDevice(udn);
+		}
+	}
+
 }

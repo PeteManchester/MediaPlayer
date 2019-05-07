@@ -1,6 +1,7 @@
 package org.rpi.player;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
@@ -22,6 +23,7 @@ import org.rpi.player.events.EventFinishedCurrentTrack;
 import org.rpi.player.events.EventMuteChanged;
 import org.rpi.player.events.EventPlayListPlayingTrackID;
 import org.rpi.player.events.EventPlayListStatusChanged;
+import org.rpi.player.events.EventPlayListUpdateList;
 import org.rpi.player.events.EventPlayListUpdateShuffle;
 import org.rpi.player.events.EventRadioPlayName;
 import org.rpi.player.events.EventRadioPlayNext;
@@ -115,6 +117,7 @@ public class PlayManager implements Observer {
 				log.debug("We are playing a Channel, take out of Standby");
 				setStandby(false);
 			}
+			log.debug("PlayThis: " + t);
 			if (current_track instanceof ChannelSongcast) {
 				EventStopSongcast ev = new EventStopSongcast();
 				obsvSongcast.notifyChange(ev);
@@ -287,7 +290,7 @@ public class PlayManager implements Observer {
 	 * @return
 	 */
 	public ChannelPlayList getTrackFromId(int id) {
-		log.debug("GetTrakcFromId: " + id);
+		log.debug("GetTrackFromId: " + id);
 		for (ChannelPlayList t : tracks) {
 			if (t.getId() == id) {
 				return t;
@@ -347,6 +350,12 @@ public class PlayManager implements Observer {
 		EventPlayListUpdateShuffle ev = new EventPlayListUpdateShuffle();
 		ev.setShuffle(shuffle);
 		obsvPlayList.notifyChange(ev);
+	}
+	
+	public void podcastUpdatePlayList(List<ChannelPlayList> channels) {
+		EventPlayListUpdateList epl = new EventPlayListUpdateList();
+		epl.setChannels(channels);
+		obsvPlayList.notifyChange(epl);
 	}
 
 	/**
@@ -437,7 +446,13 @@ public class PlayManager implements Observer {
 
 	public synchronized void setCurrentTrack(ChannelBase track) {
 		current_track = track;
-		log.debug("Current Track Id: " + track.getId());
+		if(track !=null) {
+			log.debug("Current Track Id: " + track.getId());
+		}
+		else {
+			log.debug("Current Track set to NULL");
+		}
+		
 	}
 
 	/**
@@ -525,7 +540,7 @@ public class PlayManager implements Observer {
 	}
 
 	/**
-	 * Stop playin Track
+	 * Stop playing Track
 	 */
 	public synchronized void stop() {
 		if (mPlayer.isPlaying()) {
@@ -1274,6 +1289,25 @@ public class PlayManager implements Observer {
 	 */
 	public long getAirplayVolume() {
 		return airplayVolume;
+	}
+
+	public void updateTracks(CopyOnWriteArrayList<ChannelPlayList> tracks2) {
+		this.tracks = tracks2;		
+	}
+	
+	/***
+	 * Check if the track Id is already being used.
+	 * This is for the Pins, the control point does not like it if you empty the tracks update the IdArray and then add a new list of tracks with the same ids.
+	 * @param id
+	 * @return
+	 */
+	public boolean duplicateTrackId(int id) {
+		for(ChannelPlayList ch : tracks) {
+			if(ch.getId() == id) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 

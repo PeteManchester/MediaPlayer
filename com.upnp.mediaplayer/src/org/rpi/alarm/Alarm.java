@@ -2,17 +2,20 @@ package org.rpi.alarm;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonValue;
-import javax.json.JsonValue.ValueType;
+//import javax.json.JsonArray;
+//import javax.json.JsonObject;
+//import javax.json.JsonValue;
+//import javax.json.JsonValue.ValueType;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -56,23 +59,24 @@ public class Alarm {
 		} catch (Exception e) {
 			log.error("Error Starting Scheduler");
 		}
-		JsonObject alarms = getAlarmObjects();
+		JSONObject alarms = getAlarmObjects();
 		refreshAlarms(alarms);
 	}
 	
-	private JsonObject getAlarmObjects()
+	private JSONObject getAlarmObjects()
 	{
 		utils = new AlarmFileUtils();
-		JsonObject array = utils.getAlarms();
+		JSONObject array = utils.getAlarms();
 		return array;
 	}
 
 	public String getAlarmConfig() {
-		JsonObject array = getAlarmObjects();
-		return utils.getPrettyString(array);
+		JSONObject array = getAlarmObjects();
+		return array.toString(2);
+		//return utils.getPrettyString(array);
 	}
 
-	public void updateAlarms(JsonObject jsonObject) {
+	public void updateAlarms(JSONObject jsonObject) {
 		try {
 			refreshAlarms(jsonObject);
 			utils.saveJSON(jsonObject);
@@ -81,7 +85,7 @@ public class Alarm {
 		}
 	}
 
-	private void refreshAlarms(JsonObject jsonObject) {
+	private void refreshAlarms(JSONObject jsonObject) {
 		log.debug("Refreshing Alarms");
 		boolean enabled = false;
 		String name = "No Name";
@@ -94,8 +98,40 @@ public class Alarm {
 		if (jsonObject == null)
 			return;
 		clearSchedule();
-		if (jsonObject.containsKey("alarms")) {
-			JsonArray body = jsonObject.getJsonArray("alarms");
+		if (jsonObject.has("alarms")) {
+			JSONArray body = jsonObject.getJSONArray("alarms");
+			
+			Iterator<Object> l = body.iterator();
+			
+			while (l.hasNext()) {
+				JSONObject object = (JSONObject) l.next();
+				if (object.has("enabled")) {
+					enabled = object.getBoolean("enabled");
+				}
+				if (object.has("name")) {
+					name = object.getString("name");
+				}
+				if (object.has("type")) {
+					type = object.getString("type");
+				}
+				if (object.has("time")) {
+					time = object.getString("time");
+				}
+				if (object.has("volume")) {
+					volume = object.getInt("volume");
+				}
+				if (object.has("channel")) {
+					channel = object.getString("channel");
+				}
+				if (object.has("shuffle")) {
+					shuffle = object.getBoolean("shuffle");
+				}
+				if (enabled) {
+					createSchedule(name, time, type, channel, "" + volume, String.valueOf(shuffle));
+				}
+			}
+			
+			/*
 			for (JsonValue jsonValue : body) {
 				if (jsonValue.getValueType() == ValueType.OBJECT) {
 					JsonObject object = (JsonObject) jsonValue;
@@ -125,6 +161,7 @@ public class Alarm {
 					}
 				}
 			}
+			*/
 		}
 	}
 

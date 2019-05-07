@@ -3,9 +3,9 @@ package org.rpi.web.rest;
 import java.io.StringReader;
 import java.net.URLDecoder;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
+//import javax.json.Json;
+//import javax.json.JsonObject;
+//import javax.json.JsonReader;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -14,6 +14,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 import org.rpi.alarm.Alarm;
 
 @Path("alarmconfig")
@@ -44,9 +45,10 @@ public class AlarmConfig {
 				msg = msg.substring(1);
 			}
 			log.debug("setConfig: " + msg);
-			JsonReader reader = Json.createReader(new StringReader(msg));
-			JsonObject alarmObject = reader.readObject();
-			reader.close();
+			//JsonReader reader = Json.createReader(new StringReader(msg));
+			//JSONObject alarmObject = reader.readObject();
+			JSONObject alarmObject = new JSONObject(msg);
+			//reader.close();
 			if (alarmObject != null) {
 				Alarm.getInstance().updateAlarms(alarmObject);
 			}

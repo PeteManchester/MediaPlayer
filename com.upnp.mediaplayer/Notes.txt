@@ -283,5 +283,12 @@ http://stackoverflow.com/questions/26424621/algorithm-negotiation-fail-ssh-in-je
 http://stackoverflow.com/questions/21524609/ant-sshexec-failing-with-algorithm-negotitation-fail-error
 
 
+http://wiki.openhome.org/wiki/Av:Developer
+
+https://s3-eu-west-1.amazonaws.com/linn-artifacts-public/index.html
+
+
+
+
 
 

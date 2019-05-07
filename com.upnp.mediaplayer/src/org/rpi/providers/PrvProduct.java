@@ -26,7 +26,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct2 implements Obser
 	private String iSourceXml = "";
 	// private boolean standby = true;
 	//private String attributes = "Info Credentials Time Volume Receiver Sender App:Config=:59148/Softplayer/index.html App:Config=http://192.168.1.30";
-	private String attributes = "Info Time Volume Receiver Sender";
+	private String attributes = "Info Time Volume Receiver Sender Pins";
 	
 	// private String attributes = "";
 	private String man_name = "Java Inc";

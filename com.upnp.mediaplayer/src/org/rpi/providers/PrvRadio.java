@@ -158,14 +158,9 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 
 	@Override
 	protected void setChannel(IDvInvocation paramIDvInvocation, String uri, String metadata) {
-		String prefix = paramIDvInvocation.getResourceUriPrefix();
-		String test = paramIDvInvocation.toString();
 		log.debug("SetChannel" + Utils.getLogText(paramIDvInvocation));		
-		//ChannelRadio channel = new ChannelRadio(uri, metadata, 2, "");
 		current_channel_radio = new ChannelRadio(uri,metadata,-99,"");
 		current_channel = -99;
-		//channels.add(channel);
-		//array = UpdateIdArray();
 	}
 
 	@Override
