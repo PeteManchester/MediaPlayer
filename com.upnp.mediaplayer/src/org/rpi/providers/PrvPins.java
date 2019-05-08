@@ -6,7 +6,6 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -34,14 +33,13 @@ import org.rpi.utils.Utils;
 public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, IDisposableDevice {
 
 	private Logger log = Logger.getLogger(PrvPins.class);
-	int iDeviceMax = 5;
-	int iAccountMax = 5;
+	int iDeviceMax = 10;
+	int iAccountMax = 10;
 
 	JSONArray aModes = new JSONArray();
 	Map<Integer, PinInfo> devicePins = new ConcurrentHashMap<Integer, PinInfo>();
-	Map<Integer,Integer> idArray = new HashMap<Integer,Integer>();
+	Map<Integer, Integer> idArray = new HashMap<Integer, Integer>();
 	PinInfo dummyPinInfo = new PinInfo(-1, "", "", "", "", "", "", false);
-
 
 	public PrvPins(DvDevice iDevice) {
 		super(iDevice);
@@ -82,20 +80,20 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 	}
 
 	private void updateIdArray(boolean save) {
-		//Create a Map of Pin numbers
-		Map<Integer,Integer> test = new HashMap<Integer,Integer>();
+		// Create a Map of Pin numbers
+		Map<Integer, Integer> test = new HashMap<Integer, Integer>();
 		int i = 0;
 		for (PinInfo pi : devicePins.values()) {
 			if (pi == null || pi.getId() < 0) {
-				test.put(i,0);
+				test.put(i, 0);
 
 			} else {
-				test.put(i, pi.getIdAsInt() );
+				test.put(i, pi.getIdAsInt());
 			}
 			i++;
-		}		
+		}
 		idArray = test;
-		//Convert the Pin Number to an array
+		// Convert the Pin Number to an array
 		JSONArray jsonArray = new JSONArray(idArray.values());
 		log.debug("Update IDArray: " + jsonArray.toString());
 		setPropertyIdArray(jsonArray.toString());
@@ -145,6 +143,7 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 
 	/***
 	 * Convert the hashmap to a list of integers the represent the id array
+	 * 
 	 * @param ids
 	 * @return
 	 */
@@ -219,7 +218,15 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 					Map<String, String> paramsTuneIn = decodeQueryString(splits[1]);
 					presetId = paramsTuneIn.get("id");
 					String m = cr.getMetaDataForTuneInId(presetId, path, image);
-					ChannelRadio c = new ChannelRadio(path, m, -99, "Test");
+					int rId = -99;
+					try {
+						rId = Integer.parseInt(presetId.replaceAll("[^0-9]+", ""));
+					} catch (Exception e) {
+
+					}
+
+					ChannelRadio c = new ChannelRadio(path, m, rId, "Test");
+					// PlayManager.getInstance().stop();
 					PlayManager.getInstance().playRadio(c);
 				} catch (Exception e) {
 					log.error(e);
@@ -238,26 +245,24 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 				EventPlayListUpdateList epl = new EventPlayListUpdateList();
 				PlayManager.getInstance().podcastUpdatePlayList(channels);
 			}
-		}
-		else if(uri.startsWith("openhome.me")) {
+		} else if (uri.startsWith("openhome.me")) {
 			try {
 				String test = uri.replace("openhome.me", "http:");
-			URL url = new URL(test);
-			String path = url.getPath();
-			path = path.replace("://", "");
-			String query = url.getQuery();
-			Map<String, String> params = decodeQueryString(query);
-			KazooServer t = new KazooServer();
-			if(params.containsKey("browse") && params.containsKey("udn")) {
-				String browse = params.get("browse");
-				String udn = params.get("udn");
-			t.getTracks(udn,path, browse);
-			}
-			}
-			catch(Exception e) {
+				URL url = new URL(test);
+				String path = url.getPath();
+				path = path.replace("://", "");
+				String query = url.getQuery();
+				Map<String, String> params = decodeQueryString(query);
+				KazooServer t = new KazooServer();
+				if (params.containsKey("browse") && params.containsKey("udn")) {
+					String browse = params.get("browse");
+					String udn = params.get("udn");
+					t.getTracks(udn, path, browse);
+				}
+			} catch (Exception e) {
 				log.error("Error Getting URL: " + uri);
 			}
-			
+
 		}
 	}
 
@@ -297,19 +302,31 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 		log.debug("setDevice: " + Utils.getLogText(paramIDvInvocation) + " Id: " + id);
 		int myId = getNextIndex();
 		log.debug("setDevice. MyId: " + myId);
-		PinInfo pi = new PinInfo(myId, mode, type, uri, "", description, artworkUri, shuffle);
+		String myDescription = tidyDescription(description);
+		PinInfo pi = new PinInfo(myId, mode, type, uri, "", myDescription, artworkUri, shuffle);
 		log.debug("setDevice. PinInfo: " + pi.toString());
 		devicePins.put((int) id, pi);
 		updateIdArray(true);
 	}
-	
-	//Spin through all the existing Pins numbers to find a spare pin.
+
+	private String tidyDescription(String description) {
+		if (description.startsWith("Album : ")) {
+			return description.substring("Album : ".length()-1, description.length());
+		}
+		if (description.startsWith("Artist : ")) {
+			return description.substring("Artist : ".length()-1, description.length());
+		}
+		if (description.startsWith("Genre : ")) {
+			return description.substring("Genre : ".length()-1,description.length());
+		}
+		return description;
+	}
+
+	// Spin through all the existing Pins numbers to find a spare pin.
 	private int getNextIndex() {
 		int res = 0;
-		for(int i = 1; i< 10000; i++)
-		{
-			if(!idArray.containsValue(i))
-			{
+		for (int i = 1; i < 10000; i++) {
+			if (!idArray.containsValue(i)) {
 				return i;
 			}
 		}
@@ -363,6 +380,5 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 	public void update(Observable arg0, Object arg1) {
 
 	}
-	
 
 }

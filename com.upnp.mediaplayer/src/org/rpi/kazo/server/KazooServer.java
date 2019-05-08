@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -14,13 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -30,11 +21,6 @@ import org.rpi.config.Config;
 import org.rpi.controlpoint.DeviceInfo;
 import org.rpi.controlpoint.DeviceManager;
 import org.rpi.player.PlayManager;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 public class KazooServer {
 
@@ -42,10 +28,20 @@ public class KazooServer {
 	private Logger log = Logger.getLogger(this.getClass());
 
 	public KazooServer() {
-
 	}
 
-	public void getTracks(String udn, String action, String albumId) {
+	/***
+	 * Get the tracks from Kazoo
+	 * They could come from:
+	 * Artist
+	 * Album
+	 * Genre
+	 * 
+	 * @param udn
+	 * @param action
+	 * @param containerId
+	 */
+	public void getTracks(String udn, String action, String containerId) {
 		
 		log.debug("Get Devices: " + udn);
 		channels.clear();
@@ -81,21 +77,16 @@ public class KazooServer {
 				String create = readFromServer(kazooUri + "/create");
 				String sessionId = create.replaceAll("\"", "");
 				log.debug(sessionId);
-
-				// AlbumId=cmF3LmU5M2JiZTU5OTBhZTdkNmE3ZTU4ZGMwZWIyYzA3YjUx
-				// ArtistId=YXJ0aXN0LjljMzZiOTkyZTBmNjUwNjA5ZjE2NjNmZWIzNTk4OGY2
-				// Genre = Z2VucmUuZmY4YThkY2E1MDM1NjRmNTAyZjRmZjBmMjE5ZDRhYjI=
-
-				// String destroy = readFromServer(kazooUri + "/destoy?session="
-				// + session);
+				//Add the <action/> case due to bug in iOS Kazoo which adds a forward slash after editing the pin!..
 				switch (action.toUpperCase()) {
 				case "ALBUM":
-					addAlbum(kazooUri, sessionId, albumId, initialUrl);
+				case "ALBUM/":
+					addAlbum(kazooUri, sessionId, containerId, initialUrl);
 					break;
 				case "ARTIST":
-
+				case "ARTIST/":
 					//Get the number of albums for this artist
-					int iCount = browse(kazooUri, sessionId, albumId);
+					int iCount = browse(kazooUri, sessionId, containerId);
 					//Browse for the albums
 					String browsea = read(kazooUri, sessionId, 0, iCount);
 					JSONArray jBrowsea = new JSONArray(browsea);
@@ -107,11 +98,10 @@ public class KazooServer {
 						addAlbum(kazooUri, sessionId, id, initialUrl);
 					}
 					break;
-				
-				
 				case "GENRE":
+				case "GENRE/":
 				{
-					int iCountg = browse(kazooUri, sessionId, albumId);
+					int iCountg = browse(kazooUri, sessionId, containerId);
 					String browseg = read(kazooUri, sessionId, 0, iCountg);
 					JSONArray jBrowseg = new JSONArray(browseg);
 					for (int i = 0; i < iCountg; i++) {
@@ -157,6 +147,14 @@ public class KazooServer {
 		return iCount;
 	}
 
+	/***
+	 * Read from the Kazoo Server
+	 * @param path
+	 * @param sessionId
+	 * @param index
+	 * @param count
+	 * @return
+	 */
 	private String read(String path, String sessionId, int index, int count) {
 		String res = "";
 		try {
@@ -167,6 +165,13 @@ public class KazooServer {
 		return res;
 	}
 
+	/***
+	 * Add an Album
+	 * @param path
+	 * @param sessionId
+	 * @param albumId
+	 * @param initialUrl
+	 */
 	private void addAlbum(String path, String sessionId, String albumId, String initialUrl) {
 		// String list = readFromServer(kazooUri + "/read?session=" + session +
 		// "&index=0&count="+iCount);
@@ -189,26 +194,19 @@ public class KazooServer {
 							JSONArray ot = (JSONArray) om;
 							String key = ot.getString(0);
 							String value = ot.getString(1);
-							log.debug(ot);
 							String myKey = getMetaDataKey(Integer.parseInt(key));
 							if (myKey != null) {
 								md.put(myKey, value);
 							}
-
 						}
 					}
-
-					String title = md.get("title");
-					String artworkUri = md.get("albumArtwork");
 					String trackUrl = md.get("uri");
-					int id = getNextTrackId();
-
-					String m = createMetaData(title, initialUrl, artworkUri);
-
-					ChannelPlayList channel = new ChannelPlayList(trackUrl, m, id);
+					int id = getNextTrackId();					
+					String s = new DidlLiteImpl().createMetaData(md);
+					//String m = createMetaData(title, initialUrl, artworkUri);
+					ChannelPlayList channel = new ChannelPlayList(trackUrl, s, id);
 					channels.add(channel);
 					log.debug("Channel: " + channel);
-
 					log.debug(md);
 				}
 			}
@@ -218,24 +216,37 @@ public class KazooServer {
 
 	}
 
-	private void getAlbum(String sessionId, String albumId) {
-
-	}
-
-	private String readFromServer(String url) throws Exception {
+	/***
+	 * Read from the URL
+	 * @param url
+	 * @return
+	 * @throws Exception
+	 */
+	private String readFromServer(String url) throws Exception {		
 		InputStream is = new URL(url).openStream();
-		BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-		String jsonText = readAll(rd);
-		is.close();
+		String jsonText ="";
+		try {
+			BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+			jsonText = readAll(rd);
+		}finally {
+			is.close();
+		}
 		return jsonText;
 	}
-
+	
+	/***
+	 * Get all lines from the reader
+	 * @param rd
+	 * @return
+	 * @throws IOException
+	 */
 	private String readAll(Reader rd) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		int cp;
 		while ((cp = rd.read()) != -1) {
 			sb.append((char) cp);
 		}
+		log.debug(sb.toString());
 		return sb.toString();
 	}
 
@@ -289,6 +300,8 @@ public class KazooServer {
 			// return "";
 		case 126: // favourited
 			return "";
+		case 200:
+			return "id";
 		case 201:
 			return "albumTitle";
 		case 202:
@@ -302,6 +315,7 @@ public class KazooServer {
 		}
 	}
 
+	/*
 	// TODO Move this somewhere more appropriate:
 	private String createMetaData(String name, String url, String image) {
 		String res = "";
@@ -346,6 +360,7 @@ public class KazooServer {
 		}
 		return res;
 	}
+	*/
 
 	private int getNextTrackId() {
 		int res = 0;

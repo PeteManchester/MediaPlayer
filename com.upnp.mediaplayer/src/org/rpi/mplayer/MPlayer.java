@@ -48,7 +48,7 @@ public class MPlayer extends Observable   implements IPlayer, Observer  {
 	 * @param track
 	 * @return
 	 */
-	public boolean playTrack(ChannelBase track, long volume, boolean mute) {
+	public boolean playTrack(ChannelBase track, long volume, boolean mute, boolean isStopped) {
 		uniqueId = track.getUniqueId();
 		this.volume = volume;
 		this.bMute = mute;

@@ -112,6 +112,7 @@ public class PlayManager implements Observer {
 	 */
 	private void playThis(ChannelBase t) {
 		if (t != null) {
+			boolean isStopping= false;
 			if(standby)
 			{
 				log.debug("We are playing a Channel, take out of Standby");
@@ -135,13 +136,14 @@ public class PlayManager implements Observer {
 			if(t instanceof ChannelRadio)
 			{
 				PluginGateWay.getInstance().setSourceByname("Radio");
+				isStopping =true;
 			}
 
 			current_track = t;
 			long v = mplayer_volume;
 			if (!isUseExternalVolume())
 				v = volume;
-			mPlayer.playThis(t, v, bMute);
+			mPlayer.playThis(t, v, bMute,isStopping);
 		}
 	}
 	
@@ -591,7 +593,7 @@ public class PlayManager implements Observer {
 	 * Play Track If Paused the resume If not Paused then get Next Track and
 	 * play it
 	 */
-	public synchronized void play() {
+	public synchronized void play(boolean isStopping) {
 		if (isPaused()) {
 			if (mPlayer.isPlaying()) {
 				mPlayer.resume();
@@ -610,12 +612,11 @@ public class PlayManager implements Observer {
 			if (t != null) {
 				playThis(t);
 			}
-			// }
-			// else
-			// {
-			// log.warn("Track is Already Playing, do not Play");
-			// }
 		}
+	}
+	
+	public synchronized void play() {
+		play(true);
 	}
 
 	/**

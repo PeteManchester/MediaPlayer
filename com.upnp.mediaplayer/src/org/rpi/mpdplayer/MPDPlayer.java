@@ -61,7 +61,10 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 	}
 
 	@Override
-	public boolean playTrack(ChannelBase track, long volume, boolean mute) {
+	public boolean playTrack(ChannelBase track, long volume, boolean mute, boolean isStopped) {
+		if(bStopRequest) {
+			bStopRequest = isStopped;
+		}		
 		current_track = track;
 		EventStatusChanged ev = new EventStatusChanged();
 		ev.setStatus("Buffering");
@@ -228,9 +231,11 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 			current_status = es.getStatus();
 			es.setTrack(current_track);
 			if (es.getStatus().equalsIgnoreCase("STOPPED")) {
+				log.debug("PETE Stopped Got Here: " + bStopRequest);
 				if (!bStopRequest) {
 					bStopRequest = false;
 					EventFinishedCurrentTrack efc = new EventFinishedCurrentTrack();
+					log.debug("PETE Stopped FireEvent efc: ");
 					fireEvent(efc);
 				}
 			}

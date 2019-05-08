@@ -626,5 +626,7 @@ public class ChannelBase {
 	public void setKeepURL(boolean keep_url) {
 		this.keep_url = keep_url;
 	}
+	
+	
 
 }

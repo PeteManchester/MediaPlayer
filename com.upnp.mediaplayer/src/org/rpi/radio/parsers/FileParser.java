@@ -127,7 +127,16 @@ public class FileParser {
 					LinkedList<String> urls = m3u.getStreamingUrl(url);
 					if((urls.size()>0))
 					{
-						return urls.get(0);
+						String myUrl = urls.get(0);
+						if(myUrl.endsWith(".pls"))
+						{
+							return getURL(myUrl);
+						}
+						else
+						{
+							return urls.get(0);
+						}
+						
 					}
 				}else if (content_type != null && content_type.contains("VND.APPLE.MPEGURL"))
 				{

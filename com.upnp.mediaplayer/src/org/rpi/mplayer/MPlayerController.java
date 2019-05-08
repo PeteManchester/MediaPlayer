@@ -1,7 +1,7 @@
 package org.rpi.mplayer;
 
 /**
- * Used to abstract the differences between the different playes
+ * Used to abstract the differences between the different players
  * with mplayer we start a new instance for each track
  */
 
@@ -10,7 +10,6 @@ import java.util.Observer;
 
 import org.apache.log4j.Logger;
 import org.rpi.channel.ChannelBase;
-import org.rpi.channel.ChannelPlayList;
 import org.rpi.player.IPlayer;
 import org.rpi.player.IPlayerController;
 
@@ -43,7 +42,7 @@ public class MPlayerController extends Observable implements IPlayerController, 
 	}
 
 	@Override
-	public void playThis(ChannelBase t, long v, boolean bMute) {
+	public void playThis(ChannelBase t, long v, boolean bMute , boolean isStopped) {
 		if (t != null) {
 
 			log.debug("Destroy current MPlayer");
@@ -53,7 +52,7 @@ public class MPlayerController extends Observable implements IPlayerController, 
 			}
 			mPlayer = new MPlayer();
 			mPlayer.addObserver(this);
-			mPlayer.playTrack(t, v, bMute);
+			mPlayer.playTrack(t, v, bMute, isStopped);
 		}
 
 	}

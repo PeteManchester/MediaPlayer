@@ -420,7 +420,8 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	}
 
 	public void getChannels() {
-		if ((System.currentTimeMillis() - last_updated) > 30000) {
+		//if ((System.currentTimeMillis() - last_updated) > 30000) {
+		if ((System.currentTimeMillis() - last_updated) > 300000000) {
 			try {
 				ChannelReaderJSON cr = new ChannelReaderJSON(this);
 				last_updated = System.currentTimeMillis();

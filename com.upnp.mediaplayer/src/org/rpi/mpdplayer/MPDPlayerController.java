@@ -40,8 +40,8 @@ public class MPDPlayerController extends Observable implements IPlayerController
 	}
 
 	@Override
-	public void playThis(ChannelBase t, long v, boolean bMute) {
-		mpdPlayer.playTrack(t, v, bMute);
+	public void playThis(ChannelBase t, long v, boolean bMute , boolean isStopped) {
+		mpdPlayer.playTrack(t, v, bMute, isStopped);
 	}
 
 	@Override

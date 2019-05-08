@@ -16,7 +16,7 @@ public interface IPlayer {
 	public  void loaded();
 	
 	//Player control
-	public boolean playTrack(ChannelBase track,long volume, boolean mute);
+	public boolean playTrack(ChannelBase track,long volume, boolean mute, boolean isStopped);
 	public void openFile(ChannelBase track);
 	public void pause(boolean bPause);	
 	public void resume();

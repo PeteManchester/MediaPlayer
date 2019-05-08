@@ -439,6 +439,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 			EventPlayListUpdateList epl = (EventPlayListUpdateList) e;
 			log.debug("PETE!!!!!!!!!!!!!!!!!!!!!!!!!Clear Tracks");
 			deleteAllTracks();
+			PlayManager.getInstance().setCurrentTrack(null);
 			log.debug("PETE!!!!!!!!!!!!!!!!!!!!!!!!Tracks Clear");
 
 			log.debug("PETE!!!!!!!!!!!!!!!!!!!!!!!!!Set Tracks");
@@ -446,7 +447,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 			UpdateIdArray();
 			log.debug("PETE!!!!!!!!!!!!!!!!!!!!!!!!!Tracks Set");		
 			iPlayer.setTracks(epl.getChannels());	
-			PlayManager.getInstance().play();
+			PlayManager.getInstance().play(false);
 			
 		}
 
