@@ -37,7 +37,15 @@ public class DeviceManager {
 	}
 
 	public void deleteDevice(String udn) {
-		devices.remove(udn);
+		try
+		{
+			devices.remove(udn);
+		}
+		catch(Exception e)
+		{
+			log.error("Error Removing Device", e);
+		}
+		
 	}
 
 	public DeviceInfo getDevice(String udn) {

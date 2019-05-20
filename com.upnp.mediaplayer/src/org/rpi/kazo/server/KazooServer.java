@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -201,7 +202,13 @@ public class KazooServer {
 						}
 					}
 					String trackUrl = md.get("uri");
-					int id = getNextTrackId();					
+					//int id = getNextTrackId();
+					//String preset_id = md.get("id");
+					
+					//BigInteger big = new BigInteger(trackUrl.getBytes());
+					int id = getNextTrackId();
+					//long l = big.
+					log.debug("ID: " + trackUrl + " Int: " + id);
 					String s = new DidlLiteImpl().createMetaData(md);
 					//String m = createMetaData(title, initialUrl, artworkUri);
 					ChannelPlayList channel = new ChannelPlayList(trackUrl, s, id);
@@ -215,6 +222,7 @@ public class KazooServer {
 		}
 
 	}
+
 
 	/***
 	 * Read from the URL
@@ -363,11 +371,12 @@ public class KazooServer {
 	*/
 
 	private int getNextTrackId() {
-		int res = 0;
+		int res = 0;		
 		int max = Config.getInstance().getMediaplayerPlaylistMax() * 2;
 		for (int i = 1; i < max; i++) {
-			if (!duplicateTrackId(i) && !PlayManager.getInstance().duplicateTrackId(i)) {
-				return i;
+			res = ThreadLocalRandom.current().nextInt(10000,Integer.MAX_VALUE);
+			if (!duplicateTrackId(res) && !PlayManager.getInstance().duplicateTrackId(res)) {
+				return res;
 			}
 		}
 		return res;

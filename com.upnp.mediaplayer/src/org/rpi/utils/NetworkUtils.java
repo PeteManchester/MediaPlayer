@@ -186,12 +186,12 @@ public class NetworkUtils {
 			InetAddress iAddress = InetAddress.getLocalHost();
 			String addr = iAddress.getHostAddress();
 			log.debug("PETE!!!!!!!! InetAddress: " + addr);
-			if ((!res.equalsIgnoreCase(addr)) && (!addr.equalsIgnoreCase("127.0.1.1"))) {
+			if ((!res.equalsIgnoreCase(addr)) && (!addr.equalsIgnoreCase("127.0.1.1") )) {
 				log.debug("PETE!!!!!!!! Returning InetAddress: " + addr);
 				return addr;
 			}
 		} catch (Exception e) {
-
+			log.error("Error getHostAddress",e);
 		}
 
 		try {
@@ -204,7 +204,7 @@ public class NetworkUtils {
 				}
 			}
 		} catch (Exception e) {
-
+			log.error("Error getNetworkInterfaces",e);
 		}
 		return res;
 	}
@@ -213,7 +213,7 @@ public class NetworkUtils {
 		String res = "127.0.0.1";
 		Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
 		for (InetAddress inetAddress : Collections.list(inetAddresses)) {
-			if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress() && !inetAddress.getHostAddress().equals("127.0.1.1") && inetAddress instanceof Inet4Address ) {
+			if (inetAddress != null && !inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress() && !inetAddress.getHostAddress().equals("127.0.1.1") && inetAddress instanceof Inet4Address && netint.isUp()) {
 				log.debug("Display name: " + netint.getDisplayName() + " Name: " + netint.getName() + " InetAddress: " + inetAddress);
 				return inetAddress.getHostAddress();
 			}

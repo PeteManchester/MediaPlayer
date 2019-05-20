@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Inet4Address;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Observable;
@@ -39,6 +41,7 @@ import org.rpi.controlpoint.DeviceInfo;
 import org.rpi.controlpoint.DeviceManager;
 import org.rpi.http.HttpServerGrizzly;
 import org.rpi.os.OSManager;
+import org.rpi.pins.PinMangerAccount;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventSourceChanged;
@@ -57,6 +60,7 @@ import org.rpi.providers.PrvRenderingControl;
 import org.rpi.providers.PrvSongcast;
 import org.rpi.providers.PrvTime;
 import org.rpi.providers.PrvVolume;
+import org.rpi.scratchpad.ws.client.EmptyClient;
 import org.rpi.sources.Source;
 import org.rpi.sources.SourceReader;
 import org.rpi.utils.NetworkUtils;
@@ -90,19 +94,40 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 	private CpDeviceListUpnpServiceType cpDeviceList = null;
 
-	// private PluginManager pm = null;
+	// private PinMangerAccount pinManager = new PinMangerAccount();
+	private org.java_websocket.client.WebSocketClient wsc = null;
+
 
 	/***
 	 * Constructor for our Simple Device
 	 */
 	public SimpleDevice() {
 		initSimpleDevice();
-		// iCPDevice = new CpDeviceImpl();
-		// iCPDevice.initCpDevice();
+	}
+	
+	/***
+	 * Constructor for our simple device.
+	 * @param test
+	 */
+	protected SimpleDevice(boolean test) {
+		// this constructor is just for test purposes...
+		// do not remove it
+	}
+
+	private void startWebSocket() {
+		try {
+			wsc = new EmptyClient(new URI("ws://127.0.0.1:8081/PinService/endpoint?push=TIME"));
+			wsc.connect();
+		} catch (URISyntaxException e) {
+			log.error(e);
+		}
+
 	}
 
 	private void initSimpleDevice() {
 		try {
+			// startWebSocket();
+			// pinManager.registerForEvent();
 			PluginGateWay.getInstance().setSimpleDevice(this);
 			log.debug("Creating Simple Device version: " + Config.getInstance().getVersion());
 			// System.loadLibrary("ohNetJni");
@@ -116,7 +141,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			}
 			// initParams.setDvEnableBonjour();
 			initParams.setFatalErrorHandler(this);
-			//initParams.setMsearchTimeSecs(1);
+			// initParams.setMsearchTimeSecs(1);
 
 			lib = Library.create(initParams);
 			lib.setDebugLevel(getDebugLevel(Config.getInstance().getOpenhomeLogLevel()));
@@ -124,17 +149,17 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			Inet4Address addr = NetworkUtils.getINet4Address();
 
 			CombinedStack ds = lib.startCombined(addr);
-			
+
 			SubnetList subnetList = new SubnetList();
-			for(int i = 0; i < subnetList.size();i++) {
+			for (int i = 0; i < subnetList.size(); i++) {
 				NetworkAdapter nif = subnetList.getSubnet(i);
-				if(nif.getAddress().getHostAddress().equals(addr.getHostAddress())) {
+				if (nif.getAddress().getHostAddress().equals(addr.getHostAddress())) {
 					lib.setCurrentSubnet(nif);
 					break;
 				}
 			}
 			subnetList.destroy();
-			
+
 			initControlPoint();
 
 			String friendly_name = Config.getInstance().getMediaplayerFriendlyName().replace(":", " ");
@@ -153,8 +178,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			iDevice.setAttribute("Upnp.ModelName", "Open Home Java Renderer: v" + Config.getInstance().getVersion());
 			iDevice.setAttribute("Upnp.ModelDescription", "'We Made History Not Money' - Tony Wilson..");
 			iDevice.setAttribute("Upnp.PresentationUrl", "http://" + NetworkUtils.getIPAddress() + ":" + Config.getInstance().getWebServerPort() + "/MainPage.html");
-			
-			
+
 			// iDevice.setAttribute("Upnp.PresentationUrl",
 			// "http://192.168.1.181:8088/MainPage.html");
 
@@ -252,26 +276,15 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		}
 	}
 
+	/***
+	 * 
+	 */
 	private void initControlPoint() {
-		//CpDeviceListUpnpAll all = new CpDeviceListUpnpAll(this);
+		//Create a listener for device that implement a ContentDirectory service
 		cpDeviceList = new CpDeviceListUpnpServiceType("upnp.org", "ContentDirectory", 1, this);
-		/*
-		iSem = new Semaphore(1);
-		iSem.acquireUninterruptibly();
-		try {
-			iSem.tryAcquire(30 * 1000, TimeUnit.MILLISECONDS);
-		} catch (InterruptedException ie) {
-			ie.printStackTrace();
-		}
-		*/
-		//CpDeviceListUpnpAll myList = new CpDeviceListUpnpAll(this);
-		//myList.refresh();
 	}
 
-	protected SimpleDevice(boolean test) {
-		// this constructor is just for test purposes...
-		// do not remove it
-	}
+
 
 	protected String constructIconList(String deviceName) {
 		StringBuffer sb = new StringBuffer();
@@ -428,15 +441,15 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		this.disposeDevice(iRenderingControl);
 		this.disposeDevice(iSongcastSender);
 		// this.disposeDevice(iCredentials);
-		
-		if(this.cpDeviceList != null) {
+
+		if (this.cpDeviceList != null) {
 			cpDeviceList.destroy();
 		}
 
 		if (lib != null) {
 			try {
 				log.info("Attempting to Close DeviceStack");
-				//lib.abortProcess();
+				// lib.abortProcess();
 				lib.close();
 				log.info("Closed DeviceStack");
 			} catch (Exception e) {
@@ -551,27 +564,35 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 	@Override
 	public void deviceAdded(CpDevice var1) {
-		synchronized (this) {
-			CpAttribute l = var1.getAttribute("Upnp.DeviceXml");
-			if(l.isAvailable()) {
-				String xml = l.getValue();
-				String udn = var1.getUdn();
-				DeviceInfo di = new DeviceInfo(var1.getUdn(),l.getValue());				
-				if(di.isValid()) {
-					DeviceManager.getInstance().addDevice(udn, di);
+		//synchronized (this) {
+			try {
+				CpAttribute l = var1.getAttribute("Upnp.DeviceXml");
+				if (l.isAvailable()) {
+					String xml = l.getValue();
+					String udn = var1.getUdn();
+					DeviceInfo di = new DeviceInfo(var1.getUdn(), l.getValue());
+					if (di.isValid()) {
+						DeviceManager.getInstance().addDevice(udn, di);
+					}
+					log.debug("Added: " + udn + " XML: " + xml);
 				}
-				log.debug("Added: " +udn + " XML: " + xml);
-			}			
-		}
+			} catch (Exception e) {
+				log.error("Error DeviceAdded", e);
+			}
+		//}
 	}
 
 	@Override
 	public void deviceRemoved(CpDevice var1) {
-		synchronized (this) {
-			log.debug("Removed: " + var1.getUdn());
-			String udn = var1.getUdn();
-			DeviceManager.getInstance().deleteDevice(udn);
-		}
+		//synchronized (this) {
+			try {
+				log.debug("Removed: " + var1.getUdn());
+				String udn = var1.getUdn();
+				DeviceManager.getInstance().deleteDevice(udn);
+			} catch (Exception e) {
+				log.error("Error DeviceAdded", e);
+			}
+		//}
 	}
 
 }

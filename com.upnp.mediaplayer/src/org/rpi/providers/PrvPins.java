@@ -1,6 +1,5 @@
 package org.rpi.providers;
 
-import java.io.FileWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -14,6 +13,7 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -23,9 +23,13 @@ import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgPins1;
 import org.rpi.channel.ChannelPlayList;
 import org.rpi.channel.ChannelRadio;
+import org.rpi.config.Config;
 import org.rpi.kazo.server.KazooServer;
+import org.rpi.pins.EventPinsChanged;
 import org.rpi.pins.PinInfo;
+import org.rpi.pins.PinMangerAccount;
 import org.rpi.player.PlayManager;
+import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventPlayListUpdateList;
 import org.rpi.radio.ChannelReaderJSON;
 import org.rpi.utils.Utils;
@@ -33,18 +37,24 @@ import org.rpi.utils.Utils;
 public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, IDisposableDevice {
 
 	private Logger log = Logger.getLogger(PrvPins.class);
-	int iDeviceMax = 10;
-	int iAccountMax = 10;
+	int iDeviceMax = 5;
+	int iAccountMax = 5;
 
 	JSONArray aModes = new JSONArray();
 	Map<Integer, PinInfo> devicePins = new ConcurrentHashMap<Integer, PinInfo>();
+	Map<Integer, PinInfo> accountPins = new ConcurrentHashMap<Integer, PinInfo>();
 	Map<Integer, Integer> idArray = new HashMap<Integer, Integer>();
 	PinInfo dummyPinInfo = new PinInfo(-1, "", "", "", "", "", "", false);
 
 	public PrvPins(DvDevice iDevice) {
 		super(iDevice);
-		for (int i = 0; i < iDeviceMax + iAccountMax; i++) {
+		PinMangerAccount.getInstance().observePinEvents(this);
+		iDeviceMax = Config.getInstance().getPinsDeviceMax();
+		for (int i = 0; i < iDeviceMax; i++) {
 			devicePins.put(i, dummyPinInfo);
+		}
+		for (int i = 0; i < iAccountMax; i++) {
+			accountPins.put(i, dummyPinInfo);
 		}
 		enablePropertyAccountMax();
 		enablePropertyDeviceMax();
@@ -52,11 +62,25 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 		enablePropertyIdArray();
 		enablePropertyModes();
 
+		enableActionGetDeviceMax();
+		enableActionGetAccountMax();
+		enableActionGetModes();
+		enableActionGetCloudConnected();
+		enableActionGetIdArray();
+		enableActionReadList();
+		enableActionInvokeIndex();
+		enableActionInvokeId();
+		enableActionInvokeUri();
+		enableActionSetDevice();
+		enableActionSetAccount();
+		enableActionClear();
+		enableActionSwap();
+
 		propertiesLock();
 		setPropertyAccountMax(iAccountMax);
 		setPropertyDeviceMax(iDeviceMax);
-		setPropertyCloudConnected(false);
-		readFromFile();
+		setPropertyCloudConnected(true);
+		readPins();
 		updateIdArray(false);
 
 		aModes.put("openhome.me");
@@ -65,24 +89,13 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 		setPropertyModes(aModes.toString(2));
 		propertiesUnlock();
 
-		enableActionGetDeviceMax();
-		enableActionGetModes();
-		enableActionGetIdArray();
-		enableActionReadList();
-		enableActionInvokeId();
-		enableActionInvokeIndex();
-		enableActionSetDevice();
-		enableActionSetAccount();
-		enableActionClear();
-		enableActionSwap();
-		enableActionGetCloudConnected();
-
 	}
 
 	private void updateIdArray(boolean save) {
 		// Create a Map of Pin numbers
 		Map<Integer, Integer> test = new HashMap<Integer, Integer>();
 		int i = 0;
+
 		for (PinInfo pi : devicePins.values()) {
 			if (pi == null || pi.getId() < 0) {
 				test.put(i, 0);
@@ -92,37 +105,55 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 			}
 			i++;
 		}
+
+		for (PinInfo pi : accountPins.values()) {
+			if (pi == null || pi.getId() < 0) {
+				test.put(i, 0);
+
+			} else {
+				test.put(i, pi.getIdAsInt());
+			}
+			i++;
+		}
+
 		idArray = test;
 		// Convert the Pin Number to an array
 		JSONArray jsonArray = new JSONArray(idArray.values());
 		log.debug("Update IDArray: " + jsonArray.toString());
 		setPropertyIdArray(jsonArray.toString());
 		if (save) {
-			saveToFile();
+			savePins();
 		}
 	}
 
-	private void saveToFile() {
+	/***
+	 * Save the Pins
+	 */
+	private void savePins() {
 		try {
 			JSONArray res = new JSONArray();
 			for (PinInfo pi : devicePins.values()) {
 				JSONObject json = pi.getJSONObject();
 				res.put(json);
 			}
-			FileWriter fw = new FileWriter("pins.json");
-			String json = res.toString(2);
-			fw.write(json);
-			fw.close();
+			String json = res.toString();
+			PinMangerAccount.getInstance().SavePins(json);
+			// saveToFile(json);
+			// saveToCloud(json);
 		} catch (Exception e) {
 			log.error("Error Saving to pins.json", e);
 		}
 	}
 
-	private void readFromFile() {
-		try {
+	private void readPins() {
+		String content = PinMangerAccount.getInstance().getPins();
+		updatePins(content, false);
+	}
 
-			String content = new String(Files.readAllBytes(Paths.get("pins.json")));
-			JSONArray array = new JSONArray(content);
+	private void updatePins(String json, boolean save) {
+		try {
+			log.debug("Got to readFromFile: " + json);
+			JSONArray array = new JSONArray(json);
 			int i = 0;
 			for (Object o : array) {
 				if (o instanceof JSONObject) {
@@ -130,15 +161,16 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 					PinInfo pi = new PinInfo(jpi);
 					devicePins.put(i, pi);
 					i++;
-					if (i >= iDeviceMax + iAccountMax) {
+					if (i >= iDeviceMax) {
 						break;
 					}
 				}
 			}
+
 		} catch (Exception e) {
 			log.error("Error Reading from pins.json", e);
 		}
-		updateIdArray(false);
+		updateIdArray(save);
 	}
 
 	/***
@@ -160,7 +192,24 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 				}
 			}
 		}
+
+		for (PinInfo i : accountPins.values()) {
+			if (i != null) {
+				JSONObject o = i.getJSONObject();
+				if (ids == null) {
+					res.put(o);
+				} else if (ids.contains((int) i.getIdAsInt())) {
+					res.put(o);
+				}
+			}
+		}
+
 		return res;
+	}
+
+	protected long getAccountMax(IDvInvocation paramIDvInvocation) {
+		log.debug("GetAccountMax: " + Utils.getLogText(paramIDvInvocation));
+		return iAccountMax;
 	}
 
 	protected long getDeviceMax(IDvInvocation paramIDvInvocation) {
@@ -202,6 +251,7 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 		if (pi == null) {
 			return;
 		}
+		PlayManager.getInstance().updateShuffle(pi.isShuffle());
 		String uri = pi.getUri();
 		log.debug(uri);
 		if (uri.startsWith("tunein://")) {
@@ -213,7 +263,7 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 
 					ChannelReaderJSON cr = new ChannelReaderJSON(null);
 					String path = params.get("path");
-					log.debug("Boom!!!!! Play Radio: " + path);
+					log.debug("Play Radio: " + path);
 					String[] splits = path.split("\\?");
 					Map<String, String> paramsTuneIn = decodeQueryString(splits[1]);
 					presetId = paramsTuneIn.get("id");
@@ -224,9 +274,7 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 					} catch (Exception e) {
 
 					}
-
-					ChannelRadio c = new ChannelRadio(path, m, rId, "Test");
-					// PlayManager.getInstance().stop();
+					ChannelRadio c = new ChannelRadio(path, m, rId, presetId);
 					PlayManager.getInstance().playRadio(c);
 				} catch (Exception e) {
 					log.error(e);
@@ -238,6 +286,7 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 				String image = pi.getArtworkUri();
 				ChannelReaderJSON cr = new ChannelReaderJSON(null);
 				String path = params.get("path");
+				log.debug("Play Podcast: " + path);
 				String[] splits = path.split("\\?");
 				Map<String, String> paramsTuneIn = decodeQueryString(splits[1]);
 				presetId = paramsTuneIn.get("id");
@@ -250,6 +299,7 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 				String test = uri.replace("openhome.me", "http:");
 				URL url = new URL(test);
 				String path = url.getPath();
+				log.debug("Play Kazoo: " + path);
 				path = path.replace("://", "");
 				String query = url.getQuery();
 				Map<String, String> params = decodeQueryString(query);
@@ -289,18 +339,30 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 		for (PinInfo p : devicePins.values()) {
 			if (p.getId() == id) {
 				pi = p;
+				return pi;
+			}
+		}
+		for (PinInfo p : accountPins.values()) {
+			if (p.getId() == id) {
+				pi = p;
+				return pi;
 			}
 		}
 		return pi;
 	}
 
 	protected void invokeIndex(IDvInvocation paramIDvInvocation, long id) {
-		log.debug("invokeIdnex: " + Utils.getLogText(paramIDvInvocation) + " Id: " + id);
+		log.debug("invokeIndex: " + Utils.getLogText(paramIDvInvocation) + " Id: " + id);
+	}
+
+	@Override
+	protected void invokeUri(IDvInvocation paramIDvInvocation, String mode, String type, String uri, boolean shuffle) {
+		log.debug("invokeUri: " + Utils.getLogText(paramIDvInvocation) + " Id: " + uri);
 	}
 
 	protected void setDevice(IDvInvocation paramIDvInvocation, long id, String mode, String type, String uri, String description, String var8, String artworkUri, boolean shuffle) {
 		log.debug("setDevice: " + Utils.getLogText(paramIDvInvocation) + " Id: " + id);
-		int myId = getNextIndex();
+		int myId = getRandomIndex();// getNextIndex();
 		log.debug("setDevice. MyId: " + myId);
 		String myDescription = tidyDescription(description);
 		PinInfo pi = new PinInfo(myId, mode, type, uri, "", myDescription, artworkUri, shuffle);
@@ -311,13 +373,13 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 
 	private String tidyDescription(String description) {
 		if (description.startsWith("Album : ")) {
-			return description.substring("Album : ".length()-1, description.length());
+			return description.substring("Album : ".length() - 1, description.length());
 		}
 		if (description.startsWith("Artist : ")) {
-			return description.substring("Artist : ".length()-1, description.length());
+			return description.substring("Artist : ".length() - 1, description.length());
 		}
 		if (description.startsWith("Genre : ")) {
-			return description.substring("Genre : ".length()-1,description.length());
+			return description.substring("Genre : ".length() - 1, description.length());
 		}
 		return description;
 	}
@@ -333,42 +395,90 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 		return res;
 	}
 
-	protected void setAccount(IDvInvocation paramIDvInvocation, long id, String var4, String var5, String var6, String var7, String var8, String var9, boolean var10) {
-		log.debug("setAccount: " + Utils.getLogText(paramIDvInvocation) + " Id: " + id);
-
+	private int getRandomIndex() {
+		int res = 0;
+		res = ThreadLocalRandom.current().nextInt(1, Integer.MAX_VALUE);
+		return res;
 	}
 
+	/***
+	 * Set the Account Pin
+	 */
+	protected void setAccount(IDvInvocation paramIDvInvocation, long id, String mode, String type, String uri, String title, String description, String artworkUri, boolean shuffle) {
+		log.debug("setAccount: " + Utils.getLogText(paramIDvInvocation) + " Id: " + id);
+		int myId = getNextIndex() + iDeviceMax;
+		log.debug("setAccount. MyId: " + myId);
+		String myDescription = tidyDescription(description);
+		PinInfo pi = new PinInfo(myId, mode, type, uri, "", myDescription, artworkUri, shuffle);
+		log.debug("setDevice. PinInfo: " + pi.toString());
+		accountPins.put((int) id, pi);
+		updateIdArray(true);
+	}
+
+	/***
+	 * Clear a Pin
+	 */
 	protected void clear(IDvInvocation paramIDvInvocation, long id) {
 		log.debug("clear: " + Utils.getLogText(paramIDvInvocation) + " Id: " + id);
+		// Sort out the Device Pins
 		if (devicePins.containsKey((int) id)) {
 			devicePins.put((int) id, dummyPinInfo);
 		}
 		int i = 0;
 		for (PinInfo pi : devicePins.values()) {
-			if (pi != null || pi.getId() >= 0) {
+			if (pi != null && pi.getId() >= 0) {
 				if (id == pi.getId()) {
 					devicePins.put(i, dummyPinInfo);
 				}
 			}
 			i++;
 		}
+
+		// Sort out the Account Pins
+		if (accountPins.containsKey((int) id)) {
+			accountPins.put((int) id, dummyPinInfo);
+		}
+		i = 0;
+		for (PinInfo pi : accountPins.values()) {
+			if (pi != null && pi.getId() >= 0) {
+				if (id == pi.getId()) {
+					accountPins.put(i, dummyPinInfo);
+				}
+			}
+			i++;
+		}
+
 		updateIdArray(true);
 	}
 
+	/***
+	 * Swap pins. Can only swap the same type of pin (Device or Account)
+	 */
 	protected void swap(IDvInvocation paramIDvInvocation, long id1, long id2) {
 		log.debug("setDevice: " + Utils.getLogText(paramIDvInvocation) + " Id1: " + id1 + " Id2: " + id2);
 		int mId1 = (int) id1;
 		int mId2 = (int) id2;
-		PinInfo pinfo1 = devicePins.get(mId1);
-		PinInfo pinfo2 = devicePins.get(mId2);
-		devicePins.put(mId1, pinfo2);
-		devicePins.put(mId2, pinfo1);
-		updateIdArray(true);
+		if (devicePins.containsKey(mId1) && devicePins.containsKey(mId2)) {
+			PinInfo pinfo1 = devicePins.get(mId1);
+			PinInfo pinfo2 = devicePins.get(mId2);
+			devicePins.put(mId1, pinfo2);
+			devicePins.put(mId2, pinfo1);
+			updateIdArray(true);
+		}
+
+		if (accountPins.containsKey(mId1) && accountPins.containsKey(mId2)) {
+			PinInfo pinfo1 = accountPins.get(mId1);
+			PinInfo pinfo2 = accountPins.get(mId2);
+			accountPins.put(mId1, pinfo2);
+			accountPins.put(mId2, pinfo1);
+			updateIdArray(true);
+		}
+
 	}
 
 	protected boolean getCloudConnected(IDvInvocation paramIDvInvocation) {
 		log.debug("getCloudConnected: " + Utils.getLogText(paramIDvInvocation));
-		return false;
+		return getPropertyCloudConnected();
 	}
 
 	@Override
@@ -377,8 +487,20 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 	}
 
 	@Override
-	public void update(Observable arg0, Object arg1) {
+	public void dispose() {
+		PinMangerAccount.getInstance().unRegister();
+		super.dispose();
+	}
 
+	@Override
+	public void update(Observable o, Object e) {
+		EventBase base = (EventBase) e;
+		switch (base.getType()) {
+		case EVENTPINSCHANGED:
+			EventPinsChanged ev = (EventPinsChanged) e;
+			updatePins(ev.getPinInfo(), true);
+			break;
+		}
 	}
 
 }

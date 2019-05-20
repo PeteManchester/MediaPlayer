@@ -57,7 +57,8 @@ public class DidlNode {
 	 * @return the value
 	 */
 	public String getValue() {
-		return value;
+		return protectSpecialCharacters(value);
+		//return value;
 	}
 	/**
 	 * @param value the value to set
@@ -66,16 +67,43 @@ public class DidlNode {
 		this.value = value;
 	}
 	
+	private String protectSpecialCharacters(String originalUnprotectedString) {
+		 if (originalUnprotectedString == null) {
+		 return null;
+		 }
+		 boolean anyCharactersProtected = false;
+		
+		 StringBuffer stringBuffer = new StringBuffer();
+		 for (int i = 0; i < originalUnprotectedString.length(); i++) {
+		 char ch = originalUnprotectedString.charAt(i);
+		
+		 boolean controlCharacter = ch < 32;
+		 boolean unicodeButNotAscii = ch > 126;
+		 boolean characterWithSpecialMeaningInXML = ch == '<' || ch == '&' ||
+		 ch == '>';
+		
+		 if (characterWithSpecialMeaningInXML || unicodeButNotAscii ||
+		 controlCharacter) {
+		 stringBuffer.append("&#" + (int) ch + ";");
+		 anyCharactersProtected = true;
+		 } else {
+		 stringBuffer.append(ch);
+		 }
+		 }
+		 if (anyCharactersProtected == false) {
+		 return originalUnprotectedString;
+		 }
+		 return stringBuffer.toString();
+	}
+	
 	public String  getXMLNode() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("<");
 		sb.append(getNodeName());
 		sb.append(" xmlns:");
 		sb.append(getNSName());
-		//sb.append(" \"");
 		sb.append(">");
 		sb.append(getValue());
-		//sb.append("\" ");
 		sb.append("</");
 		sb.append(getNodeName());
 		sb.append(">");

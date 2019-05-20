@@ -17,56 +17,57 @@ public class DidlLiteImpl {
 	private String itemStart = "<item ";
 	private String itemEnd = "</item>";
 	private String didlEnd = "</DIDL-Lite>";
-	private String xmlEnd = "</>";
 
-	private String kNsDc = "dc=\"http://purl.org/dc/elements/1.1/\"";
-	private String kNsUpnp = "upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\"";
-	private String kNsOh = "oh=\"http://www.openhome.org\"";
+
+	private String sNsDc = "dc=\"http://purl.org/dc/elements/1.1/\"";
+	private String sNsUpnp = "upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\"";
+	private String sNsOh = "oh=\"http://www.openhome.org\"";
 	
-	
+	//Double quotes
 	private String dq = "\"";
+	//Space
 	private String s = " ";
 
 	private void createNodeTemplate() {
-		addTemplateNode(new DidlNode("artist", "upnp:artist", kNsUpnp));
-		addTemplateNode(new DidlNode("albumArtist", "upnp:albumArtist", kNsUpnp));
-		addTemplateNode(new DidlNode("composer", "upnp:composer", kNsUpnp));
-		addTemplateNode(new DidlNode("conductor", "upnp:conductor", kNsUpnp));
-		addTemplateNode(new DidlNode("narrator", "upnp:narrator", kNsUpnp));
-		addTemplateNode(new DidlNode("performer", "upnp:performer", kNsUpnp));
-		addTemplateNode(new DidlNode("genre", "upnp:genre", kNsUpnp));
-		addTemplateNode(new DidlNode("albumGenre", "upnp:genre", kNsUpnp));
+		addTemplateNode(new DidlNode("artist", "upnp:artist", sNsUpnp));
+		addTemplateNode(new DidlNode("albumArtist", "upnp:albumArtist", sNsUpnp));
+		addTemplateNode(new DidlNode("composer", "upnp:composer", sNsUpnp));
+		addTemplateNode(new DidlNode("conductor", "upnp:conductor", sNsUpnp));
+		addTemplateNode(new DidlNode("narrator", "upnp:narrator", sNsUpnp));
+		addTemplateNode(new DidlNode("performer", "upnp:performer", sNsUpnp));
+		addTemplateNode(new DidlNode("genre", "upnp:genre", sNsUpnp));
+		addTemplateNode(new DidlNode("albumGenre", "upnp:genre", sNsUpnp));
 		
-		addTemplateNode(new DidlNode("author", "dc:author", kNsDc));
-		addTemplateNode(new DidlNode("title", "dc:title", kNsDc));
-		addTemplateNode(new DidlNode("year", "dc:date", kNsDc));
+		addTemplateNode(new DidlNode("author", "dc:author", sNsDc));
+		addTemplateNode(new DidlNode("title", "dc:title", sNsDc));
+		addTemplateNode(new DidlNode("year", "dc:date", sNsDc));
 		
-		addTemplateNode(new DidlNode( "albumTitle", "upnp:album", kNsUpnp ));
-		addTemplateNode(new DidlNode( "albumArtwork", "upnp:albumArtURI", kNsUpnp ));
+		addTemplateNode(new DidlNode( "albumTitle", "upnp:album", sNsUpnp ));
+		addTemplateNode(new DidlNode( "albumArtwork", "upnp:albumArtURI", sNsUpnp ));
 		
-		addTemplateNode(new DidlNode( "provider", "oh:provider", kNsOh ));
-		addTemplateNode(new DidlNode( "artwork", "oh:artwork", kNsOh ));
+		addTemplateNode(new DidlNode( "provider", "oh:provider", sNsOh ));
+		addTemplateNode(new DidlNode( "artwork", "oh:artwork", sNsOh ));
 		
-		addTemplateNode(new DidlNode( "track", "upnp:originalTrackNumber", kNsUpnp ));
+		addTemplateNode(new DidlNode( "track", "upnp:originalTrackNumber", sNsUpnp ));
 		
-		addTemplateNode(new DidlNode("tracks", "oh:originalTrackCount", kNsOh));
-		addTemplateNode(new DidlNode("disc", "oh:originalDiscNumber", kNsOh));
-		addTemplateNode(new DidlNode("discs", "oh:originalDiscCount", kNsOh));
-		addTemplateNode(new DidlNode("work", "oh:work", kNsOh));
-		addTemplateNode(new DidlNode("movement", "oh:movement", kNsOh));
-		addTemplateNode(new DidlNode("show", "oh:show", kNsOh));
-		addTemplateNode(new DidlNode("episode", "oh:episodeNumber", kNsOh));
-		addTemplateNode(new DidlNode("episodes", "oh:episodeCount", kNsOh));
-		addTemplateNode(new DidlNode("published", "oh:published", kNsOh));
-		addTemplateNode(new DidlNode("website", "oh:website", kNsOh));
-		addTemplateNode(new DidlNode("location", "oh:location", kNsOh));
-		addTemplateNode(new DidlNode("details", "oh:details", kNsOh));
-		addTemplateNode(new DidlNode("extensions", "oh:extensions", kNsOh));
+		addTemplateNode(new DidlNode("tracks", "oh:originalTrackCount", sNsOh));
+		addTemplateNode(new DidlNode("disc", "oh:originalDiscNumber", sNsOh));
+		addTemplateNode(new DidlNode("discs", "oh:originalDiscCount", sNsOh));
+		addTemplateNode(new DidlNode("work", "oh:work", sNsOh));
+		addTemplateNode(new DidlNode("movement", "oh:movement", sNsOh));
+		addTemplateNode(new DidlNode("show", "oh:show", sNsOh));
+		addTemplateNode(new DidlNode("episode", "oh:episodeNumber", sNsOh));
+		addTemplateNode(new DidlNode("episodes", "oh:episodeCount", sNsOh));
+		addTemplateNode(new DidlNode("published", "oh:published", sNsOh));
+		addTemplateNode(new DidlNode("website", "oh:website", sNsOh));
+		addTemplateNode(new DidlNode("location", "oh:location", sNsOh));
+		addTemplateNode(new DidlNode("details", "oh:details", sNsOh));
+		addTemplateNode(new DidlNode("extensions", "oh:extensions", sNsOh));
 		
-		addTemplateNode(new DidlNode("publisher", "dc:publisher", kNsDc));
-		addTemplateNode(new DidlNode("description", "dc:description", kNsDc));
+		addTemplateNode(new DidlNode("publisher", "dc:publisher", sNsDc));
+		addTemplateNode(new DidlNode("description", "dc:description", sNsDc));
 		
-		addTemplateNode(new DidlNode("rating", "upnp:rating", kNsUpnp));
+		addTemplateNode(new DidlNode("rating", "upnp:rating", sNsUpnp));
 
 	}
 
@@ -75,6 +76,27 @@ public class DidlLiteImpl {
 	}
 
 	public String createMetaData(Map<String, String> data) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(createStartOfDidl(data));
+		//Iterate meta data
+		for (String key : data.keySet()) {
+			String value = data.get(key);
+			String node = getMetaDataNode(key, value);
+			if (node != null) {
+				sb.append(node);
+			}
+		}		
+		String res = createResTag(data);
+		sb.append(res);
+	
+		//Finish it
+		sb.append(itemEnd);
+		sb.append(didlEnd);
+		return sb.toString();
+	}
+	
+	private String createStartOfDidl(Map<String, String> data)
+	{
 		StringBuilder sb = new StringBuilder();
 		sb.append(xmlStart);
 		sb.append(didlStart);
@@ -91,26 +113,8 @@ public class DidlLiteImpl {
 		sb.append(" restricted=\"0\"");
 		sb.append(">");		
 		sb.append("<upnp:class xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\">object.item.audioItem.musicTrack</upnp:class>");
-		//Iterate meta data
-		for (String key : data.keySet()) {
-			String value = data.get(key);
-			String node = getMetaDataNode(key, value);
-			if (node != null) {
-				sb.append(node);
-			}
-		}
-		
-		String res = createResTag(data);
-		sb.append(res);
-		//create the res node
-
-		
-
-		sb.append(itemEnd);
-		sb.append(didlEnd);
 		return sb.toString();
 	}
-	
 	
 	private String createResTag(Map<String, String> data)
 	{

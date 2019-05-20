@@ -6,8 +6,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.crypto.Cipher;
-
 import org.apache.log4j.Logger;
 import org.bouncycastle.util.encoders.Base64;
 //import org.bouncycastle.util.encoders.Base64;
