@@ -17,6 +17,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JSON"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JerseyClient"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JerseySSE"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/WebSocketClient"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/socketio"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

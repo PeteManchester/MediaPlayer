@@ -1,8 +1,5 @@
 package org.rpi.credentials;
 
-import java.util.Arrays;
-
-
 public class CredentialInfo {
 	
 	private String userName = "";

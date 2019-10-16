@@ -374,7 +374,8 @@ public class ChannelReaderJSON implements Runnable {
 		String sep = "";
 		if (splits.length > 0) {
 			for (String key : splits) {
-				if (!(key.toLowerCase().startsWith("partnerid=") || key.toLowerCase().startsWith("username="))) {
+				//if (!(key.toLowerCase().startsWith("partnerid=") || key.toLowerCase().startsWith("username="))) {
+				if (!key.toLowerCase().startsWith("username=")) {
 					sb.append(sep);
 					sb.append(key);
 					sep = "&";

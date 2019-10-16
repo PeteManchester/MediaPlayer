@@ -25,7 +25,7 @@ import org.rpi.config.Config;
 import org.rpi.kazo.server.KazooServer;
 import org.rpi.pins.EventPinsChanged;
 import org.rpi.pins.PinInfo;
-import org.rpi.pins.PinMangerAccount;
+import org.rpi.pins.PinManagerAccount;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventPlayListUpdateList;
@@ -46,7 +46,7 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 
 	public PrvPins(DvDevice iDevice) {
 		super(iDevice);
-		PinMangerAccount.getInstance().observePinEvents(this);
+		PinManagerAccount.getInstance().observePinEvents(this);
 		iDeviceMax = Config.getInstance().getPinsDeviceMax();
 		for (int i = 0; i < iDeviceMax; i++) {
 			devicePins.put(i, dummyPinInfo);
@@ -135,7 +135,7 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 				res.put(json);
 			}
 			String json = res.toString();
-			PinMangerAccount.getInstance().SavePins(json);
+			PinManagerAccount.getInstance().SavePins(json);
 			// saveToFile(json);
 			// saveToCloud(json);
 		} catch (Exception e) {
@@ -144,7 +144,7 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 	}
 
 	private void readPins() {
-		String content = PinMangerAccount.getInstance().getPins();
+		String content = PinManagerAccount.getInstance().getPins();
 		updatePins(content, false);
 	}
 
@@ -486,7 +486,7 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 
 	@Override
 	public void dispose() {
-		PinMangerAccount.getInstance().unRegister();
+		PinManagerAccount.getInstance().unRegister();
 		super.dispose();
 	}
 

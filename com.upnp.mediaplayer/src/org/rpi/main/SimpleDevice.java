@@ -41,7 +41,6 @@ import org.rpi.controlpoint.DeviceInfo;
 import org.rpi.controlpoint.DeviceManager;
 import org.rpi.http.HttpServerGrizzly;
 import org.rpi.os.OSManager;
-import org.rpi.pins.PinMangerAccount;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventSourceChanged;
@@ -60,7 +59,6 @@ import org.rpi.providers.PrvRenderingControl;
 import org.rpi.providers.PrvSongcast;
 import org.rpi.providers.PrvTime;
 import org.rpi.providers.PrvVolume;
-import org.rpi.scratchpad.ws.client.EmptyClient;
 import org.rpi.sources.Source;
 import org.rpi.sources.SourceReader;
 import org.rpi.utils.NetworkUtils;
@@ -95,7 +93,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	private CpDeviceListUpnpServiceType cpDeviceList = null;
 
 	// private PinMangerAccount pinManager = new PinMangerAccount();
-	private org.java_websocket.client.WebSocketClient wsc = null;
+	//private org.java_websocket.client.WebSocketClient wsc = null;
 
 
 	/***
@@ -112,16 +110,6 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	protected SimpleDevice(boolean test) {
 		// this constructor is just for test purposes...
 		// do not remove it
-	}
-
-	private void startWebSocket() {
-		try {
-			wsc = new EmptyClient(new URI("ws://127.0.0.1:8081/PinService/endpoint?push=TIME"));
-			wsc.connect();
-		} catch (URISyntaxException e) {
-			log.error(e);
-		}
-
 	}
 
 	private void initSimpleDevice() {
