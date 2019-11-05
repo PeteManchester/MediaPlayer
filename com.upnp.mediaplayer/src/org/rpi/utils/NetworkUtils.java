@@ -7,9 +7,13 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by triplem on 24.02.14.
@@ -223,12 +227,18 @@ public class NetworkUtils {
 	
 	
 	public static Inet4Address getINet4Address() {
-		String res = "127.0.0.1";
+		//String res = "127.0.0.1,192.168.116.1,192.168.32.1";
+		Map<String, String> resList = new HashMap<String,String>();
+		//IP Addresses to exclude.
+		resList.put("127.0.0.1", "127.0.0.1");
+		resList.put("192.168.116.1", "192.168.116.1");
+		//resList.put("192.168.32.1", "192.168.32.1");
+		
 		try {
 			InetAddress iAddress = InetAddress.getLocalHost();
 			String addr = iAddress.getHostAddress();
 			log.debug("PETE!!!!!!!! InetAddress: " + addr);
-			if ((!res.equalsIgnoreCase(addr)) && (!addr.equalsIgnoreCase("127.0.1.1") && iAddress instanceof Inet4Address)) {
+			if ((!resList.containsKey(addr)) && (!addr.equalsIgnoreCase("127.0.1.1")  && !addr.equalsIgnoreCase("192.168.116.1") && iAddress instanceof Inet4Address)) {
 				log.debug("PETE!!!!!!!! Returning InetAddress: " + addr);
 				return (Inet4Address) iAddress;
 			}
@@ -241,7 +251,12 @@ public class NetworkUtils {
 			Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
 			for (NetworkInterface netint : Collections.list(nets)) {
 				InetAddress addr = getInetAddressInfo(netint);
-				if (addr instanceof Inet4Address && !addr.getHostAddress().equalsIgnoreCase(res)) {
+				String hostAddress = "BAD";
+				if(addr != null) {
+					hostAddress = addr.getHostAddress();
+				}
+				
+				if (addr instanceof Inet4Address && !resList.containsKey(addr.getHostAddress())) {
 					return (Inet4Address) addr;
 				}
 			}

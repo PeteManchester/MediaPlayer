@@ -6,6 +6,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
@@ -30,6 +31,7 @@ import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventPlayListUpdateList;
 import org.rpi.radio.ChannelReaderJSON;
+import org.rpi.radio.parsers.ASHXParser;
 import org.rpi.utils.Utils;
 
 public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, IDisposableDevice {
@@ -273,6 +275,17 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 
 					}
 					ChannelRadio c = new ChannelRadio(path, m, rId, presetId);
+					
+					ASHXParser parser = new ASHXParser();
+					if (c.getUri().toLowerCase().contains("opml.radiotime.com")) {
+						log.debug("Radio URL contains 'opml.radiotime.com' Get the Correct URL: " + c.getUri());
+						LinkedList<String> ashxURLs = parser.getStreamingUrl(c.getUri());
+						if (ashxURLs.size() > 0) {
+							c.setUri(ashxURLs.get(0));
+						}
+					}
+					
+					
 					PlayManager.getInstance().playRadio(c);
 				} catch (Exception e) {
 					log.error(e);
