@@ -260,7 +260,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			Alarm.getInstance();
 			OSManager.getInstance().loadPlugins();
 		} catch (Exception e) {
-			log.error("PETE!!!!!", e);
+			log.error("MAJOR ERROR. SimpleDevice", e);
 		}
 	}
 
@@ -551,18 +551,32 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	}
 
 	@Override
-	public void deviceAdded(CpDevice var1) {
+	public void deviceAdded(CpDevice cpDevice) {
 		//synchronized (this) {
 			try {
-				CpAttribute l = var1.getAttribute("Upnp.DeviceXml");
-				if (l.isAvailable()) {
-					String xml = l.getValue();
-					String udn = var1.getUdn();
-					DeviceInfo di = new DeviceInfo(var1.getUdn(), l.getValue());
-					if (di.isValid()) {
-						DeviceManager.getInstance().addDevice(udn, di);
+				CpAttribute l = cpDevice.getAttribute("Upnp.DeviceXml");
+				try {
+					if (l.isAvailable()) {
+						String xml = l.getValue();
+						String udn = cpDevice.getUdn();
+						DeviceInfo di = new DeviceInfo(cpDevice.getUdn(), l.getValue());
+						if (di.isValid()) {
+							DeviceManager.getInstance().addDevice(udn, di);
+						}
+						log.debug("Added: " + udn + " XML: " + xml);
 					}
-					log.debug("Added: " + udn + " XML: " + xml);
+				}catch(Exception ex) {
+					
+				}finally {
+					try {
+						if(l !=null) {
+							l = null;
+							cpDevice = null;
+						}
+					}
+					catch(Exception ex) {
+						log.error("Error Tidy up Device on Device Added", ex);
+					}
 				}
 			} catch (Exception e) {
 				log.error("Error DeviceAdded", e);
@@ -571,12 +585,19 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	}
 
 	@Override
-	public void deviceRemoved(CpDevice var1) {
+	public void deviceRemoved(CpDevice cpDevice) {
 		//synchronized (this) {
 			try {
-				log.debug("Removed: " + var1.getUdn());
-				String udn = var1.getUdn();
+				log.debug("Removed: " + cpDevice.getUdn());
+				String udn = cpDevice.getUdn();
 				DeviceManager.getInstance().deleteDevice(udn);
+				
+				try {
+					cpDevice = null;
+				}catch(Exception ex) {
+					log.error("Erroy Tidy up Device on Device Removed", ex);
+				}
+				
 			} catch (Exception e) {
 				log.error("Error DeviceAdded", e);
 			}

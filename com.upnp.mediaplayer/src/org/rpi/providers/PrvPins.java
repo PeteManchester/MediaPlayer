@@ -58,19 +58,19 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 		}
 		enablePropertyAccountMax();
 		enablePropertyDeviceMax();
-		enablePropertyCloudConnected();
+		//enablePropertyCloudConnected();
 		enablePropertyIdArray();
 		enablePropertyModes();
 
-		enableActionGetDeviceMax();
-		enableActionGetAccountMax();
+		//enableActionGetDeviceMax();
+		//enableActionGetAccountMax();
 		enableActionGetModes();
-		enableActionGetCloudConnected();
+		//enableActionGetCloudConnected();
 		enableActionGetIdArray();
 		enableActionReadList();
 		enableActionInvokeIndex();
 		enableActionInvokeId();
-		enableActionInvokeUri();
+		//enableActionInvokeUri();
 		enableActionSetDevice();
 		enableActionSetAccount();
 		enableActionClear();
@@ -79,7 +79,7 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 		propertiesLock();
 		setPropertyAccountMax(iAccountMax);
 		setPropertyDeviceMax(iDeviceMax);
-		setPropertyCloudConnected(true);
+		//setPropertyCloudConnected(true);
 		readPins();
 		updateIdArray(false);
 
@@ -366,10 +366,12 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 		log.debug("invokeIndex: " + Utils.getLogText(paramIDvInvocation) + " Id: " + id);
 	}
 
+	/*
 	@Override
 	protected void invokeUri(IDvInvocation paramIDvInvocation, String mode, String type, String uri, boolean shuffle) {
 		log.debug("invokeUri: " + Utils.getLogText(paramIDvInvocation) + " Id: " + uri);
 	}
+	*/
 
 	protected void setDevice(IDvInvocation paramIDvInvocation, long id, String mode, String type, String uri, String description, String var8, String artworkUri, boolean shuffle) {
 		log.debug("setDevice: " + Utils.getLogText(paramIDvInvocation) + " Id: " + id);
@@ -487,10 +489,12 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 
 	}
 
+	/*
 	protected boolean getCloudConnected(IDvInvocation paramIDvInvocation) {
 		log.debug("getCloudConnected: " + Utils.getLogText(paramIDvInvocation));
 		return getPropertyCloudConnected();
 	}
+	*/
 
 	@Override
 	public String getName() {

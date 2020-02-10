@@ -59,6 +59,12 @@
 			</antcall>
 	</target>
 	
+		<target name="deployZero">
+			<antcall target="CopyFilesToRaspiZero">
+				<param name="server_name" value="rpizero" />
+			</antcall>
+	</target>
+	
 	<target name="deployPi2">
 		<antcall target="CopyFilesToRaspi">
 			<param name="server_name" value="rpipi2.local" />
@@ -99,6 +105,37 @@
 				
 		<echo>Sending to ${server_name} Starting mediaplayer</echo>
 		<sshexec host="${server_name}" username="root" password="root" command="sudo service mediaplayer start" trust="true" />
+		
+	</target>
+	
+		<target name="CopyFilesToRaspiZero">
+		<echo>Sending to ${server_name} </echo>
+		<echo>Sending to ${server_name} Stopping mediaplayer</echo>
+		<sshexec host="${server_name}" username="root" password="root" command="sudo systemctl stop mediaplayer" trust="true" />
+		<echo>Sending to ${server_name} Copying mediaplayer.jar </echo>
+		<scp remoteTodir="root:root@${server_name}:/home/pi/mediaplayer" trust="yes" sftp="true">
+			<fileset dir="${buildbetamediaplayer}">
+				<include name="mediaplayer.jar" />
+			</fileset>
+		</scp>
+		
+		
+		<echo>Sending to ${server_name} Copying to mediaplayer_lib</echo>
+		<scp remoteTodir="root:root@${server_name}:/home/pi/mediaplayer/mediaplayer_lib" trust="yes" sftp="true">
+			<fileset dir="${buildbetamediaplayer}/mediaplayer_lib">
+			</fileset>
+		</scp>
+		
+		<echo>Sending to ${server_name} Copying to web dir</echo>
+		<scp remoteTodir="root:root@${server_name}:/home/pi/mediaplayer/web" trust="yes" sftp="true">
+			<fileset dir="${basedir}/web">
+			</fileset>
+		</scp>
+		
+		
+				
+		<echo>Sending to ${server_name} Starting mediaplayer</echo>
+		<sshexec host="${server_name}" username="root" password="root" command="sudo systemctl start mediaplayer" trust="true" />
 		
 	</target>
 

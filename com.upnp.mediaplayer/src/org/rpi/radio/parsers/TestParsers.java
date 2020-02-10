@@ -13,7 +13,8 @@ public class TestParsers {
 		//pls.getStreamingUrl("http://radio.linnrecords.com/cast/tunein.php/linnjazz/playlist.pls");
 		M3UParser m3u = new M3UParser();
 		//m3u.getStreamingUrl("http://media-ice.musicradio.com/CapitalManchesterMP3.m3u");
-		m3u.getStreamingUrl("http://opml.radiotime.com/Tune.ashx?id=t101185768&sid=p220075&formats=mp3");
+		//m3u.getStreamingUrl("http://opml.radiotime.com/Tune.ashx?id=t101185768&sid=p220075&formats=mp3");
+		m3u.getStreamingUrl("http://http://opml.radiotime.com/Tune.ashx?id=t137806398&#38;sid=p945158&#38;formats=mp3,aac,ogg,hls&#38;partnerId=Sonos&#38;locale=enGB&#38;username=petehoyle");
 		//ASXParser asx = new ASXParser();
 		//asx.getStreamingUrl("http://bbc.co.uk/radio/listen/live/bbcmanchester.asx");
 		FileParser asx = new FileParser();

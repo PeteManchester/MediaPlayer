@@ -231,8 +231,8 @@ public class NetworkUtils {
 		Map<String, String> resList = new HashMap<String,String>();
 		//IP Addresses to exclude.
 		resList.put("127.0.0.1", "127.0.0.1");
-		//resList.put("192.168.116.1", "192.168.116.1");
-		//resList.put("192.168.32.1", "192.168.32.1");
+		resList.put("192.168.116.1", "192.168.116.1");
+		resList.put("192.168.32.1", "192.168.32.1");
 		
 		try {
 			InetAddress iAddress = InetAddress.getLocalHost();

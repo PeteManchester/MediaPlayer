@@ -164,7 +164,7 @@ function checkStatusConfig() {
 				url : '/myapp/config/getConfig',
 				success : function(text) {
 
-					var data = JSON.parse(text);
+					var data = JSON.parse(unescape(text));
 					config_json = data;
 					$("#friendlyName").val(
 							decode(data.mediaplayer_friendly_name));
@@ -328,14 +328,12 @@ function updateConfig() {
 		config_json.airplay_audio_start_delay = $("#airplay_audio_start_delay").val();
 		
 		config_json.airplay_master_volume_enabled = $("#airplay_master_volume_enabled").val();
-		
-		
-		
+
 		$.ajax({
 			type : 'POST',
 			url : '/myapp/config/setConfig',
 			contentType : "application/json; charset=utf-8",
-			dataType : 'text',
+			dataType : 'json',
 			data : {
 				'' : JSON.stringify(config_json)
 			},
@@ -346,6 +344,8 @@ function updateConfig() {
 				message('Error UpdateConfig: ' + textStatus + ' ' + errorThrown);
 			}
 		});
+		
+		
 
 	}
 }

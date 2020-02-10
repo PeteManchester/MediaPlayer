@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.TreeSet;
 
-
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -43,7 +43,7 @@ enum Props {
 
 public class Config {
 
-	private String version = "0.0.9.5";
+	private String version = "0.0.9.6";
 
 	private Logger log = Logger.getLogger(this.getClass());
 
@@ -774,8 +774,9 @@ public class Config {
 					if (!value.toString().equalsIgnoreCase(pr.getProperty(Props.LOG_FILE_LEVEL.toString()))) {
 						changeFileLogLevel(value);
 					}
-				}
-				pr.put(key, value);
+				}				
+				String s = StringEscapeUtils.unescapeJson(value);
+				pr.put(key, s );
 			}
 		} catch (Exception e) {
 
@@ -806,7 +807,7 @@ public class Config {
 			}
 		}
 	}
-
+	
 	public void setResourceURIPrefix(String resourceURIPrefix) {
 		this.resourceURIPrefix = resourceURIPrefix;
 	}

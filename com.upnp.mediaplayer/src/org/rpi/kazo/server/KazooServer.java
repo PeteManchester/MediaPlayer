@@ -122,6 +122,10 @@ public class KazooServer {
 			}
 		} catch (Exception e) {
 			log.error(e);
+		}finally {
+			if(di !=null) {
+				di = null;
+			}
 		}
 	}
 

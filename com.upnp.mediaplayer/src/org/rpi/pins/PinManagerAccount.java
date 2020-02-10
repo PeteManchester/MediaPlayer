@@ -52,6 +52,9 @@ public class PinManagerAccount {
 			log.info("PinManger URL is configured, connect to the service");
 			connectToServer();
 		}
+		else {
+			log.info("PinManger URL is not configured, do  NOT connect to the service");
+		}
 	}
 
 	private void connectToServer() {
@@ -61,13 +64,14 @@ public class PinManagerAccount {
 			String host = url.getHost();
 			Options options = new Options();
 			options.path = path;
+			options.transports = new String[] {"websocket"};
 			String sUrl = pinManagerURL.replace(path, "");
 			socket = IO.socket(sUrl, options);
 			socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
 				@Override
 				public void call(Object... args) {
 					log.debug("Connected: " + socket.connected());
-					socket.emit("foo", "hi");
+					//socket.emit("foo", "hi");
 				}
 
 			}).on(Socket.EVENT_MESSAGE, new Emitter.Listener() {
@@ -94,9 +98,6 @@ public class PinManagerAccount {
 						
 						break;
 					}
-					
-
-					
 				}
 
 			}).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
@@ -117,7 +118,7 @@ public class PinManagerAccount {
 
 				@Override
 				public void call(Object... args) {
-					log.debug("Reconnect Attempt");
+					log.debug("Reconnect Attempt: " + args);
 
 				}
 			}).on("pins", new Emitter.Listener() {
@@ -146,7 +147,6 @@ public class PinManagerAccount {
 			socket.connect();
 			log.debug("Status: " + socket.toString());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			log.error("Error: ", e);
 		}
 	}
