@@ -9,6 +9,7 @@ import java.net.URLConnection;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
+import org.rpi.mplayer.CloseMe;
 
 public class PLSParser {
 	private static Logger log = Logger.getLogger(PLSParser.class);
@@ -27,7 +28,7 @@ public class PLSParser {
 	}
 
 	public LinkedList<String> getStreamingUrl(URLConnection conn) {
-		final BufferedReader br;
+		BufferedReader br = null;
 		String murl = null;
 		LinkedList<String> murls = new LinkedList<String>();
 		try {
@@ -54,7 +55,16 @@ public class PLSParser {
 		} catch (IOException e) {
 			log.error(e);
 		}
-		murls.add(conn.getURL().toString());
+		finally {
+			murls.add(conn.getURL().toString());
+			if(br !=null) {
+				CloseMe.close(br);
+			}
+			if(conn !=null){
+				conn = null;
+			}			
+		}
+		
 		return murls;
 	}
 

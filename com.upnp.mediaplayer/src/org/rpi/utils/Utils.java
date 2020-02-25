@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.openhome.net.device.IDvInvocation;
 import org.rpi.config.Config;
+import org.rpi.mplayer.CloseMe;
 
 public class Utils {
 
@@ -102,17 +103,33 @@ public class Utils {
 	public static String[] execute(String command) throws Exception {
 		ArrayList<String> list = new ArrayList<String>();
 		Process pa = Runtime.getRuntime().exec(command);
-		pa.waitFor();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(pa.getInputStream()));
-		String line;
-		while ((line = reader.readLine()) != null) {
-			line = line.trim();
-			log.debug("Result of " + command + " : " + line);
-			list.add(line);
+		BufferedReader reader = null;
+		try
+		{
+			pa.waitFor();
+			reader = new BufferedReader(new InputStreamReader(pa.getInputStream()));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				line = line.trim();
+				log.debug("Result of " + command + " : " + line);
+				list.add(line);
+			}
+			return list.toArray(new String[list.size()]);
 		}
-		reader.close();
-		pa.getInputStream().close();
-		return list.toArray(new String[list.size()]);
+		catch(Exception e) {
+			throw e;
+		}finally {
+			if(reader !=null ) {
+				CloseMe.close(reader);
+				reader = null;
+			}
+			if(pa !=null) {
+				CloseMe.close(pa.getInputStream());
+				pa.destroy();
+				pa = null;
+			}
+		}
+		
 	}
 
 	/**

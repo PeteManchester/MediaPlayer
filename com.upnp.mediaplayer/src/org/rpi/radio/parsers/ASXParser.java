@@ -9,11 +9,12 @@ import java.net.URLConnection;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
+import org.rpi.mplayer.CloseMe;
 
 public class ASXParser {
-	
+
 	private Logger log = Logger.getLogger(ASXParser.class);
-	
+
 	public LinkedList<String> getStreamingUrl(String url) {
 		LinkedList<String> murls = null;
 		try {
@@ -26,15 +27,15 @@ public class ASXParser {
 		return murls;
 	}
 
-	public LinkedList<String> getStreamingUrl(URLConnection conn) {		
-		
-		final BufferedReader br;
+	public LinkedList<String> getStreamingUrl(URLConnection conn) {
+
+		BufferedReader br = null;
 		String murl = null;
 		LinkedList<String> murls = null;
 		murls = new LinkedList<String>();
 		try {
 			br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			
+
 			while (true) {
 				try {
 					String line = br.readLine();
@@ -53,8 +54,15 @@ public class ASXParser {
 			log.error(e);
 		} catch (IOException e) {
 			log.error(e);
+		} finally {
+			if (br != null) {
+				CloseMe.close(br);
+			}
+			if (conn != null) {
+				conn = null;
+			}
 		}
-		//murls.add(conn.getURL().toString());
+		// murls.add(conn.getURL().toString());
 		return murls;
 	}
 
@@ -65,7 +73,7 @@ public class ASXParser {
 		String trimmed = line.trim();
 		if (trimmed.toLowerCase().startsWith("<ref href=\"")) {
 			trimmed = trimmed.substring(11);
-			//trimmed = trimmed.replace("<ref href=\"", "");
+			// trimmed = trimmed.replace("<ref href=\"", "");
 			trimmed = trimmed.replace("/>", "").trim();
 			if (trimmed.endsWith("\"")) {
 				trimmed = trimmed.replace("\"", "");
@@ -75,9 +83,8 @@ public class ASXParser {
 		}
 		return "";
 	}
-	
-	private URLConnection getConnection(String url) throws MalformedURLException, IOException
-	{
+
+	private URLConnection getConnection(String url) throws MalformedURLException, IOException {
 		URLConnection mUrl = new URL(url).openConnection();
 		return mUrl;
 	}

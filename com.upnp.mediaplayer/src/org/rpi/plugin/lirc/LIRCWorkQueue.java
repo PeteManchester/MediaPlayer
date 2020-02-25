@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+import org.rpi.mplayer.CloseMe;
 
 
 public class LIRCWorkQueue extends Thread {
@@ -95,9 +96,10 @@ public class LIRCWorkQueue extends Thread {
 		if(command ==null)
 			return;
 		log.debug("Sending Command: " + command);
+		Process pa =  null;
 		try
 		{
-		Process pa = Runtime.getRuntime().exec(command);
+		pa = Runtime.getRuntime().exec(command);
 		pa.waitFor();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(pa.getInputStream()));
 		String line;
@@ -106,11 +108,16 @@ public class LIRCWorkQueue extends Thread {
 			log.debug("Result of " + command + " : " + line);
 		}
 		reader.close();
-		pa.getInputStream().close();
+		//pa.getInputStream().close();
 		}
 		catch(Exception e)
 		{
 			log.error("Error Sending Command: " + command , e);
+		}finally {
+			if(pa !=null && pa.getInputStream() != null) {
+				CloseMe.close(pa.getInputStream());
+				pa = null;
+			}
 		}
 	}
 

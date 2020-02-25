@@ -66,97 +66,108 @@ public class FileParser {
 		}
 		else
 		{
-			URLConnection conn = getConnection(url);
-			if(conn!=null)
+			URLConnection conn = null;
+			try
 			{
-                log.debug("URL: "  + url + " Headers: " + conn.getHeaderFields());
-				String content_disp = conn.getHeaderField("Content-Disposition");
-				log.debug("ContentDisposition:" + content_disp);
-				String content_type = conn.getContentType();
-				if(content_type !=null)
-				{
-					content_type = content_type.toUpperCase();
-				}
-				if(content_disp !=null && content_disp.toUpperCase().endsWith("M3U"))
-				{
-					log.debug("M3U File: " + url);
-					M3UParser m3u = new M3UParser();
-					LinkedList<String> urls = m3u.getStreamingUrl(conn);
-					if(urls.size()> 0)
+				 conn = getConnection(url);
+				 if(conn!=null)
 					{
-						return urls.getFirst();
-					}
-				}
-				
-				else if(content_type != null && content_type.contains("AUDIO/X-SCPLS"))
-				{
-					log.debug("PLS File: " + url);
-					PLSParser pls = new PLSParser();
-					LinkedList<String> urls = pls.getStreamingUrl(conn);
-					if(urls.size()> 0)
-					{
-						return urls.getFirst();
-					}
-				}
-				else if(content_type != null && content_type.contains("VIDEO/X-MS-ASF"))
-				{
-					ASXParser asx = new ASXParser(); 
-					log.debug("ASX File: " + url);
-					LinkedList<String> urls = asx.getStreamingUrl(url);
-					if((urls.size()>0))
-					{
-						return urls.get(0);
-					}
-					log.debug("ContentType was VIDEO/X-MS-ASF but could not parse .asx file, attempt to parse as .PLS File ");
-					PLSParser pls = new PLSParser();
-					urls = pls.getStreamingUrl(url);
-					if((urls.size()>0))
-					{
-						return urls.get(0);
-					}
-				}
-				else if(content_type != null && content_type.contains("AUDIO/MPEG"))
-				{
-					log.debug("MPEG File: " + url);
-					return url;
-				}
-				else if (content_type != null && content_type.contains("AUDIO/X-MPEGURL"))
-				{
-					log.debug("M3U File: " + url);
-					M3UParser m3u = new M3UParser();
-					LinkedList<String> urls = m3u.getStreamingUrl(url);
-					if((urls.size()>0))
-					{
-						String myUrl = urls.get(0);
-						if(myUrl.endsWith(".pls"))
+		                log.debug("URL: "  + url + " Headers: " + conn.getHeaderFields());
+						String content_disp = conn.getHeaderField("Content-Disposition");
+						log.debug("ContentDisposition:" + content_disp);
+						String content_type = conn.getContentType();
+						if(content_type !=null)
 						{
-							return getURL(myUrl);
+							content_type = content_type.toUpperCase();
 						}
-						else
+						if(content_disp !=null && content_disp.toUpperCase().endsWith("M3U"))
 						{
-							return urls.get(0);
+							log.debug("M3U File: " + url);
+							M3UParser m3u = new M3UParser();
+							LinkedList<String> urls = m3u.getStreamingUrl(conn);
+							if(urls.size()> 0)
+							{
+								return urls.getFirst();
+							}
 						}
 						
+						else if(content_type != null && content_type.contains("AUDIO/X-SCPLS"))
+						{
+							log.debug("PLS File: " + url);
+							PLSParser pls = new PLSParser();
+							LinkedList<String> urls = pls.getStreamingUrl(conn);
+							if(urls.size()> 0)
+							{
+								return urls.getFirst();
+							}
+						}
+						else if(content_type != null && content_type.contains("VIDEO/X-MS-ASF"))
+						{
+							ASXParser asx = new ASXParser(); 
+							log.debug("ASX File: " + url);
+							LinkedList<String> urls = asx.getStreamingUrl(url);
+							if((urls.size()>0))
+							{
+								return urls.get(0);
+							}
+							log.debug("ContentType was VIDEO/X-MS-ASF but could not parse .asx file, attempt to parse as .PLS File ");
+							PLSParser pls = new PLSParser();
+							urls = pls.getStreamingUrl(url);
+							if((urls.size()>0))
+							{
+								return urls.get(0);
+							}
+						}
+						else if(content_type != null && content_type.contains("AUDIO/MPEG"))
+						{
+							log.debug("MPEG File: " + url);
+							return url;
+						}
+						else if (content_type != null && content_type.contains("AUDIO/X-MPEGURL"))
+						{
+							log.debug("M3U File: " + url);
+							M3UParser m3u = new M3UParser();
+							LinkedList<String> urls = m3u.getStreamingUrl(url);
+							if((urls.size()>0))
+							{
+								String myUrl = urls.get(0);
+								if(myUrl.endsWith(".pls"))
+								{
+									return getURL(myUrl);
+								}
+								else
+								{
+									return urls.get(0);
+								}
+								
+							}
+						}else if (content_type != null && content_type.contains("VND.APPLE.MPEGURL"))
+						{
+							log.debug("VND.APPLE.MPEGURL, use M3UParser File: " + url);
+							M3UParser m3u = new M3UParser();
+							LinkedList<String> urls = m3u.getStreamingUrl(url);
+							if((urls.size()>0))
+							{
+								log.debug("FileParser Returned: " + urls.get(0));
+								return urls.get(0);
+							}
+						}
+						
+						else
+						{
+							log.warn("##################Could Not Find File Type##########################");
+							log.warn("URL: " + url + " Headers: " + conn.getHeaderFields());
+							log.warn("####################################################################");
+						}
 					}
-				}else if (content_type != null && content_type.contains("VND.APPLE.MPEGURL"))
-				{
-					log.debug("VND.APPLE.MPEGURL, use M3UParser File: " + url);
-					M3UParser m3u = new M3UParser();
-					LinkedList<String> urls = m3u.getStreamingUrl(url);
-					if((urls.size()>0))
-					{
-						log.debug("FileParser Returned: " + urls.get(0));
-						return urls.get(0);
-					}
-				}
-				
-				else
-				{
-					log.warn("##################Could Not Find File Type##########################");
-					log.warn("URL: " + url + " Headers: " + conn.getHeaderFields());
-					log.warn("####################################################################");
-				}
 			}
+			catch(Exception e) {
+				
+			}finally {
+				if(conn !=null) {
+					conn = null;
+				}
+			}			
 		}
 		return url;
 	}

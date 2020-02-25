@@ -42,13 +42,13 @@ public class DeviceInfo {
             String ex_title = "root/device/presentationURL";
             XPath xPath = XPathFactory.newInstance().newXPath();
             String title = xPath.compile(ex_title).evaluate(doc);
-            log.debug("PresentationURL: " + title);
+            log.debug("Device## UDN: " + udn + " PresentationURL: " + title);
             URL url = new URL(title);
             setHost(url.getHost());
             setPort(url.getPort());
-            log.debug("Host and Port");
+            log.debug("Device## UDN: " + udn + " Host: " + host + "  Port: " + port);
 		} catch (Exception e) {
-			log.error("Error parsing xml");
+			log.error("Device## UDN: " + udn + " Error parsing xml");
 		}
 	}
 
@@ -78,10 +78,12 @@ public class DeviceInfo {
 
 	public boolean isValid() {
 		if(Utils.isEmpty(host)) {
+			log.debug("Device## UDN: " + udn + " Not Valid. Host was emtpy");
 			return false;
 		}
 		if(port <= 0)
 		{
+			log.debug("Device## UDN: " + udn + " Not Valid. Port less than Zero");
 			return false;
 		}
 		return true;

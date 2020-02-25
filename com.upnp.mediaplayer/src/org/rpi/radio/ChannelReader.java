@@ -23,6 +23,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Logger;
 import org.rpi.channel.ChannelRadio;
 import org.rpi.config.Config;
+import org.rpi.mplayer.CloseMe;
 import org.rpi.radio.parsers.ASHXParser;
 import org.rpi.utils.Utils;
 import org.w3c.dom.Document;
@@ -287,11 +288,12 @@ public class ChannelReader {
 	 */
 	private Document getDocument(String url) {
 		Document doc = null;
+		BufferedReader br = null;
 		try {
 			URLConnection conn = getConnection(url);
 			if (conn != null) {
 				log.debug("URL: " + url + " Headers: " + conn.getHeaderFields());
-				BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+				br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				StringBuilder sb = new StringBuilder();
 				while (true) {
 					try {
@@ -310,6 +312,12 @@ public class ChannelReader {
 			}
 
 		} catch (Exception e) {
+		}finally {
+			if(br !=null )
+			{
+				CloseMe.close(br);
+				br = null;
+			}
 		}
 		return doc;
 	}

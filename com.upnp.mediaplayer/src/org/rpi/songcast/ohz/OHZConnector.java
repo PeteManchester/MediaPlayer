@@ -78,7 +78,10 @@ public class OHZConnector {
 			//b.option(ChannelOption.IP_MULTICAST_IF, nic);
 
 			b.handler(new OHZChannelInitializer(localInetAddr));
-			log.debug("Am I Logged on as ROOT: " + PlatformDependent.isRoot());
+			
+			boolean isRoot = System.getProperty("user.name").equals("root");
+			log.debug("Am I Logged on as ROOT: " + isRoot);
+			//log.debug("Am I Logged on as ROOT: " + PlatformDependent.isRoot());
 			ch = (DatagramChannel) b.bind(localInetSocket).sync().channel();
 			if (remoteInetAddr.isMulticastAddress()) {
 				ChannelFuture future = ch.joinGroup(remoteInetSocket, nic);

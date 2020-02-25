@@ -15,6 +15,7 @@ import java.util.Observer;
 
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
+import org.rpi.mplayer.CloseMe;
 import org.rpi.player.IPlayer;
 import org.rpi.player.events.EventBase;
 
@@ -33,6 +34,9 @@ public class TCPConnector extends Observable implements Observer {
 	private Thread th = null;
 
 	private Socket socket = null;
+	DataOutputStream dOut = null;
+	BufferedReader dIn = null;
+	BufferedReader in = null;
 	private IPlayer iPlayer = null;
 
 	public TCPConnector(IPlayer iPlayer) {
@@ -50,21 +54,32 @@ public class TCPConnector extends Observable implements Observer {
 		}
 	}
 
-
 	protected synchronized String connect() throws IOException {
 		this.socket = new Socket();
 		String version = "";
+		String line = "";
 		SocketAddress sockaddr = new InetSocketAddress(host, port);
 		try {
 			this.socket.connect(sockaddr, timeout);
 		} catch (SocketTimeoutException ste) {
 			log.error(ste);
 		}
-		BufferedReader in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-		String line = in.readLine();
-		if (isOK(line)) {
-			version = removeText(line, MPD_OK);
-			log.info("MPD Version: " + version);
+		
+		try {
+			in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+			line = in.readLine();
+			if (isOK(line)) {
+				version = removeText(line, MPD_OK);
+				log.info("MPD Version: " + version);
+			}
+			return line;
+		} catch (Exception e) {
+
+		} finally {
+			if (in != null) {
+				// CloseMe.close(in);
+				// in = null;
+			}
 		}
 		return line;
 	}
@@ -85,12 +100,12 @@ public class TCPConnector extends Observable implements Observer {
 				return res;
 			}
 		}
-		DataOutputStream dOut = null;
+
 		try {
 			dOut = new DataOutputStream(socket.getOutputStream());
 			byte[] bytesToSend = command.getBytes("UTF-8");
 			dOut.write(bytesToSend);
-			BufferedReader dIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			dIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			String line = null;
 			while ((line = dIn.readLine()) != null) {
 				if (isOK(line))
@@ -112,6 +127,9 @@ public class TCPConnector extends Observable implements Observer {
 			log.error(e);
 			try {
 				socket.close();
+				if (dOut != null) {
+					CloseMe.close(dOut);
+				}
 				connect();
 			} catch (Exception ex) {
 				log.error(ex);
@@ -120,6 +138,7 @@ public class TCPConnector extends Observable implements Observer {
 			if (dOut != null) {
 				try {
 					dOut.flush();
+					// CloseMe.close(dOut);
 				} catch (IOException e) {
 					log.error(e);
 				}
@@ -185,7 +204,6 @@ public class TCPConnector extends Observable implements Observer {
 		return sb.toString();
 	}
 
-
 	/**
 	 * Remove the String from the line of Text
 	 * 
@@ -220,15 +238,33 @@ public class TCPConnector extends Observable implements Observer {
 		return iPlayer;
 	}
 
-
 	public void destroy() {
 		th = null;
-		if (socket.isConnected()) {
-			try {
-				socket.close();
-			} catch (Exception e) {
+		/*
+		 * if (socket.isConnected()) { try { socket.close(); } catch (Exception
+		 * e) {
+		 * 
+		 * } }
+		 */
+		
+		if(in !=null) {
+			CloseMe.close(in);
+			in = null;
+		}
 
-			}
+		if (dIn != null) {
+			CloseMe.close(dIn);
+			dIn = null;
+		}
+
+		if (dOut != null) {
+			CloseMe.close(dOut);
+			dOut = null;
+		}
+
+		if (socket != null) {
+			CloseMe.close(socket);
+			socket = null;
 		}
 
 	}

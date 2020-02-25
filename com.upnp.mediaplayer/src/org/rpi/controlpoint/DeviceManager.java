@@ -33,17 +33,19 @@ public class DeviceManager {
 	}
 
 	public void addDevice(String udn, DeviceInfo info) {
+		log.debug("Device## Added Device: " + udn);
 		devices.put(udn, info);
 	}
 
 	public void deleteDevice(String udn) {
 		try
 		{
+			log.debug("Device## Delete Device: " + udn);
 			devices.remove(udn);
 		}
 		catch(Exception e)
 		{
-			log.error("Error Removing Device", e);
+			log.error("Device## Error Removing Device", e);
 		}
 		
 	}
@@ -53,6 +55,7 @@ public class DeviceManager {
 			return null;
 		}
 		if (devices.containsKey(udn)) {
+			log.debug("Device## Get Device: " + udn);
 			return devices.get(udn);
 		}
 		return null;

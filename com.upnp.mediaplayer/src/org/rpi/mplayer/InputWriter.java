@@ -67,7 +67,7 @@ public class InputWriter  {
 	{
 		try
 		{
-		this.streamToProcess = null;
+		//this.streamToProcess = null;
 		}
 		catch(Exception e)
 		{
@@ -76,7 +76,11 @@ public class InputWriter  {
 		finally
 		{
 			log.debug("Closing BufferedWriter");
-			CloseMe.close(streamToProcess);
+			if(streamToProcess !=null) {
+				CloseMe.close(streamToProcess);
+				streamToProcess = null;
+			}
+			
 		}
 		}
 	

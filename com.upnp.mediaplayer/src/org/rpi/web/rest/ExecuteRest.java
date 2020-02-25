@@ -11,6 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
+import org.rpi.mplayer.CloseMe;
 
 @Path("execute")
 public class ExecuteRest {
@@ -33,21 +34,31 @@ public class ExecuteRest {
 	}
 
 	private void executeCommand(String command) {
+		Process pa = null;
+		BufferedReader reader = null;
 		try {
 			ArrayList<String> list = new ArrayList<String>();
-			Process pa = Runtime.getRuntime().exec(command);
+			pa = Runtime.getRuntime().exec(command);
 			pa.waitFor();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(pa.getInputStream()));
+			reader = new BufferedReader(new InputStreamReader(pa.getInputStream()));
 			String line;
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();
 				log.debug("Result of " + command + " : " + line);
 				list.add(line);
 			}
-			reader.close();
-			pa.getInputStream().close();
+			
 		} catch (Exception e) {
 			log.error("Error executing command: " + command, e);
+		}finally {
+			if(reader !=null) {
+				CloseMe.close(reader);
+			}
+			if(pa !=null) {
+				CloseMe.close(pa.getInputStream());
+				pa.destroy();
+				pa = null;
+			}
 		}
 	}
 

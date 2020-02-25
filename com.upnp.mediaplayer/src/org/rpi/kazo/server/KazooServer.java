@@ -21,6 +21,7 @@ import org.rpi.channel.ChannelPlayList;
 import org.rpi.config.Config;
 import org.rpi.controlpoint.DeviceInfo;
 import org.rpi.controlpoint.DeviceManager;
+import org.rpi.mplayer.CloseMe;
 import org.rpi.player.PlayManager;
 
 public class KazooServer {
@@ -234,14 +235,24 @@ public class KazooServer {
 	 * @return
 	 * @throws Exception
 	 */
-	private String readFromServer(String url) throws Exception {		
+	private String readFromServer(String url) throws Exception {	
+		log.debug("Device## Read From Server: " + url);
 		InputStream is = new URL(url).openStream();
+		BufferedReader rd = null;
 		String jsonText ="";
 		try {
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+			rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 			jsonText = readAll(rd);
 		}finally {
-			is.close();
+			if(is !=null) {
+				CloseMe.close(is);
+				is = null;
+			}			
+			is = null;
+			if(rd !=null) {
+				CloseMe.close(rd);
+				rd = null;
+			}
 		}
 		return jsonText;
 	}

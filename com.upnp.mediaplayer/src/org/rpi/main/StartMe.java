@@ -19,6 +19,7 @@ import javax.sound.sampled.Mixer;
 
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
+import org.rpi.mplayer.CloseMe;
 import org.rpi.utils.Utils;
 
 public class StartMe {
@@ -97,18 +98,26 @@ public class StartMe {
 			SimpleDevice sd = new SimpleDevice();
 			sd.attachShutDownHook();
 			if (bInput) {
-
-				BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-				String line = "";
-
+				BufferedReader in = null;
 				try {
-					while (line.equalsIgnoreCase("quit") == false) {
-						line = in.readLine();
+					 in = new BufferedReader(new InputStreamReader(System.in));
+					String line = "";
+					try {
+						while (line.equalsIgnoreCase("quit") == false) {
+							line = in.readLine();
+						}
+						in.close();
+					} catch (Exception e) {
+						log.error(e.getMessage(), e);
 					}
-					in.close();
-				} catch (Exception e) {
-					log.error(e.getMessage(), e);
-				}
+				}catch(Exception e) {
+					
+				}finally {
+					if(in !=null) {
+						CloseMe.close(in);
+						in = null;
+					}
+				}				
 			}
 
 			else {

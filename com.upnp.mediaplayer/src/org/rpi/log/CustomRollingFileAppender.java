@@ -120,13 +120,14 @@ public class CustomRollingFileAppender extends RollingFileAppender {
 			(new Thread(new Runnable() {
 
 				public void run() {
+					FileInputStream fileIn = null;
 					try {
 						File file = new File(fileToZip);
-						FileInputStream fileIn = new FileInputStream(file);
+						fileIn = new FileInputStream(file);
 						long len = file.length();
 						byte tab[] = new byte[(int) len];
 						fileIn.read(tab);
-						fileIn.close();
+						//fileIn.close();
 						ZipEntry zipEntry = new ZipEntry(fileToZip);
 						ZipEntry _tmp = zipEntry;
 						zipEntry.setMethod(8);
@@ -143,6 +144,17 @@ public class CustomRollingFileAppender extends RollingFileAppender {
 						LogLog.warn("Error while trying to zip log file " + fileToZip + ": " + fe.getMessage());
 					} catch (IOException ioe) {
 						LogLog.warn("Error while trying to zip log file " + fileToZip + ": " + ioe.getMessage());
+					} finally {
+						if(fileIn !=null) {
+							try {
+								if(fileIn !=null) {
+									fileIn.close();
+								}								
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
 					}
 				}
 

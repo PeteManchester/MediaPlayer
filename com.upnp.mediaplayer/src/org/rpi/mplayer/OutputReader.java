@@ -191,8 +191,9 @@ public class OutputReader extends Thread {
 	@Override
 	public void run() {
 		String line = null;
-		BufferedReader in = new BufferedReader(new InputStreamReader(this.process.getInputStream()));
+		BufferedReader in = null;
 		try {
+			 in = new BufferedReader(new InputStreamReader(this.process.getInputStream()));
 			line = in.readLine();
 			while (line != null && (mPlayer.isPlaying() || mPlayer.isLoading()) && !isInterrupted()) {
 				read(line);
@@ -202,7 +203,10 @@ public class OutputReader extends Thread {
 			log.error("Error OutputReader", e);
 		} finally {
 			log.debug("Closing BufferedReader");
-			CloseMe.close(in);
+			if(in !=null) {
+				CloseMe.close(in);
+				in = null;
+			}			
 			mPlayer.endPositionThread();
 		}
 	}

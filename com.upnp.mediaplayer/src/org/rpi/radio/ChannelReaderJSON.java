@@ -34,6 +34,7 @@ import org.json.JSONObject;
 import org.rpi.channel.ChannelPlayList;
 import org.rpi.channel.ChannelRadio;
 import org.rpi.config.Config;
+import org.rpi.mplayer.CloseMe;
 import org.rpi.providers.PrvRadio;
 import org.rpi.utils.Utils;
 import org.w3c.dom.Document;
@@ -138,9 +139,10 @@ public class ChannelReaderJSON implements Runnable {
 	private void getJsonFromURL(String url) {
 		JSONObject res = new JSONObject();
 		InputStream is = null;
+		BufferedReader rd = null;
 		try {
 			is = new URL(url).openStream();
-			BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+			rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 			String jsonText = readAll(rd);
 			res = new JSONObject(jsonText);
 			getBody(res);
@@ -148,13 +150,13 @@ public class ChannelReaderJSON implements Runnable {
 			log.error("Error GetJSONFromURL", e);
 		} finally {
 			if (is != null) {
-				try {
-					is.close();
-				} catch (IOException e) {
-					log.error("Error GetJSONFromURL Close is", e);
-				}
+				CloseMe.close(is);
+				is = null;
 			}
-
+			if(rd !=null) {
+				CloseMe.close(rd);
+				rd = null;
+			}
 		}
 
 
@@ -676,10 +678,12 @@ public class ChannelReaderJSON implements Runnable {
 	private JSONObject getJSONObject(String url) {
 		JSONObject array = new JSONObject();
 		InputStream is = null;
+		BufferedReader rd = null;
 		try {
 			is = new URL(url).openStream();
 			try {
-				BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+				rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+				rd.close();
 				String jsonText = readAll(rd);
 				array = new JSONObject(jsonText);
 			} catch (Exception e) {
@@ -694,6 +698,15 @@ public class ChannelReaderJSON implements Runnable {
 
 		} catch (Exception e) {
 			log.error("Error GetJSONFromURL", e);
+		}finally {
+			if(is !=null) {
+				CloseMe.close(is);
+				is = null;
+			}
+			if(rd !=null) {
+				CloseMe.close(rd);
+				rd = null;
+			}
 		}
 
 		return array;

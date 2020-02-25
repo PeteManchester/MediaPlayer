@@ -6,14 +6,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Inet4Address;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Semaphore;
 
 import javax.imageio.ImageIO;
 
@@ -148,6 +145,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			}
 			subnetList.destroy();
 
+			//PETE Test for socket leak
 			initControlPoint();
 
 			String friendly_name = Config.getInstance().getMediaplayerFriendlyName().replace(":", " ");
@@ -554,32 +552,34 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	public void deviceAdded(CpDevice cpDevice) {
 		//synchronized (this) {
 			try {
+				log.debug("Device## DeviceAdded Event");
 				CpAttribute l = cpDevice.getAttribute("Upnp.DeviceXml");
 				try {
 					if (l.isAvailable()) {
 						String xml = l.getValue();
 						String udn = cpDevice.getUdn();
-						DeviceInfo di = new DeviceInfo(cpDevice.getUdn(), l.getValue());
+						log.debug("Device## DeviceAdded Event: " + udn + " XML: " + xml);
+						DeviceInfo di = new DeviceInfo(cpDevice.getUdn(), l.getValue());						
 						if (di.isValid()) {
+							log.debug("Device## DeviceAdded to Cache: " + di.toString());
 							DeviceManager.getInstance().addDevice(udn, di);
-						}
-						log.debug("Added: " + udn + " XML: " + xml);
+						}						
 					}
 				}catch(Exception ex) {
-					
+					log.error("Device## Error DeviceAdded: ", ex);
 				}finally {
 					try {
 						if(l !=null) {
-							l = null;
-							cpDevice = null;
+							l = null;							
 						}
+						cpDevice = null;
 					}
 					catch(Exception ex) {
-						log.error("Error Tidy up Device on Device Added", ex);
+						log.error("Device## Error Tidy up Device on Device Added", ex);
 					}
 				}
 			} catch (Exception e) {
-				log.error("Error DeviceAdded", e);
+				log.error("Device## Error DeviceAdded", e);
 			}
 		//}
 	}
@@ -588,18 +588,18 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	public void deviceRemoved(CpDevice cpDevice) {
 		//synchronized (this) {
 			try {
-				log.debug("Removed: " + cpDevice.getUdn());
+				log.debug("Device## Removed: " + cpDevice.getUdn());
 				String udn = cpDevice.getUdn();
 				DeviceManager.getInstance().deleteDevice(udn);
 				
 				try {
 					cpDevice = null;
 				}catch(Exception ex) {
-					log.error("Erroy Tidy up Device on Device Removed", ex);
+					log.error("Device## Error Tidy up Device on Device Removed", ex);
 				}
 				
 			} catch (Exception e) {
-				log.error("Error DeviceAdded", e);
+				log.error("Device## Error DeviceRemoved", e);
 			}
 		//}
 	}
