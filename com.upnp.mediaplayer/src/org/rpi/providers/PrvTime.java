@@ -48,24 +48,27 @@ public class PrvTime extends DvProviderAvOpenhomeOrgTime1 implements Observer, I
 
 	public synchronized void setSeconds(long seconds) {
 		try {
-			//if ((seconds % 2) == 0) {
-				//propertiesLock();
-				setPropertySeconds(seconds);
-				//propertiesUnlock();
-			//}
+			// if ((seconds % 2) == 0) {
+			setPropertySeconds(seconds);
+			// }
 		} catch (Exception e) {
-			log.error("Error: setDetails", e);
+			log.error("Error: setSeconds", e);
 		}
 	}
 
 	@Override
 	protected Time time(IDvInvocation paramIDvInvocation) {
 		log.debug("time" + Utils.getLogText(paramIDvInvocation));
-		long trackCount = getPropertyTrackCount();
-		long duration = getPropertyDuration();
-		long seconds = getPropertySeconds();
-		Time time = new Time(trackCount, duration, seconds);
-		return time;
+		try {
+			long trackCount = getPropertyTrackCount();
+			long duration = getPropertyDuration();
+			long seconds = getPropertySeconds();
+			Time time = new Time(trackCount, duration, seconds);
+			return time;
+		} catch (Exception e) {
+			log.error("Erorr Time", e);
+		}
+		return new Time(0, 0, 0);
 	}
 
 	@Override
@@ -84,9 +87,10 @@ public class PrvTime extends DvProviderAvOpenhomeOrgTime1 implements Observer, I
 
 	}
 
-    @Override
-    public String getName() {
-        return "Time";
-    }
+	@Override
+	public String getName() {
+		return "Time";
+	}
+
 
 }

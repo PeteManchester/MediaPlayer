@@ -7,6 +7,7 @@ import java.net.URLConnection;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
+import org.rpi.mplayer.CloseMe;
 
 public class FileParser {
 	
@@ -80,6 +81,12 @@ public class FileParser {
 						{
 							content_type = content_type.toUpperCase();
 						}
+						
+						if(content_type == null && content_disp == null) {
+							log.info("No ContentType or ContentDisp for URL: " + url);
+							return url;
+						}
+						
 						if(content_disp !=null && content_disp.toUpperCase().endsWith("M3U"))
 						{
 							log.debug("M3U File: " + url);
@@ -105,7 +112,7 @@ public class FileParser {
 						{
 							ASXParser asx = new ASXParser(); 
 							log.debug("ASX File: " + url);
-							LinkedList<String> urls = asx.getStreamingUrl(url);
+							LinkedList<String> urls = asx.getStreamingUrl(conn);
 							if((urls.size()>0))
 							{
 								return urls.get(0);
@@ -127,7 +134,7 @@ public class FileParser {
 						{
 							log.debug("M3U File: " + url);
 							M3UParser m3u = new M3UParser();
-							LinkedList<String> urls = m3u.getStreamingUrl(url);
+							LinkedList<String> urls = m3u.getStreamingUrl(conn);
 							if((urls.size()>0))
 							{
 								String myUrl = urls.get(0);
@@ -145,7 +152,7 @@ public class FileParser {
 						{
 							log.debug("VND.APPLE.MPEGURL, use M3UParser File: " + url);
 							M3UParser m3u = new M3UParser();
-							LinkedList<String> urls = m3u.getStreamingUrl(url);
+							LinkedList<String> urls = m3u.getStreamingUrl(conn);
 							if((urls.size()>0))
 							{
 								log.debug("FileParser Returned: " + urls.get(0));
@@ -165,6 +172,23 @@ public class FileParser {
 				
 			}finally {
 				if(conn !=null) {
+					try {
+						if(conn.getInputStream() !=null) {
+							CloseMe.close(conn.getInputStream());
+						}
+					}
+					catch(Exception e) {
+					}
+					
+					try {
+						if(conn.getOutputStream() !=null) {
+							CloseMe.close(conn.getOutputStream());
+						}
+					}
+					catch(Exception e) {
+
+					}
+					
 					conn = null;
 				}
 			}			

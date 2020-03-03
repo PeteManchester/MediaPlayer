@@ -9,6 +9,7 @@ import java.net.URLConnection;
 import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
+import org.rpi.mplayer.CloseMe;
 
 /**
  * Used to parse the TuneIn Radio URL. Returns an .m3u.
@@ -21,12 +22,36 @@ public class ASHXParser {
 	
 	public LinkedList<String> getStreamingUrl(String url) {
 		log.debug("Get URLs from : " + url);
+		URLConnection conn = null;
 		LinkedList<String> murls = new LinkedList<String>();
 		try {
-			return getStreamingUrl(getConnection(url));
+			conn = getConnection(url);
+			return getStreamingUrl(conn);
 		} catch (Exception e) {
 			log.error("getStreamtingURL Exception. URL: " + url,e);
 		} 
+		finally {
+			if(conn !=null) {
+				try {
+					if(conn.getInputStream() !=null) {
+						CloseMe.close(conn.getInputStream());
+					}
+				}
+				catch(Exception e) {
+				}
+				
+				try {
+					if(conn.getOutputStream() !=null) {
+						CloseMe.close(conn.getOutputStream());
+					}
+				}
+				catch(Exception e) {
+
+				}
+				
+				conn = null;
+			}
+		}
 		log.debug("Get URLs from : " + url + " Returning: " + murls.size());
 		murls.add(url);
 		return murls;

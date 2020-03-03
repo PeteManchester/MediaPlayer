@@ -17,12 +17,34 @@ public class ASXParser {
 
 	public LinkedList<String> getStreamingUrl(String url) {
 		LinkedList<String> murls = null;
+		URLConnection conn = null;
 		try {
-			return getStreamingUrl(getConnection(url));
+			conn = getConnection(url);
+			return getStreamingUrl(conn);
 		} catch (MalformedURLException e) {
 			log.error(e);
 		} catch (IOException e) {
 			log.error(e);
+		}finally {
+			if(conn !=null) {
+				try {
+					if(conn.getInputStream() !=null) {
+						CloseMe.close(conn.getInputStream());
+					}
+				}
+				catch(Exception e) {
+				}
+				
+				try {
+					if(conn.getOutputStream() !=null) {
+						CloseMe.close(conn.getOutputStream());
+					}
+				}
+				catch(Exception e) {
+
+				}				
+				conn = null;
+			}
 		}
 		return murls;
 	}

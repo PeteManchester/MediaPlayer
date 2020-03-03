@@ -61,6 +61,7 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 		//enablePropertyCloudConnected();
 		enablePropertyIdArray();
 		enablePropertyModes();
+		//enablePropertyAccountMax();
 
 		//enableActionGetDeviceMax();
 		//enableActionGetAccountMax();
@@ -75,6 +76,8 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 		enableActionSetAccount();
 		enableActionClear();
 		enableActionSwap();
+		enableActionGetDeviceAccountMax();
+
 
 		propertiesLock();
 		setPropertyAccountMax(iAccountMax);
@@ -90,6 +93,8 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 		propertiesUnlock();
 
 	}
+	
+
 
 	private void updateIdArray(boolean save) {
 		// Create a Map of Pin numbers
@@ -221,6 +226,12 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 		log.debug("GetModes: " + Utils.getLogText(paramIDvInvocation));
 		return getPropertyModes();
 	}
+	
+	protected GetDeviceAccountMax getDeviceAccountMax(IDvInvocation paramIDvInvocation) {
+		log.debug("GetDeviceAccountMax: " + Utils.getLogText(paramIDvInvocation));
+		GetDeviceAccountMax max = new GetDeviceAccountMax(getPropertyDeviceMax(), getPropertyAccountMax());
+		return max;
+	}
 
 	protected String getIdArray(IDvInvocation paramIDvInvocation) {
 		log.debug("GetIdArray: " + Utils.getLogText(paramIDvInvocation));
@@ -247,84 +258,90 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 
 	protected void invokeId(IDvInvocation paramIDvInvocation, long id) {
 		log.debug("invokeId: " + Utils.getLogText(paramIDvInvocation) + " Id: " + id);
-		PinInfo pi = getPinInfo(id);
-		if (pi == null) {
-			return;
-		}
-		PlayManager.getInstance().updateShuffle(pi.isShuffle());
-		String uri = pi.getUri();
-		log.debug(uri);
-		if (uri.startsWith("tunein://")) {
-			if (uri.startsWith("tunein://stream")) {
-				try {
-					Map<String, String> params = decodeQueryString(uri.substring("tunein://stream".length() + 1));
+		try {
+			PinInfo pi = getPinInfo(id);
+			if (pi == null) {
+				return;
+			}
+			PlayManager.getInstance().updateShuffle(pi.isShuffle());
+			String uri = pi.getUri();
+			log.debug(uri);
+			if (uri.startsWith("tunein://")) {
+				if (uri.startsWith("tunein://stream")) {
+					try {
+						Map<String, String> params = decodeQueryString(uri.substring("tunein://stream".length() + 1));
+						String presetId = "";
+						String image = pi.getArtworkUri();
+
+						ChannelReaderJSON cr = new ChannelReaderJSON(null);
+						String path = params.get("path");
+						log.debug("Play Radio: " + path);
+						String[] splits = path.split("\\?");
+						Map<String, String> paramsTuneIn = decodeQueryString(splits[1]);
+						presetId = paramsTuneIn.get("id");
+						String m = cr.getMetaDataForTuneInId(presetId, path, image);
+						int rId = -99;
+						try {
+							rId = Integer.parseInt(presetId.replaceAll("[^0-9]+", ""));
+						} catch (Exception e) {
+
+						}
+						ChannelRadio c = new ChannelRadio(path, m, rId, presetId);
+						
+						ASHXParser parser = new ASHXParser();
+						if (c.getUri().toLowerCase().contains("opml.radiotime.com")) {
+							log.debug("Radio URL contains 'opml.radiotime.com' Get the Correct URL: " + c.getUri());
+							LinkedList<String> ashxURLs = parser.getStreamingUrl(c.getUri());
+							if (ashxURLs.size() > 0) {
+								c.setUri(ashxURLs.get(0));
+							}
+						}
+						
+						
+						PlayManager.getInstance().playRadio(c);
+					} catch (Exception e) {
+						log.error(e);
+					}
+
+				} else if (uri.startsWith("tunein://podcast")) {
+					Map<String, String> params = decodeQueryString(uri.substring("tunein://podcast".length() + 1));
 					String presetId = "";
 					String image = pi.getArtworkUri();
-
 					ChannelReaderJSON cr = new ChannelReaderJSON(null);
 					String path = params.get("path");
-					log.debug("Play Radio: " + path);
+					log.debug("Play Podcast: " + path);
 					String[] splits = path.split("\\?");
 					Map<String, String> paramsTuneIn = decodeQueryString(splits[1]);
 					presetId = paramsTuneIn.get("id");
-					String m = cr.getMetaDataForTuneInId(presetId, path, image);
-					int rId = -99;
-					try {
-						rId = Integer.parseInt(presetId.replaceAll("[^0-9]+", ""));
-					} catch (Exception e) {
-
+					List<ChannelPlayList> channels = cr.getPodcasts(path, image);
+					EventPlayListUpdateList epl = new EventPlayListUpdateList();
+					PlayManager.getInstance().podcastUpdatePlayList(channels);
+				}
+			} else if (uri.startsWith("openhome.me")) {
+				try {
+					String test = uri.replace("openhome.me", "http:");
+					URL url = new URL(test);
+					String path = url.getPath();
+					log.debug("Play Kazoo: " + path);
+					path = path.replace("://", "");
+					String query = url.getQuery();
+					Map<String, String> params = decodeQueryString(query);
+					KazooServer t = new KazooServer();
+					if (params.containsKey("browse") && params.containsKey("udn")) {
+						String browse = params.get("browse");
+						String udn = params.get("udn");
+						t.getTracks(udn, path, browse);
 					}
-					ChannelRadio c = new ChannelRadio(path, m, rId, presetId);
-					
-					ASHXParser parser = new ASHXParser();
-					if (c.getUri().toLowerCase().contains("opml.radiotime.com")) {
-						log.debug("Radio URL contains 'opml.radiotime.com' Get the Correct URL: " + c.getUri());
-						LinkedList<String> ashxURLs = parser.getStreamingUrl(c.getUri());
-						if (ashxURLs.size() > 0) {
-							c.setUri(ashxURLs.get(0));
-						}
-					}
-					
-					
-					PlayManager.getInstance().playRadio(c);
 				} catch (Exception e) {
-					log.error(e);
+					log.error("Error Getting URL: " + uri);
 				}
 
-			} else if (uri.startsWith("tunein://podcast")) {
-				Map<String, String> params = decodeQueryString(uri.substring("tunein://podcast".length() + 1));
-				String presetId = "";
-				String image = pi.getArtworkUri();
-				ChannelReaderJSON cr = new ChannelReaderJSON(null);
-				String path = params.get("path");
-				log.debug("Play Podcast: " + path);
-				String[] splits = path.split("\\?");
-				Map<String, String> paramsTuneIn = decodeQueryString(splits[1]);
-				presetId = paramsTuneIn.get("id");
-				List<ChannelPlayList> channels = cr.getPodcasts(path, image);
-				EventPlayListUpdateList epl = new EventPlayListUpdateList();
-				PlayManager.getInstance().podcastUpdatePlayList(channels);
 			}
-		} else if (uri.startsWith("openhome.me")) {
-			try {
-				String test = uri.replace("openhome.me", "http:");
-				URL url = new URL(test);
-				String path = url.getPath();
-				log.debug("Play Kazoo: " + path);
-				path = path.replace("://", "");
-				String query = url.getQuery();
-				Map<String, String> params = decodeQueryString(query);
-				KazooServer t = new KazooServer();
-				if (params.containsKey("browse") && params.containsKey("udn")) {
-					String browse = params.get("browse");
-					String udn = params.get("udn");
-					t.getTracks(udn, path, browse);
-				}
-			} catch (Exception e) {
-				log.error("Error Getting URL: " + uri);
-			}
-
 		}
+		catch(Exception e) {
+			log.error("Error invokeId", e);
+		}
+		
 	}
 
 	public Map<String, String> decodeQueryString(String query) {
@@ -463,6 +480,8 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 
 		updateIdArray(true);
 	}
+	
+
 
 	/***
 	 * Swap pins. Can only swap the same type of pin (Device or Account)

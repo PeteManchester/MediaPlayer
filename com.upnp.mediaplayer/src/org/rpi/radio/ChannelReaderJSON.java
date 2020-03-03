@@ -92,7 +92,7 @@ public class ChannelReaderJSON implements Runnable {
 				// Config.getInstance().getRadioTuneinUsername() +
 				// "&render=json" + "&formats=mp3,wma,aac,wmvideo,ogg,hls";
 				getJsonFromURL(url);
-				//getBody(object);
+				// getBody(object);
 			}
 			prvRadio.addChannels(channels);
 		} catch (Exception e) {
@@ -119,7 +119,7 @@ public class ChannelReaderJSON implements Runnable {
 			JSONObject array = new JSONObject(content);
 			getBody(array);
 		} catch (IOException e) {
-			log.error("getJSONFromFile",e);
+			log.error("getJSONFromFile", e);
 		}
 
 	}
@@ -153,12 +153,11 @@ public class ChannelReaderJSON implements Runnable {
 				CloseMe.close(is);
 				is = null;
 			}
-			if(rd !=null) {
+			if (rd != null) {
 				CloseMe.close(rd);
 				rd = null;
 			}
 		}
-
 
 		/*
 		 * URL mUrl = null; Reader reader = null;
@@ -200,11 +199,7 @@ public class ChannelReaderJSON implements Runnable {
 			log.error("Error Printing Reader", e);
 		} finally {
 			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					log.error("Error Printing Reader", e);
-				}
+				CloseMe.close(br);
 			}
 		}
 		return sb.toString();
@@ -226,11 +221,7 @@ public class ChannelReaderJSON implements Runnable {
 			log.error("Error Printing Reader", e);
 		} finally {
 			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					log.error("Error Printing Reader", e);
-				}
+				CloseMe.close(br);
 			}
 		}
 
@@ -376,7 +367,8 @@ public class ChannelReaderJSON implements Runnable {
 		String sep = "";
 		if (splits.length > 0) {
 			for (String key : splits) {
-				//if (!(key.toLowerCase().startsWith("partnerid=") || key.toLowerCase().startsWith("username="))) {
+				// if (!(key.toLowerCase().startsWith("partnerid=") ||
+				// key.toLowerCase().startsWith("username="))) {
 				if (!key.toLowerCase().startsWith("username=")) {
 					sb.append(sep);
 					sb.append(key);
@@ -557,8 +549,18 @@ public class ChannelReaderJSON implements Runnable {
 		String title = "";
 		try {
 			JSONObject array = getJSONObject(url);
-			JSONObject o = array.getJSONObject("head");
-			title = o.getString("title");
+			if(array.has("head")) {
+				JSONObject o = array.getJSONObject("head");
+				if(o.has("head")) {
+					title = o.getString("title");
+				}
+				else {
+					log.error("Error getMetaData does not contain 'title'. URL: " + url + " JSON: " + o.toString());
+				}
+			}
+			else {
+				log.error("Error getMetaData does not contain 'head'. URL: " + url + " JSON: " + array.toString());
+			}
 		} catch (Exception e) {
 			log.error("Invalid URL given", e);
 		}
@@ -650,7 +652,7 @@ public class ChannelReaderJSON implements Runnable {
 					if (object.getString("type").toLowerCase().equalsIgnoreCase("link") && object.getString("item").equalsIgnoreCase("show")) {
 						String url = object.getString("URL");
 						log.debug("Get Shows: " + url);
-						//getJsonFromURL(url + "&render=json" + "&c=pbrowse");
+						// getJsonFromURL(url + "&render=json" + "&c=pbrowse");
 					} else if (object.getString("type").equalsIgnoreCase("audio") || object.getString("item").equalsIgnoreCase("url") || object.getString("item").equalsIgnoreCase("topic")) {
 						String text = getString(object, "text");
 						String url = getString(object, "URL");
@@ -681,29 +683,18 @@ public class ChannelReaderJSON implements Runnable {
 		BufferedReader rd = null;
 		try {
 			is = new URL(url).openStream();
-			try {
-				rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-				rd.close();
-				String jsonText = readAll(rd);
-				array = new JSONObject(jsonText);
-			} catch (Exception e) {
-				try {
-					if (is == null) {
-						is.close();
-					}
-				} catch (IOException ex) {
-					log.error("Error GetJSONFromURL Close is", ex);
-				}
-			}
-
+			rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+			// rd.close();
+			String jsonText = readAll(rd);
+			array = new JSONObject(jsonText);
 		} catch (Exception e) {
 			log.error("Error GetJSONFromURL", e);
-		}finally {
-			if(is !=null) {
+		} finally {
+			if (is != null) {
 				CloseMe.close(is);
 				is = null;
 			}
-			if(rd !=null) {
+			if (rd != null) {
 				CloseMe.close(rd);
 				rd = null;
 			}

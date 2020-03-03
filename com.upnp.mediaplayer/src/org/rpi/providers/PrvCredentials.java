@@ -177,9 +177,10 @@ public class PrvCredentials extends DvProviderAvOpenhomeOrgCredentials1 implemen
 	 * @return
 	 */
 	private String getPublicKey() {
+		log.debug("Get Public Key");
 		StringBuffer sb = new StringBuffer();
 		//String lineSeparator = ((String) AccessController.doPrivileged(new GetPropertyAction("line.separator")));
-		String lineSepartor = System.lineSeparator();
+		//String lineSepartor = System.lineSeparator();
 		String lineSeparator = System.getProperty("line.separator");
 		
 		// String lineSeparator = "\r\n";

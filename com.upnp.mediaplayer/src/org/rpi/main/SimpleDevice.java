@@ -37,6 +37,7 @@ import org.rpi.config.Config;
 import org.rpi.controlpoint.DeviceInfo;
 import org.rpi.controlpoint.DeviceManager;
 import org.rpi.http.HttpServerGrizzly;
+import org.rpi.mplayer.CloseMe;
 import org.rpi.os.OSManager;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
@@ -126,6 +127,9 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			}
 			// initParams.setDvEnableBonjour();
 			initParams.setFatalErrorHandler(this);
+			//PETE Added this to see if it fixes issues with Kazoo keeping sockets.
+			initParams.setTcpConnectTimeoutMs(1000);
+
 			// initParams.setMsearchTimeSecs(1);
 
 			lib = Library.create(initParams);
@@ -420,12 +424,13 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		this.disposeDevice(iCredentials);
 		this.disposeDevice(iProduct);
 		this.disposeDevice(iInfo);
-		this.disposeDevice(iTime);
+		
 		this.disposeDevice(iRadio);
 		this.disposeDevice(iReceiver);
 		this.disposeDevice(iAVTransport);
 		this.disposeDevice(iRenderingControl);
 		this.disposeDevice(iSongcastSender);
+		this.disposeDevice(iTime);
 		// this.disposeDevice(iCredentials);
 
 		if (this.cpDeviceList != null) {
@@ -463,11 +468,12 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	@Override
 	public void writeResource(String resource_name, int arg1, List<String> arg2, IResourceWriter writer) {
 		log.info("writeResource Called: " + resource_name);
+		ByteArrayOutputStream baos =null;
 		try {
 			resource_name = "/" + resource_name;
 			URL url = this.getClass().getResource(resource_name);
 			BufferedImage image = ImageIO.read(url);
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			baos = new ByteArrayOutputStream();
 			String fileType = "image/png";
 			String format = "png";
 			if (resource_name.toUpperCase().endsWith("JPG")) {
@@ -479,8 +485,13 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			writer.writeResourceBegin(length, fileType);
 			writer.writeResource(baos.toByteArray(), length);
 			writer.writeResourceEnd();
+
 		} catch (IOException e) {
 			log.error("Error Writing Resource: " + resource_name, e);
+		}finally {
+			if(baos !=null) {
+				CloseMe.close(baos);
+			}
 		}
 
 	}

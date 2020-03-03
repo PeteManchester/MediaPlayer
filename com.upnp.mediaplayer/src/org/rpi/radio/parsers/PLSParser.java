@@ -14,14 +14,42 @@ import org.rpi.mplayer.CloseMe;
 public class PLSParser {
 	private static Logger log = Logger.getLogger(PLSParser.class);
 
+	/***
+	 * 
+	 * @param url
+	 * @return
+	 */
 	public LinkedList<String> getStreamingUrl(String url) {
 		LinkedList<String> murls = new LinkedList<String>();
+		URLConnection conn = null;
 		try {
-			return getStreamingUrl(getConnection(url));
+			conn = getConnection(url);
+			return getStreamingUrl(conn);
 		} catch (MalformedURLException e) {
 			log.error(e);
 		} catch (IOException e) {
 			log.error(e);
+		}finally {
+			if(conn !=null) {
+				try {
+					if(conn.getInputStream() !=null) {
+						CloseMe.close(conn.getInputStream());
+					}
+				}
+				catch(Exception e) {
+				}
+				
+				try {
+					if(conn.getOutputStream() !=null) {
+						CloseMe.close(conn.getOutputStream());
+					}
+				}
+				catch(Exception e) {
+
+				}
+				
+				conn = null;
+			}
 		}
 		murls.add(url);
 		return murls;
@@ -61,6 +89,24 @@ public class PLSParser {
 				CloseMe.close(br);
 			}
 			if(conn !=null){
+				
+				try {
+					if(conn.getInputStream() !=null) {
+						CloseMe.close(conn.getInputStream());
+					}
+				}
+				catch(Exception e) {
+				}
+				
+				try {
+					if(conn.getOutputStream() !=null) {
+						CloseMe.close(conn.getOutputStream());
+					}
+				}
+				catch(Exception e) {
+
+				}
+				
 				conn = null;
 			}			
 		}

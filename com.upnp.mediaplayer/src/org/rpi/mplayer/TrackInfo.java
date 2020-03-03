@@ -129,5 +129,50 @@ public class TrackInfo extends Observable {
 			log.error("Error notifyObservers",e);
 		}
 	}
+	
+	@Override
+	public boolean equals(Object old) {
+		if(!(old instanceof TrackInfo)) {
+			return false;
+		}
+		TrackInfo previous = (TrackInfo)old;
+		if(previous.getBitrate() != this.bitRate)
+		{
+			return false;
+		}
+		if(!previous.getCodec().equals(this.codec))
+		{
+			return false;
+		}
+		if(previous.getBitDepth() != this.depth) {
+			return false;
+		}
+		if(previous.getDuration() != this.duration) {
+			return false;
+		}
+		if(previous.getSampleRate() != this.sampleRate) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("TrackInfo [bSentUpdate=");
+		builder.append(bSentUpdate);
+		builder.append(", codec=");
+		builder.append(codec);
+		builder.append(", bitRate=");
+		builder.append(bitRate);
+		builder.append(", sampleRate=");
+		builder.append(sampleRate);
+		builder.append(", duration=");
+		builder.append(duration);
+		builder.append(", depth=");
+		builder.append(depth);
+		builder.append("]");
+		return builder.toString();
+	}
 
 }

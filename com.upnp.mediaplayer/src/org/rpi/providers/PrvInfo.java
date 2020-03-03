@@ -20,6 +20,7 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer, I
 	private Logger log = Logger.getLogger(PrvInfo.class);
 	
 	private int meta_text_id = -99;
+	private String previousTrackInfo = "";
 
 	public PrvInfo(DvDevice iDevice) {
 		super(iDevice);
@@ -91,10 +92,12 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer, I
 		}
 	}
 
+	/*
 	public void setDetails(long duration, long bitRate, long bitDepth, long sampleRate, boolean lossLess, String codecName) {
 		try {
 			long detailsCount = getPropertyDetailsCount();
 			detailsCount++;
+			log.debug("SetDetailsCount: " + detailsCount + " Duration: " +  duration + " BitRate: " + bitRate + " BitDepth: " + bitDepth + " SampleRate: " + sampleRate + " CodecName: " + codecName);
 			propertiesLock();
 			setPropertyDetailsCount(detailsCount);
 			setPropertyDuration(duration);
@@ -103,6 +106,26 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer, I
 			setPropertySampleRate(sampleRate);
 			setPropertyLossless(lossLess);
 			setPropertyCodecName(codecName);
+			propertiesUnlock();
+		} catch (Exception e) {
+			log.error("Error: setDetails", e);
+		}
+	}
+	*/
+	
+	public void setDetails(TrackInfo i) {
+		try {
+			long detailsCount = getPropertyDetailsCount();
+			detailsCount++;
+			log.debug("SetDetailsCount: " + detailsCount + " " + i.toString());
+			propertiesLock();
+			setPropertyDetailsCount(detailsCount);
+			setPropertyDuration(i.getDuration());
+			setPropertyBitRate(i.getBitrate() * 1000);
+			setPropertyBitDepth(i.getBitDepth());
+			setPropertySampleRate(i.getSampleRate());
+			setPropertyLossless(false);
+			setPropertyCodecName(i.getCodec());
 			propertiesUnlock();
 		} catch (Exception e) {
 			log.error("Error: setDetails", e);
@@ -136,7 +159,8 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer, I
 		long detailsCount = getPropertyDetailsCount();
 		long metaextCount = getPropertyMetatextCount();
 		Counters counters = new Counters(trackCount, detailsCount, metaextCount);
-		//log.debug("Return counters: " + counters.toString());
+		log.debug("Return counters: " + counters.toString());
+		
 		return counters;
 	}
 
@@ -181,7 +205,15 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer, I
 			try {
 				EventUpdateTrackInfo euti = (EventUpdateTrackInfo)e;
 				TrackInfo i = (TrackInfo) euti.getTrackInfo();
-				setDetails(i.getDuration(), i.getBitrate(), i.getBitDepth(), i.getSampleRate(), false, i.getCodec());
+				//setDetails(i.getDuration(), i.getBitrate(), i.getBitDepth(), i.getSampleRate(), false, i.getCodec());
+				if(!previousTrackInfo.equals(i.toString()))
+				{
+					previousTrackInfo = i.toString();
+					setDetails(i);
+				}else {
+					//log.debug("TrackInfo did not change");
+				}
+				
 			} catch (Exception ex) {
 				log.error("Error EventUpdateTrackInfo", ex);
 			}			
