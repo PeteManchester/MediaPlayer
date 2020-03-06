@@ -941,7 +941,7 @@ public class PlayManager implements Observer {
 	 * @param status
 	 */
 	public synchronized void setStatus(String status, String source) {
-		log.debug("SetStatus: " + status);
+		log.info("SetStatus: " + status + " Source: " + source);
 		this.status = status;
 		EventTrackChanged ev = new EventTrackChanged();
 		if (status.equalsIgnoreCase("PLAYING")) {

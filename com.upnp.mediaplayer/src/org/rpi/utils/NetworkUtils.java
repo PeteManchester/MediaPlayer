@@ -1,6 +1,7 @@
 package org.rpi.utils;
 
 import org.apache.log4j.Logger;
+import org.rpi.config.Config;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -190,29 +191,32 @@ public class NetworkUtils {
 			InetAddress iAddress = InetAddress.getLocalHost();
 			String addr = iAddress.getHostAddress();
 			log.debug("PETE!!!!!!!! InetAddress: " + addr);
-			if ((!res.equalsIgnoreCase(addr)) && (!addr.equalsIgnoreCase("127.0.1.1") )) {
+			if ((!res.equalsIgnoreCase(addr)) && (!addr.equalsIgnoreCase("127.0.1.1"))) {
 				log.debug("PETE!!!!!!!! Returning InetAddress: " + addr);
 				return addr;
 			}
 		} catch (Exception e) {
-			log.error("Error getHostAddress",e);
+			log.error("Error getHostAddress", e);
 		}
 
 		try {
-			log.debug("PETE!!!!!!!! Interate InetAddress Interfaces: " );
-			Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
-			for (NetworkInterface netint : Collections.list(nets)) {
+			log.debug("PETE!!!!!!!! Interate InetAddress Interfaces: ");
+			// Enumeration<NetworkInterface> nets =
+			// NetworkInterface.getNetworkInterfaces();
+			// for (final NetworkInterface iface :
+			// Collections.list(NetworkInterface.getNetworkInterfaces())) {
+			for (final NetworkInterface netint : Collections.list(NetworkInterface.getNetworkInterfaces())) {
 				String addr = getIPAddressInfo(netint);
 				if (!addr.equalsIgnoreCase(res)) {
 					return addr;
 				}
 			}
 		} catch (Exception e) {
-			log.error("Error getNetworkInterfaces",e);
+			log.error("Error getNetworkInterfaces", e);
 		}
 		return res;
 	}
-	
+
 	static String getIPAddressInfo(NetworkInterface netint) throws SocketException {
 		String res = "127.0.0.1";
 		Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
@@ -224,21 +228,20 @@ public class NetworkUtils {
 		}
 		return res;
 	}
-	
-	
+
 	public static Inet4Address getINet4Address() {
-		//String res = "127.0.0.1,192.168.116.1,192.168.32.1";
-		Map<String, String> resList = new HashMap<String,String>();
-		//IP Addresses to exclude.
+		// String res = "127.0.0.1,192.168.116.1,192.168.32.1";
+		Map<String, String> resList = new HashMap<String, String>();
+		// IP Addresses to exclude.
 		resList.put("127.0.0.1", "127.0.0.1");
 		resList.put("192.168.116.1", "192.168.116.1");
 		resList.put("192.168.32.1", "192.168.32.1");
-		
+
 		try {
 			InetAddress iAddress = InetAddress.getLocalHost();
 			String addr = iAddress.getHostAddress();
 			log.debug("PETE!!!!!!!! InetAddress: " + addr);
-			if ((!resList.containsKey(addr)) && (!addr.equalsIgnoreCase("127.0.1.1")  && !addr.equalsIgnoreCase("192.168.116.1") && iAddress instanceof Inet4Address)) {
+			if ((!resList.containsKey(addr)) && (!addr.equalsIgnoreCase("127.0.1.1") && !addr.equalsIgnoreCase("192.168.116.1") && iAddress instanceof Inet4Address)) {
 				log.debug("PETE!!!!!!!! Returning InetAddress: " + addr);
 				return (Inet4Address) iAddress;
 			}
@@ -247,15 +250,17 @@ public class NetworkUtils {
 		}
 
 		try {
-			log.debug("PETE!!!!!!!! Interate InetAddress Interfaces: " );
-			Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
-			for (NetworkInterface netint : Collections.list(nets)) {
+			log.debug("PETE!!!!!!!! Interate InetAddress Interfaces: ");
+			// Enumeration<NetworkInterface> nets =
+			// NetworkInterface.getNetworkInterfaces();
+			// for (NetworkInterface netint : Collections.list(nets)) {
+			for (final NetworkInterface netint : Collections.list(NetworkInterface.getNetworkInterfaces())) {
 				InetAddress addr = getInetAddressInfo(netint);
 				String hostAddress = "BAD";
-				if(addr != null) {
+				if (addr != null) {
 					hostAddress = addr.getHostAddress();
 				}
-				
+
 				if (addr instanceof Inet4Address && !resList.containsKey(addr.getHostAddress())) {
 					return (Inet4Address) addr;
 				}
@@ -265,12 +270,12 @@ public class NetworkUtils {
 		}
 		return null;
 	}
-	
+
 	static InetAddress getInetAddressInfo(NetworkInterface netint) throws SocketException {
 		String res = "127.0.0.1";
 		Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
 		for (InetAddress inetAddress : Collections.list(inetAddresses)) {
-			if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress() && !inetAddress.getHostAddress().equals("127.0.1.1") && inetAddress instanceof Inet4Address ) {
+			if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress() && !inetAddress.getHostAddress().equals("127.0.1.1") && inetAddress instanceof Inet4Address) {
 				log.debug("Display name: " + netint.getDisplayName() + " Name: " + netint.getName() + " InetAddress: " + inetAddress);
 				return inetAddress;
 			}
@@ -278,17 +283,14 @@ public class NetworkUtils {
 		return null;
 	}
 
-	
-	
-	
-	
-
 	public static String getNICName(String displayName) {
 		String res = "";
 		try {
-			Enumeration e = NetworkInterface.getNetworkInterfaces();
-			while (e.hasMoreElements()) {
-				NetworkInterface n = (NetworkInterface) e.nextElement();
+			// Enumeration<NetworkInterface> e =
+			// NetworkInterface.getNetworkInterfaces();
+			// while (e.hasMoreElements()) {
+			for (final NetworkInterface n : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+				// NetworkInterface n = (NetworkInterface) e.nextElement();
 				// Enumeration ee = n.getInetAddresses();
 				if (n.getDisplayName().equals(displayName)) {
 					return n.getName();
@@ -299,4 +301,62 @@ public class NetworkUtils {
 		}
 		return res;
 	}
+
+	/***
+	 * Find the name of the NIC from the IPAddress.
+	 * 
+	 * @param ip
+	 * @return
+	 */
+	public static String getNICNameForIPAddress(String ip) {
+		String nic = "";
+		try {
+			// Enumeration<NetworkInterface> e =
+			// NetworkInterface.getNetworkInterfaces();
+			// while (e.hasMoreElements()) {
+			// NetworkInterface n = (NetworkInterface) e.nextElement();
+			for (final NetworkInterface n : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+				Enumeration<InetAddress> ee = n.getInetAddresses();
+				// log.info("Network Interface Display Name: '" +
+				// n.getDisplayName() + "'");
+				// log.info("NIC Name: '" + n.getName() + "'");
+				while (ee.hasMoreElements()) {
+					InetAddress i = (InetAddress) ee.nextElement();
+					if (i.getHostAddress().equalsIgnoreCase(ip)) {
+						log.info("IPAddress for Network Interface: " + n.getDisplayName() + " : " + i.getHostAddress());
+						nic = n.getName();
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.error("Error getNICNameForIPAddress", e);
+		}
+		return nic;
+	}
+
+	/***
+	 * Print out each Network Card and IPAddress.
+	 */
+	public static void printNetworkInterfaceDetails() {
+		log.info("Getting Network Interfaces");
+		try {
+			// Enumeration<NetworkInterface> e =
+			// NetworkInterface.getNetworkInterfaces();
+			// while (e.hasMoreElements()) {
+			// NetworkInterface n = (NetworkInterface) e.nextElement();
+			for (final NetworkInterface n : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+				Enumeration<InetAddress> ee = n.getInetAddresses();
+				log.info("Network Interface Display Name: '" + n.getDisplayName() + "'");
+				log.info("NIC Name: '" + n.getName() + "'");
+				while (ee.hasMoreElements()) {
+					InetAddress i = (InetAddress) ee.nextElement();
+					log.info("IPAddress for Network Interface: " + n.getDisplayName() + " : " + i.getHostAddress());
+				}
+			}
+		} catch (Exception e) {
+			log.error("Error Getting IPAddress", e);
+		}
+		log.info("End Of Network Interfaces");
+	}
+
 }

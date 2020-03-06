@@ -119,7 +119,7 @@
 			</fileset>
 		</scp>
 		
-		
+		<!--  
 		<echo>Sending to ${server_name} Copying to mediaplayer_lib</echo>
 		<scp remoteTodir="root:root@${server_name}:/home/pi/mediaplayer/mediaplayer_lib" trust="yes" sftp="true">
 			<fileset dir="${buildbetamediaplayer}/mediaplayer_lib">
@@ -131,6 +131,8 @@
 			<fileset dir="${basedir}/web">
 			</fileset>
 		</scp>
+		
+		-->
 		
 		
 				

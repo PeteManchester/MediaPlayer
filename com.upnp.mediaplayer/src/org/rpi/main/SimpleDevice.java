@@ -52,11 +52,12 @@ import org.rpi.providers.PrvPins;
 import org.rpi.providers.PrvPlayList;
 import org.rpi.providers.PrvProduct;
 import org.rpi.providers.PrvRadio;
-import org.rpi.providers.PrvReceiver;
+import org.rpi.providers.PrvSongcastReceiver;
 import org.rpi.providers.PrvRenderingControl;
-import org.rpi.providers.PrvSongcast;
+import org.rpi.providers.PrvSongcastSender;
 import org.rpi.providers.PrvTime;
 import org.rpi.providers.PrvVolume;
+import org.rpi.songcast.ohz.common.OHZConnector;
 import org.rpi.sources.Source;
 import org.rpi.sources.SourceReader;
 import org.rpi.utils.NetworkUtils;
@@ -77,10 +78,10 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	private PrvInfo iInfo = null;
 	private PrvTime iTime = null;
 	private PrvRadio iRadio = null;
-	private PrvReceiver iReceiver = null;
+	private PrvSongcastReceiver iReceiver = null;
 	private PrvAVTransport iAVTransport = null;
 	private PrvRenderingControl iRenderingControl = null;
-	private PrvSongcast iSongcastSender = null;
+	private PrvSongcastSender iSongcastSender = null;
 	private PrvCredentials iCredentials = null;
 	private HttpServerGrizzly httpServer = null;
 
@@ -91,8 +92,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	private CpDeviceListUpnpServiceType cpDeviceList = null;
 
 	// private PinMangerAccount pinManager = new PinMangerAccount();
-	//private org.java_websocket.client.WebSocketClient wsc = null;
-
+	// private org.java_websocket.client.WebSocketClient wsc = null;
 
 	/***
 	 * Constructor for our Simple Device
@@ -100,9 +100,10 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	public SimpleDevice() {
 		initSimpleDevice();
 	}
-	
+
 	/***
 	 * Constructor for our simple device.
+	 * 
 	 * @param test
 	 */
 	protected SimpleDevice(boolean test) {
@@ -127,13 +128,23 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			}
 			// initParams.setDvEnableBonjour();
 			initParams.setFatalErrorHandler(this);
-			//PETE Added this to see if it fixes issues with Kazoo keeping sockets.
+			// PETE Added this to see if it fixes issues with Kazoo keeping
+			// sockets.
 			initParams.setTcpConnectTimeoutMs(1000);
 
 			// initParams.setMsearchTimeSecs(1);
 
 			lib = Library.create(initParams);
-			lib.setDebugLevel(getDebugLevel(Config.getInstance().getOpenhomeLogLevel()));
+			String level = Config.getInstance().getOpenhomeLogLevel();
+			String[] splits = level.split(",");
+			long debugLevel = 0;
+
+			for (String s : splits) {
+				debugLevel += getDebugLevel(s);
+			}
+
+			log.info("OpenHome DebugLevel: " + debugLevel);
+			lib.setDebugLevel(debugLevel);
 
 			Inet4Address addr = NetworkUtils.getINet4Address();
 
@@ -149,7 +160,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			}
 			subnetList.destroy();
 
-			//PETE Test for socket leak
+			// PETE Test for socket leak
 			initControlPoint();
 
 			String friendly_name = Config.getInstance().getMediaplayerFriendlyName().replace(":", " ");
@@ -168,6 +179,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			iDevice.setAttribute("Upnp.ModelName", "Open Home Java Renderer: v" + Config.getInstance().getVersion());
 			iDevice.setAttribute("Upnp.ModelDescription", "'We Made History Not Money' - Tony Wilson..");
 			iDevice.setAttribute("Upnp.PresentationUrl", "http://" + NetworkUtils.getIPAddress() + ":" + Config.getInstance().getWebServerPort() + "/MainPage.html");
+			iDevice.setAttribute("Upnp.SerialNumber", "1234");
 
 			// iDevice.setAttribute("Upnp.PresentationUrl",
 			// "http://192.168.1.181:8088/MainPage.html");
@@ -185,14 +197,14 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			iRadio = new PrvRadio(iDevice);
 			// iInput = new PrvRadio(iDevice);
 			if (Config.getInstance().isMediaplayerEnableReceiver()) {
-				iReceiver = new PrvReceiver(iDevice);
+				iReceiver = new PrvSongcastReceiver(iDevice);
 			}
 			if (Config.getInstance().isMediaplayerEnableAVTransport()) {
 				iAVTransport = new PrvAVTransport(iDevice);
 				iRenderingControl = new PrvRenderingControl(iDevice);
 			}
 			// iConfig = new PrvConfig(iDevice);
-			iSongcastSender = new PrvSongcast(iDevice);
+			iSongcastSender = new PrvSongcastSender(iDevice);
 			iCredentials = new PrvCredentials(iDevice);
 			// updateRadioList();
 
@@ -257,7 +269,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 				airplay = new AirPlayThread(Config.getInstance().getMediaplayerFriendlyName());
 				airplay.start();
 			}
-
+			startOHZConnector(addr);
 			PlayerStatus.getInstance();
 			Alarm.getInstance();
 			OSManager.getInstance().loadPlugins();
@@ -267,14 +279,25 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	}
 
 	/***
+	 * Start the OHZConnector for Songcast Sender and Receiver.
+	 * @param localInetAddr
+	 */
+	private void startOHZConnector(Inet4Address localInetAddr) {
+		try {
+			OHZConnector.getInstance().run("ohz://239.255.255.250:51972", Config.getInstance().getMediaplayerFriendlyName(), localInetAddr);
+		} catch (Exception e) {
+			log.error("Error starting OHZConnector", e);
+		}
+	}
+
+	/***
 	 * 
 	 */
 	private void initControlPoint() {
-		//Create a listener for device that implement a ContentDirectory service
+		// Create a listener for device that implement a ContentDirectory
+		// service
 		cpDeviceList = new CpDeviceListUpnpServiceType("upnp.org", "ContentDirectory", 1, this);
 	}
-
-
 
 	protected String constructIconList(String deviceName) {
 		StringBuffer sb = new StringBuffer();
@@ -315,8 +338,8 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 		if (sLevel.equalsIgnoreCase("NONE")) {
 			return DebugLevel.None.longValue();
-		} else if (sLevel.equalsIgnoreCase("TRACE")) {
-			// return DebugLevel.T.ordinal();
+		} else if (sLevel.equalsIgnoreCase("Thread")) {
+			return DebugLevel.Thread.longValue();
 		} else if (sLevel.equalsIgnoreCase("NETWORK")) {
 			return DebugLevel.Network.longValue();
 		} else if (sLevel.equalsIgnoreCase("TIMER")) {
@@ -335,28 +358,130 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			return DebugLevel.Service.longValue();
 		} else if (sLevel.equalsIgnoreCase("Event")) {
 			return DebugLevel.Event.longValue();
-		} else if (sLevel.equalsIgnoreCase("Topology")) {
-			// return DebugLevel.Topology.ordinal();
-		} else if (sLevel.equalsIgnoreCase("DvInvocation")) {
-			return DebugLevel.DvInvocation.longValue();
+		} else if (sLevel.equalsIgnoreCase("SsdpNotifier")) {
+			return DebugLevel.SsdpNotifier.ordinal();
 		} else if (sLevel.equalsIgnoreCase("DvInvocation")) {
 			return DebugLevel.DvInvocation.longValue();
 		} else if (sLevel.equalsIgnoreCase("DvEvent")) {
 			return DebugLevel.DvEvent.longValue();
+		} else if (sLevel.equalsIgnoreCase("Lpec")) {
+			return DebugLevel.Lpec.longValue();
 		} else if (sLevel.equalsIgnoreCase("DvWebSocket")) {
 			return DebugLevel.DvWebSocket.longValue();
 		} else if (sLevel.equalsIgnoreCase("Bonjour")) {
 			return DebugLevel.Bonjour.longValue();
 		} else if (sLevel.equalsIgnoreCase("DvDevice")) {
 			return DebugLevel.DvDevice.longValue();
-		} else if (sLevel.equalsIgnoreCase("Error")) {
-			// return DebugLevel.
+		} else if (sLevel.equalsIgnoreCase("App0")) {
+			return DebugLevel.App0.longValue();
+		} else if (sLevel.equalsIgnoreCase("App0")) {
+			return DebugLevel.App0.longValue();
+		} else if (sLevel.equalsIgnoreCase("App0")) {
+			return DebugLevel.App0.longValue();
+		} else if (sLevel.equalsIgnoreCase("App0")) {
+			return DebugLevel.App0.longValue();
+		} else if (sLevel.equalsIgnoreCase("App0")) {
+			return DebugLevel.App0.longValue();
+		} else if (sLevel.equalsIgnoreCase("App1")) {
+			return DebugLevel.App1.longValue();
+		} else if (sLevel.equalsIgnoreCase("App2")) {
+			return DebugLevel.App2.longValue();
+		} else if (sLevel.equalsIgnoreCase("App3")) {
+			return DebugLevel.App3.longValue();
+		} else if (sLevel.equalsIgnoreCase("App4")) {
+			return DebugLevel.App4.longValue();
+		} else if (sLevel.equalsIgnoreCase("App5")) {
+			return DebugLevel.App5.longValue();
+		} else if (sLevel.equalsIgnoreCase("App6")) {
+			return DebugLevel.App6.longValue();
+		} else if (sLevel.equalsIgnoreCase("App7")) {
+			return DebugLevel.App7.longValue();
+		} else if (sLevel.equalsIgnoreCase("App8")) {
+			return DebugLevel.App8.longValue();
+		} else if (sLevel.equalsIgnoreCase("App0")) {
+			return DebugLevel.App0.longValue();
+		} else if (sLevel.equalsIgnoreCase("App9")) {
+			return DebugLevel.App9.longValue();
+		} else if (sLevel.equalsIgnoreCase("App10")) {
+			return DebugLevel.App10.longValue();
+		} else if (sLevel.equalsIgnoreCase("App11")) {
+			return DebugLevel.App11.longValue();
+		} else if (sLevel.equalsIgnoreCase("App12")) {
+			return DebugLevel.App12.longValue();
+		} else if (sLevel.equalsIgnoreCase("App13")) {
+			return DebugLevel.App13.longValue();
+		} else if (sLevel.equalsIgnoreCase("App14")) {
+			return DebugLevel.App14.longValue();
+		} else if (sLevel.equalsIgnoreCase("App15")) {
+			return DebugLevel.App15.longValue();
+		} else if (sLevel.equalsIgnoreCase("App16")) {
+			return DebugLevel.App16.longValue();
+		} else if (sLevel.equalsIgnoreCase("App17")) {
+			return DebugLevel.App17.longValue();
+		} else if (sLevel.equalsIgnoreCase("App18")) {
+			return DebugLevel.App18.longValue();
+		} else if (sLevel.equalsIgnoreCase("App19")) {
+			return DebugLevel.App19.longValue();
+		} else if (sLevel.equalsIgnoreCase("App20")) {
+			return DebugLevel.App20.longValue();
+		} else if (sLevel.equalsIgnoreCase("App21")) {
+			return DebugLevel.App21.longValue();
+		} else if (sLevel.equalsIgnoreCase("App22")) {
+			return DebugLevel.App22.longValue();
+		} else if (sLevel.equalsIgnoreCase("App23")) {
+			return DebugLevel.App23.longValue();
+		} else if (sLevel.equalsIgnoreCase("App24")) {
+			return DebugLevel.App24.longValue();
+		} else if (sLevel.equalsIgnoreCase("App25")) {
+			return DebugLevel.App25.longValue();
+		} else if (sLevel.equalsIgnoreCase("App26")) {
+			return DebugLevel.App26.longValue();
+		} else if (sLevel.equalsIgnoreCase("App27")) {
+			return DebugLevel.App27.longValue();
+		} else if (sLevel.equalsIgnoreCase("App28")) {
+			return DebugLevel.App28.longValue();
+		} else if (sLevel.equalsIgnoreCase("App29")) {
+			return DebugLevel.App29.longValue();
+		} else if (sLevel.equalsIgnoreCase("App30")) {
+			return DebugLevel.App30.longValue();
+		} else if (sLevel.equalsIgnoreCase("App31")) {
+			return DebugLevel.App31.longValue();
+		} else if (sLevel.equalsIgnoreCase("App32")) {
+			return DebugLevel.App32.longValue();
+		} else if (sLevel.equalsIgnoreCase("App33")) {
+			return DebugLevel.App33.longValue();
+		} else if (sLevel.equalsIgnoreCase("App34")) {
+			return DebugLevel.App34.longValue();
+		} else if (sLevel.equalsIgnoreCase("App35")) {
+			return DebugLevel.App35.longValue();
+		} else if (sLevel.equalsIgnoreCase("App36")) {
+			return DebugLevel.App36.longValue();
+		} else if (sLevel.equalsIgnoreCase("App37")) {
+			return DebugLevel.App37.longValue();
+		} else if (sLevel.equalsIgnoreCase("App38")) {
+			return DebugLevel.App38.longValue();
+		} else if (sLevel.equalsIgnoreCase("App39")) {
+			return DebugLevel.App39.longValue();
+		} else if (sLevel.equalsIgnoreCase("App40")) {
+			return DebugLevel.App40.longValue();
+		} else if (sLevel.equalsIgnoreCase("App41")) {
+			return DebugLevel.App41.longValue();
+		} else if (sLevel.equalsIgnoreCase("App42")) {
+			return DebugLevel.App42.longValue();
+		} else if (sLevel.equalsIgnoreCase("App43")) {
+			return DebugLevel.App43.longValue();
+		} else if (sLevel.equalsIgnoreCase("App44")) {
+			return DebugLevel.App44.longValue();
+		} else if (sLevel.equalsIgnoreCase("CpDeviceDv")) {
+			return DebugLevel.CpDeviceDv.longValue();
+		} else if (sLevel.equalsIgnoreCase("AdapterChange")) {
+			return DebugLevel.AdapterChange.longValue();
 		} else if (sLevel.equalsIgnoreCase("All")) {
 			return DebugLevel.All.longValue();
-		} else if (sLevel.equalsIgnoreCase("Verbose")) {
-			return DebugLevel.All.longValue();
 		}
+
 		return DebugLevel.None.longValue();
+
 	}
 
 	public void attachShutDownHook() {
@@ -393,6 +518,14 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		} catch (Exception e) {
 
 		}
+		
+		try {
+			
+			OHZConnector.getInstance().stop();
+		}
+		catch(Exception e) {
+			log.error("Error Stopping OHZConnector",e);
+		}
 
 		if (iPlayer != null) {
 			log.info("Destroying IPlayer");
@@ -424,7 +557,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		this.disposeDevice(iCredentials);
 		this.disposeDevice(iProduct);
 		this.disposeDevice(iInfo);
-		
+
 		this.disposeDevice(iRadio);
 		this.disposeDevice(iReceiver);
 		this.disposeDevice(iAVTransport);
@@ -468,7 +601,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	@Override
 	public void writeResource(String resource_name, int arg1, List<String> arg2, IResourceWriter writer) {
 		log.info("writeResource Called: " + resource_name);
-		ByteArrayOutputStream baos =null;
+		ByteArrayOutputStream baos = null;
 		try {
 			resource_name = "/" + resource_name;
 			URL url = this.getClass().getResource(resource_name);
@@ -488,8 +621,8 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 		} catch (IOException e) {
 			log.error("Error Writing Resource: " + resource_name, e);
-		}finally {
-			if(baos !=null) {
+		} finally {
+			if (baos != null) {
 				CloseMe.close(baos);
 			}
 		}
@@ -561,58 +694,57 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 
 	@Override
 	public void deviceAdded(CpDevice cpDevice) {
-		//synchronized (this) {
+		// synchronized (this) {
+		try {
+			log.debug("Device## DeviceAdded Event");
+			CpAttribute l = cpDevice.getAttribute("Upnp.DeviceXml");
 			try {
-				log.debug("Device## DeviceAdded Event");
-				CpAttribute l = cpDevice.getAttribute("Upnp.DeviceXml");
-				try {
-					if (l.isAvailable()) {
-						String xml = l.getValue();
-						String udn = cpDevice.getUdn();
-						log.debug("Device## DeviceAdded Event: " + udn + " XML: " + xml);
-						DeviceInfo di = new DeviceInfo(cpDevice.getUdn(), l.getValue());						
-						if (di.isValid()) {
-							log.debug("Device## DeviceAdded to Cache: " + di.toString());
-							DeviceManager.getInstance().addDevice(udn, di);
-						}						
-					}
-				}catch(Exception ex) {
-					log.error("Device## Error DeviceAdded: ", ex);
-				}finally {
-					try {
-						if(l !=null) {
-							l = null;							
-						}
-						cpDevice = null;
-					}
-					catch(Exception ex) {
-						log.error("Device## Error Tidy up Device on Device Added", ex);
+				if (l.isAvailable()) {
+					String xml = l.getValue();
+					String udn = cpDevice.getUdn();
+					log.debug("Device## DeviceAdded Event: " + udn + " XML: " + xml);
+					DeviceInfo di = new DeviceInfo(cpDevice.getUdn(), l.getValue());
+					if (di.isValid()) {
+						log.debug("Device## DeviceAdded to Cache: " + di.toString());
+						DeviceManager.getInstance().addDevice(udn, di);
 					}
 				}
-			} catch (Exception e) {
-				log.error("Device## Error DeviceAdded", e);
+			} catch (Exception ex) {
+				log.error("Device## Error DeviceAdded: ", ex);
+			} finally {
+				try {
+					if (l != null) {
+						l = null;
+					}
+					cpDevice = null;
+				} catch (Exception ex) {
+					log.error("Device## Error Tidy up Device on Device Added", ex);
+				}
 			}
-		//}
+		} catch (Exception e) {
+			log.error("Device## Error DeviceAdded", e);
+		}
+		// }
 	}
 
 	@Override
 	public void deviceRemoved(CpDevice cpDevice) {
-		//synchronized (this) {
+		// synchronized (this) {
+		try {
+			log.debug("Device## Removed: " + cpDevice.getUdn());
+			String udn = cpDevice.getUdn();
+			DeviceManager.getInstance().deleteDevice(udn);
+
 			try {
-				log.debug("Device## Removed: " + cpDevice.getUdn());
-				String udn = cpDevice.getUdn();
-				DeviceManager.getInstance().deleteDevice(udn);
-				
-				try {
-					cpDevice = null;
-				}catch(Exception ex) {
-					log.error("Device## Error Tidy up Device on Device Removed", ex);
-				}
-				
-			} catch (Exception e) {
-				log.error("Device## Error DeviceRemoved", e);
+				cpDevice = null;
+			} catch (Exception ex) {
+				log.error("Device## Error Tidy up Device on Device Removed", ex);
 			}
-		//}
+
+		} catch (Exception e) {
+			log.error("Device## Error DeviceRemoved", e);
+		}
+		// }
 	}
 
 }

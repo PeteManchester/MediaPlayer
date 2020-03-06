@@ -20,6 +20,7 @@ import javax.sound.sampled.Mixer;
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
 import org.rpi.mplayer.CloseMe;
+import org.rpi.utils.NetworkUtils;
 import org.rpi.utils.Utils;
 
 public class StartMe {
@@ -47,23 +48,7 @@ public class StartMe {
 		if (log.isInfoEnabled()) {
 			// to improve startup performance, if loglevel info is not enabled,
 			// this is not needed, right?
-			log.info("Getting Network Interfaces");
-			try {
-				Enumeration e = NetworkInterface.getNetworkInterfaces();
-				while (e.hasMoreElements()) {
-					NetworkInterface n = (NetworkInterface) e.nextElement();
-					Enumeration ee = n.getInetAddresses();
-					log.info("Network Interface Display Name: '" + n.getDisplayName() + "'");
-					log.info("NIC Name: '" + n.getName() + "'");
-					while (ee.hasMoreElements()) {
-						InetAddress i = (InetAddress) ee.nextElement();
-						log.info("IPAddress for Network Interface: " + n.getDisplayName() + " : " + i.getHostAddress());
-					}
-				}
-			} catch (Exception e) {
-				log.error("Error Getting IPAddress", e);
-			}
-			log.info("End Of Network Interfaces");
+			NetworkUtils.printNetworkInterfaceDetails();
 		}
 
 		// Do we need to attempt to set the AudioCard
@@ -93,14 +78,13 @@ public class StartMe {
 		setAudioDevice();
 		log.info("JVM Version: " + System.getProperty("java.version"));
 		printSystemProperties();
-		try
-		{
+		try {
 			SimpleDevice sd = new SimpleDevice();
 			sd.attachShutDownHook();
 			if (bInput) {
 				BufferedReader in = null;
 				try {
-					 in = new BufferedReader(new InputStreamReader(System.in));
+					in = new BufferedReader(new InputStreamReader(System.in));
 					String line = "";
 					try {
 						while (line.equalsIgnoreCase("quit") == false) {
@@ -110,14 +94,14 @@ public class StartMe {
 					} catch (Exception e) {
 						log.error(e.getMessage(), e);
 					}
-				}catch(Exception e) {
-					
-				}finally {
-					if(in !=null) {
+				} catch (Exception e) {
+
+				} finally {
+					if (in != null) {
 						CloseMe.close(in);
 						in = null;
 					}
-				}				
+				}
 			}
 
 			else {
@@ -130,15 +114,12 @@ public class StartMe {
 				}
 			}
 			System.exit(0);
-		}
-		catch(Exception e)
-		{
+		} catch (Exception e) {
 			log.error("PETE!!!!!", e);
 		}
-		
 
 		// loadPlugins();
-		
+
 	}
 
 	/***

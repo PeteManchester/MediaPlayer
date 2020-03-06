@@ -14,6 +14,7 @@ import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventSourceChanged;
 import org.rpi.player.events.EventStandbyChanged;
 import org.rpi.plugingateway.PluginGateWay;
+import org.rpi.utils.NetworkUtils;
 import org.rpi.utils.Utils;
 
 public class PrvProduct extends DvProviderAvOpenhomeOrgProduct2 implements Observer, IDisposableDevice {
@@ -29,8 +30,8 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct2 implements Obser
 	private String attributes = "Info Time Volume Receiver Sender Pins";
 	
 	// private String attributes = "";
-	private String man_name = "Java Inc";
-	private String man_info = "Developed in Java using OpenHome";
+	private String man_name = "Pete";
+	private String man_info = "Developed in Java using OpenHome by Pete";
 	private String man_url = "";
 	private String man_image = "";
 	private String model_name = "Music Renderer";
@@ -50,6 +51,8 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct2 implements Obser
 	public PrvProduct(DvDevice iDevice) {
 		super(iDevice);
 		log.debug("Creating CustomProduct");
+		
+		prod_image = man_image =  "http://" + NetworkUtils.getIPAddress() + ":" + Config.getInstance().getWebServerPort() + "/images/mediaplayer240.png";
 		
 		String tuneInPartnerID = Config.getInstance().getRadioTuneInPartnerId();
 		if(!Utils.isEmpty(tuneInPartnerID))
