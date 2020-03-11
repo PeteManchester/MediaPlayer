@@ -13,6 +13,8 @@ import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventReceiverStatusChanged;
 import org.rpi.player.events.EventTimeUpdate;
 import org.rpi.providers.IDisposableDevice;
+import org.rpi.songcast.ohu.receiver.requests.OHURequestJoin;
+import org.rpi.songcast.ohu.receiver.requests.OHURequestListen;
 import org.rpi.songcast.ohz.common.OHZLeaveRequest;
 
 import io.netty.bootstrap.Bootstrap;
@@ -84,14 +86,6 @@ public class OHUConnector {
 			Bootstrap b = new Bootstrap();
 			b.group(group);
 			b.channel(NioDatagramChannel.class);
-			/*
-			b.channelFactory(new ChannelFactory<Channel>() {
-				@Override
-				public Channel newChannel() {
-					return new NioDatagramChannel(InternetProtocolFamily.IPv4);
-				}
-			});
-			*/
 			
 			b.option(ChannelOption.SO_BROADCAST, true);
 			b.option(ChannelOption.SO_REUSEADDR, true);

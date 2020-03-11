@@ -1,6 +1,7 @@
-package org.rpi.songcast.ohu.receiver;
+package org.rpi.songcast.ohu.receiver.handlers;
 
 import org.apache.log4j.Logger;
+import org.rpi.songcast.ohu.receiver.messages.OHUMessageMetaText;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;

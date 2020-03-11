@@ -1,4 +1,4 @@
-package org.rpi.songcast.ohu.receiver;
+package org.rpi.songcast.ohu.receiver.requests;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

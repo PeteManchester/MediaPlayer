@@ -1,31 +1,41 @@
-package org.rpi.songcast.ohu.receiver;
+package org.rpi.songcast.ohu.receiver.handlers;
 
 import org.apache.log4j.Logger;
+import org.rpi.channel.ChannelSongcast;
+import org.rpi.player.PlayManager;
+import org.rpi.player.events.EventUpdateTrackMetaText;
+import org.rpi.songcast.ohu.receiver.messages.OHUMessageTrack;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
-public class OHUMessageSlaveHandler extends SimpleChannelInboundHandler<OHUMessageSlave> {
+public class OHUMessageTrackHandler extends SimpleChannelInboundHandler<OHUMessageTrack> {
 
 	private Logger log = Logger.getLogger(this.getClass());
-	private OHUChannelInitializer initializer = null;
-	
-	public OHUMessageSlaveHandler(OHUChannelInitializer initializer)
-	{
-		this.initializer = initializer;
-	}
 
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, OHUMessageSlave msg) throws Exception {
-		log.debug("Slave Message");
+	protected void channelRead0(ChannelHandlerContext ctx, OHUMessageTrack msg) throws Exception {
+		log.debug("Track Message");
 		try {
-			if(msg instanceof OHUMessageSlave)
-			{
-				OHUMessageSlave slave = (OHUMessageSlave)msg;
-				log.debug(slave.toString());
+			EventUpdateTrackMetaText ev = new EventUpdateTrackMetaText();
+			ChannelSongcast cs = new ChannelSongcast("", msg.getMetaData(), 1);
+			String meta_text = msg.getMetaData();
+			if (!meta_text.equalsIgnoreCase("")) {
+				ev.setMetaText(msg.getMetaData());
+				ev.setTitle(cs.getTitle());
+				ev.setArtist(cs.getArtist());
+				if (ev != null) {
+					PlayManager.getInstance().updateTrackInfo(ev);
+				}
 			}
+			else
+			{
+				log.debug("meta_text was Empty");
+			}
+			PlayManager.getInstance().setStatus("Playing", "SONGCAST");
+			//msg.getData().release();
 		} catch (Exception e) {
-			log.error("Error Releasing Slave ByteBuf");
+			log.error("Error Handling OHUMessageTrack: ", e);
 		}
 	}
 

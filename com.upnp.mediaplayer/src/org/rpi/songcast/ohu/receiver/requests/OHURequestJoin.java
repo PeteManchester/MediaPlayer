@@ -1,4 +1,4 @@
-package org.rpi.songcast.ohu.receiver;
+package org.rpi.songcast.ohu.receiver.requests;
 
 /*
  * Join the OHM stream to start receiving audio stream.

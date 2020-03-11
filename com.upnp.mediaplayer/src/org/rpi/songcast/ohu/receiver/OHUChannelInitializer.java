@@ -2,15 +2,20 @@ package org.rpi.songcast.ohu.receiver;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.rpi.songcast.ohu.receiver.handlers.OHUMessageAudioHandler;
+import org.rpi.songcast.ohu.receiver.handlers.OHUMessageDecoder;
+import org.rpi.songcast.ohu.receiver.handlers.OHUMessageMetaTextHandler;
+import org.rpi.songcast.ohu.receiver.handlers.OHUMessageSlaveHandler;
+import org.rpi.songcast.ohu.receiver.handlers.OHUMessageTrackHandler;
+import org.rpi.songcast.ohu.receiver.handlers.OHUSlaveForwarder;
+
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 
 public class OHUChannelInitializer extends ChannelInitializer<NioDatagramChannel> {
 	
-	private ConcurrentHashMap<String, Slave> endpoints = new ConcurrentHashMap<String, Slave>();
+	private ConcurrentHashMap<String, SlaveInfo> endpoints = new ConcurrentHashMap<String, SlaveInfo>();
 
 	@Override
 	protected void initChannel(NioDatagramChannel ch) throws Exception {
@@ -30,7 +35,7 @@ public class OHUChannelInitializer extends ChannelInitializer<NioDatagramChannel
 	 * Set the Slave Endpoints
 	 * @param endpoints
 	 */
-	public void setEndpoints(ConcurrentHashMap<String, Slave> endpoints) {
+	public void setEndpoints(ConcurrentHashMap<String, SlaveInfo> endpoints) {
 		this.endpoints = endpoints;
 		
 	}

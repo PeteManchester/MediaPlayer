@@ -1,4 +1,4 @@
-package org.rpi.songcast.ohu.receiver;
+package org.rpi.songcast.ohu.receiver.handlers;
 
 /**
  * OHUMessageAudioHandler
@@ -20,6 +20,7 @@ import org.rpi.java.sound.JavaSoundPlayerLatency;
 import org.rpi.mplayer.TrackInfo;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventUpdateTrackInfo;
+import org.rpi.songcast.ohu.receiver.messages.OHUMessageAudio;
 public class OHUMessageAudioHandler extends SimpleChannelInboundHandler<OHUMessageAudio> {
 
 	private Logger log = Logger.getLogger(this.getClass());
@@ -93,19 +94,19 @@ public class OHUMessageAudioHandler extends SimpleChannelInboundHandler<OHUMessa
 	}
 	
 	public boolean repair(OHUMessageAudio msg) {
-		log.fatal("Songcast: Repair recevied frame " + msg.getFrameNumber());
+		//log.fatal("Songcast: Repair recevied frame " + msg.getFrameNumber());
 		int diff = msg.getFrameNumber() - lastFrameNumber;
 		
 		if (diff == 1) {
 			// This is the next expected frame, send it to the player
-			log.debug("Songcast: Repair sending frame " + msg.getFrameNumber() + " directly");
+			//log.debug("Songcast: Repair sending frame " + msg.getFrameNumber() + " directly");
 			player.put(msg);
 			lastFrameNumber = msg.getFrameNumber();
 			// Now check if the first waiting frame in the repair queue is the next one we need
 			while (!repairIsEmpty() && repairFirstFrameNumber() == lastFrameNumber + 1) {
 				// If so, pull it out of the queue and send it
 				OHUMessageAudio nextMsg = repairFirst();
-				log.debug("Songcast: Sending frame " + nextMsg.getFrameNumber() + " from repair queue");
+				//log.debug("Songcast: Sending frame " + nextMsg.getFrameNumber() + " from repair queue");
 				player.put(nextMsg);
 				lastFrameNumber = nextMsg.getFrameNumber();
 				// Then check for more
@@ -228,7 +229,7 @@ public class OHUMessageAudioHandler extends SimpleChannelInboundHandler<OHUMessa
 	
 	public synchronized void repairInsertFirst(OHUMessageAudio msg) {
 		try {
-			log.debug("Songcast: Adding frame " + msg.getFrameNumber() + " to front of repair queue");
+			//log.debug("Songcast: Adding frame " + msg.getFrameNumber() + " to front of repair queue");
 			repairQueue.add(0, msg);
 		} catch (Exception e) {
 			log.error("Songcast: Unable to add audio frame to front of repair queue");
@@ -237,7 +238,7 @@ public class OHUMessageAudioHandler extends SimpleChannelInboundHandler<OHUMessa
 	
 	public synchronized void repairInsertLast(OHUMessageAudio msg) {
 		try {
-			log.debug("Songcast: Adding frame " + msg.getFrameNumber() + " to end of repair queue");
+			//log.debug("Songcast: Adding frame " + msg.getFrameNumber() + " to end of repair queue");
 			repairQueue.addElement(msg);
 		} catch (Exception e) {
 			log.error("Songcast: Unable to add audio frame to end of repair queue");
@@ -246,7 +247,7 @@ public class OHUMessageAudioHandler extends SimpleChannelInboundHandler<OHUMessa
 	
 	public synchronized void repairInsertMiddle(int i, OHUMessageAudio msg) {
 		try {
-			log.debug("Songcast: Adding frame " + msg.getFrameNumber() + " to middle of repair queue");
+			//log.debug("Songcast: Adding frame " + msg.getFrameNumber() + " to middle of repair queue");
 			repairQueue.add(i, msg);
 		} catch (Exception e) {
 			log.error("Songcast: Unable to add audio frame to middle of repair queue");

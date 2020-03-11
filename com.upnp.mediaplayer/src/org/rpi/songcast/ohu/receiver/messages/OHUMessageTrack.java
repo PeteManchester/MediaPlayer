@@ -1,4 +1,4 @@
-package org.rpi.songcast.ohu.receiver;
+package org.rpi.songcast.ohu.receiver.messages;
 
 import io.netty.buffer.ByteBuf;
 import org.apache.log4j.Logger;

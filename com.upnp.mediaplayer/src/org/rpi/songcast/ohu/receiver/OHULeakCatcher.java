@@ -1,6 +1,7 @@
 package org.rpi.songcast.ohu.receiver;
 
 import org.apache.log4j.Logger;
+import org.rpi.songcast.ohu.receiver.messages.OHUMessageTrack;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -16,6 +17,7 @@ public class OHULeakCatcher extends SimpleChannelInboundHandler<OHUMessageTrack>
 			int refCnt = msg.getData().refCnt();
 			if(refCnt>0)
 			{
+				log.debug("Leak Caught");
 				msg.getData().release(refCnt);
 			}			
 		}

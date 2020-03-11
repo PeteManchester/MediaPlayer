@@ -18,5 +18,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JerseyClient"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JerseySSE"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/socketio"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/vorbis"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

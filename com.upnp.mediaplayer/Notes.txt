@@ -4,6 +4,8 @@ http://wiki.openhome.org/wiki/OhMediaDevelopers
 
 Songcast capture audio https://stackoverflow.com/questions/31738072/how-do-you-capture-sound-from-the-sound-card-in-java
 
+MPD streaming wav https://takla.wordpress.com/2014/04/01/mpd-stream-lossless-flac-or-wav/
+
 #Play and queue tracks
 mplayer -slave -quiet http://192.168.1.205:26125/content/c2/b16/f44100/d67188-co32752.mp3 http://192.168.1.205:26125/content/c2/b16/f44100/d67189-co32752.mp3
 

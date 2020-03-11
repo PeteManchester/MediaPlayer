@@ -1,4 +1,4 @@
-package org.rpi.songcast.ohu.receiver;
+package org.rpi.songcast.ohu.receiver.messages;
 
 /**
  * Get the Slave Endpoint information
@@ -18,11 +18,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.rpi.songcast.common.SongcastMessage;
+import org.rpi.songcast.ohu.receiver.SlaveInfo;
 
 public class OHUMessageSlave extends SongcastMessage {
 	
 	private Logger log = Logger.getLogger(this.getClass());
-	private ConcurrentHashMap<String, Slave> endpoints = new ConcurrentHashMap<String, Slave>();
+	private ConcurrentHashMap<String, SlaveInfo> endpoints = new ConcurrentHashMap<String, SlaveInfo>();
 
 	
 	public OHUMessageSlave(ByteBuf buf) {
@@ -36,7 +37,7 @@ public class OHUMessageSlave extends SongcastMessage {
 			try {				
 				InetAddress address = InetAddress.getByAddress(endpoint);
 				int port = buf.getUnsignedShort(start+4);
-				Slave sl = new Slave(address,port);
+				SlaveInfo sl = new SlaveInfo(address,port);
 
 				log.debug("Adding Slave Endpoint: " + sl.toString());
 				getEndpoints().put(sl.getName(), sl);
@@ -49,7 +50,7 @@ public class OHUMessageSlave extends SongcastMessage {
 	/**
 	 * @return the endpoints
 	 */
-	public ConcurrentHashMap<String, Slave> getEndpoints() {
+	public ConcurrentHashMap<String, SlaveInfo> getEndpoints() {
 		return endpoints;
 	}
 	

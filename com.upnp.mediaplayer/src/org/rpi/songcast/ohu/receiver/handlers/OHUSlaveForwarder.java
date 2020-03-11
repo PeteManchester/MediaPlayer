@@ -1,4 +1,4 @@
-package org.rpi.songcast.ohu.receiver;
+package org.rpi.songcast.ohu.receiver.handlers;
 
 /**
  * Handle the OHUMessages
@@ -15,11 +15,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.rpi.songcast.common.SongcastMessage;
+import org.rpi.songcast.ohu.receiver.OHUChannelInitializer;
+import org.rpi.songcast.ohu.receiver.SlaveInfo;
+import org.rpi.songcast.ohu.receiver.messages.OHUMessageSlave;
 
 public class OHUSlaveForwarder extends SimpleChannelInboundHandler<SongcastMessage> {
 
 	private Logger log = Logger.getLogger(this.getClass());
-	private ConcurrentHashMap<String, Slave> endpoints = new ConcurrentHashMap<String, Slave>();
+	private ConcurrentHashMap<String, SlaveInfo> endpoints = new ConcurrentHashMap<String, SlaveInfo>();
 	private OHUChannelInitializer initializer = null;
 	public OHUSlaveForwarder(OHUChannelInitializer initializer)
 	{
@@ -36,7 +39,7 @@ public class OHUSlaveForwarder extends SimpleChannelInboundHandler<SongcastMessa
 			// msg.getData().release();
 		} else {
 			if (endpoints.size() > 0) {
-				for (Slave sl : endpoints.values()) {
+				for (SlaveInfo sl : endpoints.values()) {
 					try {
 						InetSocketAddress toAddress = sl.getRemoteAddress();
 						DatagramPacket packet = new DatagramPacket(msg.getData().retain(), toAddress);

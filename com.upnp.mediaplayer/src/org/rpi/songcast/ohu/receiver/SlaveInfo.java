@@ -3,13 +3,13 @@ package org.rpi.songcast.ohu.receiver;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-public class Slave {
+public class SlaveInfo {
 	
 	private InetAddress address = null;
 	private int port = -99;
 	private InetSocketAddress remoteAddress = null;
 	
-	public Slave(InetAddress address, int port) {
+	public SlaveInfo(InetAddress address, int port) {
 		this.address = address;
 		this.port = port;
 		remoteAddress = new InetSocketAddress(address, port);

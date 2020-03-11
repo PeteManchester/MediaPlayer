@@ -36,6 +36,8 @@ public class AudioInformation {
 	private int soundByteSize = -99;
 	private int sampleCount = -99;
 	private long compareString = 0;
+	private boolean isBigEndian = true;
+	private boolean isSigned = true;
 
 	/**
 	 * @return the sampleRate
@@ -113,11 +115,11 @@ public class AudioInformation {
 	}
 
 	public boolean isSigned() {
-		return true;
+		return this.isSigned;
 	}
 
 	public boolean isBigEndian() {
-		return true;
+		return this.isBigEndian;
 	}
 
 	public long CompareString() {
@@ -125,7 +127,7 @@ public class AudioInformation {
 	}
 
 	/**
-	 * Comprare the SampleRate, BitDepth, Channels and BitRate
+	 * Compare the SampleRate, BitDepth, Channels and BitRate
 	 * 
 	 * @param ai
 	 * @return
@@ -152,24 +154,29 @@ public class AudioInformation {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("SampleRate:" + sampleRate);
-		sb.append(" ");
-		sb.append("BitRate:" + bitRate);
-		sb.append(" ");
-		sb.append("BitDepth:" + bitDepth);
-		sb.append(" ");
-		sb.append("Channels:" + channels);
-		sb.append(" ");
-		sb.append("Codec:" + codec);
-		sb.append(" ");
-		sb.append("Signed:" + isSigned());
-		sb.append(" ");
-		sb.append("SoundByteSize:" + soundByteSize);
-		sb.append(" ");
-		sb.append("SamplesCount:" + sampleCount);
-
-		return sb.toString();
+		StringBuilder builder = new StringBuilder();
+		builder.append("AudioInformation [sampleRate=");
+		builder.append(sampleRate);
+		builder.append(", bitRate=");
+		builder.append(bitRate);
+		builder.append(", bitDepth=");
+		builder.append(bitDepth);
+		builder.append(", codec=");
+		builder.append(codec);
+		builder.append(", channels=");
+		builder.append(channels);
+		builder.append(", soundByteSize=");
+		builder.append(soundByteSize);
+		builder.append(", sampleCount=");
+		builder.append(sampleCount);
+		builder.append(", isBigEndian=");
+		builder.append(isBigEndian());
+		builder.append(", isSigned=");
+		builder.append(isSigned());
+		builder.append("]");
+		return builder.toString();
 	}
+
+	
 
 }

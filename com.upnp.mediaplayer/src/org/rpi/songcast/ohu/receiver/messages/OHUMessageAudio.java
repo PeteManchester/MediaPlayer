@@ -1,7 +1,8 @@
-package org.rpi.songcast.ohu.receiver;
+package org.rpi.songcast.ohu.receiver.messages;
 
 import io.netty.buffer.ByteBuf;
 
+import org.apache.log4j.Logger;
 import org.rpi.java.sound.AudioInformation;
 import org.rpi.java.sound.IAudioPacket;
 import org.rpi.songcast.common.SongcastMessage;
@@ -27,6 +28,8 @@ import org.rpi.songcast.common.SongcastMessage;
 //50 + n    Msg Total Bytes - Msg Header Bytes - Code Name Bytes (Sample data in big endian, channels interleaved, packed)
 
 public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
+	
+	private Logger log = Logger.getLogger(this.getClass());
 	private AudioInformation ai = null;
 	private byte[] audio;
 	private int frameNumber = 0;
@@ -36,15 +39,23 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 
 	public OHUMessageAudio(ByteBuf buf,boolean hasSlaves) {
 		super.setData(buf.retain());
+		int length = buf.getShort(6);
 		int headerLength = buf.getByte(8) & ~0x80;
+		int flags = buf.getByte(9) & ~0x80;
 		int sampleCount = buf.getShort(10);
 		frameNumber = buf.getInt(12);
 		int latency = buf.getInt(20);
+		int timeStamp = buf.getInt(24);
+		long StartSample = buf.getLong(28);
+		long TotalSamples = buf.getLong(36);
 		int iSampleRate = buf.getInt(44);
 		int bitRate = buf.getInt(48);
 		int iBitDepth = buf.getByte(54) & ~0x80;
 		int channels = buf.getByte(55) & ~0x80;
 		int codecNameLength = buf.getByte(57) & ~0x80;
+		
+		
+		
 		if (bitRate > 0) {
 			bitRate = bitRate / 1000;
 		}

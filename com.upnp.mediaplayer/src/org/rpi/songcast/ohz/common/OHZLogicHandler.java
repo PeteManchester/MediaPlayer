@@ -80,6 +80,10 @@ public class OHZLogicHandler extends ChannelDuplexHandler {
 			if (ohz.getZoneId().equals(myZoneId)) {
 				log.debug("#####################  This is a request for my OHU URL");
 				// TODO for now just create a new Sender..
+				if(ohuSender !=null) {
+					ohuSender.stop();
+					ohuSender = null;
+				}
 				ohuSender = new OHUSenderConnection(myZoneId, localInetAddr);
 				String myURI = ohuSender.run();
 				OHZZoneUriResponse res = new OHZZoneUriResponse(myURI, myZoneId);
