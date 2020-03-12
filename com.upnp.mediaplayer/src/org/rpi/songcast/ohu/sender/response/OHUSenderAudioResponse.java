@@ -43,7 +43,7 @@ public class OHUSenderAudioResponse {
 	private Logger log = Logger.getLogger(this.getClass());
 	private ByteBuf buffer = null;
 
-	public OHUSenderAudioResponse(int frameNumber, byte[] bytes) {
+	public OHUSenderAudioResponse(byte[] bytes) {
 		byte[] version = new byte[] { (byte) (1 & 0xff) };
 		byte[] type = new byte[] { (byte) (3 & 0xff) };
 		String codecName = "PCM   ";
@@ -60,9 +60,9 @@ public class OHUSenderAudioResponse {
 		test.setBytes(8, new byte[] {(byte) (50 &0xff)});//Header Length
 		test.setBytes(9, new byte[] {(byte) (2 &0xff)});
 		test.setShort(10, sampleCount);
-		test.setInt(12, frameNumber);
 		
-		test.setInt(16, 4321);
+		
+		test.setInt(16, 0);
 		test.setInt(20, 1);//MediaLatency
 		test.setInt(24, 1);//MediaTimestamp
 		test.setLong(28, 1);//Start Sample
@@ -92,6 +92,14 @@ public class OHUSenderAudioResponse {
 	 */
 	public ByteBuf getBuffer() {
 		return buffer;
+	}
+
+
+
+	public void setFrameId(int frameId) {
+		if(buffer !=null) {
+			buffer.setInt(12, frameId);		
+		}		
 	}
 
 }

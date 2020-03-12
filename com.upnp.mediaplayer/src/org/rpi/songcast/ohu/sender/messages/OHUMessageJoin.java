@@ -1,5 +1,6 @@
 package org.rpi.songcast.ohu.sender.messages;
 
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 import org.apache.log4j.Logger;
@@ -11,10 +12,10 @@ import io.netty.buffer.ByteBuf;
 public class OHUMessageJoin extends SongcastMessage {
 	
 	private Logger log = Logger.getLogger(this.getClass());
-	private SocketAddress address = null;
+	private InetSocketAddress address = null;
 
 	
-	public OHUMessageJoin(ByteBuf buf, SocketAddress address) {
+	public OHUMessageJoin(ByteBuf buf, InetSocketAddress address) {
 		super.setData(buf.retain());
 		this.setAddress(address);
 		log.debug("Join Message Received from Address: " + address);
@@ -50,7 +51,7 @@ public class OHUMessageJoin extends SongcastMessage {
 	/**
 	 * @return the address
 	 */
-	public SocketAddress getAddress() {
+	public InetSocketAddress getAddress() {
 		return address;
 	}
 
@@ -58,7 +59,7 @@ public class OHUMessageJoin extends SongcastMessage {
 	/**
 	 * @param address the address to set
 	 */
-	private void setAddress(SocketAddress address) {
+	private void setAddress(InetSocketAddress address) {
 		this.address = address;
 	}
 }

@@ -37,6 +37,7 @@ public class OHUSenderConnection {
 	private int frameCount = 0;
 
 	private Thread ohuSenderThread = null;
+	OHUSenderThread1 ohuSender =null;
 
 	private int lastTab = 0;
 
@@ -48,7 +49,7 @@ public class OHUSenderConnection {
 		this.localInetAddr = localInetAddr;
 		this.zoneID = zoneID;
 
-		OHUSenderThread ohuSender = new OHUSenderThread(this);
+		ohuSender = new OHUSenderThread1(this);
 		ohuSenderThread = new Thread(ohuSender, "OHUSenderThread");
 		ohuSenderThread.start();
 	}
@@ -75,45 +76,6 @@ public class OHUSenderConnection {
 			log.debug(ch.localAddress());
 			uri = localInetAddr.getHostAddress() + ":" + ch.localAddress().getPort();
 
-			// FileOutputStream outputStream = new
-			// FileOutputStream("c:\\temp\\my2.wav");
-
-			/*
-			 * group.scheduleAtFixedRate(new Runnable() {
-			 * 
-			 * @Override public void run() { if(!bConnected) { return; } try {
-			 * // ByteBuf lBuffer = Unpooled.copiedBuffer(listen.data);
-			 * 
-			 * TestAudioByte tab =
-			 * MPDStreamerController.getInstance().getNext();
-			 * 
-			 * if (tab != null) { if(tab.getFrameId() - lastTab !=1) {
-			 * log.error("TabId Error: " + lastTab + " this tab: " +
-			 * tab.getFrameId()); } lastTab = tab.getFrameId();
-			 * log.debug("FrameId: " + tab.getFrameId()); byte[] buffer =
-			 * tab.getAudio(); // log.debug("Buffer was not null");
-			 * 
-			 * //byte[] be = converting(buffer); //outputStream.write(buffer);
-			 * OHUSenderAudioResponse r = new OHUSenderAudioResponse(frameCount,
-			 * buffer);
-			 * 
-			 * //if(frameCount % 1000 == 0) { //log.debug("Queue Size: " +
-			 * MPDStreamerController.getInstance().getQueue().size() +
-			 * " FrameCount: " + frameCount); //}
-			 * 
-			 * //ByteBuf buff = r.getBuffer().copy(); DatagramPacket packet =
-			 * new DatagramPacket(r.getBuffer(), remoteInetSocket,
-			 * localInetSocket); ChannelFuture f =
-			 * ch.writeAndFlush(packet).sync(); //if(frameCount % 200 == 0) {
-			 * //ch.flush(); // log.debug(f.toString()); //} frameCount++;
-			 * //OHUMessageAudio test = new OHUMessageAudio(r.getBuffer(),
-			 * false); //outputStream.write(test.getAudio());
-			 * //log.debug(frameCount); } else {
-			 * //log.debug("Buffer is null: "); } // sendMessage(pListen); }
-			 * catch (Exception e) { log.error("Error Sending Audio Packet", e);
-			 * } } }, 0L, 35L, TimeUnit.MILLISECONDS);
-			 */
-
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		} finally {
@@ -123,15 +85,6 @@ public class OHUSenderConnection {
 		return uri;
 	}
 
-	private byte[] converting(byte[] value) {
-		final int length = value.length;
-		byte[] res = new byte[length];
-		for (int i = 0; i < length; i++) {
-			res[length - i - 1] = value[i];
-		}
-		return res;
-	}
-
 	public void sendMessage(DatagramPacket packet) throws Exception {
 		try {
 			// log.debug("SendMessage");
@@ -139,7 +92,7 @@ public class OHUSenderConnection {
 				@Override
 				public void operationComplete(ChannelFuture future) throws Exception {
 					if (future.isSuccess()) {
-						log.debug("Write successful");
+						//log.debug("Write successful");
 					} else {
 						log.error("Error writing message to Raspi host");
 					}
@@ -156,35 +109,16 @@ public class OHUSenderConnection {
 		log.debug("Attempt to Stop Songcast Playback");
 
 		try {
-			if (ohuSenderThread != null) {
-				ohuSenderThread.stop();
-				ohuSenderThread = null;
+			
+			if (ohuSender != null) {
+				ohuSender.stop();
+				ohuSender = null;
+				ohuSenderThread = null;				
 			}
 		} catch (Exception e) {
 			log.error("Error Closing OHUSenderThread", e);
 		}
 		try {
-			if (ch != null) {
-				try {
-					// OHZLeaveRequest leave = new OHZLeaveRequest();
-					// ByteBuf buffer =
-					// Unpooled.copiedBuffer(leave.getBuffer());
-					// DatagramPacket packet = new DatagramPacket(buffer,
-					// remoteInetSocket, localInetSocket);
-					// log.debug("Sending : " + packet.toString());
-					// ch.writeAndFlush(packet).sync();
-					// log.debug("Sent Leave Message");
-					// PlayManager.getInstance().setStatus("Stopped",
-					// "SONGCAST");
-				} catch (Exception e) {
-					log.error("Error Sending Leave", e);
-				}
-				try {
-					ch.close();
-				} catch (Exception e) {
-					log.error("Error Closing Channel", e);
-				}
-			}
 			group.shutdownGracefully();
 		} catch (Exception e) {
 			log.error("Error ShuttingDown", e);

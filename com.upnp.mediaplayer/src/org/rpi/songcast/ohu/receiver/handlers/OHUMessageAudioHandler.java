@@ -31,6 +31,10 @@ public class OHUMessageAudioHandler extends SimpleChannelInboundHandler<OHUMessa
 	private int maxRepairQueueFrames = 50;
 	private boolean isRepairing = false;
 	private Vector<OHUMessageAudio> repairQueue = new Vector<OHUMessageAudio>();
+	
+	public OHUMessageAudioHandler() {
+		log.debug("Created OHUMessageAudioHandler"  );
+	}
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, OHUMessageAudio msg) throws Exception {
@@ -207,7 +211,7 @@ public class OHUMessageAudioHandler extends SimpleChannelInboundHandler<OHUMessa
 			while (!repairIsEmpty()) {
 				// Just send all the frames in the repair queue as they are
 				OHUMessageAudio nextMsg = repairFirst();
-				log.debug("Songcast: Sending frame " + nextMsg.getFrameNumber() + " from repair queue");
+				//log.debug("Songcast: Sending frame " + nextMsg.getFrameNumber() + " from repair queue");
 				player.put(nextMsg);
 				lastFrameNumber = nextMsg.getFrameNumber();
 			}

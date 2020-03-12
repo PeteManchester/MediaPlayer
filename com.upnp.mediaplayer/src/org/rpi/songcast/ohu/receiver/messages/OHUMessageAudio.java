@@ -39,15 +39,15 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 
 	public OHUMessageAudio(ByteBuf buf,boolean hasSlaves) {
 		super.setData(buf.retain());
-		int length = buf.getShort(6);
+		//int Totallength = buf.getShort(6);
 		int headerLength = buf.getByte(8) & ~0x80;
-		int flags = buf.getByte(9) & ~0x80;
+		//int flags = buf.getByte(9) & ~0x80;
 		int sampleCount = buf.getShort(10);
 		frameNumber = buf.getInt(12);
 		int latency = buf.getInt(20);
-		int timeStamp = buf.getInt(24);
-		long StartSample = buf.getLong(28);
-		long TotalSamples = buf.getLong(36);
+		//int timeStamp = buf.getInt(24);
+		//long StartSample = buf.getLong(28);
+		//long TotalSamples = buf.getLong(36);
 		int iSampleRate = buf.getInt(44);
 		int bitRate = buf.getInt(48);
 		int iBitDepth = buf.getByte(54) & ~0x80;
@@ -125,10 +125,7 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 		return audio;
 	}
 
-	@Override
-	public String toString() {
-		return "OHUMessageAudio";
-	}
+
 
 	/**
 	 * @return the frameNumber
@@ -176,5 +173,20 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 	@Override
 	public int getLength() {
 		return length;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("OHUMessageAudio [frameNumber=");
+		builder.append(frameNumber);
+		builder.append(", time_to_play=");
+		builder.append(time_to_play);
+		builder.append(", attempts=");
+		builder.append(attempts);
+		builder.append(", length=");
+		builder.append(length);
+		builder.append("]");
+		return builder.toString();
 	}
 }

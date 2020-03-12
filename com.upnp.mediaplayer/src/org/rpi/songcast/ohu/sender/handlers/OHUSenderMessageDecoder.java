@@ -5,12 +5,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.rpi.songcast.common.SongcastMessage;
-import org.rpi.songcast.ohu.receiver.OHUChannelInitializer;
-import org.rpi.songcast.ohu.receiver.messages.OHUMessageAudio;
-import org.rpi.songcast.ohu.receiver.messages.OHUMessageMetaText;
-import org.rpi.songcast.ohu.receiver.messages.OHUMessageSlave;
-import org.rpi.songcast.ohu.receiver.messages.OHUMessageTrack;
-import org.rpi.songcast.ohu.sender.OHUSenderChannelInitialiser;
 import org.rpi.songcast.ohu.sender.messages.OHUMessageJoin;
 import org.rpi.songcast.ohu.sender.messages.OHUMessageLeave;
 import org.rpi.songcast.ohu.sender.messages.OHUMessageListen;
@@ -25,11 +19,10 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 public class OHUSenderMessageDecoder extends MessageToMessageDecoder<DatagramPacket> {
 	
 	private Logger log = Logger.getLogger(this.getClass());
-	private OHUSenderChannelInitialiser initializer = null;
+
 	
-	public OHUSenderMessageDecoder(OHUSenderChannelInitialiser initializer)
+	public OHUSenderMessageDecoder()
 	{
-		this.initializer = initializer;
 	}
 
 	@Override
@@ -43,7 +36,7 @@ public class OHUSenderMessageDecoder extends MessageToMessageDecoder<DatagramPac
 			case 0://Join
 				log.debug("Join: " + msg.sender() + " " + buf.toString(Charset.forName("utf-8")));
 				message = new OHUMessageJoin(buf,msg.sender());
-				initializer.setRemoteAddress(msg.sender());
+				
 				out.add(message);
 				break;
 			case 1://Listen
@@ -55,7 +48,7 @@ public class OHUSenderMessageDecoder extends MessageToMessageDecoder<DatagramPac
 				log.debug("Leave  "+ msg.sender() + " " + buf.toString(Charset.forName("utf-8")));
 				message = new OHUMessageLeave(buf, msg.sender());
 				out.add(message);
-				initializer.setRemoteAddress(null);
+				
 				break;
 			default:
 				log.info("Unknown Message: " + buf.toString(Charset.forName("utf-8")));
