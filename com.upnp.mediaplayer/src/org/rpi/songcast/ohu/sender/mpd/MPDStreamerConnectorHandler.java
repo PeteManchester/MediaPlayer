@@ -11,13 +11,10 @@ import io.netty.handler.codec.http.HttpObject;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.LastHttpContent;
-import io.netty.util.CharsetUtil;
 
 public class MPDStreamerConnectorHandler extends SimpleChannelInboundHandler<HttpObject> {
 
 	private Logger log = Logger.getLogger(this.getClass());
-
-	//int frameCount = 0;
 
 	public MPDStreamerConnectorHandler() {
 	}
@@ -27,25 +24,35 @@ public class MPDStreamerConnectorHandler extends SimpleChannelInboundHandler<Htt
 
 		if (msg instanceof HttpResponse) {
 			HttpResponse response = (HttpResponse) msg;
+			
+			String nl = System.getProperty("line.separator");
+			
+			StringBuilder sb = new StringBuilder();
+			sb.append("MPD Response: ");
+			sb.append(nl);
+			sb.append("Status: " + response.status());
+			sb.append(nl);
+			sb.append("Version: " + response.protocolVersion());
+			sb.append(nl);
+			
 
-			// response.protocolVersion()
-			// System.err.println("STATUS: " + response.status());
-			// System.err.println("VERSION: " + response.protocolVersion());
-			// System.err.println();
+
 
 			if (!response.headers().isEmpty()) {
 				for (CharSequence name : response.headers().names()) {
 					for (CharSequence value : response.headers().getAll(name)) {
-						log.debug("HEADER: " + name + " = " + value);
+						sb.append("HEADER: " + name + " = " + value);
+						sb.append(nl);
 					}
 				}
-				System.err.println();
 			}
+			
+			log.debug(sb.toString());
 
 			if (HttpUtil.isTransferEncodingChunked(response)) {
-				log.debug("CHUNKED CONTENT {");
+				log.debug("CHUNKED CONTENT Start");
 			} else {
-				log.debug("CONTENT {");
+				log.debug("CONTENT Start");
 			}
 		}
 		if (msg instanceof HttpContent) {
@@ -66,23 +73,16 @@ public class MPDStreamerConnectorHandler extends SimpleChannelInboundHandler<Htt
 				httpContent.content().readBytes(test, 0, skim);
 				//System.err.println("RIFF: " + test);
 			}
-
+			
 			byte[] bytes = new byte[buffer.readableBytes() ];
 			buffer.readBytes(bytes);
 
 			OHUSenderAudioResponse a = new OHUSenderAudioResponse( bytes);
-			//frameCount++;
-			//if(frameCount == Integer.MAX_VALUE) {
-			//	log.debug("FrameCount reached Max Value");
-			//	frameCount = 0;
-			//}
-			//if (frameCount % 1000 == 0) {
-			//	log.debug("Frame: " + frameCount);
-			//}
 			MPDStreamerController.getInstance().addSoundByte(a);
 
 			if (httpContent instanceof LastHttpContent) {
-				log.debug("} END OF CONTENT");
+				log.debug(" END OF CONTENT");
+				MPDStreamerController.getInstance().setFinished(true);
 				ctx.close();
 			}
 		}
@@ -92,7 +92,6 @@ public class MPDStreamerConnectorHandler extends SimpleChannelInboundHandler<Htt
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 		log.error("MPDConnector Connection Error: ", cause);
-		// cause.printStackTrace();
 		ctx.close();
 	}
 }

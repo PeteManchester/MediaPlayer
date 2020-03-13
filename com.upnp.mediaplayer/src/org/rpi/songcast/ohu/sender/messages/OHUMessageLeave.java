@@ -12,6 +12,7 @@ public class OHUMessageLeave extends SongcastMessage {
 	
 	private Logger log = Logger.getLogger(this.getClass());
 	private InetSocketAddress address = null;
+	private String hostString = "";
 
 	
 	public OHUMessageLeave(ByteBuf buf, InetSocketAddress address) {
@@ -22,9 +23,12 @@ public class OHUMessageLeave extends SongcastMessage {
 
 	
 	@Override
-	public String toString()
-	{
-		return "OHUMessageLeave";
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("OHUMessageLeave [hostString=");
+		builder.append(hostString);
+		builder.append("]");
+		return builder.toString();
 	}
 
 
@@ -34,6 +38,15 @@ public class OHUMessageLeave extends SongcastMessage {
 	public SocketAddress getAddress() {
 		return address;
 	}
+	
+	/***
+	 * Host String
+	 * 
+	 * @return
+	 */
+	public String getHostString() {
+		return hostString;
+	}
 
 
 	/**
@@ -41,6 +54,7 @@ public class OHUMessageLeave extends SongcastMessage {
 	 */
 	private void setAddress(InetSocketAddress address) {
 		this.address = address;
+		this.hostString = address.getHostString();
 	}
 
 }

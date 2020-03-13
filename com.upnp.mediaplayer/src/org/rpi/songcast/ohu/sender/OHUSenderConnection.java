@@ -2,11 +2,10 @@ package org.rpi.songcast.ohu.sender;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
 
 import org.apache.log4j.Logger;
-import org.rpi.songcast.ohu.receiver.requests.OHURequestListen;
 import org.rpi.songcast.ohu.sender.response.OHUSenderAudioResponse;
+import org.rpi.utils.Utils;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -21,37 +20,28 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 
 public class OHUSenderConnection {
 
-	private String zoneID = "";
 	private Logger log = Logger.getLogger(this.getClass());
 
-	private InetAddress remoteInetAddr = null;
 	private InetSocketAddress remoteInetSocket = null;
 	private InetAddress localInetAddr = null;
 	private InetSocketAddress localInetSocket = null;
 
 	private EventLoopGroup group = new NioEventLoopGroup(1);
-	private OHURequestListen listen = null;
+	// private OHURequestListen listen = null;
 
 	private DatagramChannel ch = null;
-	private long started = System.nanoTime();
-	private int frameCount = 0;
 
-	private Thread ohuSenderThread = null;
-	OHUSenderThread1 ohuSender =null;
+	// private Thread ohuSenderThread = null;
+	// OHUSenderThread1 ohuSender =null;
 
-	private int lastTab = 0;
+	private String myURI = "";
 
-	private boolean bConnected = false;
+	private boolean enabled = true;
 
-	public OHUSenderConnection(String zoneID, InetAddress localInetAddr) {
+	public OHUSenderConnection(InetAddress localInetAddr) {
 		log.debug("Create OHUSenderConnector: " + localInetAddr.getHostAddress());
-
 		this.localInetAddr = localInetAddr;
-		this.zoneID = zoneID;
 
-		ohuSender = new OHUSenderThread1(this);
-		ohuSenderThread = new Thread(ohuSender, "OHUSenderThread");
-		ohuSenderThread.start();
 	}
 
 	public String run() throws Exception {
@@ -60,13 +50,11 @@ public class OHUSenderConnection {
 			log.debug("Start OHUConnector: " + localInetAddr.getHostName());
 
 			localInetSocket = new InetSocketAddress(0);
-			NetworkInterface nic = NetworkInterface.getByInetAddress(localInetAddr);
 
 			Bootstrap b = new Bootstrap();
 			b.group(group);
 			b.channel(NioDatagramChannel.class);
 
-			// b.option(ChannelOption.SO_BROADCAST, true);
 			b.option(ChannelOption.SO_REUSEADDR, true);
 			b.option(ChannelOption.IP_MULTICAST_LOOP_DISABLED, false);
 			b.option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(1024 * 5));
@@ -85,16 +73,19 @@ public class OHUSenderConnection {
 		return uri;
 	}
 
+	/***
+	 * Send a Datagram Packet
+	 * 
+	 * @param packet
+	 * @throws Exception
+	 */
 	public void sendMessage(DatagramPacket packet) throws Exception {
 		try {
-			// log.debug("SendMessage");
 			ch.writeAndFlush(packet).addListener(new ChannelFutureListener() {
 				@Override
 				public void operationComplete(ChannelFuture future) throws Exception {
-					if (future.isSuccess()) {
-						//log.debug("Write successful");
-					} else {
-						log.error("Error writing message to Raspi host");
+					if (!future.isSuccess()) {
+						log.error("Error writing Datagram Packet for RemoteHost");
 					}
 				}
 			});
@@ -106,18 +97,6 @@ public class OHUSenderConnection {
 
 	public void stop() {
 
-		log.debug("Attempt to Stop Songcast Playback");
-
-		try {
-			
-			if (ohuSender != null) {
-				ohuSender.stop();
-				ohuSender = null;
-				ohuSenderThread = null;				
-			}
-		} catch (Exception e) {
-			log.error("Error Closing OHUSenderThread", e);
-		}
 		try {
 			group.shutdownGracefully();
 		} catch (Exception e) {
@@ -125,24 +104,82 @@ public class OHUSenderConnection {
 		}
 	}
 
+	/***
+	 * 
+	 * @param sender
+	 */
 	public void setRemoteAddress(InetSocketAddress sender) {
 		log.debug("Remote Socket Address is being set: " + sender);
 		this.remoteInetSocket = sender;
 		if (remoteInetSocket == null) {
-			log.error("This is NUL NOT GOOD");
-			bConnected = false;
-		} else {
-			bConnected = true;
+			log.error("This is NUL. Not Connected");
 		}
+	}
+
+	/***
+	 * 
+	 * @return
+	 */
+	public InetSocketAddress getRemoteAddress() {
+		return remoteInetSocket;
+	}
+
+	/***
+	 * 
+	 */
+	public String getRemoteHostString() {
+
+		if (remoteInetSocket == null) {
+			return "";
+		}
+		return remoteInetSocket.getHostString();
 
 	}
 
+	/***
+	 * Send An OHUSenderAudioResponse to the main OHUListener.
+	 * 
+	 * @param r
+	 * @throws Exception
+	 */
 	public void sendMessage(OHUSenderAudioResponse r) throws Exception {
 		if (remoteInetSocket == null) {
 			return;
 		}
 		DatagramPacket packet = new DatagramPacket(r.getBuffer(), remoteInetSocket, localInetSocket);
 		sendMessage(packet);
+	}
+
+	public String getURI() {
+		if (Utils.isEmpty(myURI)) {
+			try {
+				myURI = run();
+			} catch (Exception e) {
+				log.error("Could Not Start OHUSenderConnection");
+			}
+		}
+		return myURI;
+	}
+
+	public void setEnabled(boolean b) {
+		this.enabled = b;		
+	}
+	
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("OHUSenderConnection [remoteInetSocket=");
+		builder.append(getRemoteHostString());
+		builder.append(", myURI=");
+		builder.append(myURI);
+		builder.append(", enabled=");
+		builder.append(enabled);
+		builder.append("]");
+		return builder.toString();
 	}
 
 }

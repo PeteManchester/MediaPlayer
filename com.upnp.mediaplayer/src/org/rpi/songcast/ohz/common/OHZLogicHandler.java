@@ -5,15 +5,13 @@ import java.net.InetSocketAddress;
 
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
-import org.rpi.songcast.ohu.receiver.OHUConnector;
 import org.rpi.songcast.ohu.receiver.OHUReceiverController;
-import org.rpi.songcast.ohu.sender.OHUSenderConnection;
+import org.rpi.songcast.ohu.sender.OHUSenderController;
 import org.rpi.songcast.ohz.sender.OHZZoneQueryMessage;
 import org.rpi.songcast.ohz.sender.OHZZoneUriResponse;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
-
 import io.netty.channel.ChannelPromise;
 import io.netty.channel.socket.DatagramPacket;
 
@@ -25,7 +23,7 @@ public class OHZLogicHandler extends ChannelDuplexHandler {
 	private InetSocketAddress remoteInetSocketAddr = null;
 	private InetSocketAddress localInetSocketAddr = null;
 	private long lastZoneQueryRequest = 0;
-	private OHUSenderConnection ohuSender = null;
+	//private OHUSenderConnection ohuSender = null;
 	private String myZoneId = Config.getInstance().getMediaplayerFriendlyName();
 
 	public OHZLogicHandler(InetAddress localInetAddr, InetSocketAddress remoteInetSocketAddr, InetSocketAddress localInetSocketAddress) {
@@ -50,7 +48,7 @@ public class OHZLogicHandler extends ChannelDuplexHandler {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-		log.debug("Read");
+		log.debug("Read: " + ctx.channel().remoteAddress());
 
 		if (msg instanceof OHZZoneUriMessage) {
 			long timeNow = System.currentTimeMillis();
@@ -74,27 +72,25 @@ public class OHZLogicHandler extends ChannelDuplexHandler {
 			}
 
 		} else if (msg instanceof OHZZoneQueryMessage) {
-
 			OHZZoneQueryMessage ohz = (OHZZoneQueryMessage) msg;
-
 			if (ohz.getZoneId().equals(myZoneId)) {
 				log.debug("#####################  This is a request for my OHU URL");
 				// TODO for now just create a new Sender..
-				if(ohuSender !=null) {
-					ohuSender.stop();
-					ohuSender = null;
-				}
-				ohuSender = new OHUSenderConnection(myZoneId, localInetAddr);
-				String myURI = ohuSender.run();
+				//if(ohuSender !=null) {
+				//	ohuSender.stop();
+				//	ohuSender = null;
+				//}
+				//if(ohuSender ==null) {
+				//	ohuSender = new OHUSenderConnection(localInetAddr);
+				//}				
+				//String myURI = ohuSender.getURI();
+				String myURI = OHUSenderController.getInstance().startSenderConnection(localInetAddr, ohz.getRemoteAddress());
 				OHZZoneUriResponse res = new OHZZoneUriResponse(myURI, myZoneId);
 				DatagramPacket packet = new DatagramPacket(res.getBuffer(), remoteInetSocketAddr, localInetSocketAddr);
 				log.debug("Sending ZoneQuery Request : " + packet.toString());
 				ctx.writeAndFlush(packet).sync();
-
 			}
 		}
-
-		// ctx.fireChannelRead(msg);
 	}
 
 }

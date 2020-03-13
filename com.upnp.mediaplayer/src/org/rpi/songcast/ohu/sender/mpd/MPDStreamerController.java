@@ -11,8 +11,11 @@ public class MPDStreamerController {
 	private static MPDStreamerController instance = null;
 	private Logger log = Logger.getLogger(this.getClass());
 	private Queue<OHUSenderAudioResponse> queue = new ConcurrentLinkedQueue<OHUSenderAudioResponse>();
-	Thread threadPlayer = null;
-	int frameCount = 0;
+	private Thread mpdThread = null;
+	private MPDStreamerConnector mpdClient = null;
+	private int frameCount = 0;// Integer.MAX_VALUE - 1000;
+	
+	private boolean bFinished = false;
 
 	/***
 	 * 
@@ -29,7 +32,7 @@ public class MPDStreamerController {
 	/***
 	 * 
 	 */
-	private MPDStreamerController() {		
+	private MPDStreamerController() {
 	}
 
 	/***
@@ -55,14 +58,78 @@ public class MPDStreamerController {
 	public OHUSenderAudioResponse getNext() {
 		// log.debug("Queue Size: " + queue.size());
 		OHUSenderAudioResponse a = queue.poll();
-		if(a !=null) {
-			a.setFrameId(frameCount++);
+		if (a != null) {
+			frameCount++;
+			if (frameCount < 0) {
+				log.debug("Integer RollOver: " + frameCount);
+				frameCount = 0;
+			}
+			a.setFrameId(frameCount);
+			if (frameCount % 1000 == 0) {
+				log.debug("Frame: " + frameCount);
+			}
 		}
-		return queue.poll();
+		return a;
 	}
 
 	public void addSoundByte(OHUSenderAudioResponse a) {
 		queue.add(a);
+	}
+	
+	
+	
+	/***
+	 * 
+	 */
+	private void startMPDConnection() {
+		if (mpdThread != null) {
+			stopMPDConnection();
+		}
+		mpdClient = new MPDStreamerConnector();
+		mpdThread = new Thread(mpdClient, "MPDStreamerConnector");
+		mpdThread.start();
+	}
+	
+	/***
+	 * 
+	 */
+	private void stopMPDConnection() {
+
+		try {
+			if (mpdClient != null) {
+				mpdClient.stop();
+			}
+			mpdClient = null;
+			mpdThread = null;
+		} catch (Exception e) {
+			log.error("Error Stopping MPDConnection", e);
+		}
+	}
+
+	/**
+	 * @return the bFinished
+	 */
+	public boolean isFinished() {
+		return bFinished;
+	}
+
+	/**
+	 * @param bFinished the bFinished to set
+	 */
+	public void setFinished(boolean bFinished) {
+		this.bFinished = bFinished;
+		if(bFinished) {
+			stopMPDConnection();
+		}
+	}
+
+	public void start() {
+		if(mpdClient !=null && !bFinished) {
+			return;
+		}
+		stopMPDConnection();
+		startMPDConnection();
+		
 	}
 
 }
