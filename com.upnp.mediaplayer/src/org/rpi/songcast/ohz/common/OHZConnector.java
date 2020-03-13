@@ -55,7 +55,7 @@ public class OHZConnector {
 
 	public void run(String uri, String zoneID, Inet4Address localInetAddr) throws Exception {
 
-		log.debug("Run OHZConnector");
+		log.debug("Run OHZConnector: ZoneID: " + zoneID + " LocalAddress: " + localInetAddr.getHostAddress());
 
 		log.debug("Creating OHZConnector: " + uri + " " + zoneID);
 		int lastColon = uri.lastIndexOf(":");
@@ -77,7 +77,7 @@ public class OHZConnector {
 			remoteInetSocket = new InetSocketAddress(remoteInetAddr, remotePort);
 			localInetSocket = new InetSocketAddress(remotePort);
 			NetworkInterface nic = NetworkInterface.getByInetAddress(localInetAddr);
-
+			log.info("OHZ is using NIF: " + nic.getDisplayName());
 			Bootstrap b = new Bootstrap();
 			b.group(group);
 			// b.channel(NioDatagramChannel.class);

@@ -80,7 +80,7 @@ public class OHUConnector {
 
 			
 			remoteInetSocket = new InetSocketAddress(remoteInetAddr, remotePort);
-			localInetSocket = new InetSocketAddress(remotePort);
+			localInetSocket = new InetSocketAddress(localInetAddr, remotePort);
 			NetworkInterface nic = NetworkInterface.getByInetAddress(localInetAddr);
 
 			Bootstrap b = new Bootstrap();

@@ -23,6 +23,7 @@ import org.rpi.config.Config;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLException;
 
@@ -30,7 +31,7 @@ import javax.net.ssl.SSLException;
  * A simple HTTP client that prints out the content of the HTTP response to
  * {@link System#out} to test {@link HttpSnoopServer}.
  */
-public final class MPDSreamerConnector implements Runnable {
+public final class MPDStreamerConnector implements Runnable {
 
 	private Logger log = Logger.getLogger(this.getClass());
 	private EventLoopGroup group = new NioEventLoopGroup();
@@ -38,6 +39,7 @@ public final class MPDSreamerConnector implements Runnable {
 
 	public void start() throws InterruptedException, URISyntaxException, SSLException {
 		String URL = "http://127.0.0.1:" + Config.getInstance().getMpdListenPort();
+		log.debug("Starting MPD StreamerConnector: " + URL);
 		URI uri = new URI(URL);
 		String scheme = uri.getScheme() == null ? "http" : uri.getScheme();
 		String host = uri.getHost() == null ? "127.0.0.1" : uri.getHost();
@@ -51,7 +53,7 @@ public final class MPDSreamerConnector implements Runnable {
 		}
 
 		if (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)) {
-			System.err.println("Only HTTP(S) is supported.");
+			log.error("Only HTTP(S) is supported.");
 			return;
 		}
 
@@ -69,9 +71,21 @@ public final class MPDSreamerConnector implements Runnable {
 		try {
 			Bootstrap b = new Bootstrap();
 			b.group(group).channel(NioSocketChannel.class).handler(new MPDStreamerConnectorInitializer(sslCtx));
-
-			// Make the connection attempt.
-			ch = b.connect(host, port).sync().channel();
+			boolean bConnect = true;
+			while (bConnect) {
+				try {
+					// Make the connection attempt.
+					ch = b.connect(host, port).sync().channel();
+					bConnect = false;
+				} catch (Exception e) {
+					log.error("Error Conneting to MPD: ", e);
+					try {
+						TimeUnit.SECONDS.sleep(2);
+					} catch (InterruptedException ex) {
+						log.error("Error Sleeping", ex);
+					}
+				}
+			}
 
 			// Prepare the HTTP request.
 			HttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, uri.getRawPath(), Unpooled.EMPTY_BUFFER);
@@ -91,6 +105,10 @@ public final class MPDSreamerConnector implements Runnable {
 
 			// Wait for the server to close the connection.
 			ch.closeFuture().sync();
+		} catch (Exception e) {
+			log.error("Error Connecting: ", e);
+			stop();
+			throw e;
 		} finally {
 			// Shut down executor threads to exit.
 			group.shutdownGracefully();
@@ -99,28 +117,31 @@ public final class MPDSreamerConnector implements Runnable {
 
 	@Override
 	public void run() {
+
 		try {
+			log.debug("MPDConnector Run");
 			start();
 		} catch (Exception e) {
 			log.error("Error Starting MPDStreamerConnector", e);
+		} finally {
+
 		}
 
 	}
 
 	public void stop() {
 		log.debug("Stopping MPDStreamer Connection");
-		
+
 		try {
-			if(ch !=null) {
+			if (ch != null) {
 				ch.close().sync();
 				log.debug("Channel Closed");
 			}
-		}
-		catch(Exception e) {
-			log.error("Error Close Connection",e);
+		} catch (Exception e) {
+			log.error("Error Close Connection", e);
 		}
 		try {
-			group.shutdownGracefully().sync();
+			group.shutdownGracefully(1,2,TimeUnit.SECONDS).sync();
 		} catch (Exception e) {
 			log.error("Error Group Shutdown", e);
 		}

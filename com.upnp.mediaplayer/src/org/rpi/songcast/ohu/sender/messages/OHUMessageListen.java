@@ -17,7 +17,7 @@ public class OHUMessageListen extends SongcastMessage {
 	public OHUMessageListen(ByteBuf buf, SocketAddress address) {
 		super.setData(buf.retain());
 		this.setAddress(address);
-		//log.debug("Listen Message Received from Address: " + address);
+		log.debug("Listen Message Received from Address: " + address);
 		/*
 		int slave_count = buf.getInt(8);
 		log.debug("Slave Count: " + slave_count);		

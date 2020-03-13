@@ -26,14 +26,14 @@ public class OHZMessageDecoder extends MessageToMessageDecoder<DatagramPacket> {
 			{
 				
 				log.info("Zone Query: " + buf.toString());				
-				OHZZoneQueryMessage  ohz = new OHZZoneQueryMessage(buf);				
+				OHZZoneQueryMessage  ohz = new OHZZoneQueryMessage(buf, msg.sender());				
 				out.add(ohz);				
 				break;
 			}
 
 			case 1:// Zone URI Sent by Sender in response to a ZoneQuery
 			{
-				OHZZoneUriMessage message = new OHZZoneUriMessage(buf);
+				OHZZoneUriMessage message = new OHZZoneUriMessage(buf, msg.sender());
 				out.add(message);
 				break;
 			}

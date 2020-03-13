@@ -1,8 +1,8 @@
 package org.rpi.songcast.ohz.common;
 
+import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 
-import org.apache.log4j.Logger;
 import org.rpi.songcast.common.SongcastMessage;
 
 import io.netty.buffer.ByteBuf;
@@ -19,9 +19,10 @@ public class OHZZoneUriMessage extends SongcastMessage {
 	
 	private String zone = "";
 	private String uri = "";
+	private InetSocketAddress  remoteSender = null;
 	
 	
-	public OHZZoneUriMessage(ByteBuf buf) {
+	public OHZZoneUriMessage(ByteBuf buf, InetSocketAddress remoteSender) {
 		int zl = buf.getInt(8);
 		int uri_length = buf.getInt(12);
 		String buffs = buf.toString(Charset.defaultCharset());
@@ -30,6 +31,7 @@ public class OHZZoneUriMessage extends SongcastMessage {
 		String uri = buffs.substring(start_point + zl, uri_length + start_point + zl);
 		setZone(zone);
 		setUri(uri);
+		this.remoteSender = remoteSender;
 		//log.debug(this.toString());
 	}
 	
@@ -58,6 +60,17 @@ public class OHZZoneUriMessage extends SongcastMessage {
 		this.uri = uri;
 	}
 	
+	/**
+	 * @return the remoteSender
+	 */
+	public InetSocketAddress getRemoteSender() {
+		return remoteSender;
+	}
+	
+	public String getRemoteAddress() {
+		return remoteSender.getHostString();
+	}
+	
 	@Override
 	public String toString()
 	{
@@ -67,6 +80,9 @@ public class OHZZoneUriMessage extends SongcastMessage {
 		sb.append("URI: " + uri);
 		sb.append("\r\n");
 		sb.append("Zone: " + zone);
+		sb.append("\r\n");
+		sb.append("RemoteSender=");
+		sb.append(remoteSender.getHostString() + ":" + remoteSender.getPort());
 		return sb.toString();
 	}
 }

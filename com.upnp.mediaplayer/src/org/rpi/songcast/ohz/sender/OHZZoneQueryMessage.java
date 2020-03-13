@@ -1,5 +1,6 @@
 package org.rpi.songcast.ohz.sender;
 
+import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 
 import org.apache.log4j.Logger;
@@ -19,8 +20,9 @@ public class OHZZoneQueryMessage extends SongcastMessage  {
 	private Logger log = Logger.getLogger(this.getClass());	
 	int zoneLength = 0;
 	private String zoneId = "";
+	private InetSocketAddress remoteSender = null;
 	
-	public OHZZoneQueryMessage(ByteBuf buf) {
+	public OHZZoneQueryMessage(ByteBuf buf, InetSocketAddress remoteSender) {
 		super.setData(buf.retain());
 		int zl = buf.getInt(8);
 		String buffs = buf.toString(Charset.defaultCharset());
@@ -28,6 +30,7 @@ public class OHZZoneQueryMessage extends SongcastMessage  {
 		String zoneId = buffs.substring(start_point, zl + start_point);
 		setZoneLength(zl);
 		setZoneId(zoneId);
+		this.remoteSender = remoteSender;
 		log.debug(this.toString());
 	}
 
@@ -65,8 +68,28 @@ public class OHZZoneQueryMessage extends SongcastMessage  {
 		builder.append(zoneLength);
 		builder.append(", zoneId=");
 		builder.append(getZoneId());
+		builder.append(", RemoteSender=");
+		builder.append(remoteSender.getHostString() + ":" + remoteSender.getPort());
 		builder.append("]");
 		return builder.toString();
+	}
+
+	/**
+	 * @return the remoteSender
+	 */
+	public InetSocketAddress getRemoteSender() {
+		return remoteSender;
+	}
+	
+	public String getRemoteAddress() {
+		return remoteSender.getHostString();
+	}
+
+	/**
+	 * @param remoteSender the remoteSender to set
+	 */
+	public void setRemoteSender(InetSocketAddress remoteSender) {
+		this.remoteSender = remoteSender;
 	}
 
 

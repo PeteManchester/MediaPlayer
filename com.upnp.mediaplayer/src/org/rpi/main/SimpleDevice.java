@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Inet4Address;
+import java.net.InetSocketAddress;
 import java.net.URL;
 import java.util.List;
 import java.util.Observable;
@@ -146,7 +147,9 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			log.info("OpenHome DebugLevel: " + debugLevel);
 			lib.setDebugLevel(debugLevel);
 
+			//TODO look at why it prefers wlan to lan on raspi..
 			Inet4Address addr = NetworkUtils.getINet4Address();
+			log.info("Using LocalIPAddress: " + addr.getHostAddress());
 
 			CombinedStack ds = lib.startCombined(addr);
 
@@ -154,6 +157,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			for (int i = 0; i < subnetList.size(); i++) {
 				NetworkAdapter nif = subnetList.getSubnet(i);
 				if (nif.getAddress().getHostAddress().equals(addr.getHostAddress())) {
+					log.info("Using NIC: " + nif.getName());
 					lib.setCurrentSubnet(nif);
 					break;
 				}
