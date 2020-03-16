@@ -11,6 +11,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.rpi.airplay.audio.AirPlayAudioChannelInitializer;
 import org.rpi.java.sound.IJavaSoundPlayer;
 
 

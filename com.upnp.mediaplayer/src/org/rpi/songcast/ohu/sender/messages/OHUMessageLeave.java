@@ -16,9 +16,10 @@ public class OHUMessageLeave extends SongcastMessage {
 
 	
 	public OHUMessageLeave(ByteBuf buf, InetSocketAddress address) {
-		super.setData(buf.retain());
+		//super.setData(buf.retain());
 		this.setAddress(address);
 		log.debug("Leave Message Received from Address: " + address);
+		buf.release();
 	}
 
 	

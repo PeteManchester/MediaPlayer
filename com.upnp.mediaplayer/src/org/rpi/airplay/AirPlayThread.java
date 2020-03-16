@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.rpi.airplay.rtsp.RtspServerInitializer;
 import org.rpi.utils.NetworkUtils;
 import org.rpi.utils.SecUtils;
 import org.rpi.utils.Utils;
@@ -83,6 +84,13 @@ public class AirPlayThread extends Thread {
 		log.debug("Create BouncyCastleProvider");
 		//Security.addProvider(new BouncyCastleProvider());
 		Security.insertProviderAt(new BouncyCastleProvider(),1);
+		
+		Logger testLogger = Logger.getLogger("javax.jmdns.impl");
+		if(testLogger !=null) {
+			testLogger.setLevel(org.apache.log4j.Level.INFO);
+		}
+		
+		//problem creating RSA private key: java.lang.IllegalArgumentException: failed to construct sequence from byte[]: Extra data detected in stream
 		log.debug("Created BouncyCastleProvider");
 		log.debug("Initiate an encrypt");
 		byte[] test = new byte[] { (byte) 0xe0, 0x4f, (byte) 0xd0, 0x20, (byte) 0xea, 0x3a, 0x69, 0x10, (byte) 0xa2, (byte) 0xd8, 0x08, 0x00, 0x2b, 0x30, 0x30, (byte) 0x9d };

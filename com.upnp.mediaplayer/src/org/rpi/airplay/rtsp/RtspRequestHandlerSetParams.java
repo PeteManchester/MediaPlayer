@@ -1,11 +1,11 @@
-package org.rpi.airplay;
+package org.rpi.airplay.rtsp;
 
 /**
  * Handler for the RTSP SET_PARAMETERS
  * Used for volume changes, meta data changes and progress
  */
 
-import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
+//import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -16,6 +16,7 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.rtsp.RtspMethods;
 import io.netty.handler.codec.rtsp.RtspVersions;
 
@@ -24,6 +25,9 @@ import java.net.SocketAddress;
 import java.nio.charset.Charset;
 
 import org.apache.log4j.Logger;
+import org.rpi.airplay.AudioSessionHolder;
+import org.rpi.airplay.DecodeDMAP;
+import org.rpi.airplay.Utils;
 import org.rpi.channel.ChannelAirPlay;
 import org.rpi.channel.ChannelBase;
 import org.rpi.player.PlayManager;
@@ -37,7 +41,7 @@ public class RtspRequestHandlerSetParams extends SimpleChannelInboundHandler<Ful
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
 
-		HttpMethod method = request.getMethod();
+		HttpMethod method = request.method();
 		if (RtspMethods.SET_PARAMETER.equals(method)) {
 			log.debug("SET PARAMETERS ###### " + request.toString());
 			FullHttpResponse response = new DefaultFullHttpResponse(RtspVersions.RTSP_1_0, HttpResponseStatus.OK);
@@ -106,7 +110,7 @@ public class RtspRequestHandlerSetParams extends SimpleChannelInboundHandler<Ful
 				log.debug("Album: " + album + " Artist: " + artist + " title: " + title);
 			}
 
-			boolean keepAlive = isKeepAlive(request);
+			boolean keepAlive = HttpUtil.isKeepAlive(request);
 
 			if (keepAlive) {
 				response.headers().add("Content-Length", response.content().readableBytes());

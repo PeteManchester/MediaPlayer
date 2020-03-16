@@ -1,6 +1,6 @@
-package org.rpi.airplay;
+package org.rpi.airplay.rtsp;
 
-import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
+//import static io.netty.handler.codec.http.HttpHeaders.isKeepAlive;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -12,6 +12,7 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpUtil;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.rtsp.RtspMethods;
 import io.netty.handler.codec.rtsp.RtspVersions;
@@ -30,6 +31,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.rpi.airplay.AudioServer;
+import org.rpi.airplay.AudioSession;
+import org.rpi.airplay.AudioSessionHolder;
+import org.rpi.airplay.RaopSessionManager;
+import org.rpi.airplay.Utils;
 import org.rpi.channel.ChannelAirPlay;
 import org.rpi.config.Config;
 import org.rpi.player.PlayManager;
@@ -211,7 +217,7 @@ public class RtspRequestHandlerSimple extends SimpleChannelInboundHandler<FullHt
 				log.info("Unknown RSTPMethod: " + method.name() + "\r\n");
 			}
 
-			boolean keepAlive = isKeepAlive(request);
+			boolean keepAlive = HttpUtil.isKeepAlive(request);
 
 			if (keepAlive) {
 				response.headers().add("Content-Length", response.content().readableBytes());

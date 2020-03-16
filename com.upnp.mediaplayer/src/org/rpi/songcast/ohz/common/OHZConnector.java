@@ -131,7 +131,8 @@ public class OHZConnector {
 		try	{
 			DatagramPacket packet = new DatagramPacket(buf, remoteInetSocket, localInetSocket);
 			log.debug("Sending Request Request : " + packet.toString());
-			ch.writeAndFlush(packet).sync();
+			//ch.writeAndFlush(packet).sync();
+			ch.writeAndFlush(packet);
 			log.debug("Sent Request");
 		}catch(Exception e) {
 			log.error("Error sendMessage",e);
@@ -153,7 +154,8 @@ public class OHZConnector {
 		// remoteInetSocket, localInetSocket);
 
 		log.debug("Sending ZoneQuery Request : " + zoneQuery.toString());
-		ch.writeAndFlush(zoneQuery).sync();
+		//ch.writeAndFlush(zoneQuery).sync();
+		ch.writeAndFlush(zoneQuery);
 		log.debug("Sent ZoneQuery Request");
 	}
 
@@ -168,7 +170,8 @@ public class OHZConnector {
 			ByteBuf buffer = Unpooled.copiedBuffer(leave.getBuffer());
 			DatagramPacket packet = new DatagramPacket(buffer, remoteInetSocket, localInetSocket);
 			log.debug("Sending : " + packet.toString());
-			ch.writeAndFlush(packet).sync();
+			//ch.writeAndFlush(packet).sync();
+			ch.writeAndFlush(packet);
 			log.debug("Sent Leave Message");
 
 		} catch (Exception e) {

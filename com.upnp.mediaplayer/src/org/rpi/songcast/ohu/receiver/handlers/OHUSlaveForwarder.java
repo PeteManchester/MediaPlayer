@@ -51,9 +51,11 @@ public class OHUSlaveForwarder extends SimpleChannelInboundHandler<SongcastMessa
 			}
 		}
 		try {
-			msg.getData().release();
+			//msg.getData().release();
 		} catch (Exception e) {
 			log.error("Error Releasing Data", e);
+		}finally {
+			msg.getData().release();
 		}
 		ctx.fireChannelRead(msg);
 	}

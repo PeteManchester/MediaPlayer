@@ -2,6 +2,9 @@ package org.rpi.songcast.ohz.common;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
@@ -22,9 +25,14 @@ public class OHZLogicHandler extends ChannelDuplexHandler {
 	private InetAddress localInetAddr = null;
 	private InetSocketAddress remoteInetSocketAddr = null;
 	private InetSocketAddress localInetSocketAddr = null;
-	private long lastZoneQueryRequest = 0;
-	//private OHUSenderConnection ohuSender = null;
+	// private long lastZoneQueryRequest = 0;
+	// private OHUSenderConnection ohuSender = null;
 	private String myZoneId = Config.getInstance().getMediaplayerFriendlyName();
+
+	private final ScheduledExecutorService ses = Executors.newSingleThreadScheduledExecutor();
+	private String statusZoneQueryRequest = "NONE";
+	private ChannelHandlerContext ctx = null;
+	private DatagramPacket zoneQueryRequestPacket = null;
 
 	public OHZLogicHandler(InetAddress localInetAddr, InetSocketAddress remoteInetSocketAddr, InetSocketAddress localInetSocketAddress) {
 		this.localInetAddr = localInetAddr;
@@ -38,7 +46,9 @@ public class OHZLogicHandler extends ChannelDuplexHandler {
 		if (msg instanceof OHZZoneQueryRequest) {
 			OHZZoneQueryRequest ohzZR = (OHZZoneQueryRequest) msg;
 			DatagramPacket packet = new DatagramPacket(ohzZR.getBuffer(), remoteInetSocketAddr, localInetSocketAddr);
-			lastZoneQueryRequest = System.currentTimeMillis();
+			this.zoneQueryRequestPacket = packet;
+			// lastZoneQueryRequest = System.currentTimeMillis();
+			startTimer("FIRSTTIME", ctx);
 			ctx.write(packet, promise);
 		} else {
 			ctx.write(msg, promise);
@@ -52,7 +62,8 @@ public class OHZLogicHandler extends ChannelDuplexHandler {
 
 		if (msg instanceof OHZZoneUriMessage) {
 			long timeNow = System.currentTimeMillis();
-			if (timeNow - lastZoneQueryRequest <= 1000) {
+			if (statusZoneQueryRequest.equalsIgnoreCase("FIRSTTIME") || statusZoneQueryRequest.equalsIgnoreCase("SECONDTIME")) {
+				stopTimer("NONE");
 				OHZZoneUriMessage mess = (OHZZoneUriMessage) msg;
 				log.debug("OHZZoneUriMessage: " + mess.toString());
 				if (mess.getUri().endsWith("0.0.0.0:0")) {
@@ -63,12 +74,13 @@ public class OHZLogicHandler extends ChannelDuplexHandler {
 						latestZone = "";
 					}
 				}
-				log.debug("OHZZoneUriMessage OHU is NULL so create it");
+				//log.debug("OHZZoneUriMessage OHU is NULL so create it");
 				latestZone = mess.getZone();
-				OHUReceiverController.getInstance().startReceiver(mess.getUri(), latestZone, localInetAddr);
+				OHUReceiverController.getInstance().startReceiver(mess.getUri(), latestZone, localInetAddr);				
 
 			} else {
-				log.info("Zone URI Message was received with no corresponding Zone QueryRequest: " + lastZoneQueryRequest);
+				log.info("Zone URI Message was received with no corresponding Zone QueryRequest ");
+				statusZoneQueryRequest = "NONE";
 			}
 
 		} else if (msg instanceof OHZZoneQueryMessage) {
@@ -76,21 +88,48 @@ public class OHZLogicHandler extends ChannelDuplexHandler {
 			if (ohz.getZoneId().equals(myZoneId)) {
 				log.debug("#####################  This is a request for my OHU URL");
 				// TODO for now just create a new Sender..
-				//if(ohuSender !=null) {
-				//	ohuSender.stop();
-				//	ohuSender = null;
-				//}
-				//if(ohuSender ==null) {
-				//	ohuSender = new OHUSenderConnection(localInetAddr);
-				//}				
-				//String myURI = ohuSender.getURI();
+				// if(ohuSender !=null) {
+				// ohuSender.stop();
+				// ohuSender = null;
+				// }
+				// if(ohuSender ==null) {
+				// ohuSender = new OHUSenderConnection(localInetAddr);
+				// }
+				// String myURI = ohuSender.getURI();
 				String myURI = OHUSenderController.getInstance().startSenderConnection(localInetAddr, ohz.getRemoteAddress());
 				OHZZoneUriResponse res = new OHZZoneUriResponse(myURI, myZoneId);
 				DatagramPacket packet = new DatagramPacket(res.getBuffer(), remoteInetSocketAddr, localInetSocketAddr);
 				log.debug("Sending ZoneQuery Request : " + packet.toString());
-				ctx.writeAndFlush(packet).sync();
+				// ctx.writeAndFlush(packet).sync();
+				ctx.writeAndFlush(packet);
 			}
 		}
 	}
 
+	private void startTimer(String status, ChannelHandlerContext ctx) {
+		statusZoneQueryRequest = status;
+		this.ctx = ctx;
+		ses.schedule(new Runnable() {
+			@Override
+			public void run() {
+				log.debug("TimerFired");
+				if (statusZoneQueryRequest.equalsIgnoreCase("FIRSTTIME")) {
+					if (ctx != null && zoneQueryRequestPacket != null) {
+						log.debug("Resending the ZoneQueryRequest");
+						ctx.write(zoneQueryRequestPacket);
+						startTimer("SECONDTIME", ctx);
+					}
+				} else if (statusZoneQueryRequest.equalsIgnoreCase("SECONDTIME")) {
+					log.debug("Second ZoneQuery Request times out, do nothing else");
+					statusZoneQueryRequest = "NONE";
+					
+				}
+			}
+		}, 1100, TimeUnit.MILLISECONDS);
+	}
+
+	private void stopTimer(String status) {
+		statusZoneQueryRequest = status;
+		ses.shutdown();
+	}
 }

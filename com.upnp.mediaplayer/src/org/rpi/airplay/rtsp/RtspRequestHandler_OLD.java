@@ -1,6 +1,12 @@
-package org.rpi.airplay;
+package org.rpi.airplay.rtsp;
 
 import org.apache.log4j.Logger;
+import org.rpi.airplay.AudioServer;
+import org.rpi.airplay.AudioSession;
+import org.rpi.airplay.AudioSessionHolder;
+import org.rpi.airplay.DecodeDMAP;
+import org.rpi.airplay.RaopSessionManager;
+import org.rpi.airplay.Utils;
 import org.rpi.channel.ChannelAirPlay;
 import org.rpi.config.Config;
 import org.rpi.player.PlayManager;

@@ -3,6 +3,7 @@ package org.rpi.songcast.ohu.receiver;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.rpi.songcast.ohu.receiver.handlers.OHUMessageAudioHandler;
+import org.rpi.songcast.ohu.receiver.handlers.OHUMessageBuffefHandler;
 import org.rpi.songcast.ohu.receiver.handlers.OHUMessageDecoder;
 import org.rpi.songcast.ohu.receiver.handlers.OHUMessageMetaTextHandler;
 import org.rpi.songcast.ohu.receiver.handlers.OHUMessageSlaveHandler;
@@ -23,11 +24,12 @@ public class OHUChannelInitializer extends ChannelInitializer<NioDatagramChannel
 		//p.addLast(new LoggingHandler(LogLevel.DEBUG));
 		p.addLast("OHUDecoder",new OHUMessageDecoder(this));
 		p.addLast("OHUSlaveForwarder",new OHUSlaveForwarder(this));
+		p.addLast("OHUMessageBuffer", new OHUMessageBuffefHandler());		
 		p.addLast("OHUAudioHandler", new OHUMessageAudioHandler());
 		p.addLast("OHMTrackHandler", new OHUMessageTrackHandler());
 		p.addLast("OHMMessageMetaTextHandler", new OHUMessageMetaTextHandler());
-		p.addLast("OHUSlaveHandler", new OHUMessageSlaveHandler(this));
-		//p.addLast("OHULeakCatcher", new OHULeakCatcher());
+		p.addLast("OHUSlaveHandler", new OHUMessageSlaveHandler());
+		p.addLast("OHULeakCatcher", new OHULeakCatcher());
 		
 	}
 

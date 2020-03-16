@@ -61,14 +61,17 @@ public class OHUMessageAudioHandler extends SimpleChannelInboundHandler<OHUMessa
 						lastFrameNumber = msg.getFrameNumber();
 					} else if (diff < 1) {
 						// Next frame is older than last played, discard it (repair not applicable)
-						log.debug("Songcast: Frame is out of sequence but too old to repair: " + msg.getFrameNumber() + " (previous frame number: " + lastFrameNumber + ")");
+						//log.debug("Songcast: Frame is out of sequence but too old to repair: " + msg.getFrameNumber() + " (previous frame number: " + lastFrameNumber + ")");
 						if(diff > ((Integer.MAX_VALUE - 10) * -1)) {
 							player.put(msg);
 							lastFrameNumber = msg.getFrameNumber();
 						}
 					} else {
 						// Next frame is newer than we expected (out of sequence), begin repair
-						isRepairing = repairBegin(msg);
+						//log.debug("Songcast: Frame is out of sequence : " + msg.getFrameNumber() + " (previous frame number: " + lastFrameNumber);
+						//isRepairing = repairBegin(msg);
+						player.put(msg);
+						lastFrameNumber = msg.getFrameNumber();
 					}
 					
 				} else {
@@ -91,6 +94,8 @@ public class OHUMessageAudioHandler extends SimpleChannelInboundHandler<OHUMessa
 				// msg.getData().release();
 			} catch (Exception e) {
 				log.error("Error Handling Audio Message", e);
+			}finally {
+				//msg.getData().release();
 			}
 		}
 	}

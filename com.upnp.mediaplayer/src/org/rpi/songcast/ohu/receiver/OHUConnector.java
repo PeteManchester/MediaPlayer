@@ -150,7 +150,8 @@ public class OHUConnector {
 	private void sendMessage(DatagramPacket packet) {
 		try {
 			// log.debug("SendMessage");
-			ch.writeAndFlush(packet).sync();
+			//ch.writeAndFlush(packet).sync();
+			ch.writeAndFlush(packet);
 		} catch (Exception e) {
 			log.error("Error Listen Keep Alive", e);
 		}
@@ -167,7 +168,8 @@ public class OHUConnector {
 					ByteBuf buffer = Unpooled.copiedBuffer(leave.getBuffer());
 					DatagramPacket packet = new DatagramPacket(buffer, remoteInetSocket, localInetSocket);
 					log.debug("Sending : " + packet.toString());
-					ch.writeAndFlush(packet).sync();
+					//ch.writeAndFlush(packet).sync();
+					ch.writeAndFlush(packet);
 					log.debug("Sent Leave Message");
 					PlayManager.getInstance().setStatus("Stopped", "SONGCAST");
 				}

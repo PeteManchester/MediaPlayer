@@ -9,7 +9,7 @@ import org.rpi.utils.SecUtils;
 public class Utils {
 
 	/**
-	 * New getBytes method using SystenArrayCopy which is supposed to be quicker
+	 * New getBytes method using SystemArrayCopy which is supposed to be quicker
 	 * 
 	 * @param start
 	 * @param end

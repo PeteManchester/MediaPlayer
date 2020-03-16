@@ -34,7 +34,7 @@ public class StartMe {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// ResourceLeakDetector.setLevel(Level.PARANOID);
+		ResourceLeakDetector.setLevel(Level.PARANOID);
 		Config.getInstance();
 		boolean bInput = false;
 		for (String s : args) {

@@ -1,8 +1,9 @@
-package org.rpi.airplay;
+package org.rpi.airplay.audio;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+
 import org.rpi.java.sound.IJavaSoundPlayer;
 
 
@@ -23,6 +24,7 @@ public class AirPlayAudioChannelInitializer extends ChannelInitializer<NioDatagr
 		//EventExecutorGroup e1 = new DefaultEventExecutorGroup(1);
 		//p.addLast(new LoggingHandler(LogLevel.DEBUG));
 		p.addLast("Audio Decrypter", new AudioDecrpyt());
+		p.addLast("AudioBuffer", new AudioBuffer());
 		p.addLast("Audio Deocder", new AudioALACDecode(audioQueue));
 		p.addLast("Audio Handler",new AudioChannelRequestHandler());
 	}

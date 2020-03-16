@@ -1,39 +1,21 @@
 package org.rpi.songcast.ohu.sender.handlers;
 
-import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentSkipListMap;
-
 import org.apache.log4j.Logger;
-import org.rpi.songcast.ohu.receiver.messages.OHUMessageSlave;
-import org.rpi.songcast.ohu.sender.OHUSenderConnection;
 import org.rpi.songcast.ohu.sender.OHUSenderController;
 import org.rpi.songcast.ohu.sender.messages.OHUMessageJoin;
 import org.rpi.songcast.ohu.sender.messages.OHUMessageLeave;
-import org.rpi.songcast.ohu.sender.mpd.MPDStreamerConnector;
-import org.rpi.songcast.ohu.sender.response.OHUSenderSlave;
+import org.rpi.songcast.ohu.sender.messages.OHUMessageListen;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.channel.socket.DatagramPacket;
-import io.netty.util.CharsetUtil;
 
 public class OHUSenderLogicHandler extends SimpleChannelInboundHandler<Object> {
 
 	private Logger log = Logger.getLogger(this.getClass());
 
-	//private Thread threadPlayer = null;
-	//MPDSreamerConnector client = null;
-	//OHUSenderConnection ohuSenderConnection = null;
-
-	//Map<String, InetSocketAddress> receivers = new ConcurrentSkipListMap<String, InetSocketAddress>();
-	//InetSocketAddress primaryReceiver = null;
 
 	public OHUSenderLogicHandler() {
-		//this.ohuSenderConnection = ohuSenderConnection;
+
 	}
 
 	@Override
@@ -41,20 +23,6 @@ public class OHUSenderLogicHandler extends SimpleChannelInboundHandler<Object> {
 		if (msg instanceof OHUMessageJoin) {
 			OHUMessageJoin mJoin = (OHUMessageJoin) msg;
 			OHUSenderController.getInstance().AddClient(mJoin);
-			/*
-			if (!receivers.containsKey(mJoin.getHostString())) {
-				log.debug("Join Request. Adding Songcast Receiver: " + mJoin.toString());
-				receivers.put(mJoin.getHostString(), mJoin.getAddress());
-				if (primaryReceiver == null) {
-					log.debug("Join Request. No other Songcast Receiver so making this one Primary: " + mJoin.toString());
-					setRemoteAddress(mJoin.getAddress());
-					startMPDConnection();
-				}
-				buildSlaveRequest();
-			}
-			*/
-			// long timeNow = System.currentTimeMillis();
-			// ohuSenderConnection.setRemoteAddress(mJoin.getAddress());
 
 		} else if (msg instanceof OHUMessageLeave) {
 			OHUMessageLeave ohuLeave = (OHUMessageLeave) msg;
@@ -77,6 +45,9 @@ public class OHUSenderLogicHandler extends SimpleChannelInboundHandler<Object> {
 				buildSlaveRequest();
 			}
 			*/
+		} else if (msg instanceof OHUMessageListen) {
+			OHUMessageListen listen = (OHUMessageListen) msg;
+			log.debug("Listen: " + listen.getAddress());
 		}
 	}
 

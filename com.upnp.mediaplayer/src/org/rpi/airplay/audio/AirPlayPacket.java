@@ -1,4 +1,4 @@
-package org.rpi.airplay;
+package org.rpi.airplay.audio;
 
 import org.rpi.java.sound.AudioInformation;
 import org.rpi.java.sound.IAudioPacket;

@@ -1,7 +1,6 @@
 package org.rpi.songcast.ohu.receiver.handlers;
 
 import org.apache.log4j.Logger;
-import org.rpi.songcast.ohu.receiver.OHUChannelInitializer;
 import org.rpi.songcast.ohu.receiver.messages.OHUMessageSlave;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -10,11 +9,10 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class OHUMessageSlaveHandler extends SimpleChannelInboundHandler<OHUMessageSlave> {
 
 	private Logger log = Logger.getLogger(this.getClass());
-	private OHUChannelInitializer initializer = null;
 	
-	public OHUMessageSlaveHandler(OHUChannelInitializer initializer)
+	public OHUMessageSlaveHandler()
 	{
-		this.initializer = initializer;
+
 	}
 
 	@Override
@@ -25,9 +23,11 @@ public class OHUMessageSlaveHandler extends SimpleChannelInboundHandler<OHUMessa
 			{
 				OHUMessageSlave slave = (OHUMessageSlave)msg;
 				log.debug(slave.toString());
+				
+				//slave.getData().release();
 			}
 		} catch (Exception e) {
-			log.error("Error Releasing Slave ByteBuf");
+			log.error("Error Slave Message:", e);
 		}
 	}
 

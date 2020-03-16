@@ -1,4 +1,4 @@
-package org.rpi.airplay;
+package org.rpi.airplay.audio;
 
 /**
  * Used to decrypt the AirPlay message
@@ -18,6 +18,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.log4j.Logger;
+import org.rpi.airplay.AudioSessionHolder;
 import org.rpi.config.Config;
 
 public class AudioDecrpyt extends MessageToMessageDecoder<DatagramPacket> {
@@ -30,7 +31,7 @@ public class AudioDecrpyt extends MessageToMessageDecoder<DatagramPacket> {
 
 	private IvParameterSpec paramSpec = null;
 
-	private int last_sequence = 0;
+	//private int last_sequence = 0;
 
 	private int start_count = 0;
 	
@@ -63,10 +64,10 @@ public class AudioDecrpyt extends MessageToMessageDecoder<DatagramPacket> {
 			if (type == 0x60 || type == 0x56) { // audio data / resend
 				int audio_size = msg.content().readableBytes();
 				int sequence = buffer.getUnsignedShort(2);
-				if (sequence - last_sequence != 1) {
-					log.debug("Missed a Frame: " + sequence + " Last Frame: " + last_sequence + "     " + ((sequence - last_sequence) - 1));
-				}
-				last_sequence = sequence;
+				//if (sequence - last_sequence != 1) {
+				//	log.debug("Missed a Frame: " + sequence + " Last Frame: " + last_sequence + "     " + ((sequence - last_sequence) - 1));
+				//}
+				//last_sequence = sequence;
 				long time_stamp = buffer.getUnsignedInt(4);
 				// log.debug(sequence + " " + time_stamp);
 				int off = 12;
@@ -82,6 +83,9 @@ public class AudioDecrpyt extends MessageToMessageDecoder<DatagramPacket> {
 					out.add(test.retain());
 					return;
 				}
+				
+				
+				
 				ByteBuf audio = Unpooled.buffer(audio_size, audio_size);
 				// ByteBuf audio = ByteBufAllocator.DEFAULT.buffer(audio_size,
 				// audio_size);
@@ -93,7 +97,10 @@ public class AudioDecrpyt extends MessageToMessageDecoder<DatagramPacket> {
 					block = cipher.update(block);
 					audio.setBytes(i, block);
 				}
-				out.add(audio.retain());
+				
+				AirPlayAudioHolder aph = new AirPlayAudioHolder(sequence, audio);
+				//audio.release();				
+				out.add(aph);
 				
 			}
 		} catch (Exception e) {

@@ -1,4 +1,4 @@
-package org.rpi.airplay;
+package org.rpi.airplay.rtsp;
 
 import org.apache.log4j.Logger;
 
@@ -17,7 +17,7 @@ public class RtspRequestHandlerVerifyRequest extends SimpleChannelInboundHandler
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
-		if (!RtspVersions.RTSP_1_0.equals(request.getProtocolVersion())) {
+		if (!RtspVersions.RTSP_1_0.equals(request.protocolVersion())) {
 			log.error("Not an RTSP_1_0 Request");
 			HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR);
 			response.headers().add("Connection", "close");

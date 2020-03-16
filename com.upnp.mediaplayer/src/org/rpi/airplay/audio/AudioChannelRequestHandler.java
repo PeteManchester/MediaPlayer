@@ -1,4 +1,4 @@
-package org.rpi.airplay;
+package org.rpi.airplay.audio;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import org.apache.log4j.Logger;
+import org.rpi.songcast.ohu.receiver.OHULeakCatcher;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -39,7 +40,7 @@ public class OHZChannelInitializer extends ChannelInitializer<NioDatagramChannel
 			p.addLast(new LoggingHandler(LogLevel.DEBUG));
 			p.addLast("OHZDecoder", new OHZMessageDecoder());
 			p.addLast("OHZLogicHandler", new OHZLogicHandler(localInetAddr, remoteInetSocketAddr, localInetSocketAddr));
-			p.addLast("OHZTest", new OHZTest());
+			p.addLast("OHZLeakCatcher", new OHULeakCatcher());
 			log.debug("End of OHZChannelInitializer");
 		} catch (Exception e) {
 			log.error("Error ChannelInitializer", e);

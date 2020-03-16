@@ -1,4 +1,4 @@
-package org.rpi.airplay;
+package org.rpi.airplay.audio;
 
 /**
  * Used to decode an ALAC byte array
@@ -11,6 +11,8 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.rpi.airplay.AudioSession;
+import org.rpi.airplay.AudioSessionHolder;
 import org.rpi.alacdecoder.AlacDecodeUtils;
 import org.rpi.alacdecoder.AlacFile;
 import org.rpi.java.sound.IJavaSoundPlayer;
@@ -51,7 +53,7 @@ public class AudioALACDecode extends MessageToMessageDecoder<ByteBuf> {
 			if (audioQueue != null) {
 				audioQueue.put(packet);
 			}
-			buffer.release();
+			//buffer.release();
 			// Return a byte array
 			//out.add(buffer);
 		} catch (Exception e) {

@@ -22,9 +22,10 @@ public class OHUMessageJoin extends SongcastMessage {
 	private String hostString = "";
 
 	public OHUMessageJoin(ByteBuf buf, InetSocketAddress address) {
-		super.setData(buf.retain());
+		//super.setData(buf.retain());
 		this.setAddress(address);
 		log.debug("Join Message Received from Address: " + address);
+		buf.release();
 	}
 
 	@Override

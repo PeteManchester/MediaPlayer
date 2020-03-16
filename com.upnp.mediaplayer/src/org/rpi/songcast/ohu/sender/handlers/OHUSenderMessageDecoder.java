@@ -35,8 +35,7 @@ public class OHUSenderMessageDecoder extends MessageToMessageDecoder<DatagramPac
 			switch (type) {
 			case 0://Join
 				log.debug("Join: " + msg.sender() + " " + buf.toString(Charset.forName("utf-8")));
-				message = new OHUMessageJoin(buf,msg.sender());
-				
+				message = new OHUMessageJoin(buf,msg.sender());				
 				out.add(message);
 				break;
 			case 1://Listen
@@ -60,7 +59,7 @@ public class OHUSenderMessageDecoder extends MessageToMessageDecoder<DatagramPac
 	
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		log.error(cause);
+		log.error("ExceptionCaught",cause);
 		//ctx.close();
 	}
 	

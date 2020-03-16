@@ -81,6 +81,8 @@ public class OHUSenderConnection {
 	 */
 	public void sendMessage(DatagramPacket packet) throws Exception {
 		try {
+			ch.writeAndFlush(packet);
+			/*
 			ch.writeAndFlush(packet).addListener(new ChannelFutureListener() {
 				@Override
 				public void operationComplete(ChannelFuture future) throws Exception {
@@ -89,6 +91,7 @@ public class OHUSenderConnection {
 					}
 				}
 			});
+			*/
 		} catch (Exception e) {
 			log.error("SendMessage", e);
 			throw e;
