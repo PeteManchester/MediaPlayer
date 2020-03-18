@@ -60,6 +60,7 @@ public class AudioDecrpyt extends MessageToMessageDecoder<DatagramPacket> {
 	protected void decode(ChannelHandlerContext ctx, DatagramPacket msg, List<Object> out) throws Exception {
 		try {
 			ByteBuf buffer = msg.content();
+			//log.debug(buffer.readableBytes());
 			int type = buffer.getByte(1) & ~0x80;
 			if (type == 0x60 || type == 0x56) { // audio data / resend
 				int audio_size = msg.content().readableBytes();

@@ -18,8 +18,10 @@ public class OHZZoneQueryRequest {
 	private String header = "Ohz ";
 	//private Logger log = Logger.getLogger(this.getClass());
 	private ByteBuf buffer = null;
+	private String zone = "";
 
 	public OHZZoneQueryRequest(String zone) {
+		this.zone = zone;
 		byte[] version = new byte[] { (byte) (1 & 0xff) };
 		byte[] type = new byte[] { (byte) (0 & 0xff) };
 		int length = header.length() + 1 + 1 + 2 + 4 + zone.length();
@@ -40,5 +42,14 @@ public class OHZZoneQueryRequest {
 	 */
 	public ByteBuf getBuffer() {
 		return buffer;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("OHZZoneQueryRequest [zone=");
+		builder.append(zone);
+		builder.append("]");
+		return builder.toString();
 	}
 }

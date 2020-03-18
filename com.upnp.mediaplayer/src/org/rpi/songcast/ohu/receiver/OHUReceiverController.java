@@ -31,6 +31,7 @@ public class OHUReceiverController implements Observer {
 	}
 	
 	public void startReceiver(String uri, String zone, InetAddress localInetAddr ) {
+		log.debug("Start OHUReceiver: " + uri);
 		if(ohuConnector !=null) {
 			ohuConnector.stop();
 		}

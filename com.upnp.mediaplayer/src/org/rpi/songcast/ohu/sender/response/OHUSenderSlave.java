@@ -14,11 +14,12 @@ public class OHUSenderSlave {
 	private String header = "Ohm ";
 	private Logger log = Logger.getLogger(this.getClass());
 	private ByteBuf buffer = null;
+	private int numSlaves = 0;
 	
 	public OHUSenderSlave(List<InetSocketAddress> slaves) {
 		byte[] version = new byte[] { (byte) (1 & 0xff) };
 		byte[] type = new byte[] { (byte) (6 & 0xff) };
-		int numSlaves = slaves.size();
+		numSlaves = slaves.size();
 		int length = header.length() + 1 + 1 + 2 + 4 + (numSlaves * 6) ;
 
 		ByteBuf test = Unpooled.buffer(length);
@@ -52,6 +53,15 @@ public class OHUSenderSlave {
 	 */
 	public ByteBuf getBuffer() {
 		return buffer;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("OHUSenderSlave [numSlaves=");
+		builder.append(numSlaves);
+		builder.append("]");
+		return builder.toString();
 	}
 
 }

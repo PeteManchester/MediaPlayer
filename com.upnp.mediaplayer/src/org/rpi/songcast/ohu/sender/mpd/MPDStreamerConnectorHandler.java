@@ -15,6 +15,8 @@ import io.netty.handler.codec.http.LastHttpContent;
 public class MPDStreamerConnectorHandler extends SimpleChannelInboundHandler<HttpObject> {
 
 	private Logger log = Logger.getLogger(this.getClass());
+	private int maxBufferSize = 0;
+	private int count = 0;
 
 	public MPDStreamerConnectorHandler() {
 	}
@@ -60,6 +62,10 @@ public class MPDStreamerConnectorHandler extends SimpleChannelInboundHandler<Htt
 
 			ByteBuf buffer = httpContent.content();
 			int capacity = buffer.readableBytes();
+			
+			if(capacity > maxBufferSize) {
+				maxBufferSize = capacity;
+			}
 			// System.err.println(capacity);
 
 			// For some reason skimming off the first 5bytes is the only way to
@@ -67,7 +73,7 @@ public class MPDStreamerConnectorHandler extends SimpleChannelInboundHandler<Htt
 			// Definition of WAV File here:
 			// http://www.topherlee.com/software/pcm-tut-wavformat.html
 			int skim = 1;
-			if (capacity > skim) {
+			if (capacity > skim && skim > 0) {
 				//String riff = buffer.readCharSequence(skim, CharsetUtil.UTF_8).toString();
 				byte[] test = new byte[skim];
 				httpContent.content().readBytes(test, 0, skim);
@@ -76,13 +82,20 @@ public class MPDStreamerConnectorHandler extends SimpleChannelInboundHandler<Htt
 			
 			byte[] bytes = new byte[buffer.readableBytes() ];
 			buffer.readBytes(bytes);
+			
+			count++;
+			if(count % 1000 == 0)
+			{
+				log.debug("MPD MaxBufferSize: " + maxBufferSize);
+				maxBufferSize = 0;
+			}
 
 			OHUSenderAudioResponse a = new OHUSenderAudioResponse( bytes);
 			MPDStreamerController.getInstance().addSoundByte(a);
 
 			if (httpContent instanceof LastHttpContent) {
 				log.debug(" END OF CONTENT");
-				MPDStreamerController.getInstance().setFinished(true);
+				MPDStreamerController.getInstance().stop();
 				ctx.close();
 			}
 		}

@@ -4,6 +4,7 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.FixedRecvByteBufAllocator;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 
@@ -14,15 +15,12 @@ import org.apache.log4j.Logger;
 import org.rpi.airplay.audio.AirPlayAudioChannelInitializer;
 import org.rpi.java.sound.IJavaSoundPlayer;
 
-
 public class AudioChannel {
 
 	private Logger log = Logger.getLogger(this.getClass());
 	EventLoopGroup workerGroup = new NioEventLoopGroup(1);
 	Bootstrap b = new Bootstrap();
 	ChannelFuture channel = null;
-
-	
 
 	public AudioChannel(InetSocketAddress local, InetSocketAddress remote, int remotePort, IJavaSoundPlayer audioQueue) {
 		initialize(local, remote, remotePort, audioQueue);
@@ -34,7 +32,12 @@ public class AudioChannel {
 			b.channel(NioDatagramChannel.class);
 			b.option(ChannelOption.SO_REUSEADDR, true);
 			b.option(ChannelOption.TCP_NODELAY, true);
-			//b.option(ChannelOption.SO_KEEPALIVE, true);
+			int bufferSize = 2048;
+			b.option(ChannelOption.SO_RCVBUF, bufferSize);
+			b.option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(bufferSize * 2));
+			b.option(ChannelOption.SO_SNDBUF, bufferSize);
+
+			// b.option(ChannelOption.SO_KEEPALIVE, true);
 			b.handler(new AirPlayAudioChannelInitializer(audioQueue));
 			InetSocketAddress localAddr = new InetSocketAddress(local.getAddress().getHostAddress(), remotePort);
 			InetSocketAddress remoteAddr = new InetSocketAddress(remote.getAddress().getHostAddress(), 0);
@@ -50,34 +53,24 @@ public class AudioChannel {
 	}
 
 	public void close() {
-		
-		try
-		{
-			if(channel !=null)
-			{
+
+		try {
+			if (channel != null) {
 				channel.channel().close().sync();
 			}
+		} catch (Exception e) {
+			log.error("Error Closing AudioChannel ", e);
 		}
-		catch(Exception e)
-		{
-			log.error("Error Closing AudioChannel ",e);
-		}
-		try
-		{
+		try {
 			workerGroup.shutdownGracefully(10, 100, TimeUnit.MILLISECONDS);
+		} catch (Exception e) {
+			log.error("Error Stop AudioChannel", e);
 		}
-		catch(Exception e)
-		{
-			log.error("Error Stop AudioChannel" ,e);
-		}
-		
-		try
-		{
+
+		try {
 			workerGroup.terminationFuture().sync();
-		}
-		catch(Exception e)
-		{
-			log.debug("Error Closing Audio ChannelFuture",e );
+		} catch (Exception e) {
+			log.debug("Error Closing Audio ChannelFuture", e);
 		}
 	}
 }

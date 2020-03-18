@@ -1,43 +1,22 @@
 package org.rpi.songcast.ohu.sender.messages;
 
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 import org.apache.log4j.Logger;
 import org.rpi.songcast.common.SongcastMessage;
 
-import io.netty.buffer.ByteBuf;
-
 
 public class OHUMessageListen extends SongcastMessage {
 	
 	private Logger log = Logger.getLogger(this.getClass());
-	private SocketAddress address = null;
+	private InetSocketAddress address = null;
+	private String hostString = "";
 
 	
-	public OHUMessageListen(ByteBuf buf, SocketAddress address) {
-		//super.setData(buf.retain());
+	public OHUMessageListen(InetSocketAddress address) {
 		this.setAddress(address);
-		//buf.release();
-		log.debug("Listen Message Received from Address: " + address);
-		/*
-		int slave_count = buf.getInt(8);
-		log.debug("Slave Count: " + slave_count);		
-		for (int i = 0; i < slave_count; i++) {
-			byte[] endpoint = new byte[4]; 
-			int start = 12 + (6*i);
-			buf.getBytes(start, endpoint,0,4);
-			try {				
-				InetAddress address = InetAddress.getByAddress(endpoint);
-				int port = buf.getUnsignedShort(start+4);
-				SlaveInfo sl = new SlaveInfo(address,port);
-
-				log.debug("Adding Slave Endpoint: " + sl.toString());
-				getEndpoints().put(sl.getName(), sl);
-			} catch (UnknownHostException e) {
-				log.error("Slave Message Error",e);
-			}
-		}
-		*/
+		//log.debug("Listen Message Received from Address: " + address);
 	}
 
 	
@@ -45,6 +24,15 @@ public class OHUMessageListen extends SongcastMessage {
 	public String toString()
 	{
 		return "OHUMessageSlave";
+	}
+	
+	/***
+	 * Host String
+	 * 
+	 * @return
+	 */
+	public String getHostString() {
+		return hostString;
 	}
 
 
@@ -59,8 +47,9 @@ public class OHUMessageListen extends SongcastMessage {
 	/**
 	 * @param address the address to set
 	 */
-	private void setAddress(SocketAddress address) {
+	private void setAddress(InetSocketAddress address) {
 		this.address = address;
+		this.hostString = address.getHostString();
 	}
 	
 }

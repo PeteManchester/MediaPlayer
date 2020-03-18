@@ -14,55 +14,65 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageDecoder;
 
-
-
 public class OHUSenderMessageDecoder extends MessageToMessageDecoder<DatagramPacket> {
-	
+
 	private Logger log = Logger.getLogger(this.getClass());
 
-	
-	public OHUSenderMessageDecoder()
-	{
+	public OHUSenderMessageDecoder() {
 	}
 
 	@Override
 	protected void decode(ChannelHandlerContext ctx, DatagramPacket msg, List<Object> out) throws Exception {
 		if (msg instanceof DatagramPacket) {
-			
+
 			ByteBuf buf = msg.content();
 			int type = buf.getByte(5) & ~0x80;
 			SongcastMessage message = null;
 			switch (type) {
-			case 0://Join
-				log.debug("Join: " + msg.sender() + " " + buf.toString(Charset.forName("utf-8")));
-				message = new OHUMessageJoin(buf,msg.sender());				
-				out.add(message);
+			case 0:// Join
+				try {
+					log.debug("Join: " + msg.sender() + " " + buf.toString(Charset.forName("utf-8")));
+					message = new OHUMessageJoin(buf, msg.sender());
+					out.add(message);
+				} catch (Exception e) {
+					log.error("Error Join", e);
+				}
+
 				break;
-			case 1://Listen
-				//log.debug("Listen " + msg.sender() + " " + buf.toString(Charset.forName("utf-8")));
-				message = new OHUMessageListen(buf,msg.sender());
-				out.add(message);
+			case 1:// Listen
+				try {
+					message = new OHUMessageListen(msg.sender());
+					out.add(message);
+				} catch (Exception e) {
+					log.error("Error Listen", e);
+				}
+
 				break;
-			case 2://Leave
-				log.debug("Leave  "+ msg.sender() + " " + buf.toString(Charset.forName("utf-8")));
-				message = new OHUMessageLeave(buf, msg.sender());
-				out.add(message);
-				
+			case 2:// Leave
+
+				try {
+					log.debug("Leave  " + msg.sender() + " " + buf.toString(Charset.forName("utf-8")));
+					message = new OHUMessageLeave(buf, msg.sender());
+					out.add(message);
+				} catch (Exception e) {
+					log.error("Error Leave", e);
+				}
+
 				break;
 			default:
 				log.info("Unknown Message: " + buf.toString(Charset.forName("utf-8")));
 				break;
 			}
-			
+
 		}
 	}
-	
+
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		log.error("ExceptionCaught",cause);
-		//ctx.close();
+		log.error("ExceptionCaught", cause);
+		// ctx.close();
 	}
-	
+
 	@Override
 	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
 		log.debug("Channel Registered: " + ctx.name());
@@ -87,4 +97,3 @@ public class OHUSenderMessageDecoder extends MessageToMessageDecoder<DatagramPac
 		super.channelUnregistered(ctx);
 	}
 }
-

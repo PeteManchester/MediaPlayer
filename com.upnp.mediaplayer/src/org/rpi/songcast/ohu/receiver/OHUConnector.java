@@ -27,10 +27,12 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.FixedRecvByteBufAllocator;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.oio.OioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.InternetProtocolFamily;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.channel.socket.oio.OioDatagramChannel;
 
 public class OHUConnector {
 
@@ -77,21 +79,24 @@ public class OHUConnector {
 		try {
 			log.debug("Start OHUConnector: " + localInetAddr.getHostName());
 			
-
+			//https:stackoverflow.com/questions/9637436/lot-of-udp-requests-lost-in-udp-server-with-netty
 			
 			remoteInetSocket = new InetSocketAddress(remoteInetAddr, remotePort);
 			localInetSocket = new InetSocketAddress(localInetAddr, remotePort);
 			NetworkInterface nic = NetworkInterface.getByInetAddress(localInetAddr);
 
 			Bootstrap b = new Bootstrap();
-			b.group(group);
+			b.group(group);			
 			b.channel(NioDatagramChannel.class);
+
 			
-			b.option(ChannelOption.SO_BROADCAST, true);
+			//b.option(ChannelOption.SO_BROADCAST, true);
+			int byteBuffer = 10240;
 			b.option(ChannelOption.SO_REUSEADDR, true);
 			b.option(ChannelOption.IP_MULTICAST_LOOP_DISABLED, false);
-			//b.option(ChannelOption.SO_RCVBUF, 3 * 1024);
-			b.option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator( 1024 * 5 ));
+			b.option(ChannelOption.SO_RCVBUF, byteBuffer);
+			b.option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator( byteBuffer * 4 ));
+			b.option(ChannelOption.SO_SNDBUF, byteBuffer);
 			//b.option(ChannelOption.IP_MULTICAST_TTL, 255);
 			//b.option(ChannelOption.IP_MULTICAST_IF, nic);
 			b.handler(new OHUChannelInitializer());
@@ -112,6 +117,7 @@ public class OHUConnector {
 			log.debug("Send OHU Join Message: " + join.toString());
 			sendMessage(packet);
 			log.debug("Sent OHU Join Message: " + join.toString());
+			
 			group.scheduleAtFixedRate(new Runnable() {
 
 				@Override
@@ -139,6 +145,7 @@ public class OHUConnector {
 					}
 				}
 			}, 1, 1, TimeUnit.SECONDS);
+			
 
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);

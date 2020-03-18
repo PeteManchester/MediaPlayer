@@ -134,20 +134,20 @@ public final class MPDStreamerConnector implements Runnable {
 
 		try {
 			if (ch != null) {
-				ch.close().sync();
+				ch.close();
 				log.debug("Channel Closed");
 			}
 		} catch (Exception e) {
 			log.error("Error Close Connection", e);
 		}
 		try {
-			group.shutdownGracefully(1,2,TimeUnit.SECONDS).sync();
+			group.shutdownGracefully(1,2,TimeUnit.SECONDS);
 		} catch (Exception e) {
 			log.error("Error Group Shutdown", e);
 		}
 
 		try {
-			group.terminationFuture().sync();
+			group.terminationFuture();
 		} catch (Exception e) {
 			log.error("Error Group Terminate", e);
 		}

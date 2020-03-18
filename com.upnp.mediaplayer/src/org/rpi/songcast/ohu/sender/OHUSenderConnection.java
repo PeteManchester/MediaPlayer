@@ -27,12 +27,8 @@ public class OHUSenderConnection {
 	private InetSocketAddress localInetSocket = null;
 
 	private EventLoopGroup group = new NioEventLoopGroup(1);
-	// private OHURequestListen listen = null;
 
 	private DatagramChannel ch = null;
-
-	// private Thread ohuSenderThread = null;
-	// OHUSenderThread1 ohuSender =null;
 
 	private String myURI = "";
 
@@ -41,7 +37,7 @@ public class OHUSenderConnection {
 	public OHUSenderConnection(InetAddress localInetAddr) {
 		log.debug("Create OHUSenderConnector: " + localInetAddr.getHostAddress());
 		this.localInetAddr = localInetAddr;
-
+		log.debug("Created OHUSenderConnector: " + localInetAddr.getHostAddress());
 	}
 
 	public String run() throws Exception {
@@ -55,9 +51,13 @@ public class OHUSenderConnection {
 			b.group(group);
 			b.channel(NioDatagramChannel.class);
 
+			int byteBuffer = 10240;
 			b.option(ChannelOption.SO_REUSEADDR, true);
 			b.option(ChannelOption.IP_MULTICAST_LOOP_DISABLED, false);
-			b.option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(1024 * 5));
+			b.option(ChannelOption.SO_RCVBUF, byteBuffer);
+			b.option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(byteBuffer * 4));
+			b.option(ChannelOption.SO_SNDBUF, byteBuffer);
+
 			b.handler(new OHUSenderChannelInitialiser(this));
 			log.debug("OHU Bind to Socket: " + localInetSocket.getHostName());
 			ch = (DatagramChannel) b.bind(localInetSocket).sync().channel();
@@ -81,9 +81,10 @@ public class OHUSenderConnection {
 	 */
 	public void sendMessage(DatagramPacket packet) throws Exception {
 		try {
-			ch.writeAndFlush(packet);
-			/*
+			// ch.writeAndFlush(packet);
+
 			ch.writeAndFlush(packet).addListener(new ChannelFutureListener() {
+
 				@Override
 				public void operationComplete(ChannelFuture future) throws Exception {
 					if (!future.isSuccess()) {
@@ -91,7 +92,7 @@ public class OHUSenderConnection {
 					}
 				}
 			});
-			*/
+
 		} catch (Exception e) {
 			log.error("SendMessage", e);
 			throw e;
@@ -99,6 +100,15 @@ public class OHUSenderConnection {
 	}
 
 	public void stop() {
+
+		if (ch != null) {
+			try {
+				ch.close().sync();
+				ch = null;
+			} catch (Exception e) {
+
+			}
+		}
 
 		try {
 			group.shutdownGracefully();
@@ -165,9 +175,9 @@ public class OHUSenderConnection {
 	}
 
 	public void setEnabled(boolean b) {
-		this.enabled = b;		
+		this.enabled = b;
 	}
-	
+
 	public boolean isEnabled() {
 		return enabled;
 	}

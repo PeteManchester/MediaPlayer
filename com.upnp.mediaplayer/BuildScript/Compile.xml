@@ -10,6 +10,8 @@
 	<property name="mediaplayer_lib" value="${buildbeta}/libs/" />
 
 	<target name="copy_to_bin">
+		<mkdir dir="${basedir}/bin/mediaplayer_lib/ohNet/windows/x86" />
+		<mkdir dir="${basedir}/bin/mediaplayer_lib/ohNet/windows/x64" />
 	    <copy todir="${basedir}/bin/mediaplayer_lib/ohNet/windows/x86">
 		<fileset dir="${basedir}/lib/native/windows/x86"/>
 		</copy>

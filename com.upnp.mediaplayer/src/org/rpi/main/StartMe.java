@@ -1,13 +1,7 @@
 package org.rpi.main;
 
-import io.netty.util.ResourceLeakDetector;
-import io.netty.util.ResourceLeakDetector.Level;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +28,7 @@ public class StartMe {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		ResourceLeakDetector.setLevel(Level.PARANOID);
+		//ResourceLeakDetector.setLevel(Level.PARANOID);
 		Config.getInstance();
 		boolean bInput = false;
 		for (String s : args) {

@@ -9,7 +9,6 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.rpi.player.PlayManager;
 import org.rpi.songcast.common.SongcastMessage;
 import org.rpi.songcast.ohu.receiver.OHUChannelInitializer;
 import org.rpi.songcast.ohu.receiver.messages.OHUMessageAudio;
@@ -23,34 +22,38 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageDecoder;
 
 public class OHUMessageDecoder extends MessageToMessageDecoder<DatagramPacket> {
-	
+
 	private Logger log = Logger.getLogger(this.getClass());
 	private OHUChannelInitializer initializer = null;
-	
-	public OHUMessageDecoder(OHUChannelInitializer initializer)
-	{
+	private int largestPacketSize = 0;
+	private int iCount = 0;
+
+	public OHUMessageDecoder(OHUChannelInitializer initializer) {
 		this.initializer = initializer;
 	}
 
 	@Override
 	protected void decode(ChannelHandlerContext ctx, DatagramPacket msg, List<Object> out) throws Exception {
-		if (msg instanceof DatagramPacket) {
+		/*
+		if (msg.content().readableBytes() > largestPacketSize) {
+			largestPacketSize = msg.content().readableBytes();
+			log.debug("LargestPacketSize: " + largestPacketSize);
+		}
+
+		if (iCount % 1000 == 0) {
+			log.debug("LargestPacketSize: " + largestPacketSize);
 			
+		}
+		iCount++;
+		*/
+		if (msg instanceof DatagramPacket) {
+
 			ByteBuf buf = msg.content();
 			int type = buf.getByte(5) & ~0x80;
 			SongcastMessage message = null;
 			switch (type) {
-			case 0://Join
-				//log.debug("Join: " + msg.sender());
-				break;
-			case 1://Listen
-				//log.debug("Listen " + msg.sender());
-				break;
-			case 2://Leave
-				//log.debug("Leave  "+ msg.sender());
-				break;
 			case 3:// Audio
-				message = new OHUMessageAudio(buf,initializer.hasSlaves());
+				message = new OHUMessageAudio(buf, initializer.hasSlaves());
 				out.add(message);
 				break;
 			case 4:// Track
@@ -69,16 +72,16 @@ public class OHUMessageDecoder extends MessageToMessageDecoder<DatagramPacket> {
 				log.info("Unknown Message: " + buf.toString(Charset.forName("utf-8")));
 				break;
 			}
-			
+
 		}
 	}
-	
+
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
 		log.error(cause);
-		//ctx.close();
+		// ctx.close();
 	}
-	
+
 	@Override
 	public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
 		log.debug("Channel Registered: " + ctx.name());

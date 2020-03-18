@@ -28,26 +28,10 @@ public class OHUSenderLogicHandler extends SimpleChannelInboundHandler<Object> {
 			OHUMessageLeave ohuLeave = (OHUMessageLeave) msg;
 			log.debug("Leave Request. Removing Songcast Receiver: " + ohuLeave.toString());
 			OHUSenderController.getInstance().removeClient(ohuLeave);
-			/*
-			if (receivers.containsKey(ohuLeave.getHostString())) {
-				receivers.remove(ohuLeave.getHostString());
-				if (receivers.size() == 0) {
-					log.debug("Leave Request. Removed Songcast Receiver, no other Songcast Receivers to stop sending");
-					setRemoteAddress(null);
-				} else {
-					String key = receivers.keySet().stream().findFirst().get();
-					if (!receivers.containsKey(primaryReceiver.getHostString())) {
-						log.debug("Leave Request. Removed Songcast Receiver: " + ohuLeave.toString() + " Promoting this Receiver to be Primary: " + key);
-						setRemoteAddress(receivers.get(key));
-					}
-
-				}
-				buildSlaveRequest();
-			}
-			*/
 		} else if (msg instanceof OHUMessageListen) {
 			OHUMessageListen listen = (OHUMessageListen) msg;
-			log.debug("Listen: " + listen.getAddress());
+			OHUSenderController.getInstance().addListen(listen);
+			//log.debug("Listen: " + listen.getAddress());
 		}
 	}
 

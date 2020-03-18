@@ -18,7 +18,7 @@ public class MPDStreamerConnectorInitializer extends ChannelInitializer<SocketCh
     @Override
     public void initChannel(SocketChannel ch) {
     	
-    	int chunkSize = 1764;
+    	int chunkSize = 1766;
         ChannelPipeline p = ch.pipeline();
 
         // Enable HTTPS if necessary.

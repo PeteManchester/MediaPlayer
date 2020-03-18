@@ -1,5 +1,6 @@
 package org.rpi.songcast.ohu.sender.mpd;
 
+import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -10,12 +11,15 @@ public class MPDStreamerController {
 
 	private static MPDStreamerController instance = null;
 	private Logger log = Logger.getLogger(this.getClass());
-	private Queue<OHUSenderAudioResponse> queue = new ConcurrentLinkedQueue<OHUSenderAudioResponse>();
+
+	// private Queue<OHUSenderAudioResponse> queue = new
+	// ConcurrentLinkedQueue<OHUSenderAudioResponse>();
+	private Queue<OHUSenderAudioResponse> queue = new ArrayDeque<OHUSenderAudioResponse>();
 	private Thread mpdThread = null;
 	private MPDStreamerConnector mpdClient = null;
 	private int frameCount = 0;// Integer.MAX_VALUE - 1000;
-	
-	private boolean bFinished = false;
+
+	// private boolean bFinished = false;
 
 	/***
 	 * 
@@ -75,13 +79,12 @@ public class MPDStreamerController {
 	public void addSoundByte(OHUSenderAudioResponse a) {
 		queue.add(a);
 	}
-	
-	
-	
+
 	/***
 	 * 
 	 */
 	private void startMPDConnection() {
+		log.debug("Start MPDConnection");
 		if (mpdThread != null) {
 			stopMPDConnection();
 		}
@@ -89,14 +92,14 @@ public class MPDStreamerController {
 		mpdThread = new Thread(mpdClient, "MPDStreamerConnector");
 		mpdThread.start();
 	}
-	
+
 	/***
 	 * 
 	 */
 	private void stopMPDConnection() {
-
 		try {
 			if (mpdClient != null) {
+				log.debug("Stopping MPD Connection");
 				mpdClient.stop();
 			}
 			mpdClient = null;
@@ -108,28 +111,29 @@ public class MPDStreamerController {
 
 	/**
 	 * @return the bFinished
+	 * 
+	 *         public boolean isFinished() { return bFinished; }
 	 */
-	public boolean isFinished() {
-		return bFinished;
-	}
 
 	/**
-	 * @param bFinished the bFinished to set
+	 * @param bFinished
+	 *            the bFinished to set
+	 * 
+	 *            public void setFinished(boolean bFinished) { this.bFinished =
+	 *            bFinished; if(bFinished) { stopMPDConnection(); } }
 	 */
-	public void setFinished(boolean bFinished) {
-		this.bFinished = bFinished;
-		if(bFinished) {
-			stopMPDConnection();
-		}
-	}
 
 	public void start() {
-		if(mpdClient !=null && !bFinished) {
+		if (mpdClient != null) {
 			return;
 		}
 		stopMPDConnection();
 		startMPDConnection();
-		
+
+	}
+
+	public void stop() {
+		stopMPDConnection();
 	}
 
 }

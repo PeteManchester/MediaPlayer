@@ -15,6 +15,9 @@ public class OHUMessageBuffefHandler extends MessageToMessageDecoder<OHUMessageA
 	Map<Integer, OHUMessageAudio> map = new TreeMap<Integer, OHUMessageAudio>();
 	Logger log = Logger.getLogger(this.getClass());
 	int lastHandledMessage = 0;
+	int countMissedFrames = 0;
+	int maxConsecutivesMisses = 0;
+	int maxBufferSize = 0;
 
 	@Override
 	protected void decode(ChannelHandlerContext ctx, OHUMessageAudio msg, List<Object> out) throws Exception {
@@ -25,9 +28,30 @@ public class OHUMessageBuffefHandler extends MessageToMessageDecoder<OHUMessageA
 			int frameId = a.getFrameNumber();
 			map.remove(frameId);
 			if (frameId - lastHandledMessage != 1) {
-				boolean isInList = map.containsKey(lastHandledMessage + 1);
-				log.debug("Frame is out of sequence: Expected Frame: " + lastHandledMessage + 1 + " IsInList: " + isInList);				
+				//boolean isInList = map.containsKey(lastHandledMessage + 1);
+				int missed = ((frameId - lastHandledMessage) - 1);
+				countMissedFrames += missed;
+				if(missed > maxConsecutivesMisses) {
+					maxConsecutivesMisses = missed;
+				}
+				
+				//log.debug("Missed a Frame: " + frameId + " Last Frame: " + lastHandledMessage + "  " + ((frameId - lastHandledMessage) - 1) + " IsInBuffer: " + isInList);
 			}
+			
+			int bufferSize = a.getData().readableBytes();
+			if(bufferSize > maxBufferSize) {
+				maxBufferSize = bufferSize;
+			}
+
+			
+			if(frameId % 1000 == 0) {
+				log.debug("FrameCount: " + frameId + " Missed Frames: " + countMissedFrames + " Max Consecutive Missed Frames: " + maxConsecutivesMisses + " MaxBufferSize: " + maxBufferSize);
+				countMissedFrames = 0;
+				maxConsecutivesMisses = 0;
+				maxBufferSize = 0;
+			}
+			
+						
 			lastHandledMessage = frameId;
 			out.add(a);
 		}

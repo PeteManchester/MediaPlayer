@@ -114,8 +114,8 @@ public class AirPlayThread extends Thread {
 
 			b.channel(NioServerSocketChannel.class);
 			b.option(ChannelOption.SO_REUSEADDR, true);
-			b.option(ChannelOption.TCP_NODELAY, true);
-			b.option(ChannelOption.SO_KEEPALIVE, true);
+			//b.option(ChannelOption.TCP_NODELAY, true);
+			//b.option(ChannelOption.SO_KEEPALIVE, true);
 			b.childHandler(new RtspServerInitializer());
 			ChannelFuture channel = b.bind(new InetSocketAddress(port)).sync();
 

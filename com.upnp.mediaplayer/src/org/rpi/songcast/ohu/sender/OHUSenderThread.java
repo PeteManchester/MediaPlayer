@@ -31,13 +31,14 @@ public class OHUSenderThread implements Runnable {
 					if (ohu != null) {
 						try {
 							ohu.sendMessage(tab);
-							// TimeUnit.MILLISECONDS.sleep(2);
+							
+							TimeUnit.MILLISECONDS.sleep(1);
 						} catch (Exception e) {
 							log.error("Error Send AudioBytes", e);
 						}
 					}
 				} else {
-					TimeUnit.MILLISECONDS.sleep(20);
+					TimeUnit.MILLISECONDS.sleep(10);
 				}
 			}
 		} catch (Exception e) {
