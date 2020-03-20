@@ -42,16 +42,70 @@ public class OHUSenderAudioResponse {
 	private String header = "Ohm ";
 	private Logger log = Logger.getLogger(this.getClass());
 	private ByteBuf buffer = null;
-
+	
 	public OHUSenderAudioResponse(byte[] bytes) {
 		byte[] version = new byte[] { (byte) (1 & 0xff) };
 		byte[] type = new byte[] { (byte) (3 & 0xff) };
+		//String codecName = "PCM   ";
 		String codecName = "PCM   ";
 		int codec_length = codecName.length();
-		int length = header.length() + 1 + 1 + 2 + 50 + codec_length + bytes.length  ;
+		int audioSize = bytes.length;
+		int length = header.length() + 1 + 1 + 2 + 50 + codec_length + audioSize ;
+		//log.debug("AudioSize: " + audioSize + " Full Length: " + length);
 		int sampleCount = bytes.length/4;
-		ByteBuf test = Unpooled.buffer(length);
+		buffer = Unpooled.buffer(length);
+				
+		buffer.writeBytes( header.getBytes(CharsetUtil.UTF_8));
+		buffer.writeBytes( version);
+		buffer.writeBytes( type);
+		buffer.writeShort( length);
+		
+		buffer.writeBytes( new byte[] {(byte) (50 &0xff)});//Header Length
+		buffer.writeBytes( new byte[] {(byte) (2 &0xff)});
+		buffer.writeShort( sampleCount);
+		
+		buffer.writeInt(0);//FrameNumber
+		buffer.writeInt( 0);//Network TimeStamp
+		buffer.writeInt( 1);//MediaLatency
+		buffer.writeInt( 1);//MediaTimestamp
+		buffer.writeLong( 1);//Start Sample
+		buffer.writeLong(4);//Total Samples
+		//log.debug("SampleRate: " + test.readableBytes());
+		buffer.writeInt( 44100);//SampleRate
+		//log.debug("BitRate: " + test.readableBytes());
+		buffer.writeInt(1411200);//BitRate
+		//log.debug("VolumeOffset: " + test.readableBytes());
+		buffer.writeShort( 0);//Volume Offset
+		//log.debug("BitDepth: " + test.readableBytes());
+		buffer.writeBytes( new byte[] {(byte) (16 &0xff)});//BitDepth
+		//log.debug("Channels: " + test.readableBytes());
+		buffer.writeBytes( new byte[] {(byte) (2 &0xff)});//Channels
+		//log.debug("Reserved: " + test.readableBytes());
+		buffer.writeBytes( new byte[] {(byte) (0 &0xff)});//Reserved
+		//log.debug("CodecNameLength: " + test.readableBytes());
+		buffer.writeBytes( new byte[] {(byte) (codec_length &0xff)});//CodecNameLength
+		//test.writeShort(codec_length);
+		buffer.writeBytes( codecName.getBytes(CharsetUtil.UTF_8));//CodecName
+		
+		buffer.writeBytes(bytes);
+
+	}
+	
+
+	public OHUSenderAudioResponse(ByteBuf bytes) {
+		byte[] version = new byte[] { (byte) (1 & 0xff) };
+		byte[] type = new byte[] { (byte) (3 & 0xff) };
+		//String codecName = "PCM   ";
+		String codecName = "PCM   ";
+		int codec_length = codecName.length();
+		int audioSize = bytes.readableBytes();
+		int length = header.length() + 1 + 1 + 2 + 50 + codec_length + audioSize ;
+		//log.debug("AudioSize: " + audioSize + " Full Length: " + length);
+		int sampleCount = bytes.readableBytes()/4;
+		buffer = Unpooled.buffer();
+		//ByteBuf test = Unpooled.buffer(length);
 		//Header
+		/*
 		test.setBytes(0, header.getBytes(CharsetUtil.UTF_8));
 		test.setBytes(4, version);
 		test.setBytes(5, type);
@@ -76,12 +130,54 @@ public class OHUSenderAudioResponse {
 		test.setBytes(57, new byte[] {(byte) (codec_length &0xff)});//CodecNameLength
 		test.setBytes(58, codecName.getBytes(CharsetUtil.UTF_8));//CodecName
 		//ByteBuf audio = Unpooled.buffer(bytes.length);
+		 * 
+		 */
 		
-		test.setBytes(58 + codec_length,bytes);
+		buffer.writeBytes( header.getBytes(CharsetUtil.UTF_8));
+		buffer.writeBytes( version);
+		buffer.writeBytes( type);
+		buffer.writeShort( length);
+		
+		buffer.writeBytes( new byte[] {(byte) (50 &0xff)});//Header Length
+		buffer.writeBytes( new byte[] {(byte) (2 &0xff)});
+		buffer.writeShort( sampleCount);
+		
+		buffer.writeInt(0);//FrameNumber
+		buffer.writeInt( 0);//Network TimeStamp
+		buffer.writeInt( 1);//MediaLatency
+		buffer.writeInt( 1);//MediaTimestamp
+		buffer.writeLong( 1);//Start Sample
+		buffer.writeLong(4);//Total Samples
+		//log.debug("SampleRate: " + test.readableBytes());
+		buffer.writeInt( 44100);//SampleRate
+		//log.debug("BitRate: " + test.readableBytes());
+		buffer.writeInt(1411200);//BitRate
+		//log.debug("VolumeOffset: " + test.readableBytes());
+		buffer.writeShort( 0);//Volume Offset
+		//log.debug("BitDepth: " + test.readableBytes());
+		buffer.writeBytes( new byte[] {(byte) (16 &0xff)});//BitDepth
+		//log.debug("Channels: " + test.readableBytes());
+		buffer.writeBytes( new byte[] {(byte) (2 &0xff)});//Channels
+		//log.debug("Reserved: " + test.readableBytes());
+		buffer.writeBytes( new byte[] {(byte) (0 &0xff)});//Reserved
+		//log.debug("CodecNameLength: " + test.readableBytes());
+		buffer.writeBytes( new byte[] {(byte) (codec_length &0xff)});//CodecNameLength
+		//test.writeShort(codec_length);
+		buffer.writeBytes( codecName.getBytes(CharsetUtil.UTF_8));//CodecName
+		//ByteBuf audio = Unpooled.buffer(bytes.length);
+		
+		//log.debug("Audio Sender Before Audio: " + buffer.readableBytes() + " Audio Length: " + bytes.readableBytes());
+		
+		//byte[] convertedBytes = convertLEtoBE(bytes);
+		
+		buffer.writeBytes(bytes);
+		
+		//log.debug("Audio Sender with Audio: " + test.readableBytes());
+		//test.setBytes(58 + codec_length,bytes);
 		//test.order(ByteOrder.BIG_ENDIAN);
 
-		buffer = Unpooled.copiedBuffer(test.array());
-		test.release();
+		//buffer = Unpooled.copiedBuffer(test.array());
+		//test.release();
 		//log.debug("OHU AudioResponse: " + frameNumber);
 	}
 	
@@ -93,12 +189,39 @@ public class OHUSenderAudioResponse {
 	public ByteBuf getBuffer() {
 		return buffer;
 	}
+	
+	private byte[] convertLEtoBE(ByteBuf value) {
+		byte[] bytes = new byte[value.readableBytes()];
+		value.readBytes(bytes);
+		return convertLEtoBE(bytes);
+	}
+	
+	
+	private  byte[] convertLEtoBE(byte[] value) {
+	    final int length = value.length;
+	    byte[] res = new byte[length];
+	    for(int i = 0; i < length; i++) {
+	        res[length - i - 1] = value[i];
+	    }
+	    return res;
+	}
 
 
 
 	public void setFrameId(int frameId) {
 		if(buffer !=null) {
-			buffer.setInt(12, frameId);		
+			try {
+				if(buffer.capacity() > 16) {
+					buffer.setInt(12, frameId);		
+				}else {
+					log.error("Could Not Set FrameId. BufferSize: " + buffer.capacity());
+				}
+				
+			}
+			catch(Exception e) {
+				log.error("Error setFrameId. Buffer Size: " + buffer.readableBytes() ,e);
+			}
+			
 		}		
 	}
 

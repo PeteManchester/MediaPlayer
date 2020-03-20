@@ -81,7 +81,8 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 
 		int soundStart = 8 + headerLength + codecNameLength;
 		int soundEnd = -99;
-		soundEnd = soundStart + ((channels * iBitDepth * sampleCount) / 8);
+		//soundEnd = soundStart + ((channels * iBitDepth * sampleCount) / 8);
+		soundEnd = buf.readableBytes();
 		int soundLength = soundEnd - soundStart;
 		byte[] codec = new byte[codecNameLength];
 		buf.getBytes(58, codec, 0, codecNameLength);
@@ -91,15 +92,19 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 		} catch (Exception e) {
 
 		}
+		//log.debug("Audio Sound Length: " + soundLength);
+		//byte test = buf.getByte(buf.readerIndex());
+		//soundLength--;
 		audio = (new byte[soundLength]);
 		length = soundLength;
 		if (buf.readableBytes() >= soundStart + soundLength) {
+			
 			buf.getBytes(soundStart, audio, 0, soundLength);
 			setAudioInformation(new AudioInformation(iSampleRate, bitRate, iBitDepth, channels, sCodec, soundLength, sampleCount));
 		}
 		else
 		{
-			System.out.println("Bufer was too small: " + (soundStart + soundLength + " BufferSize: " + buf.readableBytes()));
+			log.error("Bufer was too small: " + (soundStart + soundLength + " BufferSize: " + buf.readableBytes()));
 		}
 	}
 

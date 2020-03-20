@@ -5,6 +5,7 @@ import java.net.InetSocketAddress;
 
 import org.apache.log4j.Logger;
 import org.rpi.songcast.ohu.sender.response.OHUSenderAudioResponse;
+import org.rpi.songcast.ohu.sender.response.OHUSenderTrackResponse;
 import org.rpi.utils.Utils;
 
 import io.netty.bootstrap.Bootstrap;
@@ -156,6 +157,15 @@ public class OHUSenderConnection {
 	 * @throws Exception
 	 */
 	public void sendMessage(OHUSenderAudioResponse r) throws Exception {
+		if (remoteInetSocket == null) {
+			return;
+		}
+		DatagramPacket packet = new DatagramPacket(r.getBuffer(), remoteInetSocket, localInetSocket);
+		sendMessage(packet);
+	}
+	 
+	//TODO make just one method to send all Songcast responses..
+	public void sendMessage(OHUSenderTrackResponse r) throws Exception {
 		if (remoteInetSocket == null) {
 			return;
 		}

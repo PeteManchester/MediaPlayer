@@ -9,19 +9,40 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
 
-public class OHUSenderSlave {
+public class OHUSenderSlaveResponse {
 	
 	private String header = "Ohm ";
 	private Logger log = Logger.getLogger(this.getClass());
 	private ByteBuf buffer = null;
 	private int numSlaves = 0;
 	
-	public OHUSenderSlave(List<InetSocketAddress> slaves) {
+	public OHUSenderSlaveResponse(List<InetSocketAddress> slaves) {
 		byte[] version = new byte[] { (byte) (1 & 0xff) };
 		byte[] type = new byte[] { (byte) (6 & 0xff) };
 		numSlaves = slaves.size();
 		int length = header.length() + 1 + 1 + 2 + 4 + (numSlaves * 6) ;
-
+		buffer = Unpooled.buffer(length);
+		buffer.writeBytes( header.getBytes(CharsetUtil.UTF_8));
+		buffer.writeBytes( version);
+		buffer.writeBytes( type);
+		buffer.writeShort( length);		
+		//test.setBytes(8, new byte[] {(byte) (50 &0xff)});//Header Length
+		
+		buffer.writeInt( numSlaves);
+		int iCount =  0;
+		for(InetSocketAddress s : slaves) {			
+			byte[] addr = new byte[4];
+			addr = s.getAddress().getAddress();
+			buffer.writeBytes( addr);	
+			log.debug("Add Slave: " + s.getAddress().getAddress() + " Port: " + s.getPort() + " iCount: " + iCount);
+			//for (byte b : addr) {
+			 //   System.out.println(b & 0xFF);
+			//}			
+			buffer.writeShort( s.getPort());
+			iCount++;
+		}
+		
+		/*
 		ByteBuf test = Unpooled.buffer(length);
 		log.debug("Add Slave. Number of Slaves: " + numSlaves);
 		test.setBytes(0, header.getBytes(CharsetUtil.UTF_8));
@@ -43,9 +64,10 @@ public class OHUSenderSlave {
 			test.setShort(12 + (iCount * 6) +4 , s.getPort());
 			iCount++;
 		}
-		
+		//buffer.writeBytes(test);
 		buffer = Unpooled.copiedBuffer(test.array());
-		test.release();
+		*/
+		//test.release();
 	}
 	
 	/**

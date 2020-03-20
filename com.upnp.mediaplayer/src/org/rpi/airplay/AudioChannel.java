@@ -32,7 +32,7 @@ public class AudioChannel {
 			b.channel(NioDatagramChannel.class);
 			b.option(ChannelOption.SO_REUSEADDR, true);
 			b.option(ChannelOption.TCP_NODELAY, true);
-			int bufferSize = 2048;
+			int bufferSize = 4096;
 			b.option(ChannelOption.SO_RCVBUF, bufferSize);
 			b.option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(bufferSize * 2));
 			b.option(ChannelOption.SO_SNDBUF, bufferSize);

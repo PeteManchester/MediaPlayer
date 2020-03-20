@@ -12,7 +12,7 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 
 public class OHUMessageBuffefHandler extends MessageToMessageDecoder<OHUMessageAudio> {
 
-	Map<Integer, OHUMessageAudio> map = new TreeMap<Integer, OHUMessageAudio>();
+	//Map<Integer, OHUMessageAudio> map = new TreeMap<Integer, OHUMessageAudio>();
 	Logger log = Logger.getLogger(this.getClass());
 	int lastHandledMessage = 0;
 	int countMissedFrames = 0;
@@ -21,12 +21,12 @@ public class OHUMessageBuffefHandler extends MessageToMessageDecoder<OHUMessageA
 
 	@Override
 	protected void decode(ChannelHandlerContext ctx, OHUMessageAudio msg, List<Object> out) throws Exception {
-		map.put(msg.getFrameNumber(), msg);
+		//map.put(msg.getFrameNumber(), msg);
 
-		if (map.size() > 5) {
-			OHUMessageAudio a = map.values().stream().findFirst().get();
-			int frameId = a.getFrameNumber();
-			map.remove(frameId);
+		//if (map.size() > 5) {
+		//	OHUMessageAudio a = map.values().stream().findFirst().get();
+			int frameId = msg.getFrameNumber();
+		//	map.remove(frameId);
 			if (frameId - lastHandledMessage != 1) {
 				//boolean isInList = map.containsKey(lastHandledMessage + 1);
 				int missed = ((frameId - lastHandledMessage) - 1);
@@ -38,7 +38,7 @@ public class OHUMessageBuffefHandler extends MessageToMessageDecoder<OHUMessageA
 				//log.debug("Missed a Frame: " + frameId + " Last Frame: " + lastHandledMessage + "  " + ((frameId - lastHandledMessage) - 1) + " IsInBuffer: " + isInList);
 			}
 			
-			int bufferSize = a.getData().readableBytes();
+			int bufferSize = msg.getData().readableBytes();
 			if(bufferSize > maxBufferSize) {
 				maxBufferSize = bufferSize;
 			}
@@ -53,8 +53,8 @@ public class OHUMessageBuffefHandler extends MessageToMessageDecoder<OHUMessageA
 			
 						
 			lastHandledMessage = frameId;
-			out.add(a);
-		}
+			out.add(msg);
+		//}
 	}
 
 }

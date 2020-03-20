@@ -16,6 +16,7 @@ public class OHUMessageTrackHandler extends SimpleChannelInboundHandler<OHUMessa
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, OHUMessageTrack msg) throws Exception {
 		log.debug("Track Message");
+		PlayManager.getInstance().setStatus("Playing", "SONGCAST");
 		try {
 			EventUpdateTrackMetaText ev = new EventUpdateTrackMetaText();
 			ChannelSongcast cs = new ChannelSongcast("", msg.getMetaData(), 1);
@@ -25,6 +26,7 @@ public class OHUMessageTrackHandler extends SimpleChannelInboundHandler<OHUMessa
 				ev.setTitle(cs.getTitle());
 				ev.setArtist(cs.getArtist());
 				if (ev != null) {
+					log.debug("PlayManager, UpdateTrackInfo: " + ev);
 					PlayManager.getInstance().updateTrackInfo(ev);
 				}
 			}
@@ -32,7 +34,7 @@ public class OHUMessageTrackHandler extends SimpleChannelInboundHandler<OHUMessa
 			{
 				log.debug("meta_text was Empty");
 			}
-			PlayManager.getInstance().setStatus("Playing", "SONGCAST");
+			//PlayManager.getInstance().setStatus("Playing", "SONGCAST");
 			//msg.getData().release();
 		} catch (Exception e) {
 			log.error("Error Handling OHUMessageTrack: ", e);

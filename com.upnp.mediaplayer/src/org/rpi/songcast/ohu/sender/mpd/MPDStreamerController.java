@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.log4j.Logger;
 import org.rpi.songcast.ohu.sender.response.OHUSenderAudioResponse;
+import org.scratchpad.songcast.test.http.streaming.TestHttpURLConnection;
 
 public class MPDStreamerController {
 
@@ -17,6 +18,7 @@ public class MPDStreamerController {
 	private Queue<OHUSenderAudioResponse> queue = new ArrayDeque<OHUSenderAudioResponse>();
 	private Thread mpdThread = null;
 	private MPDStreamerConnector mpdClient = null;
+	//private TestHttpURLConnection mpdClient = null;
 	private int frameCount = 0;// Integer.MAX_VALUE - 1000;
 
 	// private boolean bFinished = false;
@@ -89,6 +91,7 @@ public class MPDStreamerController {
 			stopMPDConnection();
 		}
 		mpdClient = new MPDStreamerConnector();
+		//mpdClient = new TestHttpURLConnection();
 		mpdThread = new Thread(mpdClient, "MPDStreamerConnector");
 		mpdThread.start();
 	}

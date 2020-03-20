@@ -27,13 +27,14 @@ public class OHURequestJoin {
 		byte[] version = new byte[] { (byte) (1 & 0xff) };
 		byte[] type = new byte[] { (byte) (0 & 0xff) };
 		int length = header.length() + 1 + 1 + 2;
-		ByteBuf test = Unpooled.buffer(length);
-		test.setBytes(0, header.getBytes(CharsetUtil.UTF_8));
-		test.setBytes(4, version);
-		test.setBytes(5, type);
-		test.setShort(6, length);
-		buffer = Unpooled.copiedBuffer(test.array());
-		test.release();
+		//ByteBuf test = Unpooled.buffer(length);
+		buffer = Unpooled.buffer(length);
+		buffer.writeBytes( header.getBytes(CharsetUtil.UTF_8));
+		buffer.writeBytes( version);
+		buffer.writeBytes( type);
+		buffer.writeShort( length);
+		//buffer = Unpooled.copiedBuffer(test.array());
+		//test.release();
 		log.debug(buffer.toString(CharsetUtil.UTF_8));
 	}
 	

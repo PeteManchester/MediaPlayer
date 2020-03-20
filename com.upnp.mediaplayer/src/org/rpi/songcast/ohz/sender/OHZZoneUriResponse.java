@@ -23,17 +23,18 @@ public class OHZZoneUriResponse {
 		String url = "ohu://" + myURI;
 		int length_url = url.length();
 		int length = header.length() + 1 + 1 + 2 + 4 + 4 + length_zone + length_url;
-		ByteBuf test = Unpooled.buffer(length);
-		test.setBytes(0, header.getBytes(CharsetUtil.UTF_8));
-		test.setBytes(4, version);
-		test.setBytes(5, type);
-		test.setShort(6, length);
-		test.setInt(8, length_zone);
-		test.setInt(12, length_url);
-		test.setBytes(16, zone.getBytes(CharsetUtil.UTF_8));
-		test.setBytes(16 +length_zone, url.getBytes(CharsetUtil.UTF_8));		
-		buffer = Unpooled.copiedBuffer(test.array());
-		test.release();
+		//ByteBuf test = Unpooled.buffer(length);
+		buffer = Unpooled.buffer(length);
+		buffer.writeBytes( header.getBytes(CharsetUtil.UTF_8));
+		buffer.writeBytes( version);
+		buffer.writeBytes( type);
+		buffer.writeShort( length);
+		buffer.writeInt( length_zone);
+		buffer.writeInt( length_url);
+		buffer.writeBytes( zone.getBytes(CharsetUtil.UTF_8));
+		buffer.writeBytes( url.getBytes(CharsetUtil.UTF_8));		
+		//buffer = Unpooled.copiedBuffer(test.array());
+		//test.release();
 		log.debug(buffer.toString(CharsetUtil.UTF_8));
 	}
 	

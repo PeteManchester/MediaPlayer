@@ -16,7 +16,7 @@ import org.rpi.songcast.ohu.sender.messages.OHUMessageJoin;
 import org.rpi.songcast.ohu.sender.messages.OHUMessageLeave;
 import org.rpi.songcast.ohu.sender.messages.OHUMessageListen;
 import org.rpi.songcast.ohu.sender.mpd.MPDStreamerController;
-import org.rpi.songcast.ohu.sender.response.OHUSenderSlave;
+import org.rpi.songcast.ohu.sender.response.OHUSenderSlaveResponse;
 
 import io.netty.channel.socket.DatagramPacket;
 
@@ -217,7 +217,7 @@ public class OHUSenderController {
 			}
 
 		}
-		OHUSenderSlave s = new OHUSenderSlave(mSlaves);
+		OHUSenderSlaveResponse s = new OHUSenderSlaveResponse(mSlaves);
 		DatagramPacket packet = new DatagramPacket(s.getBuffer(), primaryConnection.getRemoteAddress());
 		try {
 			log.debug("Send SlaveRequest: " + s.toString());

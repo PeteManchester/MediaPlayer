@@ -25,5 +25,14 @@ private TrackInfo trackInfo;
 	{
 		return trackInfo;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("EventUpdateTrackInfo [trackInfo=");
+		builder.append(trackInfo);
+		builder.append("]");
+		return builder.toString();
+	}
 	
 }

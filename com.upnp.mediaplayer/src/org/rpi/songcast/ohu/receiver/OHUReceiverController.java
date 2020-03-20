@@ -7,8 +7,6 @@ import java.util.Observer;
 import org.apache.log4j.Logger;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
-import org.rpi.player.events.EventReceiverStatusChanged;
-import org.rpi.player.events.EventStopSongcast;
 
 
 public class OHUReceiverController implements Observer {
