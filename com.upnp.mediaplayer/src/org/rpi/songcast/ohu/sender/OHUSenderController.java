@@ -222,6 +222,7 @@ public class OHUSenderController {
 		try {
 			log.debug("Send SlaveRequest: " + s.toString());
 			primaryConnection.sendMessage(packet);
+			primaryConnection.sendTrackDetails();
 		} catch (Exception e) {
 			log.error("Unable to send Slave Message", e);
 		}

@@ -49,7 +49,7 @@ public class PlayManager implements Observer {
 	private CopyOnWriteArrayList<ChannelPlayList> tracks = new CopyOnWriteArrayList<ChannelPlayList>();
 	private CopyOnWriteArrayList<String> shuffled_tracks = new CopyOnWriteArrayList<String>();
 
-	private static Logger log = Logger.getLogger(PlayManager.class);
+	private Logger log = Logger.getLogger(PlayManager.class);
 	private IPlayerController mPlayer = null;
 
 	private boolean repeatPlayList = false;
@@ -1253,7 +1253,7 @@ public class PlayManager implements Observer {
 	}
 
 	/**
-	 * Used by Songcast to update the metat text
+	 * Used by Songcast to update the metatext
 	 * 
 	 * @param e
 	 */

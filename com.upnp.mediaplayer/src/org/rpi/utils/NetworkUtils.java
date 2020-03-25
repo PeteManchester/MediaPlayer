@@ -15,6 +15,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by triplem on 24.02.14.
@@ -230,6 +231,68 @@ public class NetworkUtils {
 	}
 
 	public static Inet4Address getINet4Address() {
+		Map<String, String> resList = new HashMap<String, String>();
+		// IP Addresses to exclude.
+		resList.put("127.0.0.1", "127.0.0.1");
+		resList.put("192.168.116.1", "192.168.116.1");
+		resList.put("192.168.32.1", "192.168.32.1");
+		boolean isNetworkFound = false;
+		while(!isNetworkFound) {
+			try {
+				
+				log.debug("Interate InetAddress Interfaces: ");
+				Map<String, Inet4Address> nics = new HashMap<String, Inet4Address>();
+				// Enumeration<NetworkInterface> nets =
+				// NetworkInterface.getNetworkInterfaces();
+				// for (NetworkInterface netint : Collections.list(nets)) {
+				for (final NetworkInterface netint : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+					InetAddress addr = getInetAddressInfo(netint);
+					String hostAddress = "BAD";
+					if (addr != null) {
+						hostAddress = addr.getHostAddress();
+					}
+
+					if (addr instanceof Inet4Address && !resList.containsKey(addr.getHostAddress())) {
+						// return (Inet4Address) addr;
+						log.debug("Adding NetworkInterface to List: " + netint.getName());
+						nics.put(netint.getName(), (Inet4Address) addr);
+					}
+				}
+
+				if (nics.containsKey("eth0")) {
+					log.debug("On a Raspi, prefer the wired lan (eth0) if it is active");
+					isNetworkFound = true;
+					return nics.get("eth0");
+				}
+				
+				for(String key: nics.keySet()) {
+					if(key.toUpperCase().startsWith("ETH")) {
+						log.debug("No eth0 but using: " + key);
+						isNetworkFound = true;
+						return nics.get(key);
+					}
+				}
+				
+				if(nics.size() > 0) {
+					log.debug("On a Raspi, couldn't get the wired lan, use other instead: " + nics.size());
+					isNetworkFound = true;
+				return nics.values().stream().findFirst().get();
+				}
+				log.info("No Network found, waiting for Network to start");
+				TimeUnit.SECONDS.sleep(2);
+
+			} catch (Exception e) {
+
+			}
+			
+		}
+		
+
+		return null;
+
+	}
+
+	public static Inet4Address getINetOld4Address() {
 		// String res = "127.0.0.1,192.168.116.1,192.168.32.1";
 		Map<String, String> resList = new HashMap<String, String>();
 		// IP Addresses to exclude.

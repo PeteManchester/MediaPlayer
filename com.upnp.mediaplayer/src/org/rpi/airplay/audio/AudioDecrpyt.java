@@ -111,7 +111,7 @@ public class AudioDecrpyt extends MessageToMessageDecoder<DatagramPacket> {
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		log.error(cause);
+		log.error("Error. AudioDecrypt: ", cause);
 		ctx.close();
 	}
 

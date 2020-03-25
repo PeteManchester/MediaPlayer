@@ -13,7 +13,7 @@ import org.rpi.mplayer.CloseMe;
 
 public class M3UParser {
 	
-	private static Logger log = Logger.getLogger(M3UParser.class);
+	private Logger log = Logger.getLogger(M3UParser.class);
 	
 	
 	public LinkedList<String> getStreamingUrl(String url) {

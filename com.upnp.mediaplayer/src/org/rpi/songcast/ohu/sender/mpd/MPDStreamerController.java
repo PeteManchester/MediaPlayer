@@ -13,12 +13,12 @@ public class MPDStreamerController {
 	private static MPDStreamerController instance = null;
 	private Logger log = Logger.getLogger(this.getClass());
 
+	private Queue<OHUSenderAudioResponse> queue = new ConcurrentLinkedQueue<OHUSenderAudioResponse>();
 	// private Queue<OHUSenderAudioResponse> queue = new
-	// ConcurrentLinkedQueue<OHUSenderAudioResponse>();
-	private Queue<OHUSenderAudioResponse> queue = new ArrayDeque<OHUSenderAudioResponse>();
+	// ArrayDeque<OHUSenderAudioResponse>();
 	private Thread mpdThread = null;
 	private MPDStreamerConnector mpdClient = null;
-	//private TestHttpURLConnection mpdClient = null;
+	// private TestHttpURLConnection mpdClient = null;
 	private int frameCount = 0;// Integer.MAX_VALUE - 1000;
 
 	// private boolean bFinished = false;
@@ -72,7 +72,12 @@ public class MPDStreamerController {
 			}
 			a.setFrameId(frameCount);
 			if (frameCount % 1000 == 0) {
-				log.debug("Frame: " + frameCount);
+				log.debug("Frame: " + frameCount + " QueueSize: " + queue.size());
+				//System.gc();
+			}
+			
+			if(frameCount %10000 ==0) {
+				//System.gc();
 			}
 		}
 		return a;
@@ -80,6 +85,12 @@ public class MPDStreamerController {
 
 	public void addSoundByte(OHUSenderAudioResponse a) {
 		queue.add(a);
+		if(queue.size() > 100) {
+			log.debug("Message Buffer > 100, clean up a bit");
+			OHUSenderAudioResponse osar = queue.poll();
+			osar.getBuffer().release();
+			osar = null;
+		}
 	}
 
 	/***
@@ -91,7 +102,7 @@ public class MPDStreamerController {
 			stopMPDConnection();
 		}
 		mpdClient = new MPDStreamerConnector();
-		//mpdClient = new TestHttpURLConnection();
+		// mpdClient = new TestHttpURLConnection();
 		mpdThread = new Thread(mpdClient, "MPDStreamerConnector");
 		mpdThread.start();
 	}

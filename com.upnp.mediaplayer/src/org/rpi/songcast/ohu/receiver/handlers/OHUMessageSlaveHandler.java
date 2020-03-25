@@ -33,7 +33,7 @@ public class OHUMessageSlaveHandler extends SimpleChannelInboundHandler<OHUMessa
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		log.error(cause);
+		log.error("Error. OHUSlaveHandler: ",cause);
 		ctx.close();
 	}
 

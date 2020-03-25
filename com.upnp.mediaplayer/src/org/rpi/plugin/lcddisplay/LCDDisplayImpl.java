@@ -54,7 +54,7 @@ import com.pi4j.wiringpi.Lcd;
 @PluginImplementation
 public class LCDDisplayImpl implements LCDDislayInterface, Observer {
 
-	private static Logger log = Logger.getLogger(LCDDisplayImpl.class);
+	private Logger log = Logger.getLogger(LCDDisplayImpl.class);
 	private GpioController gpio = null;
 
 	// provision gpio pin #02 as an input pin with its internal pull down

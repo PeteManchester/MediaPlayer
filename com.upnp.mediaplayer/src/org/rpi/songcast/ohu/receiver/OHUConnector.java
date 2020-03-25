@@ -5,6 +5,7 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -33,6 +34,7 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.InternetProtocolFamily;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.oio.OioDatagramChannel;
+import io.netty.util.concurrent.DefaultThreadFactory;
 
 public class OHUConnector {
 
@@ -49,7 +51,7 @@ public class OHUConnector {
 	private InetAddress localInetAddr = null;
 	private InetSocketAddress localInetSocket = null;
 
-	private EventLoopGroup group = new NioEventLoopGroup(1);
+	private EventLoopGroup group = null;
 	private OHURequestListen listen = null;
 
 	private DatagramChannel ch = null;
@@ -57,6 +59,8 @@ public class OHUConnector {
 	private boolean isMulticast = false;
 
 	public OHUConnector(String uri, String zoneID, InetAddress localInetAddr) {
+		ThreadFactory threadFactory = new DefaultThreadFactory("OHUReceiverEventLoopGroupThread");
+		group = new NioEventLoopGroup(1, threadFactory);
 		log.debug("Create OHUConnector: " + uri);
 		int lastColon = uri.lastIndexOf(":");
 		int lastSlash = uri.lastIndexOf("/");
@@ -78,27 +82,26 @@ public class OHUConnector {
 
 		try {
 			log.debug("Start OHUConnector: " + localInetAddr.getHostName());
-			
-			//https:stackoverflow.com/questions/9637436/lot-of-udp-requests-lost-in-udp-server-with-netty
-			
+
+			// https:stackoverflow.com/questions/9637436/lot-of-udp-requests-lost-in-udp-server-with-netty
+
 			remoteInetSocket = new InetSocketAddress(remoteInetAddr, remotePort);
 			localInetSocket = new InetSocketAddress(localInetAddr, remotePort);
 			NetworkInterface nic = NetworkInterface.getByInetAddress(localInetAddr);
 
 			Bootstrap b = new Bootstrap();
-			b.group(group);			
+			b.group(group);
 			b.channel(NioDatagramChannel.class);
 
-			
-			//b.option(ChannelOption.SO_BROADCAST, true);
+			// b.option(ChannelOption.SO_BROADCAST, true);
 			int byteBuffer = 10240;
 			b.option(ChannelOption.SO_REUSEADDR, true);
 			b.option(ChannelOption.IP_MULTICAST_LOOP_DISABLED, false);
 			b.option(ChannelOption.SO_RCVBUF, byteBuffer);
-			b.option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator( byteBuffer * 4 ));
+			b.option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(byteBuffer * 4));
 			b.option(ChannelOption.SO_SNDBUF, byteBuffer);
-			//b.option(ChannelOption.IP_MULTICAST_TTL, 255);
-			//b.option(ChannelOption.IP_MULTICAST_IF, nic);
+			// b.option(ChannelOption.IP_MULTICAST_TTL, 255);
+			// b.option(ChannelOption.IP_MULTICAST_IF, nic);
 			b.handler(new OHUChannelInitializer());
 			log.debug("OHU Bind to Socket: " + localInetSocket.getHostName());
 			ch = (DatagramChannel) b.bind(localInetSocket).sync().channel();
@@ -107,25 +110,25 @@ public class OHUConnector {
 				log.debug("OHU is Multicast");
 				ChannelFuture future = ch.joinGroup(remoteInetSocket, nic);
 				log.debug("Result of Join: " + future.toString());
-			}
-			else {
+			} else {
 				log.debug("OHU is not Multicast");
 			}
 			OHURequestJoin join = new OHURequestJoin();
-			//ByteBuf buffer = Unpooled.copiedBuffer(join.data);
+			// ByteBuf buffer = Unpooled.copiedBuffer(join.data);
 			DatagramPacket packet = new DatagramPacket(join.getBuffer(), remoteInetSocket, localInetSocket);
 			log.debug("Send OHU Join Message: " + join.toString());
 			sendMessage(packet);
 			log.debug("Sent OHU Join Message: " + join.toString());
-			
+
 			group.scheduleAtFixedRate(new Runnable() {
 
 				@Override
 				public void run() {
-					//log.debug("OHU Time to Listen");
+					// log.debug("OHU Time to Listen");
 					if (!isMulticast) {
 						try {
-							//ByteBuf lBuffer = Unpooled.copiedBuffer(listen.data);
+							// ByteBuf lBuffer =
+							// Unpooled.copiedBuffer(listen.data);
 							DatagramPacket pListen = new DatagramPacket(listen.getBuffer().retain(), remoteInetSocket, localInetSocket);
 							sendMessage(pListen);
 						} catch (Exception e) {
@@ -145,7 +148,6 @@ public class OHUConnector {
 					}
 				}
 			}, 1, 1, TimeUnit.SECONDS);
-			
 
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -157,7 +159,7 @@ public class OHUConnector {
 	private void sendMessage(DatagramPacket packet) {
 		try {
 			// log.debug("SendMessage");
-			//ch.writeAndFlush(packet).sync();
+			// ch.writeAndFlush(packet).sync();
 			ch.writeAndFlush(packet);
 		} catch (Exception e) {
 			log.error("Error Listen Keep Alive", e);
@@ -169,19 +171,16 @@ public class OHUConnector {
 		try {
 			log.debug("Attempt to Stop Songcast Playback");
 			if (ch != null) {
-				try
-				{
+				try {
 					OHZLeaveRequest leave = new OHZLeaveRequest();
 					ByteBuf buffer = Unpooled.copiedBuffer(leave.getBuffer());
 					DatagramPacket packet = new DatagramPacket(buffer, remoteInetSocket, localInetSocket);
 					log.debug("Sending : " + packet.toString());
-					//ch.writeAndFlush(packet).sync();
+					// ch.writeAndFlush(packet).sync();
 					ch.writeAndFlush(packet);
 					log.debug("Sent Leave Message");
 					PlayManager.getInstance().setStatus("Stopped", "SONGCAST");
-				}
-				catch(Exception e)
-				{
+				} catch (Exception e) {
 					log.error("Error Sending Leave", e);
 				}
 				try {

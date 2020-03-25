@@ -47,7 +47,7 @@ public class OHZMessageDecoder extends MessageToMessageDecoder<DatagramPacket> {
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		log.error(cause);
+		log.error("Error. OHZMessageDecoder: ",cause);
 		ctx.close();
 	}
 

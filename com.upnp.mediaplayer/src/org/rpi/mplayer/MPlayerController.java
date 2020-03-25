@@ -16,7 +16,7 @@ import org.rpi.player.IPlayerController;
 public class MPlayerController extends Observable implements IPlayerController, Observer {
 
 	IPlayer mPlayer = null;
-	private static Logger log = Logger.getLogger(MPlayerController.class);
+	private Logger log = Logger.getLogger(MPlayerController.class);
 
 	@Override
 	public void preLoadTrack(ChannelBase track) {

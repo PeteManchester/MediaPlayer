@@ -14,9 +14,9 @@ import org.rpi.player.events.EventTimeUpdate;
 
 public class OutputReader extends Thread {
 
-	private static Logger log = Logger.getLogger(OutputReader.class);
+	private Logger log = Logger.getLogger(OutputReader.class);
 
-	private static final Pattern END_PATTERN = Pattern.compile(".*\\x2e\\x2e\\x2e\\x20\\(.*\\x20.*\\).*");
+	private final Pattern END_PATTERN = Pattern.compile(".*\\x2e\\x2e\\x2e\\x20\\(.*\\x20.*\\).*");
 
 	private Process process = null;
 	private MPlayer mPlayer = null;

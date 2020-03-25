@@ -51,6 +51,12 @@ public class OHUSenderLogicHandler extends SimpleChannelInboundHandler<Object> {
 		}
 	}
 	*/
+	
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		log.error("Error. OHUSenderLogicHandler: ",cause);
+		ctx.close();
+	}
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) {

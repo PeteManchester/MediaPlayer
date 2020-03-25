@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
+import java.util.concurrent.ThreadFactory;
 
 import org.apache.log4j.Logger;
 import org.rpi.player.PlayManager;
@@ -23,6 +24,7 @@ import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.InternetProtocolFamily;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.util.concurrent.DefaultThreadFactory;
 
 public class OHZConnector {
 
@@ -39,7 +41,7 @@ public class OHZConnector {
 	private InetSocketAddress localInetSocket = null;
 
 	private DatagramChannel ch = null;
-	private EventLoopGroup group = new NioEventLoopGroup(1);
+	private EventLoopGroup group = null;
 
 	private static OHZConnector instance = null;
 
@@ -51,6 +53,8 @@ public class OHZConnector {
 	}
 
 	private OHZConnector() {
+		ThreadFactory threadFactory = new DefaultThreadFactory("OHZEventLoopGroupThread");
+		group = new NioEventLoopGroup(4, threadFactory);
 	}
 
 	public void run(String uri, String zoneID, Inet4Address localInetAddr) throws Exception {

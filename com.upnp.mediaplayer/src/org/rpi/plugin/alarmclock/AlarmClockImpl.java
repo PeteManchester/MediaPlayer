@@ -38,7 +38,7 @@ import org.w3c.dom.NodeList;
 @PluginImplementation
 public class AlarmClockImpl implements AlarmClockInterface {
 
-	private static Logger log = Logger.getLogger(AlarmClockImpl.class);
+	private Logger log = Logger.getLogger(AlarmClockImpl.class);
 
 	private PlayManager iPlayer = null;
 	private Scheduler scheduler;

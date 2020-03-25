@@ -69,8 +69,8 @@ public class OHUSenderMessageDecoder extends MessageToMessageDecoder<DatagramPac
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		log.error("ExceptionCaught", cause);
-		// ctx.close();
+		log.error("Error. OHUSenderMessageDecoder: ",cause);
+		ctx.close();
 	}
 
 	@Override

@@ -16,7 +16,7 @@ import org.rpi.player.events.EventBase;
 
 public class MPDPlayerController extends Observable implements IPlayerController, Observer {
 
-	private static Logger log = Logger.getLogger(MPDPlayerController.class);
+	private Logger log = Logger.getLogger(MPDPlayerController.class);
 	private MPDPlayer mpdPlayer = null;
 
 	public MPDPlayerController() {

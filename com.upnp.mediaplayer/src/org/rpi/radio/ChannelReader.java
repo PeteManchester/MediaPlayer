@@ -35,7 +35,7 @@ import org.xml.sax.InputSource;
 
 public class ChannelReader {
 
-	private static Logger log = Logger.getLogger(ChannelReader.class);
+	private Logger log = Logger.getLogger(ChannelReader.class);
 
 	private List<ChannelRadio> channels = new ArrayList<ChannelRadio>();
 

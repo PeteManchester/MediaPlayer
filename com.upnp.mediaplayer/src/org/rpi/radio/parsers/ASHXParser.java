@@ -18,7 +18,7 @@ import org.rpi.mplayer.CloseMe;
  */
 public class ASHXParser {
 
-	private static Logger log = Logger.getLogger(ASHXParser.class);
+	private Logger log = Logger.getLogger(ASHXParser.class);
 	
 	public LinkedList<String> getStreamingUrl(String url) {
 		log.debug("Get URLs from : " + url);

@@ -14,7 +14,7 @@ import com.pi4j.wiringpi.Lcd;
 
 public class LCDScroller extends Thread {
 
-	private static Logger log = Logger.getLogger(LCDScroller.class);
+	private Logger log = Logger.getLogger(LCDScroller.class);
 	private int lcdHandle = -1;
 	private int LCD_COLUMNS = 20;
 	private int LCD_ROWS = 2;

@@ -20,7 +20,7 @@ import org.rpi.player.events.EventVolumeChanged;
 
 public class StatusMonitor extends Observable implements Runnable, Observer {
 
-	private static Logger log = Logger.getLogger(StatusMonitor.class);
+	private Logger log = Logger.getLogger(StatusMonitor.class);
 
 	private TCPConnector tcp = null;
 	private boolean isRunning = true;

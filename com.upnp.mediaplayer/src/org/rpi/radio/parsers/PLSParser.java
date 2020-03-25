@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 import org.rpi.mplayer.CloseMe;
 
 public class PLSParser {
-	private static Logger log = Logger.getLogger(PLSParser.class);
+	private Logger log = Logger.getLogger(PLSParser.class);
 
 	/***
 	 * 

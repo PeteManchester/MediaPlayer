@@ -6,7 +6,7 @@ import com.pi4j.util.StringUtil;
 
 public class LCDRow {
 	
-	private static Logger log = Logger.getLogger(LCDRow.class);
+	private Logger log = Logger.getLogger(LCDRow.class);
 
 	private int LCD_WIDTH = 20;
 	private String current_text = "";

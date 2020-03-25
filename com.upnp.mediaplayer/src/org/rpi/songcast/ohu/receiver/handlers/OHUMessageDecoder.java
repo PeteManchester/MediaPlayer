@@ -69,7 +69,7 @@ public class OHUMessageDecoder extends MessageToMessageDecoder<DatagramPacket> {
 				out.add(message);
 				break;
 			default:
-				log.info("Unknown Message: " + buf.toString(Charset.forName("utf-8")));
+				log.info("Unknown Message. Type: " + type + " Buffer: " + buf.toString(Charset.forName("utf-8")));
 				break;
 			}
 
@@ -78,8 +78,8 @@ public class OHUMessageDecoder extends MessageToMessageDecoder<DatagramPacket> {
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		log.error(cause);
-		// ctx.close();
+		log.error("Error. OHUMessageDecoder: ",cause);
+		ctx.close();
 	}
 
 	@Override

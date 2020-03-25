@@ -130,4 +130,10 @@ public class OHZLogicHandler extends ChannelDuplexHandler {
 		statusZoneQueryRequest = status;
 
 	}
+	
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		log.error("Error. OHZLogicHandler: ",cause);
+		ctx.close();
+	}
 }

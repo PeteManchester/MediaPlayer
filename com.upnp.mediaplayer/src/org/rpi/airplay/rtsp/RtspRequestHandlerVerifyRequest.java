@@ -34,7 +34,7 @@ public class RtspRequestHandlerVerifyRequest extends SimpleChannelInboundHandler
 	
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		log.error("Exception Caught: " + cause);
+		log.error("Error RtspRequestHanlderVerifyRequest: " + cause);
 		ctx.close();
 	}
 

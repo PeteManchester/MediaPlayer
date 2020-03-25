@@ -15,7 +15,7 @@ import com.pi4j.io.gpio.GpioFactory;
 public class Pi4JManager {
 
 	private static Pi4JManager instance = null;
-	private static Logger log = Logger.getLogger(Pi4JManager.class);
+	private Logger log = Logger.getLogger(Pi4JManager.class);
 	private GpioController gpio = null;
 
 	public static Pi4JManager getInstance() {

@@ -30,7 +30,7 @@ import org.rpi.player.PlayManager;
 
 public class Alarm {
 
-	private static Logger log = Logger.getLogger(Alarm.class);
+	private Logger log = Logger.getLogger(Alarm.class);
 
 	private PlayManager iPlayer = null;
 	private Scheduler scheduler;

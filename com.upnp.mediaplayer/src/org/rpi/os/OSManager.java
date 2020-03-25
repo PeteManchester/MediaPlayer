@@ -11,13 +11,12 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.rpi.plug.interfaces.AlarmClockInterface;
-import org.rpi.plugin.alarmclock.AlarmClockImpl;
 import org.rpi.utils.Utils;
 
 import com.pi4j.io.gpio.GpioController;
 
-import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.PluginManager;
+import net.xeoh.plugins.base.impl.PluginManagerFactory;
 
 public class OSManager {
 
@@ -81,6 +80,13 @@ public class OSManager {
 		String[] newPaths = Arrays.copyOf(paths, paths.length + 1);
 		newPaths[newPaths.length - 1] = pathToAdd;
 		usrPathsField.set(null, newPaths);
+	}
+	
+	public void addLibraryPath1(String pathToAdd) throws Exception {
+		//https://stackoverflow.com/questions/15409223/adding-new-paths-for-native-libraries-at-runtime-in-java
+		//Lookup cl = MethodHandles.privateLookupIn(ClassLoader.class, MethodHandles.lookup());
+		//VarHandle sys_paths = cl.findStaticVarHandle(ClassLoader.class, "sys_paths", String[].class);
+		//sys_paths.set(null);
 	}
 
 	/**

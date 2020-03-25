@@ -11,9 +11,11 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 public class MPDStreamerBuffer extends ByteToMessageDecoder {
 	Logger log = Logger.getLogger(this.getClass());
 	private boolean isFirstTime = true;
+	private int iCount = 0;
+	private int maxSize = 0;
 
 	public MPDStreamerBuffer() {
-		log.debug("This is the First Time");
+		log.debug("Creating MPDStreamerBuffer");
 	}
 
 	@Override
@@ -39,11 +41,35 @@ public class MPDStreamerBuffer extends ByteToMessageDecoder {
 			isFirstTime = false;
 		}
 		
-		if (in.readableBytes() < 1764) {
+		
+		int i = in.readableBytes();
+		if (i < 1764) {
+			log.debug("ReadableBytes was less than 1764: " + i);
 			return;
 		}
 		
+		if(i > maxSize) {
+			maxSize = i;
+		}
+		if(iCount % 1000 == 0) {
+			log.debug("MPDStreamerBuffer " + iCount + " Largest Buffer: " + maxSize);
+			maxSize = 0;
+		}
+		iCount++;
 		out.add(in.readBytes(1764));
+		
+		//while(in.readableBytes()> 1764) {
+		//	out.add(in.readBytes(1764));
+		//}
+		
+		//log.debug("ReadableBytes: " + i);
+		
+	}
+	
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+		log.error("Error. MPDStreamerBuffer Error: " + cause);
+		ctx.close();
 	}
 
 }

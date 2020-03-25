@@ -5,7 +5,7 @@ After=mpd.service
 
 [Service]
 Type=forking
-ExecStart=/opt/mediaplayer/run_systemd.sh
+ExecStart=/home/pi/mediaplayer/run_systemd.sh
 
 [Install]
 WantedBy=multi-user.target

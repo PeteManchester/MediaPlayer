@@ -147,7 +147,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			log.info("OpenHome DebugLevel: " + debugLevel);
 			lib.setDebugLevel(debugLevel);
 
-			//TODO look at why it prefers wlan to lan on raspi..
+			
 			Inet4Address addr = NetworkUtils.getINet4Address();
 			log.info("Using LocalIPAddress: " + addr.getHostAddress());
 

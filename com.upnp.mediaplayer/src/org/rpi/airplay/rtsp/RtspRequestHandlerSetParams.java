@@ -130,7 +130,7 @@ public class RtspRequestHandlerSetParams extends SimpleChannelInboundHandler<Ful
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		log.error("Exception Caught: " + cause);
+		log.error("Error RtspRequestHandlerSetParmaeters: ", cause);
 		ctx.close();
 	}
 }

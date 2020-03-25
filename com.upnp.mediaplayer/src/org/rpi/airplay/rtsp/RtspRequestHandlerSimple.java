@@ -235,7 +235,7 @@ public class RtspRequestHandlerSimple extends SimpleChannelInboundHandler<FullHt
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		log.error("Exception Caught: " + cause);
+		log.error("Error RtspRequestHandler: " , cause);
 		ctx.close();
 	}
 

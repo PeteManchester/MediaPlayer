@@ -19,7 +19,7 @@ public class PlayListReader {
 
 	private CopyOnWriteArrayList<ChannelPlayList> tracks = new CopyOnWriteArrayList<ChannelPlayList>();
 
-	private static Logger log = Logger.getLogger(PlayListReader.class);
+	private Logger log = Logger.getLogger(PlayListReader.class);
 	private PrvPlayList iPlayList = null;
 	
 	private int max_id = 0;

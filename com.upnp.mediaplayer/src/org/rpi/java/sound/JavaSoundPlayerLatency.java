@@ -4,7 +4,9 @@ import java.math.BigInteger;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
+import java.util.Queue;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -33,7 +35,8 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 
 	private boolean bWrite = false;
 
-	private Vector<IAudioPacket> mWorkQueue = new Vector<IAudioPacket>();
+	//private Vector<IAudioPacket> mWorkQueue = new Vector<IAudioPacket>();
+	private Queue<IAudioPacket> mWorkQueue = new ConcurrentLinkedQueue<IAudioPacket>();
 
 	private float volume = 0;
 	private long airplayVolume = 0;
@@ -246,19 +249,21 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 	 * Get the first object out of the queue. Return null if the queue is empty.
 	 */
 	public synchronized IAudioPacket get() {
-		IAudioPacket object = peek();
-		if (object != null)
-			mWorkQueue.removeElementAt(0);
-		return object;
+		//IAudioPacket object = peek();
+		//if (object != null)
+		//	mWorkQueue.removeElementAt(0);
+		//return object;
+		return mWorkQueue.poll();
 	}
 
 	/**
 	 * Peek to see if something is available.
 	 */
 	public IAudioPacket peek() {
-		if (isEmpty())
-			return null;
-		return mWorkQueue.elementAt(0);
+		//if (isEmpty())
+		//	return null;
+		//return mWorkQueue.elementAt(0);
+		return mWorkQueue.peek();
 	}
 
 	public synchronized boolean isEmpty() {
@@ -268,7 +273,8 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 	@Override
 	public void put(IAudioPacket event) {
 		try {
-			mWorkQueue.addElement(event);
+			//mWorkQueue.addElement(event);
+			mWorkQueue.add(event);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -285,6 +291,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		try {
 			log.info("Clearing Work Queue. Number of Items: " + mWorkQueue.size());
 			mWorkQueue.clear();
+			
 			log.info("WorkQueue Cleared");
 		} catch (Exception e) {
 			log.debug(e.getMessage(), e);

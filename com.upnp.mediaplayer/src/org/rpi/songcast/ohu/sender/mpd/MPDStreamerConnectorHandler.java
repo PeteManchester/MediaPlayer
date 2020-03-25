@@ -117,7 +117,7 @@ public class MPDStreamerConnectorHandler extends SimpleChannelInboundHandler<Htt
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-		log.error("MPDConnector Connection Error: ", cause);
+		log.error("Error MPDConnectorHandler: ", cause);
 		ctx.close();
 	}
 }

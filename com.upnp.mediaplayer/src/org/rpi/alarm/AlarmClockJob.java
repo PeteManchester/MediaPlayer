@@ -9,7 +9,7 @@ import org.rpi.player.PlayManager;
 
 public class AlarmClockJob implements Job {
 
-	private static Logger log = Logger.getLogger(AlarmClockJob.class);
+	private Logger log = Logger.getLogger(AlarmClockJob.class);
 
 	@Override
 	public void execute(JobExecutionContext context)

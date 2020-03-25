@@ -8,6 +8,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.ResourceLeakDetector;
 import io.netty.util.ResourceLeakDetector.Level;
+import io.netty.util.concurrent.DefaultThreadFactory;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -18,6 +19,7 @@ import java.security.Security;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ThreadFactory;
 
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -41,8 +43,8 @@ public class AirPlayThread extends Thread {
 	private String password;
 	private byte[] hwAddr = null;
 	
-	private EventLoopGroup group = new NioEventLoopGroup();
-	private EventLoopGroup workerGroup = new NioEventLoopGroup(1);
+	private EventLoopGroup group = null;
+	private EventLoopGroup workerGroup = null;
 
 	// private static ChannelGroup s_allChannels = new DefaultChannelGroup();
 
@@ -61,6 +63,11 @@ public class AirPlayThread extends Thread {
 	 */
 	public AirPlayThread(String name) {
 		super();
+		ThreadFactory threadFactory = new DefaultThreadFactory("AirplayGroup");
+		group = new NioEventLoopGroup(1, threadFactory);
+		
+		ThreadFactory threadFactoryWorker = new DefaultThreadFactory("AirplayGroup");
+		workerGroup = new NioEventLoopGroup(1, threadFactoryWorker);
 		this.name = name;
 	}
 

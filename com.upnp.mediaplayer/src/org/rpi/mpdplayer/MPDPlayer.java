@@ -22,7 +22,7 @@ import org.rpi.radio.parsers.FileParser;
 
 public class MPDPlayer extends Observable implements IPlayer, Observer {
 
-	private static Logger log = Logger.getLogger(MPDPlayer.class);
+	private Logger log = Logger.getLogger(MPDPlayer.class);
 	HashMap<String, ChannelBase> tracks = new HashMap<String, ChannelBase>();
 
 	private TCPConnector tcp = null;

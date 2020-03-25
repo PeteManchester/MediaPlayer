@@ -64,7 +64,7 @@ public class AudioALACDecode extends MessageToMessageDecoder<ByteBuf> {
 	
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		log.error(cause);
+		log.error("Error AudioALACDecode",cause);
 		ctx.close();
 	}
 	

@@ -2,15 +2,15 @@ package org.rpi.songcast.ohu.sender;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.concurrent.ThreadFactory;
 
 import org.apache.log4j.Logger;
 import org.rpi.songcast.ohu.sender.response.OHUSenderAudioResponse;
+import org.rpi.songcast.ohu.sender.response.OHUSenderMetaTextResponse;
 import org.rpi.songcast.ohu.sender.response.OHUSenderTrackResponse;
 import org.rpi.utils.Utils;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.FixedRecvByteBufAllocator;
@@ -18,6 +18,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.util.concurrent.DefaultThreadFactory;
 
 public class OHUSenderConnection {
 
@@ -27,7 +28,7 @@ public class OHUSenderConnection {
 	private InetAddress localInetAddr = null;
 	private InetSocketAddress localInetSocket = null;
 
-	private EventLoopGroup group = new NioEventLoopGroup(1);
+	private EventLoopGroup group = null;
 
 	private DatagramChannel ch = null;
 
@@ -35,7 +36,12 @@ public class OHUSenderConnection {
 
 	private boolean enabled = true;
 
+	private OHUSenderTrackResponse ohuTrackResponse = null;
+	private OHUSenderMetaTextResponse ohuMetaTextResponse = null;
+
 	public OHUSenderConnection(InetAddress localInetAddr) {
+		ThreadFactory threadFactory = new DefaultThreadFactory("OHUSenderEventLoopGroupThread");
+		group = new NioEventLoopGroup(4, threadFactory);
 		log.debug("Create OHUSenderConnector: " + localInetAddr.getHostAddress());
 		this.localInetAddr = localInetAddr;
 		log.debug("Created OHUSenderConnector: " + localInetAddr.getHostAddress());
@@ -82,17 +88,16 @@ public class OHUSenderConnection {
 	 */
 	public void sendMessage(DatagramPacket packet) throws Exception {
 		try {
-			// ch.writeAndFlush(packet);
-
-			ch.writeAndFlush(packet).addListener(new ChannelFutureListener() {
-
-				@Override
-				public void operationComplete(ChannelFuture future) throws Exception {
-					if (!future.isSuccess()) {
-						log.error("Error writing Datagram Packet for RemoteHost");
-					}
-				}
-			});
+			ch.writeAndFlush(packet);
+			/*
+			 * ch.writeAndFlush(packet).addListener(new ChannelFutureListener()
+			 * {
+			 * 
+			 * @Override public void operationComplete(ChannelFuture future)
+			 * throws Exception { if (!future.isSuccess()) {
+			 * log.error("Error writing Datagram Packet for RemoteHost"); } }
+			 * });
+			 */
 
 		} catch (Exception e) {
 			log.error("SendMessage", e);
@@ -161,15 +166,26 @@ public class OHUSenderConnection {
 			return;
 		}
 		DatagramPacket packet = new DatagramPacket(r.getBuffer(), remoteInetSocket, localInetSocket);
+		// r.getBuffer().release();
 		sendMessage(packet);
 	}
-	 
-	//TODO make just one method to send all Songcast responses..
-	public void sendMessage(OHUSenderTrackResponse r) throws Exception {
+
+	// TODO make just one method to send all Songcast responses..
+	public void sendMessage(OHUSenderTrackResponse ohuTrackResponse) throws Exception {
+		this.ohuTrackResponse = ohuTrackResponse;
 		if (remoteInetSocket == null) {
 			return;
 		}
-		DatagramPacket packet = new DatagramPacket(r.getBuffer(), remoteInetSocket, localInetSocket);
+		DatagramPacket packet = new DatagramPacket(this.ohuTrackResponse.getBuffer().retain(), remoteInetSocket, localInetSocket);
+		sendMessage(packet);
+	}
+
+	public void sendMessage(OHUSenderMetaTextResponse ohuMetaTextResponse) throws Exception {
+		this.ohuMetaTextResponse = ohuMetaTextResponse;
+		if (remoteInetSocket == null) {
+			return;
+		}
+		DatagramPacket packet = new DatagramPacket(ohuMetaTextResponse.getBuffer().retain(), remoteInetSocket, localInetSocket);
 		sendMessage(packet);
 	}
 
@@ -203,6 +219,24 @@ public class OHUSenderConnection {
 		builder.append(enabled);
 		builder.append("]");
 		return builder.toString();
+	}
+
+	public void sendTrackDetails() {
+		if (ohuTrackResponse != null) {
+			try {
+				sendMessage(ohuTrackResponse);
+			} catch (Exception e) {
+				log.error("Error Sending OHUTrackResponse", e);
+			}
+		}
+		if (ohuMetaTextResponse != null) {
+			try {
+				sendMessage(ohuMetaTextResponse);
+			} catch (Exception e) {
+				log.error("Error Sending OHUMetaTextResponse", e);
+			}
+		}
+
 	}
 
 }

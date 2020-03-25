@@ -1,4 +1,6 @@
 package org.rpi.songcast.ohu.sender.mpd;
+import org.rpi.songcast.ohu.receiver.OHULeakCatcher;
+
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -27,12 +29,12 @@ public class MPDStreamerConnectorInitializer extends ChannelInitializer<SocketCh
             p.addLast(sslCtx.newHandler(ch.alloc()));
         }
         //The FrameBuffer will ensure that each chunk is 1764 (441 * 4)
-        p.addLast(new MPDStreamerBuffer());
+        p.addLast("MPDStreamerBuffer",new MPDStreamerBuffer());
         
         //p.addLast(new HttpClientCodec(chunkSize, 8192, chunkSize));
         
         //Just use the Encoder so that we can get the raw content.
-        p.addLast(new HttpRequestEncoder());
+        p.addLast("MPDHttpEnconder",new HttpRequestEncoder());
 
         // Remove the following line if you don't want automatic content decompression.
         //p.addLast(new HttpContentDecompressor());
@@ -43,6 +45,7 @@ public class MPDStreamerConnectorInitializer extends ChannelInitializer<SocketCh
         //p.addLast(new MPDStreamerConnectorHandler());
         
         //Package the raw bytes to a Songcast Audio Message
-        p.addLast(new MPDStreamerMessageHandler());
+        p.addLast("MPDStreamerMessageHandler",new MPDStreamerMessageHandler());
+        p.addLast("MPDLeakCatcher", new OHULeakCatcher());
     }
 }

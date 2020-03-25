@@ -12,12 +12,16 @@ import org.rpi.player.events.EventTrackChanged;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.songcast.ohu.sender.mpd.MPDStreamerController;
 import org.rpi.songcast.ohu.sender.response.OHUSenderAudioResponse;
+import org.rpi.songcast.ohu.sender.response.OHUSenderMetaTextResponse;
 import org.rpi.songcast.ohu.sender.response.OHUSenderTrackResponse;
 
 public class OHUSenderThread implements Runnable, Observer {
 
 	private boolean isRun = true;
 	private OHUSenderConnection ohu = null;
+	
+	private int iMetaTextSequence = 0;
+	private int iTrackSequence = 0;
 
 	private Logger log = Logger.getLogger(this.getClass());
 
@@ -60,6 +64,7 @@ public class OHUSenderThread implements Runnable, Observer {
 
 	@Override
 	public void update(Observable o, Object e) {
+		
 		EventBase base = (EventBase) e;
 		switch (base.getType()) {
 		case EVENTTRACKCHANGED:
@@ -69,18 +74,37 @@ public class OHUSenderThread implements Runnable, Observer {
 				}
 				EventTrackChanged etc = (EventTrackChanged) e;
 				ChannelBase track = etc.getTrack();
-				OHUSenderTrackResponse r = new OHUSenderTrackResponse(1, track.getUri(), track.getMetadata());
+				OHUSenderTrackResponse r = new OHUSenderTrackResponse(iTrackSequence, track.getUri(), track.getMetadata());
 				ohu.sendMessage(r);
+				iTrackSequence++;
+				if(iTrackSequence >= Integer.MAX_VALUE) {
+					iTrackSequence = 0;
+				}
 			} catch (Exception ex) {
-				log.error("TrackChanged", ex);
+				log.error("Track Changed", ex);
 			}
 
 			break;
 		case EVENTUPDATETRACKMETATEXT:
-			EventUpdateTrackMetaText et = (EventUpdateTrackMetaText) e;
-			log.debug("TrackMetaDataChanged: " + et.getMetaText());
+			try {
+				if(ohu ==null) {
+					return;
+				}				
+				EventUpdateTrackMetaText et = (EventUpdateTrackMetaText) e;
+				OHUSenderMetaTextResponse mtr = new OHUSenderMetaTextResponse(iMetaTextSequence, et.getMetaText());
+				ohu.sendMessage(mtr);
+				iMetaTextSequence++;
+				if(iMetaTextSequence >= Integer.MAX_VALUE) {
+					iMetaTextSequence = 0;
+				}
+				log.debug("TrackMetaDataChanged: " + et.getMetaText());
+			}
+			catch(Exception ex) {
+				log.error("MetaText Changed", ex);
+			}
+			
 		}
-
+	
 	}
 
 }

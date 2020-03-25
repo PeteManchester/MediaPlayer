@@ -21,7 +21,7 @@ import org.rpi.player.events.EventBase;
 
 public class TCPConnector extends Observable implements Observer {
 
-	private static Logger log = Logger.getLogger(TCPConnector.class);
+	private Logger log = Logger.getLogger(TCPConnector.class);
 
 	final String MPD_OK = "OK";
 	final String list_begin = "command_list_begin";

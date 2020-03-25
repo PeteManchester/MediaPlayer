@@ -1,5 +1,6 @@
 package org.rpi.songcast.ohu.sender.mpd;
 
+import org.apache.log4j.Logger;
 import org.rpi.songcast.ohu.sender.response.OHUSenderAudioResponse;
 
 import io.netty.buffer.ByteBuf;
@@ -8,6 +9,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 public class MPDStreamerMessageHandler extends SimpleChannelInboundHandler<ByteBuf> {
+	
+	Logger log = Logger.getLogger(this.getClass());
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
@@ -29,6 +32,14 @@ public class MPDStreamerMessageHandler extends SimpleChannelInboundHandler<ByteB
 		}
 		
 		return out;
+	}
+	
+	
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+		log.error("Error MPDStreamerMessageHandler Error: " + cause);
+		cause.printStackTrace();
+		ctx.close();
 	}
 
 }

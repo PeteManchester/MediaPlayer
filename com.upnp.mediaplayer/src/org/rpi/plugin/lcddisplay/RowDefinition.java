@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 public class RowDefinition {
 
-	private static Logger log = Logger.getLogger(RowDefinition.class);
+	private Logger log = Logger.getLogger(RowDefinition.class);
 
 	private String text = "";
 	private boolean first_time = true;

@@ -11,7 +11,7 @@ import org.rpi.mplayer.CloseMe;
 
 public class FileParser {
 	
-	private static Logger log = Logger.getLogger(FileParser.class);
+	private Logger log = Logger.getLogger(FileParser.class);
 	public String getURL(String url)
 	{
 		String uURL = url.toUpperCase();

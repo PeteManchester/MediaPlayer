@@ -54,7 +54,7 @@
 	</target>
 	
 	<target name="deployGarden">
-			<antcall target="CopyFilesToRaspi">
+			<antcall target="CopyFilesToRaspiZero">
 				<param name="server_name" value="rpigarden" />
 			</antcall>
 	</target>
@@ -119,7 +119,7 @@
 			</fileset>
 		</scp>
 		
-		<!--  
+		  
 		<echo>Sending to ${server_name} Copying to mediaplayer_lib</echo>
 		<scp remoteTodir="root:root@${server_name}:/home/pi/mediaplayer/mediaplayer_lib" trust="yes" sftp="true">
 			<fileset dir="${buildbetamediaplayer}/mediaplayer_lib">
@@ -132,7 +132,7 @@
 			</fileset>
 		</scp>
 		
-		-->
+	
 		
 		
 				

@@ -15,7 +15,7 @@ import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 @PluginImplementation
 public class CustomButtonImpl implements CustomButtonInterface {
 	
-	private static Logger log = Logger.getLogger(CustomButtonImpl.class);
+	private Logger log = Logger.getLogger(CustomButtonImpl.class);
 	
 	private GpioController gpio = null;
 

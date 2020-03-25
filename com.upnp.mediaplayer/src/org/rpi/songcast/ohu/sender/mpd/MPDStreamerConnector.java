@@ -17,12 +17,14 @@ import io.netty.handler.codec.http.cookie.DefaultCookie;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import io.netty.util.concurrent.DefaultThreadFactory;
 
 import org.apache.log4j.Logger;
 import org.rpi.config.Config;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLException;
@@ -34,8 +36,13 @@ import javax.net.ssl.SSLException;
 public final class MPDStreamerConnector implements Runnable {
 
 	private Logger log = Logger.getLogger(this.getClass());
-	private EventLoopGroup group = new NioEventLoopGroup();
+	private EventLoopGroup group = null;
 	private Channel ch = null;
+	
+	public MPDStreamerConnector() {
+		ThreadFactory acceptFactory = new DefaultThreadFactory("MPDEventLoopGroupThread");
+		group = new NioEventLoopGroup(1,acceptFactory);
+	}
 
 	public void start() throws InterruptedException, URISyntaxException, SSLException {
 		String URL = "http://127.0.0.1:" + Config.getInstance().getMpdListenPort();
@@ -67,8 +74,9 @@ public final class MPDStreamerConnector implements Runnable {
 		}
 
 		// Configure the client.
-
+		// TODO use this to give the group a name. DefaultThreadFactory
 		try {
+			
 			Bootstrap b = new Bootstrap();
 			b.group(group).channel(NioSocketChannel.class).handler(new MPDStreamerConnectorInitializer(sslCtx));
 			boolean bConnect = true;
@@ -91,7 +99,7 @@ public final class MPDStreamerConnector implements Runnable {
 			HttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, uri.getRawPath(), Unpooled.EMPTY_BUFFER);
 			request.headers().set(HttpHeaderNames.HOST, host);
 			request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
-			request.headers().set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP);
+			//request.headers().set(HttpHeaderNames.ACCEPT_ENCODING, HttpHeaderValues.GZIP);
 
 			// Set some example cookies.
 			/*

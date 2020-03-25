@@ -22,7 +22,6 @@ public class OHUSenderChannelInitialiser extends ChannelInitializer<NioDatagramC
 		p.addLast("OHUDecoder", new OHUSenderMessageDecoder());
 		p.addLast("OHUSenderLogic", new OHUSenderLogicHandler());
 		p.addLast("OHULeakCatcher", new OHULeakCatcher());
-
 	}
 
 }

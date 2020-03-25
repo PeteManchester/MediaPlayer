@@ -24,7 +24,7 @@ public class AudioChannelRequestHandler extends ChannelInboundHandlerAdapter{
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		log.error(cause);
+		log.error("Error Airplay AudioChannelrequestHandler: ",cause);
 		ctx.close();
 	}
 	

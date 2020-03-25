@@ -1,6 +1,9 @@
 package org.rpi.songcast.ohu.receiver.handlers;
 
 import org.apache.log4j.Logger;
+import org.rpi.channel.ChannelSongcast;
+import org.rpi.player.PlayManager;
+import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.songcast.ohu.receiver.messages.OHUMessageMetaText;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -16,8 +19,22 @@ public class OHUMessageMetaTextHandler extends SimpleChannelInboundHandler<OHUMe
 		try {
 			if(msg instanceof OHUMessageMetaText)
 			{
-				OHUMessageMetaText meta_text = (OHUMessageMetaText)msg;
-				log.debug(meta_text.toString());
+				EventUpdateTrackMetaText ev = new EventUpdateTrackMetaText();
+				ChannelSongcast cs = new ChannelSongcast("", msg.getMetaText(), 1);
+				String meta_text = msg.getMetaText();
+				if (!meta_text.equalsIgnoreCase("")) {
+					ev.setMetaText(msg.getMetaText());
+					ev.setTitle(cs.getTitle());
+					ev.setArtist(cs.getArtist());
+					if (ev != null) {
+						log.debug("PlayManager, UpdateTrackInfo: " + ev);
+						PlayManager.getInstance().updateTrackInfo(ev);
+					}
+				}
+				else
+				{
+					log.debug("meta_text was Empty");
+				}
 			}
 		} catch (Exception e) {
 			log.error("Error Releasing MetaText ByteBuf");
@@ -26,7 +43,7 @@ public class OHUMessageMetaTextHandler extends SimpleChannelInboundHandler<OHUMe
 	
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-		log.error(cause);
+		log.error("Error. OHUMessageMetaTextHandler: ",cause);
 		ctx.close();
 	}
 
