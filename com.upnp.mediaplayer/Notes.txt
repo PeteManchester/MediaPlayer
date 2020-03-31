@@ -447,3 +447,20 @@ echo "    sudo systemctl status pifacertc"
 echo ""
 
 
+Raspi UDP buffer errors:
+https://support.oneidentity.com/syslog-ng-premium-edition/kb/267609/how-to-performance-tune-udp-log-reception-of-syslog-ng-udp-packets-are-getting-dropped-receiving-packet-receive-and-buffer-errors-
+https://jvns.ca/blog/2016/08/24/find-out-where-youre-dropping-packets/
+https://unix.stackexchange.com/questions/276831/udp-receive-buffer-error
+
+If experiencing packet loss on Songcast receiver try the following mod:
+
+nano /etc/sysctl.conf
+
+Modify or Add the following line:
+net.core.rmem_max =1310720
+
+To check on packet loss use the command 
+netstat -suna
+
+
+

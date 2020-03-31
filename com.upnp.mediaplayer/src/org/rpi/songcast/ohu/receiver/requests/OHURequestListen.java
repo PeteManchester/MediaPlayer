@@ -28,7 +28,7 @@ public class OHURequestListen {
 		byte[] type = new byte[]{(byte)(1 & 0xff)};		
 		int length = header.length() + 1 + 1 + 2;
 		//ByteBuf test = Unpooled.buffer(length);
-		buffer = Unpooled.buffer(length);
+		buffer = Unpooled.directBuffer(length);
 		buffer.writeBytes( header.getBytes(CharsetUtil.UTF_8));
 		buffer.writeBytes( version);
 		buffer.writeBytes( type);

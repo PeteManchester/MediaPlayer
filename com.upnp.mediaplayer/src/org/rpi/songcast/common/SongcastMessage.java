@@ -11,13 +11,21 @@ import io.netty.buffer.Unpooled;
 
 public class SongcastMessage {
 	
-	private ByteBuf data = null;
+	protected ByteBuf data = null;
 
 	/**
 	 * @return the data
 	 */
 	public ByteBuf getData() {
 		return data;
+	}
+	
+	public void release() {
+		int refCount = data.refCnt();
+		if(refCount>0)
+		{
+			data.release(refCount);
+		}	
 	}
 
 	/**

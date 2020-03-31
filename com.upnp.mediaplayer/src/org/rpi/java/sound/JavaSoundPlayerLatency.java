@@ -16,10 +16,12 @@ import javax.sound.sampled.SourceDataLine;
 import org.apache.log4j.Logger;
 import org.rpi.channel.ChannelAirPlay;
 import org.rpi.config.Config;
+import org.rpi.mplayer.TrackInfo;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventAirplayVolumeChanged;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventMuteChanged;
+import org.rpi.player.events.EventUpdateTrackInfo;
 import org.rpi.player.events.EventVolumeChanged;
 import org.rpi.player.observers.ObservableVolume;
 import org.rpi.utils.Utils;
@@ -35,7 +37,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 
 	private boolean bWrite = false;
 
-	//private Vector<IAudioPacket> mWorkQueue = new Vector<IAudioPacket>();
+	// private Vector<IAudioPacket> mWorkQueue = new Vector<IAudioPacket>();
 	private Queue<IAudioPacket> mWorkQueue = new ConcurrentLinkedQueue<IAudioPacket>();
 
 	private float volume = 0;
@@ -44,6 +46,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 	private boolean bMute = false;
 	private boolean sotware_mixer_enabled = false;
 	private boolean isAirplay = false;
+	private boolean isLatency = false;
 
 	private int bitDepth = 16;
 
@@ -51,15 +54,18 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		mastervolume = PlayManager.getInstance().getVolume();
 		airplayVolume = PlayManager.getInstance().getAirplayVolume();
 		volume = calculateVolume();
-		setVolume((int)volume);
+		setVolume((int) volume);
 		bMute = PlayManager.getInstance().getMute();
 		PlayManager.getInstance().observeVolumeEvents(this);
 		PlayManager.getInstance().observeVolumeEvents(this);
 		PlayManager.getInstance().observeAirplayVolumeEvents(this);
-		if(PlayManager.getInstance().getCurrentTrack() instanceof ChannelAirPlay )
-		{
-			isAirplay = !(Config.getInstance().isAirPlayMasterVolumeEnabled());			
-		}	
+		if (PlayManager.getInstance().getCurrentTrack() instanceof ChannelAirPlay) {
+			isLatency = Config.getInstance().isAirPlayLatencyEnabled();
+			isAirplay = !(Config.getInstance().isAirPlayMasterVolumeEnabled());
+		}
+		else {
+			isLatency = Config.getInstance().isSongcastLatencyEnabled();
+		}
 	}
 
 	@Override
@@ -109,16 +115,16 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 	}
 
 	private void addData(IAudioPacket packet) {
-
-		if (!bWrite ||bMute)
-			return;
 		try {
+		if (!bWrite || bMute)
+			return;
+
 			if (soundLine != null) {
 				switch (bitDepth) {
 				case 16:
 					soundLine.write(changeVolume16Bit(packet), 0, packet.getLength());
 					break;
-				
+
 				case 24:
 					soundLine.write(changeVolume24Bit(packet), 0, packet.getLength());
 					break;
@@ -126,7 +132,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 					soundLine.write(changeVolume32Bit(packet), 0, packet.getLength());
 					break;
 				}
-					
+
 			}
 		} catch (Exception e) {
 			int length = -99;
@@ -134,6 +140,8 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 				length = packet.getLength();
 			}
 			log.error("Error Writing Data, Data Length: " + length, e);
+		}finally {
+			packet.release();
 		}
 	}
 
@@ -141,9 +149,8 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 	 * Change the Volume of a 16 bit sample
 	 */
 	private byte[] changeVolume16Bit(IAudioPacket packet) {
-		if (volume >= 1 ||!sotware_mixer_enabled) {
-			if(!isAirplay)
-			{
+		if (volume >= 1 || !sotware_mixer_enabled) {
+			if (!isAirplay) {
 				return packet.getAudio();
 			}
 		}
@@ -166,10 +173,9 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		}
 		return audio;
 	}
-	
-	
+
 	private byte[] changeVolumeTest16Bit(IAudioPacket packet) {
-		if (volume >= 1 ||!sotware_mixer_enabled) {
+		if (volume >= 1 || !sotware_mixer_enabled) {
 			return packet.getAudio();
 		}
 		byte[] audio = packet.getAudio();
@@ -177,16 +183,16 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		for (int i = 0; i < audio.length; i += 2) {
 			// convert byte pair to int
 			byte[] data = new byte[2];
-			data[0] = audio[i+0];
-			data[1] = audio[i+1];
+			data[0] = audio[i + 0];
+			data[1] = audio[i + 1];
 
 			BigInteger big = new BigInteger(data);
 			float res = big.floatValue();
 			res = res * volume;
-			int ress = (int)res;
+			int ress = (int) res;
 			// convert back
-			audio[i+0] = (byte) ((ress & 0x0000FF00) >> 8);
-			audio[i+1] = (byte) ((ress & 0x000000FF) >> 0);
+			audio[i + 0] = (byte) ((ress & 0x0000FF00) >> 8);
+			audio[i + 1] = (byte) ((ress & 0x000000FF) >> 0);
 		}
 		return audio;
 	}
@@ -195,7 +201,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 	 * Change the Volume of a 24 bit sample
 	 */
 	private byte[] changeVolume24Bit(IAudioPacket packet) {
-		if (volume >= 1 ||!sotware_mixer_enabled) {
+		if (volume >= 1 || !sotware_mixer_enabled) {
 			return packet.getAudio();
 		}
 		byte[] audio = packet.getAudio();
@@ -203,27 +209,27 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		for (int i = 0; i < audio.length; i += 3) {
 			// convert byte pair to int
 			byte[] data = new byte[3];
-			data[0] = audio[i+0];
-			data[1] = audio[i+1];
-			data[2] = audio[i+2];
+			data[0] = audio[i + 0];
+			data[1] = audio[i + 1];
+			data[2] = audio[i + 2];
 			BigInteger big = new BigInteger(data);
 			float res = big.floatValue();
 			res = res * volume;
-			int ress = (int)res;
+			int ress = (int) res;
 			// convert back
-			audio[i+0] = (byte) ((ress & 0x00FF0000) >> 16);
-			audio[i+1] = (byte) ((ress & 0x0000FF00) >> 8);
-			audio[i+2] = (byte) ((ress & 0x000000FF) >> 0);
+			audio[i + 0] = (byte) ((ress & 0x00FF0000) >> 16);
+			audio[i + 1] = (byte) ((ress & 0x0000FF00) >> 8);
+			audio[i + 2] = (byte) ((ress & 0x000000FF) >> 0);
 
 		}
 		return audio;
 	}
-	
+
 	/*
 	 * Change the Volume of a 32 bit sample
 	 */
 	private byte[] changeVolume32Bit(IAudioPacket packet) {
-		if (volume >= 1 ||!sotware_mixer_enabled) {
+		if (volume >= 1 || !sotware_mixer_enabled) {
 			return packet.getAudio();
 		}
 		byte[] audio = packet.getAudio();
@@ -231,15 +237,15 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		for (int i = 0; i < audio.length; i += 4) {
 			byte[] data = new byte[4];
 			BigInteger big = new BigInteger(data);
-			float  res = big.floatValue();
+			float res = big.floatValue();
 			res = res * volume;
-			int ress = (int)res;
+			int ress = (int) res;
 
 			// convert back
-			audio[i+0] = (byte) ((ress & 0xFF000000) >> 24);
-			audio[i+0] = (byte) ((ress & 0x00FF0000) >> 16);
-			audio[i+1] = (byte) ((ress & 0x0000FF00) >> 8);
-			audio[i+3] = (byte) ((ress & 0x000000FF) >> 0);
+			audio[i + 0] = (byte) ((ress & 0xFF000000) >> 24);
+			audio[i + 0] = (byte) ((ress & 0x00FF0000) >> 16);
+			audio[i + 1] = (byte) ((ress & 0x0000FF00) >> 8);
+			audio[i + 3] = (byte) ((ress & 0x000000FF) >> 0);
 
 		}
 		return audio;
@@ -249,10 +255,10 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 	 * Get the first object out of the queue. Return null if the queue is empty.
 	 */
 	public synchronized IAudioPacket get() {
-		//IAudioPacket object = peek();
-		//if (object != null)
-		//	mWorkQueue.removeElementAt(0);
-		//return object;
+		// IAudioPacket object = peek();
+		// if (object != null)
+		// mWorkQueue.removeElementAt(0);
+		// return object;
 		return mWorkQueue.poll();
 	}
 
@@ -260,9 +266,9 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 	 * Peek to see if something is available.
 	 */
 	public IAudioPacket peek() {
-		//if (isEmpty())
-		//	return null;
-		//return mWorkQueue.elementAt(0);
+		// if (isEmpty())
+		// return null;
+		// return mWorkQueue.elementAt(0);
 		return mWorkQueue.peek();
 	}
 
@@ -273,7 +279,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 	@Override
 	public void put(IAudioPacket event) {
 		try {
-			//mWorkQueue.addElement(event);
+			// mWorkQueue.addElement(event);
 			mWorkQueue.add(event);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -291,7 +297,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		try {
 			log.info("Clearing Work Queue. Number of Items: " + mWorkQueue.size());
 			mWorkQueue.clear();
-			
+
 			log.info("WorkQueue Cleared");
 		} catch (Exception e) {
 			log.debug(e.getMessage(), e);
@@ -304,7 +310,10 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 			if (!isEmpty()) {
 				try {
 					IAudioPacket audio = get();
-					while (audio.getTimeToPlay() > System.currentTimeMillis()) {
+					if (soundLine == null) {
+						setAudioInformation(audio.getAudioInformation());
+					}
+					while (audio.getTimeToPlay() > System.currentTimeMillis() && isLatency) {
 						if (audio.expired()) {
 							break;
 						}
@@ -313,11 +322,30 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 					}
 					addData(audio);
 				} catch (Exception e) {
-					log.error("Error in Run Method");
+					log.error("Error in Run Method", e);
 				}
 			} else {
 				sleep(10);
 			}
+		}
+	}
+
+	private void setAudioInformation(AudioInformation ai) {
+		try {
+			createSoundLine(ai);
+			TrackInfo info = new TrackInfo();
+			info.setBitDepth(ai.getBitDepth());
+			info.setCodec(ai.getCodec());
+			info.setBitrate(ai.getBitRate());
+			info.setSampleRate((long) ai.getSampleRate());
+			info.setDuration(0);
+			EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
+			ev.setTrackInfo(info);
+			if (ev != null) {
+				PlayManager.getInstance().updateTrackInfo(ev);
+			}
+		} catch (Exception e) {
+
 		}
 	}
 
@@ -348,23 +376,19 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 			break;
 		case EVENTAIRPLAYVOLUMECHANGED:
 			EventAirplayVolumeChanged eva = (EventAirplayVolumeChanged) e;
-			try
-			{
+			try {
 				airplayVolume = eva.getVolume();
 				volume = setVolume((int) calculateVolume());
-			}
-			catch(Exception ex)
-			{
+			} catch (Exception ex) {
 				log.error(ex);
 			}
 			break;
 		case EVENTMUTECHANGED:
 			if (o instanceof ObservableVolume) {
 				try {
-					if(e instanceof EventMuteChanged)
-					{
-					EventMuteChanged evmc = (EventMuteChanged) e;
-					bMute = evmc.isMute();
+					if (e instanceof EventMuteChanged) {
+						EventMuteChanged evmc = (EventMuteChanged) e;
+						bMute = evmc.isMute();
 					}
 				} catch (Exception ex) {
 					log.error(e);
@@ -373,43 +397,35 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 			break;
 		}
 	}
-	
-	private long calculateVolume()
-	{ 
-		if(!isAirplay)
-		{
+
+	private long calculateVolume() {
+		if (!isAirplay) {
 			return mastervolume;
 		}
-		
-		if(!sotware_mixer_enabled)
-		{
+
+		if (!sotware_mixer_enabled) {
 			return airplayVolume;
 		}
-		
+
 		long res = mastervolume - (100 - airplayVolume);
-		if(res < 0 )
-		{
+		if (res < 0) {
 			res = 0;
 		}
-		if(res > 100)
-		{
+		if (res > 100) {
 			res = 100;
 		}
-		log.debug("masterVolume: " + mastervolume + " airplayVolume: " + airplayVolume +" volume: " + volume);
+		log.debug("masterVolume: " + mastervolume + " airplayVolume: " + airplayVolume + " volume: " + volume);
 		return res;
 	}
-	
 
 	/*
-	 * Because the volume isn't linear, fudge the values a bit.
-	 * How I wish I had listened in my maths class when they were talking about logarithms!!
+	 * Because the volume isn't linear, fudge the values a bit. How I wish I had
+	 * listened in my maths class when they were talking about logarithms!!
 	 */
-	private float setVolume(double vv)
-	{
-		int v = (int)vv;
+	private float setVolume(double vv) {
+		int v = (int) vv;
 		float res = 100;
-		switch(v)
-		{
+		switch (v) {
 		case 100:
 			res = 1f;
 			break;
@@ -474,7 +490,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		case 80:
 			res = 0.41f;
 			break;
-			
+
 		case 79:
 			res = 0.39f;
 			break;
@@ -505,7 +521,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		case 70:
 			res = 0.21f;
 			break;
-		
+
 		case 69:
 			res = 0.20f;
 			break;
@@ -536,7 +552,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		case 60:
 			res = 0.11f;
 			break;
-			
+
 		case 59:
 			res = 0.105f;
 			break;
@@ -567,7 +583,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		case 50:
 			res = 0.04f;
 			break;
-			
+
 		case 49:
 			res = 0.03f;
 			break;
@@ -598,7 +614,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		case 40:
 			res = 0.007f;
 			break;
-			
+
 		case 39:
 			res = 0.006f;
 			break;
@@ -629,7 +645,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		case 30:
 			res = 0.0033f;
 			break;
-			
+
 		case 29:
 			res = 0.0032f;
 			break;
@@ -660,7 +676,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		case 20:
 			res = 0.0023f;
 			break;
-			
+
 		case 19:
 			res = 0.0022f;
 			break;
@@ -691,7 +707,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		case 10:
 			res = 0.0013f;
 			break;
-			
+
 		case 9:
 			res = 0.0012f;
 			break;
@@ -721,7 +737,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 			break;
 		case 0:
 			res = 0.0f;
-			break;		
+			break;
 		}
 		return res;
 	}

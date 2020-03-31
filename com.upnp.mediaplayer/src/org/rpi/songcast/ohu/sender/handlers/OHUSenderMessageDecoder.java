@@ -14,6 +14,11 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageDecoder;
 
+/***
+ * Decode the Songcast OHU messsages
+ * @author phoyle
+ *
+ */
 public class OHUSenderMessageDecoder extends MessageToMessageDecoder<DatagramPacket> {
 
 	private Logger log = Logger.getLogger(this.getClass());

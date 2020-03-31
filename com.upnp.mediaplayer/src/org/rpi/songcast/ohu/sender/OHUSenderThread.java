@@ -1,5 +1,7 @@
 package org.rpi.songcast.ohu.sender;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.TimeUnit;
@@ -15,6 +17,8 @@ import org.rpi.songcast.ohu.sender.response.OHUSenderAudioResponse;
 import org.rpi.songcast.ohu.sender.response.OHUSenderMetaTextResponse;
 import org.rpi.songcast.ohu.sender.response.OHUSenderTrackResponse;
 
+import io.netty.buffer.ByteBuf;
+
 public class OHUSenderThread implements Runnable, Observer {
 
 	private boolean isRun = true;
@@ -22,6 +26,9 @@ public class OHUSenderThread implements Runnable, Observer {
 	
 	private int iMetaTextSequence = 0;
 	private int iTrackSequence = 0;
+	private int iCount = 0;
+	private int iSendTime = 0;
+	private int iCountNameFrame = 0;
 
 	private Logger log = Logger.getLogger(this.getClass());
 
@@ -33,7 +40,51 @@ public class OHUSenderThread implements Runnable, Observer {
 	public void setOHUSenderConnector(OHUSenderConnection ohu) {
 		this.ohu = ohu;
 	}
+	
+	
+	public void run() {
+		
+		try {
+			while (isRun) {
+				ZonedDateTime now = ZonedDateTime.now();	
+				
+				ByteBuf b = MPDStreamerController.getInstance().getNext();				
+				if (b != null) {
+					if (ohu != null) {
+						try {
+													
+							OHUSenderAudioResponse tab = new OHUSenderAudioResponse(b,iCount);
+							ohu.sendMessage(tab);
+							int seconds = (int) now.until(ZonedDateTime.now(), ChronoUnit.MILLIS);
+							iCount++;
+							if(iSendTime < seconds) {
+								iSendTime = seconds;
+							}
+							if(iCount % 1000 ==0) {
+								log.debug("Count: " + iCount + " Longest SendTime: " + iSendTime + " NoFrameCount: " + iCountNameFrame);
+								iSendTime = 0;
+								iCountNameFrame = 0;
+							}
+							TimeUnit.MILLISECONDS.sleep(4);
+						} catch (Exception e) {
+							log.error("Error Send AudioBytes", e);
+						}
+					}
+				} else {
+					//log.debug("No Frame");
+					iCountNameFrame++;
+					TimeUnit.MILLISECONDS.sleep(500);					
+				}
+			}
+		} catch (Exception e) {
+			log.error("Error Get AudioBytes", e);
+		}
 
+
+		
+	}
+
+	/*
 	@Override
 	public void run() {
 		try {
@@ -43,20 +94,33 @@ public class OHUSenderThread implements Runnable, Observer {
 				if (tab != null) {
 					if (ohu != null) {
 						try {
+							
+							ZonedDateTime now = ZonedDateTime.now();							
 							ohu.sendMessage(tab);
-							TimeUnit.MILLISECONDS.sleep(1);
+							int seconds = (int) now.until(ZonedDateTime.now(), ChronoUnit.MILLIS);
+							iCount++;
+							if(iSendTime < seconds) {
+								iSendTime = seconds;
+							}
+							if(iCount % 1000 ==0) {
+								log.debug("Longest SendTime: " + iSendTime);
+								iSendTime = 0;
+							}
+							
+							TimeUnit.MILLISECONDS.sleep(2);
 						} catch (Exception e) {
 							log.error("Error Send AudioBytes", e);
 						}
 					}
 				} else {
-					TimeUnit.MILLISECONDS.sleep(10);
+					TimeUnit.MILLISECONDS.sleep(4);
 				}
 			}
 		} catch (Exception e) {
 			log.error("Error Get AudioBytes", e);
 		}
 	}
+	*/
 
 	public void stop() {
 		isRun = false;

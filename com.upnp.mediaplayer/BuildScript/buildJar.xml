@@ -37,18 +37,18 @@
 	</target>
 	
 	<target name="deployStudy">
-		<antcall target="CopyFilesToRaspi">
+		<antcall target="CopyFilesToRaspiZero">
 			<param name="server_name" value="rpistudy" />
 		</antcall>
 	</target>
 
 	<target name="deployLounge">
-		<antcall target="CopyFilesToRaspi">
+		<antcall target="CopyFilesToRaspiZero">
 			<param name="server_name" value="rpilounge" />
 		</antcall>
 	</target>
 	<target name="deployBedroom">
-		<antcall target="CopyFilesToRaspi">
+		<antcall target="CopyFilesToRaspiZero">
 			<param name="server_name" value="rpibedroom" />
 		</antcall>
 	</target>

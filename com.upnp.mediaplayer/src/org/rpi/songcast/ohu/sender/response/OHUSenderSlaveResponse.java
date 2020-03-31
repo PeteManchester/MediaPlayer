@@ -21,7 +21,7 @@ public class OHUSenderSlaveResponse {
 		byte[] type = new byte[] { (byte) (6 & 0xff) };
 		numSlaves = slaves.size();
 		int length = header.length() + 1 + 1 + 2 + 4 + (numSlaves * 6) ;
-		buffer = Unpooled.buffer(length);
+		buffer = Unpooled.directBuffer(length);
 		buffer.writeBytes( header.getBytes(CharsetUtil.UTF_8));
 		buffer.writeBytes( version);
 		buffer.writeBytes( type);

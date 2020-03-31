@@ -18,7 +18,12 @@ public class AudioChannelRequestHandler extends ChannelInboundHandlerAdapter{
 		if(msg instanceof ByteBuf)
 		{
 			ByteBuf res = (ByteBuf)msg;
-			res.release();
+			int refCnt = res.refCnt();
+			if(refCnt>0)
+			{
+				log.debug("Leak Caught: " + msg);
+				res.release(refCnt);
+			}	
 		}
 	}
 

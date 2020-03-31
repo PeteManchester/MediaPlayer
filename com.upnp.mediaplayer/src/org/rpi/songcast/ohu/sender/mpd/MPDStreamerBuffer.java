@@ -8,6 +8,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
+@Deprecated
 public class MPDStreamerBuffer extends ByteToMessageDecoder {
 	Logger log = Logger.getLogger(this.getClass());
 	private boolean isFirstTime = true;
@@ -51,16 +52,20 @@ public class MPDStreamerBuffer extends ByteToMessageDecoder {
 		if(i > maxSize) {
 			maxSize = i;
 		}
+		
 		if(iCount % 1000 == 0) {
 			log.debug("MPDStreamerBuffer " + iCount + " Largest Buffer: " + maxSize);
 			maxSize = 0;
 		}
 		iCount++;
+		
 		out.add(in.readBytes(1764));
 		
 		//while(in.readableBytes()> 1764) {
 		//	out.add(in.readBytes(1764));
 		//}
+		
+		
 		
 		//log.debug("ReadableBytes: " + i);
 		

@@ -21,6 +21,12 @@ import org.rpi.player.events.EventVolumeChanged;
 import org.rpi.player.observers.ObservableVolume;
 import org.rpi.utils.Utils;
 
+/***
+ * Use the JavaSoundPlayerLatency
+ * @author phoyle
+ *
+ */
+@Deprecated
 public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer, Observer {
 
 	private Logger log = Logger.getLogger(this.getClass());

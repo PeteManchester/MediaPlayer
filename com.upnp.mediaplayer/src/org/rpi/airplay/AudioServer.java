@@ -8,6 +8,7 @@ package org.rpi.airplay;
 import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
+import org.rpi.airplay.audio.ProcessAirplayAudio;
 import org.rpi.config.Config;
 import org.rpi.java.sound.AudioInformation;
 import org.rpi.java.sound.IJavaSoundPlayer;
@@ -33,8 +34,8 @@ public class AudioServer {
 	public static final int MAX_PACKET = 2048; // Also in UDPListener (possible
 
 	
-	private IJavaSoundPlayer player = null;
-	private Thread threadPlayer = null;
+	private ProcessAirplayAudio processQueue = null;
+	private Thread threadProcessor = null;
 	
 	private SourceTimer timer = null;
 	private Thread timerThread = null;
@@ -66,11 +67,11 @@ public class AudioServer {
 	public void stop() {
 		log.debug("Stop AudioServer");
 		stopTimer();
-		if(player !=null)
+		if(processQueue !=null)
 		{
-			player.stop();
+			processQueue.stop();
 		}
-		threadPlayer = null;
+		threadProcessor = null;
 		
 		if(control !=null)
 		{
@@ -94,16 +95,17 @@ public class AudioServer {
 	 */
 	private void initRTP() {
 		AudioInformation audioInf = new AudioInformation(44100, 48, 16, 2, "ALAC", 0, 0);		
-		if (Config.getInstance().isAirPlayLatencyEnabled()) {
+		//if (Config.getInstance().isAirPlayLatencyEnabled()) {
 			// With Latency
-			player = new JavaSoundPlayerLatency();
-			threadPlayer = new Thread(player, "SongcastPlayerJavaSoundLatency");
-		} else {
-			player = new JavaSoundPlayerBasic();
-			threadPlayer = new Thread(player, "SongcastPlayerJavaSound");
-		}
-		player.createSoundLine(audioInf);
-		threadPlayer.start();	
+			processQueue = new ProcessAirplayAudio();
+			threadProcessor = new Thread(processQueue, "AirplayProcessAudio");
+		//} else {
+		//	player = new JavaSoundPlayerBasic();
+		//	threadPlayer = new Thread(player, "SongcastPlayerJavaSound");
+		//}
+		//player.createSoundLine(audioInf);
+		threadProcessor.start();
+		/*
 		TrackInfo info = new TrackInfo();
 		info.setBitDepth(audioInf.getBitDepth());
 		info.setCodec(audioInf.getCodec());
@@ -114,8 +116,9 @@ public class AudioServer {
 		ev.setTrackInfo(info);
 		if (ev != null) {
 			PlayManager.getInstance().updateTrackInfo(ev);
-		}			
-		control = new AudioChannel(session.getLocalAddress(), session.getRemoteAddress(),session.getControlPort(),player);
+		}	
+		*/		
+		control = new AudioChannel(session.getLocalAddress(), session.getRemoteAddress(),session.getControlPort(), processQueue);
 		startTimer();
 	}
 
@@ -124,7 +127,7 @@ public class AudioServer {
 	 * Flush the audioBuffer
 	 */
 	public void flush() {
-		player.clear();
+		processQueue.clear();
 	}
 	
 	private void startTimer() {

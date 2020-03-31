@@ -1,27 +1,27 @@
 package org.rpi.songcast.ohu.sender.mpd;
 
-import java.util.ArrayDeque;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import org.apache.log4j.Logger;
-import org.rpi.songcast.ohu.sender.response.OHUSenderAudioResponse;
-import org.scratchpad.songcast.test.http.streaming.TestHttpURLConnection;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+
+/***
+ * 
+ * @author phoyle 
+ * Main controller for the MPD HTTPD listener 
+ * MPD can be configured to stream PCM of HTTP. 
+ * This is used for the Songcast Sender
+ */
 public class MPDStreamerController {
 
 	private static MPDStreamerController instance = null;
 	private Logger log = Logger.getLogger(this.getClass());
+	private int iCount = 0;
+	private int maxSize = 0;
 
-	private Queue<OHUSenderAudioResponse> queue = new ConcurrentLinkedQueue<OHUSenderAudioResponse>();
-	// private Queue<OHUSenderAudioResponse> queue = new
-	// ArrayDeque<OHUSenderAudioResponse>();
+	private ByteBuf queue = Unpooled.directBuffer();
 	private Thread mpdThread = null;
 	private MPDStreamerConnector mpdClient = null;
-	// private TestHttpURLConnection mpdClient = null;
-	private int frameCount = 0;// Integer.MAX_VALUE - 1000;
-
-	// private boolean bFinished = false;
 
 	/***
 	 * 
@@ -42,59 +42,61 @@ public class MPDStreamerController {
 	}
 
 	/***
+	 * Get the next 1764 bytes of PCM
 	 * 
-	 * @param b
-	 * 
-	 *            public void addSoundByte(byte[] b, int frameId) {
-	 *            TestAudioByte t = new TestAudioByte(b,frameId); queue.add(t);
-	 *            }
+	 * @return
 	 */
+	public ByteBuf getNext() {
+		try {
+			if (getQueue().readableBytes() > 1764) {
+				ByteBuf out = Unpooled.directBuffer(1764);
+				getQueue().readBytes(out, 1764);
 
-	/**
-	 * @return the queue
-	 */
-	public Queue<OHUSenderAudioResponse> getQueue() {
+				getQueue().discardReadBytes();
+				return out;
+			}
+		} catch (Exception e) {
+			log.error("Error getNext", e);
+		} finally {
+
+		}
+
+		return null;
+	}
+
+	private synchronized ByteBuf getQueue() {
 		return queue;
 	}
 
 	/***
+	 * Add PCM to the buffer
 	 * 
-	 * @return
+	 * @param b
 	 */
-	public OHUSenderAudioResponse getNext() {
-		// log.debug("Queue Size: " + queue.size());
-		OHUSenderAudioResponse a = queue.poll();
-		if (a != null) {
-			frameCount++;
-			if (frameCount < 0) {
-				log.debug("Integer RollOver: " + frameCount);
-				frameCount = 0;
-			}
-			a.setFrameId(frameCount);
-			if (frameCount % 1000 == 0) {
-				log.debug("Frame: " + frameCount + " QueueSize: " + queue.size());
-				//System.gc();
-			}
-			
-			if(frameCount %10000 ==0) {
-				//System.gc();
-			}
+	public void addSoundByte(ByteBuf b) {
+		getQueue().writeBytes(b, 0, b.readableBytes());
+		int size = getQueue().readableBytes();
+		if (size > maxSize) {
+			maxSize = size;
 		}
-		return a;
-	}
+		int slice = 1024 * 200;
+		if (size > slice) {
+			log.debug("Buffer too big");
+			ByteBuf out = Unpooled.directBuffer(slice);
+			getQueue().readBytes(out, slice);
+			getQueue().discardReadBytes();
+			out.release();
+		}
 
-	public void addSoundByte(OHUSenderAudioResponse a) {
-		queue.add(a);
-		if(queue.size() > 100) {
-			log.debug("Message Buffer > 100, clean up a bit");
-			OHUSenderAudioResponse osar = queue.poll();
-			osar.getBuffer().release();
-			osar = null;
+		if (iCount % 1000 == 0) {
+			log.debug("Count: " + iCount + " MaxBufferSize: " + maxSize);
+			maxSize = 0;
 		}
+		iCount++;
 	}
 
 	/***
-	 * 
+	 * Start the MPDConnector
 	 */
 	private void startMPDConnection() {
 		log.debug("Start MPDConnection");
@@ -102,13 +104,12 @@ public class MPDStreamerController {
 			stopMPDConnection();
 		}
 		mpdClient = new MPDStreamerConnector();
-		// mpdClient = new TestHttpURLConnection();
 		mpdThread = new Thread(mpdClient, "MPDStreamerConnector");
 		mpdThread.start();
 	}
 
 	/***
-	 * 
+	 * Stop the MPDConnector
 	 */
 	private void stopMPDConnection() {
 		try {
@@ -123,20 +124,9 @@ public class MPDStreamerController {
 		}
 	}
 
-	/**
-	 * @return the bFinished
-	 * 
-	 *         public boolean isFinished() { return bFinished; }
+	/***
+	 * Start
 	 */
-
-	/**
-	 * @param bFinished
-	 *            the bFinished to set
-	 * 
-	 *            public void setFinished(boolean bFinished) { this.bFinished =
-	 *            bFinished; if(bFinished) { stopMPDConnection(); } }
-	 */
-
 	public void start() {
 		if (mpdClient != null) {
 			return;
@@ -146,6 +136,9 @@ public class MPDStreamerController {
 
 	}
 
+	/***
+	 * Stop
+	 */
 	public void stop() {
 		stopMPDConnection();
 	}

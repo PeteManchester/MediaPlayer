@@ -30,8 +30,9 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLException;
 
 /**
- * A simple HTTP client that prints out the content of the HTTP response to
- * {@link System#out} to test {@link HttpSnoopServer}.
+ * A simple HTTP client that prints out the content of the HTTP response.
+ * Used to connect to the local MPD httpd streamer
+ * 
  */
 public final class MPDStreamerConnector implements Runnable {
 

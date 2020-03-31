@@ -9,6 +9,14 @@ import org.rpi.songcast.ohu.sender.messages.OHUMessageListen;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
+/***
+ * Handle the OHU messages
+ * Join - Client wants to register for Songcast
+ * Listen - Client want to listen to Songcast
+ * Leave - Client wants to leave session
+ * @author phoyle
+ *
+ */
 public class OHUSenderLogicHandler extends SimpleChannelInboundHandler<Object> {
 
 	private Logger log = Logger.getLogger(this.getClass());
@@ -31,26 +39,9 @@ public class OHUSenderLogicHandler extends SimpleChannelInboundHandler<Object> {
 		} else if (msg instanceof OHUMessageListen) {
 			OHUMessageListen listen = (OHUMessageListen) msg;
 			OHUSenderController.getInstance().addListen(listen);
-			//log.debug("Listen: " + listen.getAddress());
 		}
 	}
 
-	
-
-	/***
-	 * Set the RemoteAddress of the primary Songcast Receiver.
-	 * 
-	 * @param remoteAddress
-	 
-	private void setRemoteAddress(InetSocketAddress remoteAddress) {
-		primaryReceiver = remoteAddress;
-		ohuSenderConnection.setRemoteAddress(remoteAddress);
-		if (remoteAddress == null) {
-			log.debug("All Songcast Receivers have been removed, stop the MPD Connection");
-			stopMPDConnection();
-		}
-	}
-	*/
 	
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
@@ -60,7 +51,6 @@ public class OHUSenderLogicHandler extends SimpleChannelInboundHandler<Object> {
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) {
-		// final Channel inboundChannel = ctx.channel();
 		log.debug("Channel Active::");
 	}
 

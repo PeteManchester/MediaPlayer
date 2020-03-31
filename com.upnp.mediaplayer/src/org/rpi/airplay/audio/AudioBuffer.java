@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 
+@Deprecated
 public class AudioBuffer extends MessageToMessageDecoder<AirPlayAudioHolder> {
 
 	private int last_sequence = 0;
@@ -19,18 +20,20 @@ public class AudioBuffer extends MessageToMessageDecoder<AirPlayAudioHolder> {
 	@Override
 	protected void decode(ChannelHandlerContext ctx, AirPlayAudioHolder msg, List<Object> out) throws Exception {
 		
-		map.put(msg.getFrameId(), msg);		
-		if (map.size() > 5) {
-			AirPlayAudioHolder a = map.values().stream().findFirst().get();
-			int sequence = a.getFrameId();
-			map.remove(sequence);
+		//map.put(msg.getFrameId(), msg);		
+		//if (map.size() > 5) {
+		//	AirPlayAudioHolder a = map.values().stream().findFirst().get();
+			int sequence = msg.getFrameId();
+			//map.remove(sequence);
 			if (sequence - last_sequence != 1) {
-				boolean isInList = map.containsKey(last_sequence + 1);
-				log.debug("Missed a Frame: " + sequence + " Last Frame: " + last_sequence + "     " + ((sequence - last_sequence) - 1) + " IsInBuffer: " + isInList);				
+				//boolean isInList = map.containsKey(last_sequence + 1);
+				log.debug("Missed a Frame: " + sequence + " Last Frame: " + last_sequence + "     " + ((sequence - last_sequence) - 1) );				
 			}
 			last_sequence = sequence;
-			out.add(a.getBuf());
-		}		
+			msg.getBuf().release();
+			//last_sequence = sequence;
+			//out.add(msg.getBuf());
+		//}		
 	}
 
 }

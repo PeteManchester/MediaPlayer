@@ -25,15 +25,15 @@ public class OHZZoneQueryRequest {
 		byte[] version = new byte[] { (byte) (1 & 0xff) };
 		byte[] type = new byte[] { (byte) (0 & 0xff) };
 		int length = header.length() + 1 + 1 + 2 + 4 + zone.length();
-		ByteBuf test = Unpooled.buffer(length);
-		test.setBytes(0, header.getBytes(CharsetUtil.UTF_8));
-		test.setBytes(4, version);
-		test.setBytes(5, type);
-		test.setShort(6, length);
-		test.setInt(8, zone.length());
-		test.setBytes(12, zone.getBytes(CharsetUtil.UTF_8));
-		buffer = Unpooled.copiedBuffer(test.array());
-		test.release();
+		buffer = Unpooled.directBuffer(length);
+		buffer.writeBytes( header.getBytes(CharsetUtil.UTF_8));
+		buffer.writeBytes( version);
+		buffer.writeBytes( type);
+		buffer.writeShort( length);
+		buffer.writeInt( zone.length());
+		buffer.writeBytes( zone.getBytes(CharsetUtil.UTF_8));
+		//buffer = Unpooled.copiedBuffer(test.array());
+		//test.release();
 		//log.debug(buffer.toString(CharsetUtil.UTF_8));
 	}
 

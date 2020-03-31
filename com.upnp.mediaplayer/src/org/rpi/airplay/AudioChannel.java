@@ -13,32 +13,33 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.rpi.airplay.audio.AirPlayAudioChannelInitializer;
+import org.rpi.airplay.audio.ProcessAirplayAudio;
 import org.rpi.java.sound.IJavaSoundPlayer;
 
 public class AudioChannel {
 
 	private Logger log = Logger.getLogger(this.getClass());
-	EventLoopGroup workerGroup = new NioEventLoopGroup(1);
-	Bootstrap b = new Bootstrap();
-	ChannelFuture channel = null;
+	private EventLoopGroup workerGroup = new NioEventLoopGroup(1);
+	private Bootstrap b = new Bootstrap();
+	private ChannelFuture channel = null;
 
-	public AudioChannel(InetSocketAddress local, InetSocketAddress remote, int remotePort, IJavaSoundPlayer audioQueue) {
-		initialize(local, remote, remotePort, audioQueue);
+	public AudioChannel(InetSocketAddress local, InetSocketAddress remote, int remotePort, ProcessAirplayAudio processQueue) {
+		initialize(local, remote, remotePort,processQueue);
 	}
 
-	private void initialize(InetSocketAddress local, InetSocketAddress remote, int remotePort, IJavaSoundPlayer audioQueue) {
+	private void initialize(InetSocketAddress local, InetSocketAddress remote, int remotePort, ProcessAirplayAudio processQueue) {
 		try {
 			b.group(workerGroup);
 			b.channel(NioDatagramChannel.class);
 			b.option(ChannelOption.SO_REUSEADDR, true);
 			b.option(ChannelOption.TCP_NODELAY, true);
-			int bufferSize = 4096;
+			int bufferSize = 4096 * 2;
 			b.option(ChannelOption.SO_RCVBUF, bufferSize);
 			b.option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(bufferSize * 2));
 			b.option(ChannelOption.SO_SNDBUF, bufferSize);
 
 			// b.option(ChannelOption.SO_KEEPALIVE, true);
-			b.handler(new AirPlayAudioChannelInitializer(audioQueue));
+			b.handler(new AirPlayAudioChannelInitializer(processQueue));
 			InetSocketAddress localAddr = new InetSocketAddress(local.getAddress().getHostAddress(), remotePort);
 			InetSocketAddress remoteAddr = new InetSocketAddress(remote.getAddress().getHostAddress(), 0);
 			log.debug("LocalAddress: " + localAddr.toString());

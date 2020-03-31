@@ -2,6 +2,8 @@ package org.rpi.songcast.ohu.receiver.messages;
 
 import io.netty.buffer.ByteBuf;
 
+import java.nio.charset.Charset;
+
 import org.apache.log4j.Logger;
 import org.rpi.java.sound.AudioInformation;
 import org.rpi.java.sound.IAudioPacket;
@@ -28,7 +30,7 @@ import org.rpi.songcast.common.SongcastMessage;
 //50 + n    Msg Total Bytes - Msg Header Bytes - Code Name Bytes (Sample data in big endian, channels interleaved, packed)
 
 public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
-	
+
 	private Logger log = Logger.getLogger(this.getClass());
 	private AudioInformation ai = null;
 	private byte[] audio;
@@ -36,26 +38,28 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 	private long time_to_play = 0;
 	private int attempts = 0;
 	private int length = 0;
+	private int iSampleRate = 0;
+	private int bitRate = 0;
+	private int codecNameLength = 0;
+	private int soundLength = 0;
 
-	public OHUMessageAudio(ByteBuf buf,boolean hasSlaves) {
+	public OHUMessageAudio(ByteBuf buf, boolean hasSlaves) {
 		super.setData(buf.retain());
-		//int Totallength = buf.getShort(6);
+		// int Totallength = buf.getShort(6);
 		int headerLength = buf.getByte(8) & ~0x80;
-		//int flags = buf.getByte(9) & ~0x80;
-		int sampleCount = buf.getShort(10);
+		// int flags = buf.getByte(9) & ~0x80;
+
 		frameNumber = buf.getInt(12);
 		int latency = buf.getInt(20);
-		//int timeStamp = buf.getInt(24);
-		//long StartSample = buf.getLong(28);
-		//long TotalSamples = buf.getLong(36);
-		int iSampleRate = buf.getInt(44);
-		int bitRate = buf.getInt(48);
-		int iBitDepth = buf.getByte(54) & ~0x80;
-		int channels = buf.getByte(55) & ~0x80;
-		int codecNameLength = buf.getByte(57) & ~0x80;
-		
-		
-		
+		// int timeStamp = buf.getInt(24);
+		// long StartSample = buf.getLong(28);
+		// long TotalSamples = buf.getLong(36);
+
+		codecNameLength = buf.getByte(57) & ~0x80;
+
+		iSampleRate = data.getInt(44);
+		bitRate = data.getInt(48);
+
 		if (bitRate > 0) {
 			bitRate = bitRate / 1000;
 		}
@@ -72,38 +76,29 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 			} catch (Exception e) {
 			}
 		}
-		if(hasSlaves)
-		{
-			//Add some latency if we are forwarding to other songcast receivers.
-			time += 150 ;
+		if (hasSlaves) {
+			// Add some latency if we are forwarding to other songcast
+			// receivers.
+			time += 150;
 		}
 		setTimeToPlay(time);
 
 		int soundStart = 8 + headerLength + codecNameLength;
 		int soundEnd = -99;
-		//soundEnd = soundStart + ((channels * iBitDepth * sampleCount) / 8);
+		// soundEnd = soundStart + ((channels * iBitDepth * sampleCount) / 8);
 		soundEnd = buf.readableBytes();
-		int soundLength = soundEnd - soundStart;
-		byte[] codec = new byte[codecNameLength];
-		buf.getBytes(58, codec, 0, codecNameLength);
-		String sCodec = "";
-		try {
-			sCodec = new String(codec, "UTF-8");
-		} catch (Exception e) {
+		soundLength = soundEnd - soundStart;
 
-		}
-		//log.debug("Audio Sound Length: " + soundLength);
-		//byte test = buf.getByte(buf.readerIndex());
-		//soundLength--;
+		// log.debug("Audio Sound Length: " + soundLength);
+		// byte test = buf.getByte(buf.readerIndex());
+		// soundLength--;
 		audio = (new byte[soundLength]);
 		length = soundLength;
 		if (buf.readableBytes() >= soundStart + soundLength) {
-			
+
 			buf.getBytes(soundStart, audio, 0, soundLength);
-			setAudioInformation(new AudioInformation(iSampleRate, bitRate, iBitDepth, channels, sCodec, soundLength, sampleCount));
-		}
-		else
-		{
+
+		} else {
 			log.error("Bufer was too small: " + (soundStart + soundLength + " BufferSize: " + buf.readableBytes()));
 		}
 	}
@@ -112,7 +107,25 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 	 * @return the ai
 	 */
 	public AudioInformation getAudioInformation() {
+		int sampleCount = data.getShort(10);
+
+		int iBitDepth = data.getByte(54) & ~0x80;
+		int channels = data.getByte(55) & ~0x80;
+		byte[] codec = new byte[codecNameLength];
+		// data.getBytes(58, codec, 0, codecNameLength);
+		String sCodec = data.getCharSequence(58, codecNameLength, Charset.forName("utf-8")).toString();
+		// try {
+		// sCodec = new String(codec, "UTF-8");
+		// } catch (Exception e) {
+
+		// }
+
+		setAudioInformation(new AudioInformation(iSampleRate, bitRate, iBitDepth, channels, sCodec, soundLength, sampleCount));
 		return ai;
+	}
+	
+	public void release() {
+		super.release();
 	}
 
 	/**
@@ -129,8 +142,6 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 	public byte[] getAudio() {
 		return audio;
 	}
-
-
 
 	/**
 	 * @return the frameNumber

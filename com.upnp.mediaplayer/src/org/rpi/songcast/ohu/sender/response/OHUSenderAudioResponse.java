@@ -1,7 +1,5 @@
 package org.rpi.songcast.ohu.sender.response;
 
-import java.nio.ByteOrder;
-
 import org.apache.log4j.Logger;
 
 import io.netty.buffer.ByteBuf;
@@ -53,7 +51,7 @@ public class OHUSenderAudioResponse {
 		int length = header.length() + 1 + 1 + 2 + 50 + codec_length + audioSize ;
 		//log.debug("AudioSize: " + audioSize + " Full Length: " + length);
 		int sampleCount = bytes.length/4;
-		buffer = Unpooled.buffer(length);
+		buffer = Unpooled.directBuffer(length);
 				
 		buffer.writeBytes( header.getBytes(CharsetUtil.UTF_8));
 		buffer.writeBytes( version);
@@ -93,6 +91,11 @@ public class OHUSenderAudioResponse {
 	
 
 	public OHUSenderAudioResponse(ByteBuf bytes) {
+		this(bytes, 0);
+	}
+
+
+	public OHUSenderAudioResponse(ByteBuf bytes, int iCount) {
 		byte[] version = new byte[] { (byte) (1 & 0xff) };
 		byte[] type = new byte[] { (byte) (3 & 0xff) };
 		//String codecName = "PCM   ";
@@ -102,37 +105,8 @@ public class OHUSenderAudioResponse {
 		int length = header.length() + 1 + 1 + 2 + 50 + codec_length + audioSize ;
 		//log.debug("AudioSize: " + audioSize + " Full Length: " + length);
 		int sampleCount = bytes.readableBytes()/4;
-		buffer = Unpooled.buffer();
-		//ByteBuf test = Unpooled.buffer(length);
-		//Header
-		/*
-		test.setBytes(0, header.getBytes(CharsetUtil.UTF_8));
-		test.setBytes(4, version);
-		test.setBytes(5, type);
-		test.setShort(6, length);
-		
-		test.setBytes(8, new byte[] {(byte) (50 &0xff)});//Header Length
-		test.setBytes(9, new byte[] {(byte) (2 &0xff)});
-		test.setShort(10, sampleCount);
-		
-		
-		test.setInt(16, 0);
-		test.setInt(20, 1);//MediaLatency
-		test.setInt(24, 1);//MediaTimestamp
-		test.setLong(28, 1);//Start Sample
-		test.setLong(36, 4);//Total Samples
-		test.setInt(44, 44100);//SampleRate
-		test.setInt(48, 1411200);//BitRate
-		test.setShort(52, 0);//Volume Offset
-		test.setBytes(54, new byte[] {(byte) (16 &0xff)});//BitDepth
-		test.setBytes(55, new byte[] {(byte) (2 &0xff)});//Channels
-		test.setBytes(56, new byte[] {(byte) (0 &0xff)});//Reserved
-		test.setBytes(57, new byte[] {(byte) (codec_length &0xff)});//CodecNameLength
-		test.setBytes(58, codecName.getBytes(CharsetUtil.UTF_8));//CodecName
-		//ByteBuf audio = Unpooled.buffer(bytes.length);
-		 * 
-		 */
-		
+		buffer = Unpooled.directBuffer();
+				
 		buffer.writeBytes( header.getBytes(CharsetUtil.UTF_8));
 		buffer.writeBytes( version);
 		buffer.writeBytes( type);
@@ -142,7 +116,7 @@ public class OHUSenderAudioResponse {
 		buffer.writeBytes( new byte[] {(byte) (2 &0xff)});
 		buffer.writeShort( sampleCount);
 		
-		buffer.writeInt(0);//FrameNumber
+		buffer.writeInt(iCount);//FrameNumber
 		buffer.writeInt( 0);//Network TimeStamp
 		buffer.writeInt( 1);//MediaLatency
 		buffer.writeInt( 1);//MediaTimestamp
@@ -164,24 +138,11 @@ public class OHUSenderAudioResponse {
 		buffer.writeBytes( new byte[] {(byte) (codec_length &0xff)});//CodecNameLength
 		//test.writeShort(codec_length);
 		buffer.writeBytes( codecName.getBytes(CharsetUtil.UTF_8));//CodecName
-		//ByteBuf audio = Unpooled.buffer(bytes.length);
 		
-		//log.debug("Audio Sender Before Audio: " + buffer.readableBytes() + " Audio Length: " + bytes.readableBytes());
-		
-		//byte[] convertedBytes = convertLEtoBE(bytes);
-		
-		buffer.writeBytes(bytes);
-		
-		//log.debug("Audio Sender with Audio: " + test.readableBytes());
-		//test.setBytes(58 + codec_length,bytes);
-		//test.order(ByteOrder.BIG_ENDIAN);
-
-		//buffer = Unpooled.copiedBuffer(test.array());
-		//test.release();
-		//log.debug("OHU AudioResponse: " + frameNumber);
+		buffer.writeBytes(convertLEtoBE(bytes));
+		//buffer.writeBytes(bytes);
 	}
-	
-	
+
 
 	/**
 	 * @return the buffer
@@ -190,23 +151,23 @@ public class OHUSenderAudioResponse {
 		return buffer;
 	}
 	
-	private byte[] convertLEtoBE(ByteBuf value) {
-		byte[] bytes = new byte[value.readableBytes()];
-		value.readBytes(bytes);
-		return convertLEtoBE(bytes);
-	}
 	
-	
-	private  byte[] convertLEtoBE(byte[] value) {
-	    final int length = value.length;
-	    byte[] res = new byte[length];
-	    for(int i = 0; i < length; i++) {
-	        res[length - i - 1] = value[i];
-	    }
-	    return res;
+	/***
+	 * Convert a Little Endian Byte Array to a Big Endian Byte Array
+	 * 
+	 * @param in
+	 * @return
+	 */
+	private ByteBuf convertLEtoBE(ByteBuf in) {
+		int iSize = in.readableBytes();
+		ByteBuf out = Unpooled.directBuffer(iSize);
+		while (in.readableBytes() >= 8) {
+			double i = in.readDoubleLE();
+			out.writeDouble(i);
+		}
+
+		return out;
 	}
-
-
 
 	public void setFrameId(int frameId) {
 		if(buffer !=null) {

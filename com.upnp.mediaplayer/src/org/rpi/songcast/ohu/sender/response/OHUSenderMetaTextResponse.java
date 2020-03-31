@@ -22,7 +22,7 @@ public class OHUSenderMetaTextResponse {
 		byte[] type = new byte[] { (byte) (5 & 0xff) };
 
 		int length = header.length() + 1 + 1 + 2 + 4 + 4  +  metatext.length() ;
-		buffer = Unpooled.buffer(length);
+		buffer = Unpooled.directBuffer(length);
 		//ByteBuf test = Unpooled.buffer(length);
 		buffer.writeBytes(header.getBytes(CharsetUtil.UTF_8));
 		buffer.writeBytes( version);

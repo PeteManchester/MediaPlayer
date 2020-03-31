@@ -16,5 +16,7 @@ public interface IAudioPacket {
 	public boolean expired() ;
 	
 	public int getLength();
+	
+	public void release();
 
 }

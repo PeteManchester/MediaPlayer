@@ -2,6 +2,7 @@ package org.rpi.airplay.audio;
 
 import io.netty.buffer.ByteBuf;
 
+@Deprecated
 public class AirPlayAudioHolder {
 	
 	private int frameId = 0;

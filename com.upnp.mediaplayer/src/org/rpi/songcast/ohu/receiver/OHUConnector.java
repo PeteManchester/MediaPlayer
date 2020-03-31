@@ -97,6 +97,7 @@ public class OHUConnector {
 			int byteBuffer = 10240;
 			b.option(ChannelOption.SO_REUSEADDR, true);
 			b.option(ChannelOption.IP_MULTICAST_LOOP_DISABLED, false);
+			b.option(ChannelOption.SO_BROADCAST, true);
 			b.option(ChannelOption.SO_RCVBUF, byteBuffer);
 			b.option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(byteBuffer * 4));
 			b.option(ChannelOption.SO_SNDBUF, byteBuffer);
@@ -173,8 +174,8 @@ public class OHUConnector {
 			if (ch != null) {
 				try {
 					OHZLeaveRequest leave = new OHZLeaveRequest();
-					ByteBuf buffer = Unpooled.copiedBuffer(leave.getBuffer());
-					DatagramPacket packet = new DatagramPacket(buffer, remoteInetSocket, localInetSocket);
+					//ByteBuf buffer = Unpooled.copiedBuffer(leave.getBuffer());
+					DatagramPacket packet = new DatagramPacket(leave.getBuffer().retain(), remoteInetSocket, localInetSocket);
 					log.debug("Sending : " + packet.toString());
 					// ch.writeAndFlush(packet).sync();
 					ch.writeAndFlush(packet);

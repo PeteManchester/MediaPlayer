@@ -20,6 +20,8 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.log4j.Logger;
 import org.rpi.airplay.AudioSessionHolder;
 import org.rpi.config.Config;
+import org.rpi.java.sound.IJavaSoundPlayer;
+
 
 public class AudioDecrpyt extends MessageToMessageDecoder<DatagramPacket> {
 
@@ -36,16 +38,19 @@ public class AudioDecrpyt extends MessageToMessageDecoder<DatagramPacket> {
 	private int start_count = 0;
 	
 	private boolean delay_start_audio = false;
+	
+	private ProcessAirplayAudio processQueue = null;
 
 
-	public AudioDecrpyt() {
-		initAES();
+	public AudioDecrpyt(ProcessAirplayAudio processQueue) {
+		//initAES();
+		this.processQueue = processQueue;
 		delay_start_audio = Config.getInstance().isAirPlayStartAudioDelayEnabled();
 	}
 
 	/**
 	 * Initiate our decryption objects
-	 */
+	 
 	private void initAES() {
 		try {
 			paramSpec = new IvParameterSpec(AudioSessionHolder.getInstance().getSession().getAESIV());
@@ -55,10 +60,12 @@ public class AudioDecrpyt extends MessageToMessageDecoder<DatagramPacket> {
 			log.error("Error initAES", e);
 		}
 	}
+	*/
 
 	@Override
 	protected void decode(ChannelHandlerContext ctx, DatagramPacket msg, List<Object> out) throws Exception {
 		try {
+			/*
 			ByteBuf buffer = msg.content();
 			//log.debug(buffer.readableBytes());
 			int type = buffer.getByte(1) & ~0x80;
@@ -103,7 +110,11 @@ public class AudioDecrpyt extends MessageToMessageDecoder<DatagramPacket> {
 				//audio.release();				
 				out.add(aph);
 				
+				
 			}
+			*/
+			//Just send it to a separate thread to see if that improves package loss
+			processQueue.add(msg.content());
 		} catch (Exception e) {
 			log.error("Error Decrypt Audio", e);
 		}

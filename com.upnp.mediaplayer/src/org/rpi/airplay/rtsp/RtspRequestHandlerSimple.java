@@ -225,10 +225,12 @@ public class RtspRequestHandlerSimple extends SimpleChannelInboundHandler<FullHt
 			response.headers().add("Session", "WENEEDASSESSION");
 			// log.debug("Respone: " + response.toString());
 			if (!ignore) {
-				ChannelFuture future = ctx.writeAndFlush(response);
-				if (!keepAlive) {
-					future.addListener(ChannelFutureListener.CLOSE);
-				}
+				if(ctx.channel().isWritable()) {
+					ChannelFuture future = ctx.writeAndFlush(response);
+					if (!keepAlive) {
+						future.addListener(ChannelFutureListener.CLOSE);
+					}
+				}				
 			}
 		}
 	}
