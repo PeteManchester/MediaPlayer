@@ -1,5 +1,8 @@
 package org.rpi.songcast.ohu.receiver.handlers;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+
 /**
  * Handle the OHUMessages
  * Forward all messages except Slave messages to any Slave Endpoints
@@ -24,8 +27,8 @@ public class OHUSlaveForwarder extends SimpleChannelInboundHandler<SongcastMessa
 	private Logger log = Logger.getLogger(this.getClass());
 	private ConcurrentHashMap<String, SlaveInfo> endpoints = new ConcurrentHashMap<String, SlaveInfo>();
 	private OHUChannelInitializer initializer = null;
-	public OHUSlaveForwarder(OHUChannelInitializer initializer)
-	{
+
+	public OHUSlaveForwarder(OHUChannelInitializer initializer) {
 		this.initializer = initializer;
 	}
 
@@ -36,26 +39,33 @@ public class OHUSlaveForwarder extends SimpleChannelInboundHandler<SongcastMessa
 			OHUMessageSlave slave = (OHUMessageSlave) msg;
 			endpoints = slave.getEndpoints();
 			initializer.setEndpoints(endpoints);
-			// msg.getData().release();
 		} else {
 			if (endpoints.size() > 0) {
+				ByteBuf buf = Unpooled.copiedBuffer(msg.getData());
 				for (SlaveInfo sl : endpoints.values()) {
 					try {
 						InetSocketAddress toAddress = sl.getRemoteAddress();
-						DatagramPacket packet = new DatagramPacket(msg.getData().retain(), toAddress);
-						ctx.channel().writeAndFlush(packet);
+						DatagramPacket packet = new DatagramPacket(buf.retain(), toAddress);
+						ctx.write(packet);
 					} catch (Exception e) {
 						log.error("Error forwarding to SlaveEndpoint", e);
 					}
 				}
+				try {
+					ctx.flush();
+				} catch (Exception e) {
+					log.error("Error Flushing", e);
+				} finally {
+					try {
+						int i = buf.refCnt();
+						if (i > 0) {
+							buf.release(i);
+						}
+					} catch (Exception e) {
+						log.error("Error Release Buffer", e);
+					}
+				}
 			}
-		}
-		try {
-			//msg.getData().release();
-		} catch (Exception e) {
-			log.error("Error Releasing Data", e);
-		}finally {
-			//msg.getData().release();
 		}
 		ctx.fireChannelRead(msg);
 	}

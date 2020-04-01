@@ -5,7 +5,6 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
 import java.util.Queue;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.sound.sampled.AudioFormat;

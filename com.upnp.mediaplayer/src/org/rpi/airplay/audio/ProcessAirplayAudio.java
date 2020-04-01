@@ -46,7 +46,7 @@ public class ProcessAirplayAudio implements Runnable {
 	private AlacFile alacFile;
 	private int frame_size = 0;
 	private int[] outbuffer;
-	private IJavaSoundPlayer audioQueue = null;
+	private IJavaSoundPlayer audioPlayer = null;
 	private Thread threadPlayer = null;
 
 	private int last_sequence = 0;
@@ -64,11 +64,11 @@ public class ProcessAirplayAudio implements Runnable {
 	}
 
 	private void startAudioPlayer() {
-		audioQueue = new JavaSoundPlayerLatency();
-		threadPlayer = new Thread(audioQueue, "AirplaySoundPlayer");
+		audioPlayer = new JavaSoundPlayerLatency();
+		threadPlayer = new Thread(audioPlayer, "AirplaySoundPlayer");
 
 		AudioInformation audioInf = new AudioInformation(44100, 48, 16, 2, "ALAC", 0, 0);
-		audioQueue.createSoundLine(audioInf);
+		audioPlayer.createSoundLine(audioInf);
 		threadPlayer.start();
 		TrackInfo info = new TrackInfo();
 		info.setBitDepth(audioInf.getBitDepth());
@@ -191,8 +191,8 @@ public class ProcessAirplayAudio implements Runnable {
 
 			AirPlayPacket packet = new AirPlayPacket();
 			packet.setAudio(input);
-			if (audioQueue != null) {
-				audioQueue.put(packet);
+			if (audioPlayer != null) {
+				audioPlayer.put(packet);
 			}
 		} catch (Exception e) {
 			log.error("Error Decode", e);
@@ -204,7 +204,18 @@ public class ProcessAirplayAudio implements Runnable {
 
 	public void stop() {
 		isRunning = false;
+		try {
+			if(audioPlayer !=null) {
+				audioPlayer.stop();
+				audioPlayer =null;				
+			}
+			threadPlayer = null;
+		}
+		 catch(Exception e) {
+			 log.error("Error Stopping SoundPlayer", e);
+		 }
 	}
+	
 
 	/**
 	 * Initiate our decryption objects

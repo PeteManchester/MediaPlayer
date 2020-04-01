@@ -35,7 +35,7 @@ public class AudioChannel {
 			b.option(ChannelOption.TCP_NODELAY, true);
 			int bufferSize = 4096 * 2;
 			b.option(ChannelOption.SO_RCVBUF, bufferSize);
-			b.option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(bufferSize * 2));
+			b.option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(bufferSize * 4));
 			b.option(ChannelOption.SO_SNDBUF, bufferSize);
 
 			// b.option(ChannelOption.SO_KEEPALIVE, true);
