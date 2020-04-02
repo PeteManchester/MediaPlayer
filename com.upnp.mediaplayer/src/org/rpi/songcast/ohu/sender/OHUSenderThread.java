@@ -65,7 +65,7 @@ public class OHUSenderThread implements Runnable, Observer {
 								iSendTime = 0;
 								iCountNameFrame = 0;
 							}
-							TimeUnit.MILLISECONDS.sleep(4);
+							TimeUnit.MILLISECONDS.sleep(2);
 						} catch (Exception e) {
 							log.error("Error Send AudioBytes", e);
 						}
@@ -73,7 +73,7 @@ public class OHUSenderThread implements Runnable, Observer {
 				} else {
 					//log.debug("No Frame");
 					iCountNameFrame++;
-					TimeUnit.MILLISECONDS.sleep(500);					
+					TimeUnit.MILLISECONDS.sleep(2);					
 				}
 			}
 		} catch (Exception e) {

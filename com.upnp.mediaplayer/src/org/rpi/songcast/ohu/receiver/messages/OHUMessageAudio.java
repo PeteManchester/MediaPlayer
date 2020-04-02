@@ -111,7 +111,7 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 
 		int iBitDepth = data.getByte(54) & ~0x80;
 		int channels = data.getByte(55) & ~0x80;
-		byte[] codec = new byte[codecNameLength];
+		//byte[] codec = new byte[codecNameLength];
 		// data.getBytes(58, codec, 0, codecNameLength);
 		String sCodec = data.getCharSequence(58, codecNameLength, Charset.forName("utf-8")).toString();
 		// try {

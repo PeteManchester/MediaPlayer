@@ -79,13 +79,18 @@ public class MPDStreamerController {
 		if (size > maxSize) {
 			maxSize = size;
 		}
-		int slice = 1024 * 200;
+		int slice = 1764000;
 		if (size > slice) {
-			log.debug("Buffer too big");
+			log.debug("Buffer too big: " + size);
+			try {
+				
+			}catch(Exception e) {
 			ByteBuf out = Unpooled.directBuffer(slice);
 			getQueue().readBytes(out, slice);
 			getQueue().discardReadBytes();
 			out.release();
+			}
+			
 		}
 
 		if (iCount % 1000 == 0) {

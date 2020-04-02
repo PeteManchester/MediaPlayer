@@ -6,6 +6,7 @@ import java.util.Observer;
 import java.util.Properties;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -107,7 +108,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 
 	private void sleep(int value) {
 		try {
-			Thread.sleep(value);
+			TimeUnit.MILLISECONDS.sleep(value);
 		} catch (InterruptedException e) {
 			log.error(e.getMessage(), e);
 		}
@@ -306,26 +307,32 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 	@Override
 	public void run() {
 		while (run) {
-			if (!isEmpty()) {
+			//if (!isEmpty()) {
 				try {
 					IAudioPacket audio = get();
-					if (soundLine == null) {
-						setAudioInformation(audio.getAudioInformation());
-					}
-					while (audio.getTimeToPlay() > System.currentTimeMillis() && isLatency) {
-						if (audio.expired()) {
-							break;
+					if(audio !=null) {
+						if (soundLine == null) {
+							setAudioInformation(audio.getAudioInformation());
 						}
-						sleep(1);
-						audio.incAttempts();
+						while (audio.getTimeToPlay() > System.currentTimeMillis() && isLatency) {
+							if (audio.expired()) {
+								break;
+							}
+							sleep(1);
+							audio.incAttempts();
+						}
+						addData(audio);
 					}
-					addData(audio);
+					else {
+						sleep(10);
+					}
+					
 				} catch (Exception e) {
 					log.error("Error in Run Method", e);
 				}
-			} else {
-				sleep(10);
-			}
+			//} else {
+			//	sleep(10);
+			//}
 		}
 	}
 

@@ -95,8 +95,7 @@ public class ProcessAirplayAudio implements Runnable {
 				decrypt(buffer);
 			} else {
 				try {
-					//log.debug("Waiting");
-					TimeUnit.MILLISECONDS.sleep(500);
+					TimeUnit.MILLISECONDS.sleep(50);
 				} catch (Exception e) {
 					log.error(e);
 				}
