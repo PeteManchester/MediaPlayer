@@ -83,12 +83,12 @@ public class MPDStreamerController {
 		if (size > slice) {
 			log.debug("Buffer too big: " + size);
 			try {
-				
+				ByteBuf out = Unpooled.directBuffer(slice);
+				getQueue().readBytes(out, slice - 7056);
+				getQueue().discardReadBytes();
+				out.release();
 			}catch(Exception e) {
-			ByteBuf out = Unpooled.directBuffer(slice);
-			getQueue().readBytes(out, slice);
-			getQueue().discardReadBytes();
-			out.release();
+				log.error("Error reducing buffer size", e);
 			}
 			
 		}

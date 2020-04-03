@@ -46,9 +46,12 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 	private boolean bMute = false;
 	private boolean sotware_mixer_enabled = false;
 	private boolean isAirplay = false;
-	private boolean isLatency = false;
+	//private boolean isLatency = false;
+	private int iCount = 0;
+	private int maxBuffer = 0;
 
 	private int bitDepth = 16;
+	
 
 	public JavaSoundPlayerLatency() {
 		mastervolume = PlayManager.getInstance().getVolume();
@@ -60,12 +63,11 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		PlayManager.getInstance().observeVolumeEvents(this);
 		PlayManager.getInstance().observeAirplayVolumeEvents(this);
 		if (PlayManager.getInstance().getCurrentTrack() instanceof ChannelAirPlay) {
-			isLatency = Config.getInstance().isAirPlayLatencyEnabled();
 			isAirplay = !(Config.getInstance().isAirPlayMasterVolumeEnabled());
 		}
-		else {
-			isLatency = Config.getInstance().isSongcastLatencyEnabled();
-		}
+		//else {
+			//isLatency = Config.getInstance().isSongcastLatencyEnabled();
+		//}
 	}
 
 	@Override
@@ -281,6 +283,16 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		try {
 			// mWorkQueue.addElement(event);
 			mWorkQueue.add(event);
+			int size = mWorkQueue.size();
+			if(size > maxBuffer) {
+				maxBuffer = size;
+			}
+			if(iCount % 1000 == 0) {
+				log.debug("Count: " + iCount + " MaxBufferSize: " + maxBuffer );
+				maxBuffer = 0;
+			}
+			iCount++;
+			
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -314,7 +326,8 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 						if (soundLine == null) {
 							setAudioInformation(audio.getAudioInformation());
 						}
-						while (audio.getTimeToPlay() > System.currentTimeMillis() && isLatency) {
+						//while (audio.getTimeToPlay() > System.currentTimeMillis() && audio.isLatencyEnabled()) {
+						while (audio.getTimeToPlay() > (int)System.currentTimeMillis()) {
 							if (audio.expired()) {
 								break;
 							}
@@ -324,7 +337,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 						addData(audio);
 					}
 					else {
-						sleep(10);
+						sleep(2);
 					}
 					
 				} catch (Exception e) {
