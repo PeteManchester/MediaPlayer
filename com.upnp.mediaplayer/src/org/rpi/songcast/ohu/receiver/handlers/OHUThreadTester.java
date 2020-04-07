@@ -29,7 +29,7 @@ public class OHUThreadTester implements Runnable {
 				short type = packet.getByte(5);
 				
 				if(type == 3) {				
-					OHUMessageAudio message = new OHUMessageAudio(packet, false);
+					OHUMessageAudio message = new OHUMessageAudio(packet);
 					if(message.getFrameNumber() - lastId != 1) {
 						log.debug("Last Frame was missing: This FrameId: " + message.getFrameNumber() + " Last FrameId: " + lastId);
 					}

@@ -22,9 +22,11 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ChannelFactory;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.AdaptiveRecvByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.DefaultMaxMessagesRecvByteBufAllocator;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.FixedRecvByteBufAllocator;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -95,11 +97,13 @@ public class OHUConnector {
 
 			// b.option(ChannelOption.SO_BROADCAST, true);
 			int byteBuffer = 10240;
+			// int byteBuffer = 1310720;
 			b.option(ChannelOption.SO_REUSEADDR, true);
 			b.option(ChannelOption.IP_MULTICAST_LOOP_DISABLED, false);
 			b.option(ChannelOption.SO_BROADCAST, true);
 			b.option(ChannelOption.SO_RCVBUF, byteBuffer);
 			b.option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(byteBuffer * 4));
+			//b.option(ChannelOption.RCVBUF_ALLOCATOR, new AdaptiveRecvByteBufAllocator(64,byteBuffer , 65536));
 			b.option(ChannelOption.SO_SNDBUF, byteBuffer);
 			// b.option(ChannelOption.IP_MULTICAST_TTL, 255);
 			// b.option(ChannelOption.IP_MULTICAST_IF, nic);
@@ -174,7 +178,8 @@ public class OHUConnector {
 			if (ch != null) {
 				try {
 					OHZLeaveRequest leave = new OHZLeaveRequest();
-					//ByteBuf buffer = Unpooled.copiedBuffer(leave.getBuffer());
+					// ByteBuf buffer =
+					// Unpooled.copiedBuffer(leave.getBuffer());
 					DatagramPacket packet = new DatagramPacket(leave.getBuffer().retain(), remoteInetSocket, localInetSocket);
 					log.debug("Sending : " + packet.toString());
 					// ch.writeAndFlush(packet).sync();

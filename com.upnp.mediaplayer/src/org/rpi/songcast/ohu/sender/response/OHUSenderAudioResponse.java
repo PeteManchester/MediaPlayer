@@ -1,7 +1,5 @@
 package org.rpi.songcast.ohu.sender.response;
 
-import org.apache.log4j.Logger;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.CharsetUtil;
@@ -38,111 +36,90 @@ import io.netty.util.CharsetUtil;
 public class OHUSenderAudioResponse {
 
 	private String header = "Ohm ";
-	private Logger log = Logger.getLogger(this.getClass());
+	//private Logger log = Logger.getLogger(this.getClass());
 	private ByteBuf buffer = null;
-	
-	public OHUSenderAudioResponse(byte[] bytes) {
-		byte[] version = new byte[] { (byte) (1 & 0xff) };
-		byte[] type = new byte[] { (byte) (3 & 0xff) };
-		//String codecName = "PCM   ";
-		String codecName = "PCM   ";
-		int codec_length = codecName.length();
-		int audioSize = bytes.length;
-		int length = header.length() + 1 + 1 + 2 + 50 + codec_length + audioSize ;
-		//log.debug("AudioSize: " + audioSize + " Full Length: " + length);
-		int sampleCount = bytes.length/4;
-		buffer = Unpooled.directBuffer(length);
-				
-		buffer.writeBytes( header.getBytes(CharsetUtil.UTF_8));
-		buffer.writeBytes( version);
-		buffer.writeBytes( type);
-		buffer.writeShort( length);
-		
-		buffer.writeBytes( new byte[] {(byte) (50 &0xff)});//Header Length
-		buffer.writeBytes( new byte[] {(byte) (2 &0xff)});
-		buffer.writeShort( sampleCount);
-		
-		buffer.writeInt(0);//FrameNumber
-		buffer.writeInt( 0);//Network TimeStamp
-		buffer.writeInt( 1);//MediaLatency
-		buffer.writeInt( 1);//MediaTimestamp
-		buffer.writeLong( 1);//Start Sample
-		buffer.writeLong(4);//Total Samples
-		//log.debug("SampleRate: " + test.readableBytes());
-		buffer.writeInt( 44100);//SampleRate
-		//log.debug("BitRate: " + test.readableBytes());
-		buffer.writeInt(1411200);//BitRate
-		//log.debug("VolumeOffset: " + test.readableBytes());
-		buffer.writeShort( 0);//Volume Offset
-		//log.debug("BitDepth: " + test.readableBytes());
-		buffer.writeBytes( new byte[] {(byte) (16 &0xff)});//BitDepth
-		//log.debug("Channels: " + test.readableBytes());
-		buffer.writeBytes( new byte[] {(byte) (2 &0xff)});//Channels
-		//log.debug("Reserved: " + test.readableBytes());
-		buffer.writeBytes( new byte[] {(byte) (0 &0xff)});//Reserved
-		//log.debug("CodecNameLength: " + test.readableBytes());
-		buffer.writeBytes( new byte[] {(byte) (codec_length &0xff)});//CodecNameLength
-		//test.writeShort(codec_length);
-		buffer.writeBytes( codecName.getBytes(CharsetUtil.UTF_8));//CodecName
-		
-		buffer.writeBytes(bytes);
+	private int audioSize = 0;
+	private long audioLength = 0;
+	private int bitRate = 1411200;
 
-	}
-	
 
 	public OHUSenderAudioResponse(ByteBuf bytes) {
-		this(bytes, 0);
+		this(bytes, 0, 0);
 	}
 
-
-	public OHUSenderAudioResponse(ByteBuf bytes, int iCount) {
+	public OHUSenderAudioResponse(ByteBuf bytes, int iCount, int latency) {
 		byte[] version = new byte[] { (byte) (1 & 0xff) };
 		byte[] type = new byte[] { (byte) (3 & 0xff) };
-		//String codecName = "PCM   ";
+		// String codecName = "PCM ";
 		String codecName = "PCM   ";
 		int codec_length = codecName.length();
-		int audioSize = bytes.readableBytes();
-		int length = header.length() + 1 + 1 + 2 + 50 + codec_length + audioSize ;
-		//log.debug("AudioSize: " + audioSize + " Full Length: " + length);
-		int sampleCount = bytes.readableBytes()/4;
-		buffer = Unpooled.directBuffer();
-				
-		buffer.writeBytes( header.getBytes(CharsetUtil.UTF_8));
-		buffer.writeBytes( version);
-		buffer.writeBytes( type);
-		buffer.writeShort( length);
-		
-		buffer.writeBytes( new byte[] {(byte) (50 &0xff)});//Header Length
-		buffer.writeBytes( new byte[] {(byte) (2 &0xff)});
-		buffer.writeShort( sampleCount);
-		
-		buffer.writeInt(iCount);//FrameNumber
-		buffer.writeInt( 0);//Network TimeStamp
-		buffer.writeInt( 1);//MediaLatency
-		buffer.writeInt( 1);//MediaTimestamp
-		buffer.writeLong( 1);//Start Sample
-		buffer.writeLong(4);//Total Samples
-		//log.debug("SampleRate: " + test.readableBytes());
-		buffer.writeInt( 44100);//SampleRate
-		//log.debug("BitRate: " + test.readableBytes());
-		buffer.writeInt(1411200);//BitRate
-		//log.debug("VolumeOffset: " + test.readableBytes());
-		buffer.writeShort( 0);//Volume Offset
-		//log.debug("BitDepth: " + test.readableBytes());
-		buffer.writeBytes( new byte[] {(byte) (16 &0xff)});//BitDepth
-		//log.debug("Channels: " + test.readableBytes());
-		buffer.writeBytes( new byte[] {(byte) (2 &0xff)});//Channels
-		//log.debug("Reserved: " + test.readableBytes());
-		buffer.writeBytes( new byte[] {(byte) (0 &0xff)});//Reserved
-		//log.debug("CodecNameLength: " + test.readableBytes());
-		buffer.writeBytes( new byte[] {(byte) (codec_length &0xff)});//CodecNameLength
-		//test.writeShort(codec_length);
-		buffer.writeBytes( codecName.getBytes(CharsetUtil.UTF_8));//CodecName
-		
-		buffer.writeBytes(convertLEtoBE(bytes));
-		//buffer.writeBytes(bytes);
-	}
+		audioSize = bytes.readableBytes();
 
+		int length = header.length() + 1 + 1 + 2 + 50 + codec_length + audioSize;
+		// log.debug("AudioSize: " + audioSize + " Full Length: " + length);
+		int sampleCount = bytes.readableBytes() / 4;
+		
+		int flags = 0;
+		
+		boolean isLossLess = true;
+		boolean isHalt = false;
+		boolean isResent = false;
+		
+		if(isHalt) {
+			flags |=1;
+		}
+		
+		if(isLossLess) {
+			flags |= 2;
+		}
+		
+		if(latency > 0) {
+			flags |= 4;
+		}
+		
+		if(isResent) {
+			flags |= 8;
+		}
+		
+		double al = 0;
+		if(audioSize > 0) {
+			al = ((audioSize * 8)*1000)  / (bitRate) ;
+		}
+		audioLength =  (long)al * 1000;
+		
+		buffer = Unpooled.directBuffer();
+
+		buffer.writeBytes(header.getBytes(CharsetUtil.UTF_8));
+		buffer.writeBytes(version);
+		buffer.writeBytes(type);
+		buffer.writeShort(length);
+
+		buffer.writeBytes(new byte[] { (byte) (50 & 0xff) });// Header Length
+		buffer.writeBytes(new byte[] { (byte) (flags & 0xff) });// Flags
+		buffer.writeShort(sampleCount);
+		buffer.writeInt(iCount);// FrameNumber
+
+		int now = (int)System.currentTimeMillis();
+
+		buffer.writeInt(now);// Network TimeStamp
+		buffer.writeInt(latency);// MediaLatency
+		buffer.writeInt(now);// MediaTimestamp
+		buffer.writeLong(0);// Start Sample
+		buffer.writeLong(4);// Total Samples
+		buffer.writeInt(44100);// SampleRate
+		buffer.writeInt(bitRate);// BitRate
+		buffer.writeShort(0);// Volume Offset
+		buffer.writeBytes(new byte[] { (byte) (16 & 0xff) });// BitDepth
+		buffer.writeBytes(new byte[] { (byte) (2 & 0xff) });// Channels
+		buffer.writeBytes(new byte[] { (byte) (0 & 0xff) });// Reserved
+		buffer.writeBytes(new byte[] { (byte) (codec_length & 0xff) });// CodecNameLength
+		buffer.writeBytes(codecName.getBytes(CharsetUtil.UTF_8));// CodecName
+
+		buffer.writeBytes(convertLEtoBE(bytes));
+		
+		
+		// buffer.writeBytes(bytes);
+	}
 
 	/**
 	 * @return the buffer
@@ -151,7 +128,14 @@ public class OHUSenderAudioResponse {
 		return buffer;
 	}
 	
-	
+	/***
+	 * Get the time in micro seconds that each audio packet lasts for
+	 * @return
+	 */
+	public long getAudioLength() {
+		return audioLength;
+	}
+
 	/***
 	 * Convert a Little Endian Byte Array to a Big Endian Byte Array
 	 * 
@@ -170,20 +154,19 @@ public class OHUSenderAudioResponse {
 	}
 
 	public void setFrameId(int frameId) {
-		if(buffer !=null) {
+		if (buffer != null) {
 			try {
-				if(buffer.capacity() > 16) {
-					buffer.setInt(12, frameId);		
-				}else {
-					log.error("Could Not Set FrameId. BufferSize: " + buffer.capacity());
+				if (buffer.capacity() > 16) {
+					buffer.setInt(12, frameId);
+				} else {
+					//log.error("Could Not Set FrameId. BufferSize: " + buffer.capacity());
 				}
-				
+
+			} catch (Exception e) {
+				//log.error("Error setFrameId. Buffer Size: " + buffer.readableBytes(), e);
 			}
-			catch(Exception e) {
-				log.error("Error setFrameId. Buffer Size: " + buffer.readableBytes() ,e);
-			}
-			
-		}		
+
+		}
 	}
 
 }

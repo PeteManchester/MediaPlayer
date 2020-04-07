@@ -9,7 +9,7 @@ public interface IAudioPacket {
 
 	public int getFrameNumber() ;
 
-	public long getTimeToPlay() ;
+	public int getTimeToPlay() ;
 
 	public void incAttempts() ;
 	
@@ -18,5 +18,7 @@ public interface IAudioPacket {
 	public int getLength();
 	
 	public void release();
+	
+	public boolean isLatencyEnabled();
 
 }

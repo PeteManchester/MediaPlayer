@@ -31,7 +31,8 @@ public class OHUSenderMessageDecoder extends MessageToMessageDecoder<DatagramPac
 		if (msg instanceof DatagramPacket) {
 
 			ByteBuf buf = msg.content();
-			int type = buf.getByte(5) & ~0x80;
+			//int type = buf.getByte(5) & ~0x80;
+			int type = buf.getUnsignedByte(5);
 			SongcastMessage message = null;
 			switch (type) {
 			case 0:// Join

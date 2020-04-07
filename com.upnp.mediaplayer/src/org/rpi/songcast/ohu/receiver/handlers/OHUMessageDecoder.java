@@ -24,12 +24,13 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 public class OHUMessageDecoder extends MessageToMessageDecoder<DatagramPacket> {
 
 	private Logger log = Logger.getLogger(this.getClass());
-	private OHUChannelInitializer initializer = null;
-	private int largestPacketSize = 0;
-	private int iCount = 0;
+	//private OHUChannelInitializer initializer = null;
+	//private int largestPacketSize = 0;
+	//private int iCount = 0;
+	//private long lastMessage = 0;
 
-	public OHUMessageDecoder(OHUChannelInitializer initializer) {
-		this.initializer = initializer;
+	public OHUMessageDecoder() {
+		//this.initializer = initializer;
 	}
 
 	@Override
@@ -46,14 +47,24 @@ public class OHUMessageDecoder extends MessageToMessageDecoder<DatagramPacket> {
 		}
 		iCount++;
 		*/
-		if (msg instanceof DatagramPacket) {
+		
+		//long now = System.currentTimeMillis();
+		//long messageTime = now - lastMessage;
+		//if(messageTime > 10) {
+		//	log.debug("Message Time: " + (now - lastMessage));
+		//}				
+		//lastMessage = now;
+		
+		//if (msg instanceof DatagramPacket) {
 
 			ByteBuf buf = msg.content();
-			int type = buf.getByte(5) & ~0x80;
+
+			//int type = buf.getByte(5) & ~0x80;
+			int type = buf.getUnsignedByte(5);
 			SongcastMessage message = null;
 			switch (type) {
 			case 3:// Audio
-				message = new OHUMessageAudio(buf, initializer.hasSlaves());
+				message = new OHUMessageAudio(buf);
 				out.add(message);
 				break;
 			case 4:// Track
@@ -71,9 +82,10 @@ public class OHUMessageDecoder extends MessageToMessageDecoder<DatagramPacket> {
 			default:
 				log.info("Unknown Message. Type: " + type + " Buffer: " + buf.toString(Charset.forName("utf-8")));
 				break;
-			}
-
-		}
+			}			
+		//}
+		//long processTime = System.currentTimeMillis() - now;
+		//log.debug("Message Time: " + messageTime + " Process Time: " + processTime);
 	}
 
 	@Override

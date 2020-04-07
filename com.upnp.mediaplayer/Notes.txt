@@ -457,10 +457,17 @@ If experiencing packet loss on Songcast receiver try the following mod:
 nano /etc/sysctl.conf
 
 Modify or Add the following line:
-net.core.rmem_max =1310720
+net.core.rmem_max = 1310720
+net.core.rmem_default = 1310720
+net.core.wmem_default=1310720
+net.core.wmem_max=1310720
+
 
 To check on packet loss use the command 
 netstat -suna
 
+
+Yet another guide on how to tune the linux network card:
+https://blog.packagecloud.io/eng/2016/06/22/monitoring-tuning-linux-networking-stack-receiving-data/
 
 

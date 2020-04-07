@@ -14,7 +14,7 @@ public class MPDStreamerMessageHandler extends SimpleChannelInboundHandler<Defau
 
 	private Logger log = Logger.getLogger(this.getClass());
 	private int iCount = 0;
-	private int iCountAudio =0;
+	//private int iCountAudio =0;
 	private int iMaxSize = 0;
 	private boolean isFirstTime = true;
 	private ZonedDateTime now = ZonedDateTime.now() ;
@@ -58,10 +58,8 @@ public class MPDStreamerMessageHandler extends SimpleChannelInboundHandler<Defau
 			ZonedDateTime latest = ZonedDateTime.now();
 			int seconds = (int) now.until(latest, ChronoUnit.MILLIS);
 			now = latest;			
-			log.debug("HttpContent. Count: " + iCount + " MaxSize: " + iMaxSize + " AudioCount: " + iCountAudio + " Time: " + seconds);
+			log.debug("HttpContent. Count: " + iCount + " MaxSize: " + iMaxSize + " Time: " + seconds);
 			iMaxSize = 0;
-			iCountAudio =0;
-
 		}
 		iCount++;
 	}

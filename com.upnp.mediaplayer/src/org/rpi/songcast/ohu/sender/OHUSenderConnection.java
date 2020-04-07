@@ -11,6 +11,7 @@ import org.rpi.songcast.ohu.sender.response.OHUSenderTrackResponse;
 import org.rpi.utils.Utils;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.AdaptiveRecvByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
@@ -63,12 +64,15 @@ public class OHUSenderConnection {
 			b.channel(NioDatagramChannel.class);
 
 			int byteBuffer = 10240;
+			//int byteBuffer = 1310720;
 			//int byteBuffer = 9216;
 			b.option(ChannelOption.SO_REUSEADDR, true);
 			b.option(ChannelOption.IP_MULTICAST_LOOP_DISABLED, false);
 			b.option(ChannelOption.SO_BROADCAST, true);
 			b.option(ChannelOption.SO_RCVBUF, byteBuffer);
-			b.option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(byteBuffer *4));
+			b.option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(byteBuffer * 10));
+			//b.option(ChannelOption.RCVBUF_ALLOCATOR, new AdaptiveRecvByteBufAllocator(64,byteBuffer , 65536));
+			
 			b.option(ChannelOption.SO_SNDBUF, byteBuffer);
 
 			b.handler(new OHUSenderChannelInitialiser(this));
@@ -178,42 +182,17 @@ public class OHUSenderConnection {
 			return false;
 		}
 		DatagramPacket packet = new DatagramPacket(r.getBuffer(), remoteInetSocket, localInetSocket);
-		// r.getBuffer().release();
-		// sendMessage(packet);
-
 		try {
 			// ch.writeAndFlush(packet);
 			while(!ch.isWritable()) {
 				log.debug("Not Writable");
 			}
 			ch.writeAndFlush(packet);
-			/*
-			iCount++;
-			if (iCount % 4 == 0) {
-				ch.flush();
-			}
-			*/
-
-			/*
-			 * ch.writeAndFlush(packet).addListener(new ChannelFutureListener()
-			 * {
-			 * 
-			 * @Override public void operationComplete(ChannelFuture future)
-			 * throws Exception { if (!future.isSuccess()) {
-			 * log.error("Error writing Datagram Packet for RemoteHost"); }
-			 * 
-			 * } });
-			 */
-
 		} catch (Exception e) {
 			log.error("SendMessage", e);
 			throw e;
 		}
 		return true;
-		/*
-		 * try { r.getBuffer().release(); }catch(Exception e) {
-		 * log.error("Error releasing Buffer"); }
-		 */
 	}
 
 	// TODO make just one method to send all Songcast responses..

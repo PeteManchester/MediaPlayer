@@ -43,7 +43,7 @@ public class OHUSenderController {
 	}
 
 	private OHUSenderController() {
-		startSenderThread(null);
+		startSenderThread(primaryConnection);
 		startTimer();
 	}
 
@@ -52,7 +52,7 @@ public class OHUSenderController {
 			@Override
 			public void run() {
 				try {
-					//log.debug("TimerFired");
+					// log.debug("TimerFired");
 					checkListenEvents();
 				} catch (Exception e) {
 					log.error("Timer Error", e);
@@ -113,7 +113,7 @@ public class OHUSenderController {
 			senderChanged(null);
 			if (senders.size() == 0) {
 				log.debug("Songcast Sender, client Left: " + remoteAddress + "  Removed Songcast Receiver, no other Songcast Receivers to stop sending");
-
+				stopSenderThread();
 			} else {
 				for (String key : senders.keySet()) {
 					OHUSenderConnection con = senders.get(key);
@@ -199,6 +199,7 @@ public class OHUSenderController {
 				} catch (Exception e) {
 					log.error("Error Stopping MPD", e);
 				}
+				// stopSenderThread();
 			}
 			return;
 		}
@@ -244,7 +245,12 @@ public class OHUSenderController {
 	public void senderChanged(OHUSenderConnection ohu) {
 		log.debug("Primary Sender changed to: " + ohu);
 		this.primaryConnection = ohu;
-		ohuSender.setOHUSenderConnector(ohu);
+		if (ohuSender == null) {
+			startSenderThread(ohu);
+		} else {
+			ohuSender.setOHUSenderConnector(ohu);
+		}
+
 	}
 
 	/***
@@ -261,6 +267,11 @@ public class OHUSenderController {
 	 * @param con
 	 */
 	private void startSenderThread(OHUSenderConnection con) {
+		String remoteHost = "No Connection";
+		if (con != null) {
+			remoteHost = con.getRemoteHostString();
+		}
+		log.debug("StartSenderThread: " + remoteHost);
 		ohuSender = new OHUSenderThread(con);
 		ohuSenderThread = new Thread(ohuSender, "OHUSenderThread");
 		ohuSenderThread.start();

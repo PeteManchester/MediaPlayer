@@ -23,7 +23,7 @@ public class MPDStreamerConnectorInitializer extends ChannelInitializer<SocketCh
             p.addLast(sslCtx.newHandler(ch.alloc()));
         }
         
-        p.addLast(new HttpClientCodec(8192, 8192, 8192));
+        p.addLast(new HttpClientCodec(8192 , 8192, 8192 ));
      
         p.addLast("MPDStreamerMessageHandler",new MPDStreamerMessageHandler());
         p.addLast("MPDStreamerDefaultHttpResponse", new MPDStreamerDefaultHttpResponseHandler());

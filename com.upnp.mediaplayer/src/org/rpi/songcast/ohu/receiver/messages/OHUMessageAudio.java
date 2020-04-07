@@ -1,13 +1,12 @@
 package org.rpi.songcast.ohu.receiver.messages;
 
-import io.netty.buffer.ByteBuf;
-
 import java.nio.charset.Charset;
 
-import org.apache.log4j.Logger;
 import org.rpi.java.sound.AudioInformation;
 import org.rpi.java.sound.IAudioPacket;
 import org.rpi.songcast.common.SongcastMessage;
+
+import io.netty.buffer.ByteBuf;
 
 //Offset    Bytes                   Desc
 //0         1                       Msg Header Bytes (without the codec name)
@@ -31,31 +30,46 @@ import org.rpi.songcast.common.SongcastMessage;
 
 public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 
-	private Logger log = Logger.getLogger(this.getClass());
+	//private Logger log = Logger.getLogger(this.getClass());
 	private AudioInformation ai = null;
 	private byte[] audio;
 	private int frameNumber = 0;
-	private long time_to_play = 0;
+	private int time_to_play = 0;
 	private int attempts = 0;
 	private int length = 0;
 	private int iSampleRate = 0;
 	private int bitRate = 0;
 	private int codecNameLength = 0;
 	private int soundLength = 0;
+	private int timeStamp = 0;
+	private boolean isLatencyEnabled = false;
 
-	public OHUMessageAudio(ByteBuf buf, boolean hasSlaves) {
+	public OHUMessageAudio(ByteBuf buf) {
 		super.setData(buf.retain());
 		// int Totallength = buf.getShort(6);
-		int headerLength = buf.getByte(8) & ~0x80;
-		// int flags = buf.getByte(9) & ~0x80;
+		int headerLength = buf.getUnsignedByte(8);// & ~0x80;		
+		
+		int flags = buf.getUnsignedByte(9);// & ~0x80;
+		boolean isHalt = (flags << ~0 < 0);
+		boolean isLosLess = (flags << ~1 < 0);
+		isLatencyEnabled = (flags << ~2 < 0);
+		boolean isResent = (flags << ~3 < 0);
 
 		frameNumber = buf.getInt(12);
 		int latency = buf.getInt(20);
-		// int timeStamp = buf.getInt(24);
+		int timeStamp = buf.getInt(24);
+		
+		/*
+		if(isLatencyEnabled) {
+			time_to_play = timeStamp + (latency * 4);
+		}	
+		*/	
+		
+		//log.debug("TimeStamp: " + timeStamp);
 		// long StartSample = buf.getLong(28);
 		// long TotalSamples = buf.getLong(36);
 
-		codecNameLength = buf.getByte(57) & ~0x80;
+		codecNameLength = buf.getUnsignedByte(57);// & ~0x80;
 
 		iSampleRate = data.getInt(44);
 		bitRate = data.getInt(48);
@@ -63,6 +77,15 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 		if (bitRate > 0) {
 			bitRate = bitRate / 1000;
 		}
+		
+		if(isLatencyEnabled()) {
+			if(timeStamp == 0) {
+				timeStamp = (int)System.currentTimeMillis();
+			}
+			time_to_play = timeStamp + latency;
+		}
+		
+		/*
 		long time = System.currentTimeMillis();
 		if (latency > 0) {
 			try {
@@ -76,12 +99,15 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 			} catch (Exception e) {
 			}
 		}
+		
+		
 		if (hasSlaves) {
 			// Add some latency if we are forwarding to other songcast
 			// receivers.
 			time += 150;
 		}
 		setTimeToPlay(time);
+		*/
 
 		int soundStart = 8 + headerLength + codecNameLength;
 		int soundEnd = -99;
@@ -99,7 +125,7 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 			buf.getBytes(soundStart, audio, 0, soundLength);
 
 		} else {
-			log.error("Bufer was too small: " + (soundStart + soundLength + " BufferSize: " + buf.readableBytes()));
+			//log.error("Bufer was too small: " + (soundStart + soundLength + " BufferSize: " + buf.readableBytes()));
 		}
 	}
 
@@ -109,8 +135,8 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 	public AudioInformation getAudioInformation() {
 		int sampleCount = data.getShort(10);
 
-		int iBitDepth = data.getByte(54) & ~0x80;
-		int channels = data.getByte(55) & ~0x80;
+		int iBitDepth = data.getUnsignedByte(54);// & ~0x80;
+		int channels = data.getUnsignedByte(55);// & ~0x80;
 		//byte[] codec = new byte[codecNameLength];
 		// data.getBytes(58, codec, 0, codecNameLength);
 		String sCodec = data.getCharSequence(58, codecNameLength, Charset.forName("utf-8")).toString();
@@ -153,17 +179,10 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 	/**
 	 * @return the time_to_play
 	 */
-	public long getTimeToPlay() {
+	public int getTimeToPlay() {
 		return time_to_play;
 	}
 
-	/**
-	 * @param time_to_play
-	 *            the time_to_play to set
-	 */
-	private void setTimeToPlay(long time_to_play) {
-		this.time_to_play = time_to_play;
-	}
 
 	/**
 	 * Increase the Number of attempts.
@@ -181,6 +200,7 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 	@Override
 	public boolean expired() {
 		if (attempts > 500) {
+			//log.debug("Exceeded number of attempts");
 			return true;
 		}
 		return false;
@@ -190,7 +210,22 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 	public int getLength() {
 		return length;
 	}
+	
+	/**
+	 * @return the timeStamp
+	 */
+	public int getTimeStamp() {
+		return timeStamp;
+	}
+	
+	/**
+	 * @return the isLatencyEnabled
+	 */
+	public boolean isLatencyEnabled() {
+		return isLatencyEnabled;
+	}
 
+	/*
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -205,4 +240,8 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 		builder.append("]");
 		return builder.toString();
 	}
+	*/
+
+
+
 }

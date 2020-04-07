@@ -79,7 +79,7 @@ public class MPDStreamerController {
 		if (size > maxSize) {
 			maxSize = size;
 		}
-		int slice = 1764000;
+		int slice = 1764000 * 2;
 		if (size > slice) {
 			log.debug("Buffer too big: " + size);
 			try {

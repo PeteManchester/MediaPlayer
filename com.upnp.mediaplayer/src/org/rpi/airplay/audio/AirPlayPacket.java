@@ -1,9 +1,5 @@
 package org.rpi.airplay.audio;
 
-import org.rpi.airplay.AudioSession;
-import org.rpi.airplay.AudioSessionHolder;
-import org.rpi.alacdecoder.AlacDecodeUtils;
-import org.rpi.alacdecoder.AlacFile;
 import org.rpi.java.sound.AudioInformation;
 import org.rpi.java.sound.IAudioPacket;
 
@@ -15,19 +11,27 @@ public class AirPlayPacket implements IAudioPacket {
 	private byte[] audio;
 	private int attempts = 0;
 	private int length = 0;
-	private long time_to_play = System.currentTimeMillis();
+	private int time_to_play = 0;
 	AudioInformation audioInf = new AudioInformation(44100, 48, 16, 2, "ALAC", 0, 0);
 	private ByteBuf alac = null;
-	// private int frame_size = 0;
-	// private AlacFile alacFile = null;
+	private boolean isLatencyEnabled = false;
+
 
 	public AirPlayPacket() {
-		time_to_play += 2000;
+		//time_to_play += 2000;
 	}
 
 	public AirPlayPacket(ByteBuf buffer) {
 		alac = Unpooled.directBuffer(buffer.capacity());
 		this.alac.writeBytes(buffer);
+	}
+
+	public AirPlayPacket(boolean isLatencyEnabled) {
+		this.isLatencyEnabled = isLatencyEnabled;
+		if(isLatencyEnabled) {
+			//Set some latency
+			time_to_play = ((int)System.currentTimeMillis()) + 1000;
+		}
 	}
 
 	@Override
@@ -42,21 +46,6 @@ public class AirPlayPacket implements IAudioPacket {
 
 	@Override
 	public byte[] getAudio() {
-		/*
-		 * AudioSession session = AudioSessionHolder.getInstance().getSession();
-		 * AlacFile alacFile = session.getAlac(); int frame_size =
-		 * session.getFrameSize();
-		 * 
-		 * int[] outbuffer = new int[4 * (frame_size + 3)]; final byte[]
-		 * alacBytes = new byte[alac.capacity() + 3]; alac.getBytes(0,
-		 * alacBytes, 0, alac.capacity()); // Decode ALAC to PCM int outputsize
-		 * = 0; outputsize = AlacDecodeUtils.decode_frame(alacFile, alacBytes,
-		 * outbuffer, outputsize); // Convert int array to byte array byte[]
-		 * input = new byte[outputsize * 2]; int j = 0; for (int ic = 0; ic <
-		 * outputsize; ic++) { input[j++] = (byte) (outbuffer[ic] >> 8);
-		 * input[j++] = (byte) (outbuffer[ic]); }
-		 */
-
 		return audio;
 	}
 
@@ -66,7 +55,7 @@ public class AirPlayPacket implements IAudioPacket {
 	}
 
 	@Override
-	public long getTimeToPlay() {
+	public int getTimeToPlay() {
 		return time_to_play;
 	}
 
@@ -102,6 +91,11 @@ public class AirPlayPacket implements IAudioPacket {
 
 	public void setALAC(ByteBuf buffer) {
 		alac = buffer;
+	}
+
+	@Override
+	public boolean isLatencyEnabled() {
+		return isLatencyEnabled ;
 	}
 
 }

@@ -20,7 +20,7 @@ public class OHZMessageDecoder extends MessageToMessageDecoder<DatagramPacket> {
 
 			DatagramPacket packet = (DatagramPacket) msg;
 			ByteBuf buf = packet.content();
-			int type = buf.getByte(5) & ~0x80;
+			int type = buf.getUnsignedByte(5);// & ~0x80;
 			switch (type) {
 			case 0:// Zone Query Used by Receiver to start playing
 			{

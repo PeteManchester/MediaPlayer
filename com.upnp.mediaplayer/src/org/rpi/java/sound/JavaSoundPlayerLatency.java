@@ -47,8 +47,8 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 	private boolean sotware_mixer_enabled = false;
 	private boolean isAirplay = false;
 	//private boolean isLatency = false;
-	private int iCount = 0;
-	private int maxBuffer = 0;
+	//private int iCount = 0;
+	//private int maxBuffer = 0;
 
 	private int bitDepth = 16;
 	
@@ -283,6 +283,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		try {
 			// mWorkQueue.addElement(event);
 			mWorkQueue.add(event);
+			/*
 			int size = mWorkQueue.size();
 			if(size > maxBuffer) {
 				maxBuffer = size;
@@ -291,7 +292,9 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 				log.debug("Count: " + iCount + " MaxBufferSize: " + maxBuffer );
 				maxBuffer = 0;
 			}
+			
 			iCount++;
+			*/
 			
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);

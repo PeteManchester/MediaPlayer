@@ -226,8 +226,7 @@ function checkStatusConfig() {
 					$("#java_sound_software_mixer_enabled").slider("refresh");
 
 					$("#songcast_latency").val(
-							decode(data.songcast_latency_enabled));
-					$("#songcast_latency").slider("refresh");
+							decode(data.songcast_latency));
 
 					$("#http_web_port").val(decode(data.web_server_port));
 					
@@ -311,7 +310,7 @@ function updateConfig() {
 		
 		config_json.java_sound_software_mixer_enabled = $("#java_sound_software_mixer_enabled").val();
 
-		config_json.songcast_latency_enabled = $("#songcast_latency").val();
+		config_json.songcast_latency = $("#songcast_latency").val();
 
 		config_json.web_server_port = $("#http_web_port").val();
 

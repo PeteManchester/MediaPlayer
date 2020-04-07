@@ -21,6 +21,8 @@ public class OHUMessageAudioHandler extends SimpleChannelInboundHandler<OHUMessa
 	private IJavaSoundPlayer player = null;
 	//private AudioInformation audioInformation = null;
 	private Thread threadPlayer = null;
+	private long lastMessage = 0;
+	
 
 	public OHUMessageAudioHandler() {
 		log.debug("Created OHUMessageAudioHandler");
@@ -30,6 +32,12 @@ public class OHUMessageAudioHandler extends SimpleChannelInboundHandler<OHUMessa
 	protected void channelRead0(ChannelHandlerContext ctx, OHUMessageAudio msg) throws Exception {
 		if (msg instanceof OHUMessageAudio) {
 			try {
+				long now = System.currentTimeMillis();
+				long messageTime = now - lastMessage;
+				//if(messageTime > 10) {
+				//	log.debug("Message Time: " + (now - lastMessage));
+				//}				
+				lastMessage = now;
 				if (player == null) {
 					player = new JavaSoundPlayerLatency();
 					//threadPlayer = new Thread(player, "SongcastPlayerJavaSoundLatency");
@@ -39,6 +47,8 @@ public class OHUMessageAudioHandler extends SimpleChannelInboundHandler<OHUMessa
 					//player.createSoundLine(audioInformation);
 				}
 				player.put(msg);
+				//long processTime = System.currentTimeMillis() - now;
+				//log.debug("Message Time: " + messageTime + " Process Time: " + processTime);
 			} catch (Exception e) {
 				log.error("Error Handling Audio Message", e);
 			}

@@ -46,16 +46,17 @@ public class OHUSlaveForwarder extends SimpleChannelInboundHandler<SongcastMessa
 					try {
 						InetSocketAddress toAddress = sl.getRemoteAddress();
 						DatagramPacket packet = new DatagramPacket(buf.retain(), toAddress);
-						ctx.write(packet);
+						ctx.writeAndFlush(packet);
 					} catch (Exception e) {
 						log.error("Error forwarding to SlaveEndpoint", e);
 					}
 				}
-				try {
-					ctx.flush();
-				} catch (Exception e) {
-					log.error("Error Flushing", e);
-				} finally {
+				
+				//try {
+					//ctx.flush();
+				//} catch (Exception e) {
+				//	log.error("Error Flushing", e);
+				//} finally {
 					try {
 						int i = buf.refCnt();
 						if (i > 0) {
@@ -64,7 +65,7 @@ public class OHUSlaveForwarder extends SimpleChannelInboundHandler<SongcastMessa
 					} catch (Exception e) {
 						log.error("Error Release Buffer", e);
 					}
-				}
+				//}
 			}
 		}
 		ctx.fireChannelRead(msg);

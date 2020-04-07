@@ -14,6 +14,7 @@ import org.rpi.airplay.AudioSession;
 import org.rpi.airplay.AudioSessionHolder;
 import org.rpi.alacdecoder.AlacDecodeUtils;
 import org.rpi.alacdecoder.AlacFile;
+import org.rpi.config.Config;
 import org.rpi.java.sound.AudioInformation;
 import org.rpi.java.sound.IJavaSoundPlayer;
 import org.rpi.java.sound.JavaSoundPlayerLatency;
@@ -52,6 +53,7 @@ public class ProcessAirplayAudio implements Runnable {
 	private int last_sequence = 0;
 	private int missedCount = 0;
 	private int maxMissed = 0;
+	private boolean isLatencyEnabled = false;
 
 	public ProcessAirplayAudio() {
 		initAES();
@@ -60,6 +62,7 @@ public class ProcessAirplayAudio implements Runnable {
 		alacFile = session.getAlac();
 		frame_size = session.getFrameSize();
 		outbuffer = new int[4 * (frame_size + 3)];
+		isLatencyEnabled =  Config.getInstance().isAirPlayLatencyEnabled();
 		// this.audioQueue = audioQueue;
 	}
 
@@ -105,7 +108,8 @@ public class ProcessAirplayAudio implements Runnable {
 
 	private void decrypt(ByteBuf buffer) {
 		try {
-			int type = buffer.getByte(1) & ~0x80;
+			//int type = buffer.getByte(1) & ~0x80;
+			int type = buffer.getUnsignedByte(1);// & ~0x80;
 			if (type == 0x60 || type == 0x56) { // audio data / resend
 				int audio_size = buffer.readableBytes();
 				int sequence = buffer.getUnsignedShort(2);
@@ -188,7 +192,7 @@ public class ProcessAirplayAudio implements Runnable {
 				input[j++] = (byte) (outbuffer[ic]);
 			}
 
-			AirPlayPacket packet = new AirPlayPacket();
+			AirPlayPacket packet = new AirPlayPacket(isLatencyEnabled);
 			packet.setAudio(input);
 			if (audioPlayer != null) {
 				audioPlayer.put(packet);

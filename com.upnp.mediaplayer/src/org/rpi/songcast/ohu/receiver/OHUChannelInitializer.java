@@ -26,7 +26,7 @@ public class OHUChannelInitializer extends ChannelInitializer<NioDatagramChannel
 		//p.addLast(new LoggingHandler(LogLevel.DEBUG));
 		//p.addLast("OHUMessageTester", new OHUMessageTester());
 		
-		p.addLast("OHUDecoder",new OHUMessageDecoder(this));
+		p.addLast("OHUDecoder",new OHUMessageDecoder());
 		p.addLast("OHUSlaveForwarder",new OHUSlaveForwarder(this));
 		p.addLast("OHUMessageBuffer", new OHUMessageBuffefHandler());		
 		p.addLast("OHUAudioHandler", new OHUMessageAudioHandler());
