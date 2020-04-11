@@ -144,7 +144,7 @@ public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer, Observe
 	
 	private byte[] change16BitTo8Bit(IAudioPacket packet)
 	{
-		byte[] audio = packet.getAudio();
+		byte[] audio = packet.getAudioBytes();
 		int len = audio.length;
 		byte[] bit = new byte[len/2];
 		int tempint;
@@ -186,10 +186,10 @@ public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer, Observe
 		if (volume >= 1 ||!sotware_mixer_enabled) {
 			if(!isAirplay)
 			{
-				return packet.getAudio();
+				return packet.getAudioBytes();
 			}
 		}
-		byte[] audio = packet.getAudio();
+		byte[] audio = packet.getAudioBytes();
 
 		for (int i = 0; i < audio.length; i += 2) {
 			// convert byte pair to int
@@ -212,9 +212,9 @@ public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer, Observe
 	
 	private byte[] changeVolumeTest16Bit(IAudioPacket packet) {
 		if (volume >= 1 ||!sotware_mixer_enabled) {
-			return packet.getAudio();
+			return packet.getAudioBytes();
 		}
-		byte[] audio = packet.getAudio();
+		byte[] audio = packet.getAudioBytes();
 
 		for (int i = 0; i < audio.length; i += 2) {
 			// convert byte pair to int
@@ -238,9 +238,9 @@ public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer, Observe
 	 */
 	private byte[] changeVolume24Bit(IAudioPacket packet) {
 		if (volume >= 1 ||!sotware_mixer_enabled) {
-			return packet.getAudio();
+			return packet.getAudioBytes();
 		}
-		byte[] audio = packet.getAudio();
+		byte[] audio = packet.getAudioBytes();
 
 		for (int i = 0; i < audio.length; i += 3) {
 			// convert byte pair to int
@@ -266,9 +266,9 @@ public class JavaSoundPlayerBasic implements Runnable, IJavaSoundPlayer, Observe
 	 */
 	private byte[] changeVolume32Bit(IAudioPacket packet) {
 		if (volume >= 1 ||!sotware_mixer_enabled) {
-			return packet.getAudio();
+			return packet.getAudioBytes();
 		}
-		byte[] audio = packet.getAudio();
+		byte[] audio = packet.getAudioBytes();
 
 		for (int i = 0; i < audio.length; i += 4) {
 			byte[] data = new byte[4];

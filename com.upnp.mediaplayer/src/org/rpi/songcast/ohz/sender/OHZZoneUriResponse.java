@@ -16,8 +16,8 @@ public class OHZZoneUriResponse {
 	
 	public OHZZoneUriResponse(String myURI, String zone)
 	{
-		byte[] version = new byte[] { (byte) (1 & 0xff) };
-		byte[] type = new byte[] { (byte) (1 & 0xff) };
+		//byte[] version = new byte[] { (byte) (1 & 0xff) };
+		//byte[] type = new byte[] { (byte) (1 & 0xff) };
 		//String zone = Config.getInstance().getMediaplayerFriendlyName();
 		int length_zone = zone.length();
 		String url = "ohu://" + myURI;
@@ -26,8 +26,8 @@ public class OHZZoneUriResponse {
 		//ByteBuf test = Unpooled.buffer(length);
 		buffer = Unpooled.directBuffer(length);
 		buffer.writeBytes( header.getBytes(CharsetUtil.UTF_8));
-		buffer.writeBytes( version);
-		buffer.writeBytes( type);
+		buffer.writeByte( 1);//Version
+		buffer.writeByte( 1);//Type
 		buffer.writeShort( length);
 		buffer.writeInt( length_zone);
 		buffer.writeInt( length_url);

@@ -8,7 +8,7 @@ import io.netty.buffer.Unpooled;
 
 public class AirPlayPacket implements IAudioPacket {
 
-	private byte[] audio;
+	private ByteBuf audio;
 	private int attempts = 0;
 	private int length = 0;
 	private int time_to_play = 0;
@@ -26,11 +26,11 @@ public class AirPlayPacket implements IAudioPacket {
 		this.alac.writeBytes(buffer);
 	}
 
-	public AirPlayPacket(boolean isLatencyEnabled) {
-		this.isLatencyEnabled = isLatencyEnabled;
-		if(isLatencyEnabled) {
+	public AirPlayPacket(int latency) {
+
+		if(latency > 0) {
 			//Set some latency
-			time_to_play = ((int)System.currentTimeMillis()) + 1000;
+			time_to_play = ((int)System.currentTimeMillis()) + latency;
 		}
 	}
 
@@ -39,14 +39,21 @@ public class AirPlayPacket implements IAudioPacket {
 		return audioInf;
 	}
 
-	public void setAudio(byte[] audio) {
+	public void setAudio(ByteBuf audio) {
 		this.audio = audio;
-		length = audio.length / 2;
+		length = audio.readableBytes() / 2;
 	}
 
 	@Override
-	public byte[] getAudio() {
+	public ByteBuf getAudio() {
 		return audio;
+	}
+	
+	@Override
+	public byte[] getAudioBytes() {
+		byte[] bytes = this.audio.array();
+		audio.release();
+		return bytes;
 	}
 
 	@Override

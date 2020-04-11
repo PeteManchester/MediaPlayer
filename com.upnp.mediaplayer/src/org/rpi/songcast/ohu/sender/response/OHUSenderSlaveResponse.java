@@ -17,14 +17,14 @@ public class OHUSenderSlaveResponse {
 	private int numSlaves = 0;
 	
 	public OHUSenderSlaveResponse(List<InetSocketAddress> slaves) {
-		byte[] version = new byte[] { (byte) (1 & 0xff) };
-		byte[] type = new byte[] { (byte) (6 & 0xff) };
+		//byte[] version = new byte[] { (byte) (1 & 0xff) };
+		//byte[] type = new byte[] { (byte) (6 & 0xff) };
 		numSlaves = slaves.size();
 		int length = header.length() + 1 + 1 + 2 + 4 + (numSlaves * 6) ;
 		buffer = Unpooled.directBuffer(length);
 		buffer.writeBytes( header.getBytes(CharsetUtil.UTF_8));
-		buffer.writeBytes( version);
-		buffer.writeBytes( type);
+		buffer.writeByte( 1);//Version
+		buffer.writeByte( 6);//Type
 		buffer.writeShort( length);		
 		//test.setBytes(8, new byte[] {(byte) (50 &0xff)});//Header Length
 		

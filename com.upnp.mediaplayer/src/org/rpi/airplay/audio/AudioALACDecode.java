@@ -54,7 +54,7 @@ public class AudioALACDecode extends MessageToMessageDecoder<ByteBuf> {
 			
 			AirPlayPacket packet = new AirPlayPacket();
 			//packet.setALAC(buffer);
-			packet.setAudio(input);
+			//packet.setAudio(input);
 			if (audioQueue != null) {
 				audioQueue.put(packet);
 			}

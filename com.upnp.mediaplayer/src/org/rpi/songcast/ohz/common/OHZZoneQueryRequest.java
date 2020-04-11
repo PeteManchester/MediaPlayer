@@ -22,13 +22,13 @@ public class OHZZoneQueryRequest {
 
 	public OHZZoneQueryRequest(String zone) {
 		this.zone = zone;
-		byte[] version = new byte[] { (byte) (1 & 0xff) };
-		byte[] type = new byte[] { (byte) (0 & 0xff) };
+		//byte[] version = new byte[] { (byte) (1 & 0xff) };
+		//byte[] type = new byte[] { (byte) (0 & 0xff) };
 		int length = header.length() + 1 + 1 + 2 + 4 + zone.length();
 		buffer = Unpooled.directBuffer(length);
 		buffer.writeBytes( header.getBytes(CharsetUtil.UTF_8));
-		buffer.writeBytes( version);
-		buffer.writeBytes( type);
+		buffer.writeByte( 1);//Version
+		buffer.writeByte( 0);//Type
 		buffer.writeShort( length);
 		buffer.writeInt( zone.length());
 		buffer.writeBytes( zone.getBytes(CharsetUtil.UTF_8));

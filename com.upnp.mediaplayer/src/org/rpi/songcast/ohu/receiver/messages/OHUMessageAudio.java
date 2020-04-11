@@ -7,6 +7,7 @@ import org.rpi.java.sound.IAudioPacket;
 import org.rpi.songcast.common.SongcastMessage;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 //Offset    Bytes                   Desc
 //0         1                       Msg Header Bytes (without the codec name)
@@ -32,7 +33,8 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 
 	//private Logger log = Logger.getLogger(this.getClass());
 	private AudioInformation ai = null;
-	private byte[] audio;
+	//private byte[] audio;
+	private ByteBuf audio;
 	private int frameNumber = 0;
 	private int time_to_play = 0;
 	private int attempts = 0;
@@ -118,11 +120,14 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 		// log.debug("Audio Sound Length: " + soundLength);
 		// byte test = buf.getByte(buf.readerIndex());
 		// soundLength--;
-		audio = (new byte[soundLength]);
+		//audio = (new byte[soundLength]);
 		length = soundLength;
+		
 		if (buf.readableBytes() >= soundStart + soundLength) {
 
-			buf.getBytes(soundStart, audio, 0, soundLength);
+			//buf.getBytes(soundStart, audio, 0, soundLength);
+			audio = Unpooled.buffer(length);
+			buf.getBytes(soundStart, audio);
 
 		} else {
 			//log.error("Bufer was too small: " + (soundStart + soundLength + " BufferSize: " + buf.readableBytes()));
@@ -165,8 +170,15 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 	/**
 	 * @return the audio
 	 */
-	public byte[] getAudio() {
+	public ByteBuf getAudio() {
 		return audio;
+	}
+	
+	@Override
+	public byte[] getAudioBytes() {
+		byte[] bytes = this.audio.array();
+		audio.release();
+		return bytes;
 	}
 
 	/**

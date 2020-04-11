@@ -26,6 +26,9 @@ import org.rpi.player.events.EventVolumeChanged;
 import org.rpi.player.observers.ObservableVolume;
 import org.rpi.utils.Utils;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+
 public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Observer {
 	private Logger log = Logger.getLogger(this.getClass());
 	private boolean run = true;
@@ -46,12 +49,11 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 	private boolean bMute = false;
 	private boolean sotware_mixer_enabled = false;
 	private boolean isAirplay = false;
-	//private boolean isLatency = false;
-	//private int iCount = 0;
-	//private int maxBuffer = 0;
+	// private boolean isLatency = false;
+	// private int iCount = 0;
+	// private int maxBuffer = 0;
 
 	private int bitDepth = 16;
-	
 
 	public JavaSoundPlayerLatency() {
 		mastervolume = PlayManager.getInstance().getVolume();
@@ -65,9 +67,9 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 		if (PlayManager.getInstance().getCurrentTrack() instanceof ChannelAirPlay) {
 			isAirplay = !(Config.getInstance().isAirPlayMasterVolumeEnabled());
 		}
-		//else {
-			//isLatency = Config.getInstance().isSongcastLatencyEnabled();
-		//}
+		// else {
+		// isLatency = Config.getInstance().isSongcastLatencyEnabled();
+		// }
 	}
 
 	@Override
@@ -118,8 +120,8 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 
 	private void addData(IAudioPacket packet) {
 		try {
-		if (!bWrite || bMute)
-			return;
+			if (!bWrite || bMute)
+				return;
 
 			if (soundLine != null) {
 				switch (bitDepth) {
@@ -142,7 +144,7 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 				length = packet.getLength();
 			}
 			log.error("Error Writing Data, Data Length: " + length, e);
-		}finally {
+		} finally {
 			packet.release();
 		}
 	}
@@ -153,34 +155,41 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 	private byte[] changeVolume16Bit(IAudioPacket packet) {
 		if (volume >= 1 || !sotware_mixer_enabled) {
 			if (!isAirplay) {
-				return packet.getAudio();
+				return packet.getAudioBytes();
+				//return packet.getAudio();
 			}
 		}
-		byte[] audio = packet.getAudio();
+		// byte[] audio = packet.getAudio();
 
-		for (int i = 0; i < audio.length; i += 2) {
-			// convert byte pair to int
-			short buf1 = audio[i];
-			short buf2 = audio[i + 1];
+		//ByteBuf buf = Unpooled.copiedBuffer(packet.getAudio());
 
-			buf1 = (short) ((buf1 & 0xff) << 8);
-			buf2 = (short) (buf2 & 0xff);
-
-			short res = (short) (buf1 | buf2);
-			res = (short) (res * volume);
-
-			// convert back
-			audio[i + 1] = (byte) res;
-			audio[i] = (byte) (res >> 8);
+		for (int i = 0; i < packet.getAudio().readableBytes(); i += 2) {
+			double res = packet.getAudio().getShort(i);
+			res = (res * volume);
+			packet.getAudio().setShort(i, (short)res);
 		}
-		return audio;
+
+		/*
+		 * for (int i = 0; i < audio.length; i += 2) { // convert byte pair to
+		 * int short buf1 = audio[i]; short buf2 = audio[i + 1];
+		 * 
+		 * buf1 = (short) ((buf1 & 0xff) << 8); buf2 = (short) (buf2 & 0xff);
+		 * 
+		 * short res = (short) (buf1 | buf2); res = (short) (res * volume);
+		 * 
+		 * // convert back audio[i + 1] = (byte) res; audio[i] = (byte) (res >>
+		 * 8); }
+		 */
+
+		return packet.getAudioBytes();
+		//return audio;
 	}
 
 	private byte[] changeVolumeTest16Bit(IAudioPacket packet) {
 		if (volume >= 1 || !sotware_mixer_enabled) {
-			return packet.getAudio();
+			return packet.getAudioBytes();
 		}
-		byte[] audio = packet.getAudio();
+		byte[] audio = packet.getAudioBytes();
 
 		for (int i = 0; i < audio.length; i += 2) {
 			// convert byte pair to int
@@ -204,27 +213,32 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 	 */
 	private byte[] changeVolume24Bit(IAudioPacket packet) {
 		if (volume >= 1 || !sotware_mixer_enabled) {
-			return packet.getAudio();
+			return packet.getAudioBytes();
 		}
-		byte[] audio = packet.getAudio();
+		// byte[] audio = packet.getAudio();
 
-		for (int i = 0; i < audio.length; i += 3) {
-			// convert byte pair to int
-			byte[] data = new byte[3];
-			data[0] = audio[i + 0];
-			data[1] = audio[i + 1];
-			data[2] = audio[i + 2];
-			BigInteger big = new BigInteger(data);
-			float res = big.floatValue();
-			res = res * volume;
-			int ress = (int) res;
-			// convert back
-			audio[i + 0] = (byte) ((ress & 0x00FF0000) >> 16);
-			audio[i + 1] = (byte) ((ress & 0x0000FF00) >> 8);
-			audio[i + 2] = (byte) ((ress & 0x000000FF) >> 0);
+		//ByteBuf buf = Unpooled.copiedBuffer(packet.getAudio());
 
+		for (int i = 0; i < packet.getAudio().readableBytes(); i += 3) {
+			double res = packet.getAudio().getMedium(i);
+			res =  (res * volume);
+			packet.getAudio().setMedium(i, (int)res);
 		}
-		return audio;
+
+		/*
+		 * for (int i = 0; i < audio.length; i += 3) { // convert byte pair to
+		 * int byte[] data = new byte[3]; data[0] = audio[i + 0]; data[1] =
+		 * audio[i + 1]; data[2] = audio[i + 2]; BigInteger big = new
+		 * BigInteger(data); float res = big.floatValue(); res = res * volume;
+		 * int ress = (int) res; // convert back audio[i + 0] = (byte) ((ress &
+		 * 0x00FF0000) >> 16); audio[i + 1] = (byte) ((ress & 0x0000FF00) >> 8);
+		 * audio[i + 2] = (byte) ((ress & 0x000000FF) >> 0);
+		 * 
+		 * }
+		 */
+		//byte[] audio = buf.array();
+		//buf.release();
+		return packet.getAudioBytes();
 	}
 
 	/*
@@ -232,25 +246,34 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 	 */
 	private byte[] changeVolume32Bit(IAudioPacket packet) {
 		if (volume >= 1 || !sotware_mixer_enabled) {
-			return packet.getAudio();
+			return packet.getAudioBytes();
 		}
-		byte[] audio = packet.getAudio();
 
-		for (int i = 0; i < audio.length; i += 4) {
-			byte[] data = new byte[4];
-			BigInteger big = new BigInteger(data);
-			float res = big.floatValue();
-			res = res * volume;
-			int ress = (int) res;
+		//ByteBuf buf = Unpooled.copiedBuffer(packet.getAudio());
 
-			// convert back
-			audio[i + 0] = (byte) ((ress & 0xFF000000) >> 24);
-			audio[i + 0] = (byte) ((ress & 0x00FF0000) >> 16);
-			audio[i + 1] = (byte) ((ress & 0x0000FF00) >> 8);
-			audio[i + 3] = (byte) ((ress & 0x000000FF) >> 0);
-
+		for (int i = 0; i < packet.getAudio().readableBytes(); i += 4) {
+			double res = packet.getAudio().getFloat(i);
+			res = (float) (res * volume);
+			packet.getAudio().setFloat(i, (float)res);
 		}
-		return audio;
+
+		/*
+		 * byte[] audio = packet.getAudio();
+		 * 
+		 * for (int i = 0; i < audio.length; i += 4) { byte[] data = new
+		 * byte[4]; BigInteger big = new BigInteger(data); float res =
+		 * big.floatValue(); res = res * volume; int ress = (int) res;
+		 * 
+		 * // convert back audio[i + 0] = (byte) ((ress & 0xFF000000) >> 24);
+		 * audio[i + 0] = (byte) ((ress & 0x00FF0000) >> 16); audio[i + 1] =
+		 * (byte) ((ress & 0x0000FF00) >> 8); audio[i + 3] = (byte) ((ress &
+		 * 0x000000FF) >> 0);
+		 * 
+		 * }
+		 */
+		//byte[] audio = buf.array();
+		//buf.release();
+		return packet.getAudioBytes();
 	}
 
 	/**
@@ -284,18 +307,13 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 			// mWorkQueue.addElement(event);
 			mWorkQueue.add(event);
 			/*
-			int size = mWorkQueue.size();
-			if(size > maxBuffer) {
-				maxBuffer = size;
-			}
-			if(iCount % 1000 == 0) {
-				log.debug("Count: " + iCount + " MaxBufferSize: " + maxBuffer );
-				maxBuffer = 0;
-			}
-			
-			iCount++;
-			*/
-			
+			 * int size = mWorkQueue.size(); if(size > maxBuffer) { maxBuffer =
+			 * size; } if(iCount % 1000 == 0) { log.debug("Count: " + iCount +
+			 * " MaxBufferSize: " + maxBuffer ); maxBuffer = 0; }
+			 * 
+			 * iCount++;
+			 */
+
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -322,33 +340,33 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 	@Override
 	public void run() {
 		while (run) {
-			//if (!isEmpty()) {
-				try {
-					IAudioPacket audio = get();
-					if(audio !=null) {
-						if (soundLine == null) {
-							setAudioInformation(audio.getAudioInformation());
-						}
-						//while (audio.getTimeToPlay() > System.currentTimeMillis() && audio.isLatencyEnabled()) {
-						while (audio.getTimeToPlay() > (int)System.currentTimeMillis()) {
-							if (audio.expired()) {
-								break;
-							}
-							sleep(1);
-							audio.incAttempts();
-						}
-						addData(audio);
+			// if (!isEmpty()) {
+			try {
+				IAudioPacket audio = get();
+				if (audio != null) {
+					if (soundLine == null) {
+						setAudioInformation(audio.getAudioInformation());
 					}
-					else {
-						sleep(2);
+					// while (audio.getTimeToPlay() > System.currentTimeMillis()
+					// && audio.isLatencyEnabled()) {
+					while (audio.getTimeToPlay() > (int) System.currentTimeMillis()) {
+						if (audio.expired()) {
+							break;
+						}
+						sleep(1);
+						audio.incAttempts();
 					}
-					
-				} catch (Exception e) {
-					log.error("Error in Run Method", e);
+					addData(audio);
+				} else {
+					sleep(2);
 				}
-			//} else {
-			//	sleep(10);
-			//}
+
+			} catch (Exception e) {
+				log.error("Error in Run Method", e);
+			}
+			// } else {
+			// sleep(10);
+			// }
 		}
 	}
 

@@ -1,5 +1,7 @@
 package org.rpi.airplay.audio;
 
+import org.rpi.songcast.ohu.receiver.OHULeakCatcher;
+
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.nio.NioDatagramChannel;
@@ -26,6 +28,7 @@ public class AirPlayAudioChannelInitializer extends ChannelInitializer<NioDatagr
 		//p.addLast("AudioBuffer", new AudioBuffer());
 		//p.addLast("Audio Decoder", new AudioALACDecode(audioQueue));
 		p.addLast("Audio Handler",new AudioChannelRequestHandler());
+		p.addLast("LeakCatcher",new OHULeakCatcher());
 	}
 
 }

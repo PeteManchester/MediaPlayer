@@ -1,11 +1,14 @@
 package org.rpi.java.sound;
 
+import io.netty.buffer.ByteBuf;
 
 public interface IAudioPacket {	
 
 	public AudioInformation getAudioInformation() ;
 
-	public byte[] getAudio(); 
+	public ByteBuf getAudio(); 
+	
+	public byte[] getAudioBytes();
 
 	public int getFrameNumber() ;
 

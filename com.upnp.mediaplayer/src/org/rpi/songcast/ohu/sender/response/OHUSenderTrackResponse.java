@@ -20,15 +20,15 @@ public class OHUSenderTrackResponse {
 		this.url = url;
 		this.sequence = sequeunce;
 		
-		byte[] version = new byte[] { (byte) (1 & 0xff) };
-		byte[] type = new byte[] { (byte) (4 & 0xff) };
+		//byte[] version = new byte[] { (byte) (1 & 0xff) };
+		//byte[] type = new byte[] { (byte) (4 & 0xff) };
 
 		int length = header.length() + 1 + 1 + 2 + 4 + 4 + 4 + url.length() + metadata.length() ;
 		buffer = Unpooled.directBuffer(length);
 		//ByteBuf test = Unpooled.buffer(length);
 		buffer.writeBytes(header.getBytes(CharsetUtil.UTF_8));
-		buffer.writeBytes( version);
-		buffer.writeBytes( type);
+		buffer.writeByte( 1);//Version
+		buffer.writeByte( 4);//Type
 		buffer.writeShort( length);
 		buffer.writeInt( sequeunce);
 		buffer.writeInt( url.length());

@@ -53,7 +53,7 @@ public class ProcessAirplayAudio implements Runnable {
 	private int last_sequence = 0;
 	private int missedCount = 0;
 	private int maxMissed = 0;
-	private boolean isLatencyEnabled = false;
+	private int isLatencyEnabled = 0;
 
 	public ProcessAirplayAudio() {
 		initAES();
@@ -62,7 +62,7 @@ public class ProcessAirplayAudio implements Runnable {
 		alacFile = session.getAlac();
 		frame_size = session.getFrameSize();
 		outbuffer = new int[4 * (frame_size + 3)];
-		isLatencyEnabled =  Config.getInstance().isAirPlayLatencyEnabled();
+		isLatencyEnabled = Config.getInstance().getAirPlayLatency();
 		// this.audioQueue = audioQueue;
 	}
 
@@ -108,7 +108,7 @@ public class ProcessAirplayAudio implements Runnable {
 
 	private void decrypt(ByteBuf buffer) {
 		try {
-			//int type = buffer.getByte(1) & ~0x80;
+			// int type = buffer.getByte(1) & ~0x80;
 			int type = buffer.getUnsignedByte(1);// & ~0x80;
 			if (type == 0x60 || type == 0x56) { // audio data / resend
 				int audio_size = buffer.readableBytes();
@@ -184,16 +184,22 @@ public class ProcessAirplayAudio implements Runnable {
 			// Decode ALAC to PCM
 			int outputsize = 0;
 			outputsize = AlacDecodeUtils.decode_frame(alacFile, alacBytes, outbuffer, outputsize);
-			// Convert int array to byte array
-			byte[] input = new byte[outputsize * 2];
-			int j = 0;
+
+			ByteBuf buf = Unpooled.buffer(outputsize);
 			for (int ic = 0; ic < outputsize; ic++) {
-				input[j++] = (byte) (outbuffer[ic] >> 8);
-				input[j++] = (byte) (outbuffer[ic]);
+				buf.writeShort(outbuffer[ic]);
 			}
 
+			/*
+			 * // Convert int array to byte array byte[] input = new
+			 * byte[outputsize * 2]; int j = 0; for (int ic = 0; ic <
+			 * outputsize; ic++) { input[j++] = (byte) (outbuffer[ic] >> 8);
+			 * input[j++] = (byte) (outbuffer[ic]); }
+			 */
+
 			AirPlayPacket packet = new AirPlayPacket(isLatencyEnabled);
-			packet.setAudio(input);
+
+			packet.setAudio(buf);
 			if (audioPlayer != null) {
 				audioPlayer.put(packet);
 			}
@@ -208,17 +214,15 @@ public class ProcessAirplayAudio implements Runnable {
 	public void stop() {
 		isRunning = false;
 		try {
-			if(audioPlayer !=null) {
+			if (audioPlayer != null) {
 				audioPlayer.stop();
-				audioPlayer =null;				
+				audioPlayer = null;
 			}
 			threadPlayer = null;
+		} catch (Exception e) {
+			log.error("Error Stopping SoundPlayer", e);
 		}
-		 catch(Exception e) {
-			 log.error("Error Stopping SoundPlayer", e);
-		 }
 	}
-	
 
 	/**
 	 * Initiate our decryption objects

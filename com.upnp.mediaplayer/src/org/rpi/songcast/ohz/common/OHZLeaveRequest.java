@@ -20,13 +20,13 @@ public class OHZLeaveRequest extends SongcastMessage {
 	private ByteBuf buffer = null;
 
 	public OHZLeaveRequest() {
-		byte[] version = new byte[] { (byte) (1 & 0xff) };
-		byte[] type = new byte[] { (byte) (2 & 0xff) };
+		//byte[] version = new byte[] { (byte) (1 & 0xff) };
+		//byte[] type = new byte[] { (byte) (2 & 0xff) };
 		int length = header.length() + 1 + 1 + 2;
 		buffer = Unpooled.directBuffer(length);
 		buffer.writeBytes(header.getBytes(CharsetUtil.UTF_8));
-		buffer.writeBytes(version);
-		buffer.writeBytes(type);
+		buffer.writeByte(1);//Version
+		buffer.writeByte(2);//Type
 		buffer.writeShort(length);
 		// buffer = Unpooled.copiedBuffer(test.array());
 		// test.release();
