@@ -27,7 +27,7 @@ We support the following UPnP and OpenHome Functionality:
 * [Radio](http://www.openhome.org/wiki/Av:Developer:RadioService)
 * [SongCast (Receiver)](http://www.linn.co.uk/software#songcast)
 
-Also supported is Apples AirPlay Receiver. 
+Also supported is the Apple AirPlay Receiver. 
 
 We have implemented a http-daemon to make it possible to:  
 
