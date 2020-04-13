@@ -24,6 +24,7 @@ import org.rpi.player.events.EventMuteChanged;
 import org.rpi.player.events.EventUpdateTrackInfo;
 import org.rpi.player.events.EventVolumeChanged;
 import org.rpi.player.observers.ObservableVolume;
+import org.rpi.songcast.ohu.receiver.messages.OHUMessageAudio;
 import org.rpi.utils.Utils;
 
 import io.netty.buffer.ByteBuf;
@@ -121,7 +122,9 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 	private void addData(IAudioPacket packet) {
 		try {
 			if (!bWrite || bMute)
+			{
 				return;
+			}				
 
 			if (soundLine != null) {
 				switch (bitDepth) {
@@ -329,7 +332,13 @@ public class JavaSoundPlayerLatency implements Runnable, IJavaSoundPlayer, Obser
 	public synchronized void clear() {
 		try {
 			log.info("Clearing Work Queue. Number of Items: " + mWorkQueue.size());
-			mWorkQueue.clear();
+			
+			//Clear out all bytebufs in the queue
+			while(mWorkQueue.size()> 0) {
+				IAudioPacket audio = get();
+				audio.release();
+			}			
+			mWorkQueue.clear();		
 
 			log.info("WorkQueue Cleared");
 		} catch (Exception e) {

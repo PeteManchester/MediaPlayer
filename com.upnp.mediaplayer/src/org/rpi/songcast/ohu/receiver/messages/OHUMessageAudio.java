@@ -155,8 +155,18 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 		return ai;
 	}
 	
+	/***
+	 * Release the ByteBuffers..
+	 */
 	public void release() {
 		super.release();
+		if(audio == null) {
+			return;
+		}
+		int iCount = audio.refCnt();
+		if(iCount > 0) {
+			audio.release(iCount);
+		}
 	}
 
 	/**

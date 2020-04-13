@@ -19,7 +19,7 @@ public class MPDStreamerController {
 	private int iCount = 0;
 	private int maxSize = 0;
 
-	private ByteBuf queue = Unpooled.directBuffer();
+	private ByteBuf queue = null;
 	private Thread mpdThread = null;
 	private MPDStreamerConnector mpdClient = null;
 
@@ -48,7 +48,7 @@ public class MPDStreamerController {
 	 */
 	public ByteBuf getNext() {
 		try {
-			if (getQueue().readableBytes() > 1764) {
+			if (getQueue() != null && getQueue().readableBytes() > 1764) {
 				ByteBuf out = Unpooled.directBuffer(1764);
 				getQueue().readBytes(out, 1764);
 
@@ -108,6 +108,9 @@ public class MPDStreamerController {
 		if (mpdThread != null) {
 			stopMPDConnection();
 		}
+		if(queue == null) {
+			queue = Unpooled.directBuffer();
+		}
 		mpdClient = new MPDStreamerConnector();
 		mpdThread = new Thread(mpdClient, "MPDStreamerConnector");
 		mpdThread.start();
@@ -117,6 +120,20 @@ public class MPDStreamerController {
 	 * Stop the MPDConnector
 	 */
 	private void stopMPDConnection() {
+		
+		try {
+			if(queue !=null) {
+				int refCount = queue.refCnt();
+				if(refCount > 0) {
+					queue.release(refCount);
+				}	
+				queue = null;
+			}
+		}
+		catch(Exception e) {
+			log.error("Error Releasing BytBuf",e);
+		}
+		
 		try {
 			if (mpdClient != null) {
 				log.debug("Stopping MPD Connection");
@@ -135,7 +152,7 @@ public class MPDStreamerController {
 	public void start() {
 		if (mpdClient != null) {
 			return;
-		}
+		}		
 		stopMPDConnection();
 		startMPDConnection();
 

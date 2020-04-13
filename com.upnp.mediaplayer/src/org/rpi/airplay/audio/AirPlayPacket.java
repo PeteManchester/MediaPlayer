@@ -86,14 +86,20 @@ public class AirPlayPacket implements IAudioPacket {
 
 	@Override
 	public void release() {
-		if(alac ==null)
+		if(alac !=null)
 		{
-			return;
-		}
-		int refCnt = alac.refCnt();
-		if (refCnt > 0) {
-			alac.release(refCnt);
-		}
+			int refCnt = alac.refCnt();
+			if (refCnt > 0) {
+				alac.release(refCnt);
+			}
+		}		
+		
+		if(audio !=null) {
+			int refCnt = audio.refCnt();
+			if (refCnt > 0) {
+				audio.release(refCnt);
+			}
+		}		
 	}
 
 	public void setALAC(ByteBuf buffer) {
