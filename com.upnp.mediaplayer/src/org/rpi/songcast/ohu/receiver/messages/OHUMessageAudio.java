@@ -52,7 +52,7 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 		int headerLength = buf.getUnsignedByte(8);// & ~0x80;		
 		
 		int flags = buf.getUnsignedByte(9);// & ~0x80;
-		boolean isHalt = (flags << ~0 < 0);
+		boolean isHalted = (flags << ~0 < 0);
 		boolean isLosLess = (flags << ~1 < 0);
 		isLatencyEnabled = (flags << ~2 < 0);
 		boolean isResent = (flags << ~3 < 0);
@@ -60,6 +60,10 @@ public class OHUMessageAudio extends SongcastMessage implements IAudioPacket {
 		frameNumber = buf.getInt(12);
 		int latency = buf.getInt(20);
 		int timeStamp = buf.getInt(24);
+		
+		if(isHalted) {
+			System.out.println("I am Halted");
+		}
 		
 		/*
 		if(isLatencyEnabled) {

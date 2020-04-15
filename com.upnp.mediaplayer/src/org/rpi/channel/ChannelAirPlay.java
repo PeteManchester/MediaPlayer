@@ -1,7 +1,9 @@
 package org.rpi.channel;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.Writer;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -76,7 +78,8 @@ public class ChannelAirPlay extends ChannelBase {
 	 */
 	private String createMetaData(String name, String url, String image) {
 		String res = "";
-
+		StreamResult result = null;
+		Writer w = null;
 		try {
 
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -107,13 +110,23 @@ public class ChannelAirPlay extends ChannelBase {
 				}
 			}
 			Transformer transformer = TransformerFactory.newInstance().newTransformer();
-			StreamResult result = new StreamResult(new StringWriter());
+			result = new StreamResult(new StringWriter());
 			DOMSource source = new DOMSource(doc);
 			transformer.transform(source, result);
-			res = (result.getWriter().toString());
+			w = result.getWriter();
+			res = (w.toString());
 			metadata = res;
 		} catch (Exception e) {
 			log.error("Error Creating XML Doc", e);
+		}
+		finally {
+			if(w !=null ) {
+				try {
+					w.close();
+				} catch (IOException e) {
+					log.error("Error closing Writer");
+				};
+			}
 		}
 		return res;
 	}

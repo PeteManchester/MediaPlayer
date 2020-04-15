@@ -24,7 +24,7 @@ public class OHZZoneUriResponse {
 		int length_url = url.length();
 		int length = header.length() + 1 + 1 + 2 + 4 + 4 + length_zone + length_url;
 		//ByteBuf test = Unpooled.buffer(length);
-		buffer = Unpooled.directBuffer(length);
+		buffer = Unpooled.buffer(length);
 		buffer.writeBytes( header.getBytes(CharsetUtil.UTF_8));
 		buffer.writeByte( 1);//Version
 		buffer.writeByte( 1);//Type

@@ -27,13 +27,15 @@ public class OHUSenderThread implements Runnable, Observer {
 	private int iMetaTextSequence = 0;
 	private int iTrackSequence = 0;
 	private int iCount = 0;
-	//private long iSendTime = 0;
+	// private long iSendTime = 0;
 	private int iCountNoFrame = 0;
 	private int iLatency = 0;
 
 	private Logger log = Logger.getLogger(this.getClass());
-	
+
 	private long audioLength = 10;
+	private boolean isHalted = false;
+	private boolean isLastHalted = false;
 
 	/***
 	 * 
@@ -42,6 +44,9 @@ public class OHUSenderThread implements Runnable, Observer {
 	public OHUSenderThread(OHUSenderConnection ohu) {
 		setOHUSenderConnector(ohu);
 		iLatency = Config.getInstance().getSongcastLatency();
+
+		isHalted = PlayManager.getInstance().isHalted();
+		PlayManager.getInstance().observeOverallStatus(this);
 		PlayManager.getInstance().observeInfoEvents(this);
 	}
 
@@ -62,51 +67,62 @@ public class OHUSenderThread implements Runnable, Observer {
 				ByteBuf b = MPDStreamerController.getInstance().getNext();
 				if (b != null) {
 					if (ohu != null) {
+
 						try {
-							OHUSenderAudioResponse tab = new OHUSenderAudioResponse(b, iCount, iLatency);
-							if(audioLength != tab.getAudioLength()) {
-								audioLength = tab.getAudioLength();
-								log.debug("Audio Length: " + audioLength);
+
+							if (!isHalted || isHalted != isLastHalted) {
+								isLastHalted = isHalted;
+								OHUSenderAudioResponse tab = new OHUSenderAudioResponse(b, iCount, iLatency, isHalted);
+								if (audioLength != tab.getAudioLength()) {
+									audioLength = tab.getAudioLength();
+									log.debug("Audio Length: " + audioLength);
+								}
+								ohu.sendMessage(tab);
+								iCount++;
+							} else {
+								//Sending is halted, just release the ByteBuf.
+								int iRef = b.refCnt();
+								if (iRef > 0) {
+									b.release(iRef);
+								}
 							}
-							ohu.sendMessage(tab);
-							
+
 							/*
-							if (iCount % 1000 == 0) {
-								log.debug("Count: " + iCount + " Longest SendTime: " + iSendTime + " NoFrameCount: " + iCountNoFrame);
-								iSendTime = 0;
-								iCountNoFrame = 0;
-							}
-							*/
-							//.log.debug("SendTime: " + seconds);
+							 * if (iCount % 1000 == 0) { log.debug("Count: " +
+							 * iCount + " Longest SendTime: " + iSendTime +
+							 * " NoFrameCount: " + iCountNoFrame); iSendTime =
+							 * 0; iCountNoFrame = 0; }
+							 */
+							// .log.debug("SendTime: " + seconds);
 							/*
-							long delay = 10000000 - (seconds + 4000000);
-							if (delay < 1) {
-								log.debug("Delay was less than one! " + seconds);
-								delay = 1;
-							}
-							*/
-							//log.debug("SendTime: " + seconds + " Delay: " + delay);
-							//TimeUnit.NANOSECONDS.sleep(delay);
-							//TimeUnit.MICROSECONDS.sleep((8200));
-							
+							 * long delay = 10000000 - (seconds + 4000000); if
+							 * (delay < 1) {
+							 * log.debug("Delay was less than one! " + seconds);
+							 * delay = 1; }
+							 */
+							// log.debug("SendTime: " + seconds + " Delay: " +
+							// delay);
+							// TimeUnit.NANOSECONDS.sleep(delay);
+							// TimeUnit.MICROSECONDS.sleep((8200));
+
 							Instant.now();
-							
+
 							long nanoSeconds = System.nanoTime() - now;
-							iCount++;
-							/*
-							if (iSendTime < nanoSeconds) {
-								iSendTime = nanoSeconds;
-							}
-							*/
 							
-							long delay = (audioLength - (nanoSeconds/1000)) - 1500;
-							long pcAudioLength = (audioLength/60) * 100;
-							//Too short a delay increases the risk of dropping packets..
-							if(delay < audioLength - pcAudioLength) {
+							/*
+							 * if (iSendTime < nanoSeconds) { iSendTime =
+							 * nanoSeconds; }
+							 */
+
+							long delay = (audioLength - (nanoSeconds / 1000)) - 1500;
+							long pcAudioLength = (audioLength / 60) * 100;
+							// Too short a delay increases the risk of dropping
+							// packets..
+							if (delay < audioLength - pcAudioLength) {
 								log.debug("Delay was too small: " + delay);
 								delay = pcAudioLength;
 							}
-							//log.debug(delay);
+							// log.debug(delay);
 							TimeUnit.MICROSECONDS.sleep(delay);
 						} catch (Exception e) {
 							log.error("Error Send AudioBytes", e);
@@ -136,6 +152,18 @@ public class OHUSenderThread implements Runnable, Observer {
 	 */
 	@Override
 	public void update(Observable o, Object e) {
+
+		if (e instanceof String) {
+			String status = (String) e;
+			if (status.equalsIgnoreCase("Playing")) {
+				log.debug("Status has changed to Playing, start sending Songcast packets");
+				isHalted = false;
+			} else {
+				isHalted = true;
+				log.debug("Status has changed to Stopped, stop sending Songcast packets");
+			}
+			return;
+		}
 
 		EventBase base = (EventBase) e;
 		switch (base.getType()) {

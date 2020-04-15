@@ -28,7 +28,7 @@ public class OHURequestJoin {
 		//byte[] type = new byte[] { (byte) (0 & 0xff) };
 		int length = header.length() + 1 + 1 + 2;
 		//ByteBuf test = Unpooled.buffer(length);
-		buffer = Unpooled.directBuffer(length);
+		buffer = Unpooled.buffer(length);
 		buffer.writeBytes( header.getBytes(CharsetUtil.UTF_8));
 		buffer.writeByte( 1);
 		buffer.writeByte( 0);

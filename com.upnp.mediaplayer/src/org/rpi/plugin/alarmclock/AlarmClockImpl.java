@@ -26,6 +26,7 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
+import org.rpi.mplayer.CloseMe;
 import org.rpi.os.OSManager;
 import org.rpi.player.PlayManager;
 import org.rpi.plug.interfaces.AlarmClockInterface;
@@ -235,11 +236,16 @@ public class AlarmClockImpl implements AlarmClockInterface {
 
 	private String getAlarmTime() {
 		Properties pr = new Properties();
+		FileInputStream fis = null;
 		try {
-			pr.load(new FileInputStream("app.properties"));
+			fis = new FileInputStream("app.properties");
+			pr.load(fis );
 			return pr.getProperty("alarmtime");
 		} catch (Exception e) {
 			log.error(e);
+		}
+		finally {
+			CloseMe.close(fis);
 		}
 		return "";
 	}

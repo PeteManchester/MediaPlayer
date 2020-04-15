@@ -75,7 +75,10 @@ public class PlayManager implements Observer {
 	private ObservableAVTransport obsvAVTransport = new ObservableAVTransport();
 	private ObservableSongcast obsvSongcast = new ObservableSongcast();
 	private ObservableAirPlay obsvAirPlay = new ObservableAirPlay();
+	private ObservableOverallStatus obsvOverallStatus = new ObservableOverallStatus();
 	private String status = "Stopped";
+
+	private boolean isSongcastSending = false;
 
 	private static PlayManager instance = null;
 
@@ -112,9 +115,8 @@ public class PlayManager implements Observer {
 	 */
 	private void playThis(ChannelBase t) {
 		if (t != null) {
-			boolean isStopping= false;
-			if(standby)
-			{
+			boolean isStopping = false;
+			if (standby) {
 				log.debug("We are playing a Channel, take out of Standby");
 				setStandby(false);
 			}
@@ -127,33 +129,30 @@ public class PlayManager implements Observer {
 				EventAirPlayerStop eva = new EventAirPlayerStop();
 				obsvAirPlay.notifyChange(eva);
 			}
-			
-			if(t instanceof ChannelPlayList)
-			{
+
+			if (t instanceof ChannelPlayList) {
 				PluginGateWay.getInstance().setSourceByname("Playlist");
 			}
-			
-			if(t instanceof ChannelRadio)
-			{
+
+			if (t instanceof ChannelRadio) {
 				PluginGateWay.getInstance().setSourceByname("Radio");
-				isStopping =true;
+				isStopping = true;
 			}
 
 			current_track = t;
 			long v = mplayer_volume;
 			if (!isUseExternalVolume())
 				v = volume;
-			mPlayer.playThis(t, v, bMute,isStopping);
+			mPlayer.playThis(t, v, bMute, isStopping);
 		}
 	}
-	
+
 	/**
 	 * Set the Next Track to be played
 	 * 
 	 * @param t
 	 */
-	public synchronized void setNextTrack(ChannelBase c)
-	{
+	public synchronized void setNextTrack(ChannelBase c) {
 		log.debug("Set Next AV Track :  " + c.getUri());
 		mPlayer.preLoadTrack(c);
 	}
@@ -353,7 +352,7 @@ public class PlayManager implements Observer {
 		ev.setShuffle(shuffle);
 		obsvPlayList.notifyChange(ev);
 	}
-	
+
 	public void podcastUpdatePlayList(List<ChannelPlayList> channels) {
 		EventPlayListUpdateList epl = new EventPlayListUpdateList();
 		epl.setChannels(channels);
@@ -448,13 +447,12 @@ public class PlayManager implements Observer {
 
 	public synchronized void setCurrentTrack(ChannelBase track) {
 		current_track = track;
-		if(track !=null) {
+		if (track != null) {
 			log.debug("Current Track Id: " + track.getId());
-		}
-		else {
+		} else {
 			log.debug("Current Track set to NULL");
 		}
-		
+
 	}
 
 	/**
@@ -464,32 +462,24 @@ public class PlayManager implements Observer {
 	public synchronized ChannelBase getCurrentTrack() {
 		return current_track;
 	}
-	
+
 	/**
 	 * getCurrentSource
+	 * 
 	 * @return
 	 */
-	public String getCurrentTrackAsString()
-	{
+	public String getCurrentTrackAsString() {
 		String res = "UNKNOWN";
-		if(current_track ==null)
-		{
+		if (current_track == null) {
 			return "NONE";
 		}
-		if(current_track instanceof ChannelPlayList)
-		{
+		if (current_track instanceof ChannelPlayList) {
 			return "PLAYLIST";
-		}
-		else if (current_track instanceof ChannelAirPlay)
-		{
+		} else if (current_track instanceof ChannelAirPlay) {
 			return "AIRPLAY";
-		}
-		else if (current_track instanceof ChannelRadio)
-		{
+		} else if (current_track instanceof ChannelRadio) {
 			return "RADIO";
-		}
-		else if (current_track instanceof ChannelSongcast)
-		{
+		} else if (current_track instanceof ChannelSongcast) {
 			return "SONGCAST";
 		}
 		return res;
@@ -555,7 +545,7 @@ public class PlayManager implements Observer {
 		if (current_track instanceof ChannelAirPlay) {
 			EventAirPlayerStop eva = new EventAirPlayerStop();
 			obsvAirPlay.notifyChange(eva);
-		}		
+		}
 	}
 
 	/**
@@ -614,7 +604,7 @@ public class PlayManager implements Observer {
 			}
 		}
 	}
-	
+
 	public synchronized void play() {
 		play(true);
 	}
@@ -647,8 +637,7 @@ public class PlayManager implements Observer {
 	 */
 	public void playAirPlayer(ChannelAirPlay track) {
 		log.debug("Playing AirPlay Server. Stop Playing current Track");
-		if(standby)
-		{
+		if (standby) {
 			log.debug("We are playing the AirPlayChannel, take out of Standby");
 			setStandby(false);
 		}
@@ -678,21 +667,19 @@ public class PlayManager implements Observer {
 		ev.setName(name);
 		obsvRadio.notifyChange(ev);
 	}
-	
+
 	/**
 	 * 
 	 */
-	public synchronized void radioNextChannel()
-	{
+	public synchronized void radioNextChannel() {
 		EventRadioPlayNext erpn = new EventRadioPlayNext();
 		obsvRadio.notifyChange(erpn);
 	}
-	
+
 	/**
 	 * 
 	 */
-	public synchronized void radioPreviousChannel()
-	{
+	public synchronized void radioPreviousChannel() {
 		EventRadioPlayPrevious erpp = new EventRadioPlayPrevious();
 		obsvRadio.notifyChange(erpp);
 	}
@@ -750,8 +737,7 @@ public class PlayManager implements Observer {
 				return;
 			}
 			long max_volume = Config.getInstance().getMaxVolume();
-			if(volume > max_volume )
-			{
+			if (volume > max_volume) {
 				log.debug("Reached Max Volume: " + max_volume);
 				volume = max_volume;
 			}
@@ -766,18 +752,16 @@ public class PlayManager implements Observer {
 						mPlayer.setVolume(volume);
 				}
 			}
-			
+
 		}
 	}
-	
-	public synchronized void setAirplayVolume(long volume)
-	{
+
+	public synchronized void setAirplayVolume(long volume) {
 		airplayVolume = volume;
 		EventAirplayVolumeChanged ev = new EventAirplayVolumeChanged();
 		ev.setVolume(volume);
 		obsvAirplayVolume.notifyChange(ev);
-		if(Config.getInstance().isAirPlayMasterVolumeEnabled())
-		{
+		if (Config.getInstance().isAirPlayMasterVolumeEnabled()) {
 			setVolume(volume);
 		}
 	}
@@ -942,6 +926,29 @@ public class PlayManager implements Observer {
 	 */
 	public synchronized void setStatus(String status, String source) {
 		log.info("SetStatus: " + status + " Source: " + source);
+		boolean isSongcastable = false;
+		boolean isPlaying = false;
+		if (source.equalsIgnoreCase("Player") || source.equalsIgnoreCase("Radio")) {
+			isSongcastable = true;
+		}
+
+		if (status.equalsIgnoreCase("Buffering") || status.equalsIgnoreCase("Playing")) {
+			if (isSongcastable) {
+				if (!isPlaying) {
+					isPlaying = true;
+				}
+			}
+		}
+
+		if (isPlaying != isSongcastSending) {
+			if (isPlaying) {
+				obsvOverallStatus.notifyChange("Playing");
+			} else {
+				obsvOverallStatus.notifyChange("Stopped");
+			}
+			isSongcastSending = isPlaying;
+		}
+
 		this.status = status;
 		EventTrackChanged ev = new EventTrackChanged();
 		if (status.equalsIgnoreCase("PLAYING")) {
@@ -973,13 +980,13 @@ public class PlayManager implements Observer {
 			obsvPlayList.notifyChange(evr);
 		}
 	}
-	
+
 	/**
 	 * getPlayerStatus
+	 * 
 	 * @return
 	 */
-	public String getPlayerStatus()
-	{
+	public String getPlayerStatus() {
 		return status;
 	}
 
@@ -1179,6 +1186,15 @@ public class PlayManager implements Observer {
 	}
 
 	/**
+	 * Register for overall status events.
+	 * 
+	 * @param o
+	 */
+	public synchronized void observeOverallStatus(Observer o) {
+		obsvOverallStatus.addObserver(o);
+	}
+
+	/**
 	 * Register for Volume Events
 	 * 
 	 * @param o
@@ -1186,9 +1202,8 @@ public class PlayManager implements Observer {
 	public synchronized void observeVolumeEvents(Observer o) {
 		obsvVolume.addObserver(o);
 	}
-	
-	public synchronized void observeAirplayVolumeEvents(Observer o)
-	{
+
+	public synchronized void observeAirplayVolumeEvents(Observer o) {
 		obsvAirplayVolume.addObserver(o);
 	}
 
@@ -1293,24 +1308,34 @@ public class PlayManager implements Observer {
 	}
 
 	public void updateTracks(CopyOnWriteArrayList<ChannelPlayList> tracks2) {
-		this.tracks = tracks2;		
+		this.tracks = tracks2;
 	}
-	
+
 	/***
-	 * Check if the track Id is already being used.
-	 * This is for the Pins, the control point does not like it if you empty the tracks update the IdArray and then add a new list of tracks with the same ids.
+	 * Check if the track Id is already being used. This is for the Pins, the
+	 * control point does not like it if you empty the tracks update the IdArray
+	 * and then add a new list of tracks with the same ids.
+	 * 
 	 * @param id
 	 * @return
 	 */
 	public boolean duplicateTrackId(int id) {
-		for(ChannelPlayList ch : tracks) {
-			if(ch.getId() == id) {
+		for (ChannelPlayList ch : tracks) {
+			if (ch.getId() == id) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
 
+	/***
+	 * Is there are a Playlist or Radio track playing that can be sent by
+	 * Songcast
+	 * 
+	 * @return
+	 */
+	public boolean isHalted() {
+		return !isSongcastSending;
+	}
 
 }

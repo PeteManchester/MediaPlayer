@@ -1,16 +1,19 @@
 package org.rpi.songcast.ohu.sender.mpd;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import org.apache.log4j.Logger;
+import org.rpi.player.PlayManager;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 /***
  * 
- * @author phoyle 
- * Main controller for the MPD HTTPD listener 
- * MPD can be configured to stream PCM of HTTP. 
- * This is used for the Songcast Sender
+ * @author phoyle Main controller for the MPD HTTPD listener MPD can be
+ *         configured to stream PCM of HTTP. This is used for the Songcast
+ *         Sender
  */
 public class MPDStreamerController {
 
@@ -49,7 +52,7 @@ public class MPDStreamerController {
 	public ByteBuf getNext() {
 		try {
 			if (getQueue() != null && getQueue().readableBytes() > 1764) {
-				ByteBuf out = Unpooled.directBuffer(1764);
+				ByteBuf out = Unpooled.buffer(1764);
 				getQueue().readBytes(out, 1764);
 
 				getQueue().discardReadBytes();
@@ -74,6 +77,7 @@ public class MPDStreamerController {
 	 * @param b
 	 */
 	public void addSoundByte(ByteBuf b) {
+
 		getQueue().writeBytes(b, 0, b.readableBytes());
 		int size = getQueue().readableBytes();
 		if (size > maxSize) {
@@ -83,14 +87,14 @@ public class MPDStreamerController {
 		if (size > slice) {
 			log.debug("Buffer too big: " + size);
 			try {
-				ByteBuf out = Unpooled.directBuffer(slice);
+				ByteBuf out = Unpooled.buffer(slice);
 				getQueue().readBytes(out, slice - 7056);
 				getQueue().discardReadBytes();
 				out.release();
-			}catch(Exception e) {
+			} catch (Exception e) {
 				log.error("Error reducing buffer size", e);
 			}
-			
+
 		}
 
 		if (iCount % 1000 == 0) {
@@ -108,8 +112,8 @@ public class MPDStreamerController {
 		if (mpdThread != null) {
 			stopMPDConnection();
 		}
-		if(queue == null) {
-			queue = Unpooled.directBuffer();
+		if (queue == null) {
+			queue = Unpooled.buffer();
 		}
 		mpdClient = new MPDStreamerConnector();
 		mpdThread = new Thread(mpdClient, "MPDStreamerConnector");
@@ -120,20 +124,19 @@ public class MPDStreamerController {
 	 * Stop the MPDConnector
 	 */
 	private void stopMPDConnection() {
-		
+
 		try {
-			if(queue !=null) {
+			if (queue != null) {
 				int refCount = queue.refCnt();
-				if(refCount > 0) {
+				if (refCount > 0) {
 					queue.release(refCount);
-				}	
+				}
 				queue = null;
 			}
+		} catch (Exception e) {
+			log.error("Error Releasing BytBuf", e);
 		}
-		catch(Exception e) {
-			log.error("Error Releasing BytBuf",e);
-		}
-		
+
 		try {
 			if (mpdClient != null) {
 				log.debug("Stopping MPD Connection");
@@ -152,7 +155,7 @@ public class MPDStreamerController {
 	public void start() {
 		if (mpdClient != null) {
 			return;
-		}		
+		}
 		stopMPDConnection();
 		startMPDConnection();
 

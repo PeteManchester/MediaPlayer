@@ -1,7 +1,9 @@
 package org.rpi.channel;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -139,7 +141,7 @@ public class ChannelBase {
     }
 
     public String tidyMetaData() {
-
+    	Writer w = null;
         try {
             Vector<Node> removeNodes = new Vector<Node>();
             StringBuilder temp = new StringBuilder();
@@ -190,15 +192,26 @@ public class ChannelBase {
             StreamResult result = new StreamResult(new StringWriter());
             DOMSource source = new DOMSource(doc);
             transformer.transform(source, result);
-            return result.getWriter().toString();
+            w = result.getWriter();
+            return w.toString();
         } catch (Exception e) {
             log.error("Erorr TidyMetaData", e);
+        }
+        finally {
+        	if(w != null) {
+        		try {
+					w.close();
+				} catch (IOException e) {
+					log.error("Error closing Writer",e);
+				}
+        	}
         }
 
         return "";
     }
 
     public String updateTrack(String title, String artist) {
+    	Writer w = null;
         try {
             String full_title = title + " - " + artist;
             full_title = tidyUpString(full_title);
@@ -229,10 +242,20 @@ public class ChannelBase {
             StreamResult result = new StreamResult(new StringWriter());
             DOMSource source = new DOMSource(doc);
             transformer.transform(source, result);
-            metatext = result.getWriter().toString();
+            w = result.getWriter();
+            metatext = w.toString();
             return metatext;
         } catch (Exception e) {
             log.error("Error Creating XML Doc", e);
+        }
+        finally {
+        	if(w !=null) {
+        		try {
+					w.close();
+				} catch (IOException e) {
+					log.error("Error closing Writer");
+				}
+        	}
         }
         return null;
     }

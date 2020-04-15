@@ -13,6 +13,7 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 import org.rpi.channel.ChannelBase;
 import org.rpi.config.Config;
+import org.rpi.mplayer.CloseMe;
 import org.rpi.os.OSManager;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
@@ -121,6 +122,7 @@ public class FullscreenDisplayImpl implements FullscreenDisplayInterface, Observ
      *
      */
     private void getConfig() {
+    	FileReader fr = null;
         try {
             String class_name = this.getClass().getName();
             LOGGER.debug("Find Class, ClassName: " + class_name);
@@ -128,12 +130,15 @@ public class FullscreenDisplayImpl implements FullscreenDisplayInterface, Observ
             LOGGER.debug("Getting fullscreen.properties from Directory: " + path);
             File props = new File(path + "fullscreen.properties");
             Properties properties = new Properties();
-            properties.load(new FileReader(props));
+            fr = new FileReader(props);
+            properties.load(fr );
 
             this.debug = Boolean.valueOf((String)properties.get("fullscreen.debug"));
 
         } catch (IOException e) {
             LOGGER.error("Error Reading LIRCConfig.xml");
+        }finally {
+        	CloseMe.close(fr);
         }
 
     }

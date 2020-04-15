@@ -15,6 +15,7 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.helpers.CountingQuietWriter;
 import org.apache.log4j.helpers.LogLog;
+import org.rpi.mplayer.CloseMe;
 
 
 
@@ -196,6 +197,7 @@ public class CustomRollingFileAppender extends RollingFileAppender {
 				throw ex;
 			}
 		}
+
 		Writer fw = createWriter(ostream);
 		if (bufferedIO)
 			fw = new BufferedWriter(fw, bufferSize);
@@ -212,6 +214,15 @@ public class CustomRollingFileAppender extends RollingFileAppender {
 			((CountingQuietWriter) super.qw).setCount(f.length());
 		}
 		LogLog.debug("setFile ended");
+		
+		if(ostream !=null) {
+			CloseMe.close(ostream);
+		}
+		
+		if(fw !=null) {
+			CloseMe.close(fw);
+		}
+		
 	}
 
 }

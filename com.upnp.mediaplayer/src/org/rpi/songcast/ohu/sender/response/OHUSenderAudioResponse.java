@@ -43,10 +43,10 @@ public class OHUSenderAudioResponse {
 	private int bitRate = 1411200;
 
 	public OHUSenderAudioResponse(ByteBuf bytes) {
-		this(bytes, 0, 0);
+		this(bytes, 0, 0, false);
 	}
 
-	public OHUSenderAudioResponse(ByteBuf bytes, int iCount, int latency) {
+	public OHUSenderAudioResponse(ByteBuf bytes, int iCount, int latency, boolean isHalted) {
 		//byte[] version = new byte[] { (byte) (1 & 0xff) };
 		//byte[] type = new byte[] { (byte) (3 & 0xff) };
 		// String codecName = "PCM ";
@@ -61,10 +61,10 @@ public class OHUSenderAudioResponse {
 		int flags = 0;
 
 		boolean isLossLess = true;
-		boolean isHalt = false;
+		//boolean isHalt = false;
 		boolean isResent = false;
 
-		if (isHalt) {
+		if (isHalted) {
 			flags |= 1;
 		}
 
@@ -86,7 +86,7 @@ public class OHUSenderAudioResponse {
 		}
 		audioLength = (long) al * 1000;
 
-		buffer = Unpooled.directBuffer();
+		buffer = Unpooled.buffer();
 
 		buffer.writeBytes(header.getBytes(CharsetUtil.UTF_8));
 		buffer.writeByte(1);

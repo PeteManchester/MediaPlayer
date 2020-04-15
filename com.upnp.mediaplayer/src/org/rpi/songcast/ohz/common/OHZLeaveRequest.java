@@ -23,7 +23,7 @@ public class OHZLeaveRequest extends SongcastMessage {
 		//byte[] version = new byte[] { (byte) (1 & 0xff) };
 		//byte[] type = new byte[] { (byte) (2 & 0xff) };
 		int length = header.length() + 1 + 1 + 2;
-		buffer = Unpooled.directBuffer(length);
+		buffer = Unpooled.buffer(length);
 		buffer.writeBytes(header.getBytes(CharsetUtil.UTF_8));
 		buffer.writeByte(1);//Version
 		buffer.writeByte(2);//Type

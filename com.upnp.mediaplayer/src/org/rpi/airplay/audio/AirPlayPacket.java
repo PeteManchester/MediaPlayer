@@ -22,7 +22,7 @@ public class AirPlayPacket implements IAudioPacket {
 	}
 
 	public AirPlayPacket(ByteBuf buffer) {
-		alac = Unpooled.directBuffer(buffer.capacity());
+		alac = Unpooled.buffer(buffer.capacity());
 		this.alac.writeBytes(buffer);
 	}
 

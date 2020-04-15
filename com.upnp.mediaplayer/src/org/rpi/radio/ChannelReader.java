@@ -143,7 +143,7 @@ public class ChannelReader {
 	 */
 	private String createMetaData(String name, String url, String image) {
 		String res = "";
-
+		StreamResult result = null;
 		try {
 
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -174,12 +174,17 @@ public class ChannelReader {
 				}
 			}
 			Transformer transformer = TransformerFactory.newInstance().newTransformer();
-			StreamResult result = new StreamResult(new StringWriter());
+			result = new StreamResult(new StringWriter());
 			DOMSource source = new DOMSource(doc);
 			transformer.transform(source, result);
 			res = (result.getWriter().toString());
 		} catch (Exception e) {
 			log.error("Error Creating XML Doc", e);
+		}
+		finally {
+			if(result !=null && result.getWriter() !=null) {
+				CloseMe.close(result.getWriter());
+			}
 		}
 		return res;
 	}

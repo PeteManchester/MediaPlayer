@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -130,11 +131,21 @@ public class Config {
 	}
 
 	private static void getConfig() {
+		FileInputStream fs =null;
 		try {
 			pr = new Properties();
-			pr.load(new FileInputStream("app.properties"));
+			fs = new FileInputStream("app.properties");
+			pr.load(fs);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}finally {
+			if(fs !=null) {
+				try {
+					fs.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -796,6 +807,7 @@ public class Config {
 
 		}
 		OutputStream out = null;
+		FileWriter fw = null;
 		try {
 
 			File f = new File("app.properties");
@@ -807,7 +819,8 @@ public class Config {
 				}
 			};
 			tmp.putAll(pr);
-			tmp.store(new FileWriter(f), "Modified Using the Web Page");
+			fw = new FileWriter(f);
+			tmp.store(fw, "Modified Using the Web Page");
 
 		} catch (Exception e) {
 
@@ -817,6 +830,12 @@ public class Config {
 					out.close();
 				} catch (Exception e) {
 
+				}
+			}
+			if(fw !=null) {
+				try {
+					fw.close();
+				} catch (IOException e) {
 				}
 			}
 		}
