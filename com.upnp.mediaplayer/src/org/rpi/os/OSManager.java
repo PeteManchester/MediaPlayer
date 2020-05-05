@@ -165,6 +165,10 @@ public class OSManager {
 					String version = System.getProperty("os.version");
 					log.debug("OS is Linux, and arch is " + arch + ". Version is: " + version);
 					full_path = path + OHNET_LIB_DIR + "/" + osPathName + "/amd64";
+				} else if (arch.startsWith("AARCH64")) {
+					String version = System.getProperty("os.version");
+					log.debug("OS is Linux, and arch is " + arch + ". Version is: " + version);
+					full_path = path + OHNET_LIB_DIR + "/" + osPathName + "/aarch64";
 				}
 			}
 

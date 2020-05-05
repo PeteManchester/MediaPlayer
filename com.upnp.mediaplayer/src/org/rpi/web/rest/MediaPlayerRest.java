@@ -159,6 +159,23 @@ public class MediaPlayerRest {
 		return sb.toString();
 	}
 	
+	@Path("radioPlayChannel")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String radioPlayChannel(@QueryParam("station") String station)
+	{
+		log.debug("Playing Radio Channel: " + station);
+		StringBuilder sb = new StringBuilder();
+		try {
+			PlayManager.getInstance().playRadio(station);
+			sb.append("OK");
+		} catch (Exception e) {
+			sb.append("ERROR: " + e.getMessage());
+			log.error("Error creating Status JSON",e);
+		}
+		return sb.toString();
+	}
+	
 	
 	@Path("setVolume")
 	@GET
