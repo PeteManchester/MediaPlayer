@@ -26,7 +26,7 @@ import org.rpi.config.Config;
 import org.rpi.kazo.server.KazooServer;
 import org.rpi.pins.EventPinsChanged;
 import org.rpi.pins.PinInfo;
-import org.rpi.pins.PinManagerAccount;
+import org.rpi.pins.PinManager;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventPlayListUpdateList;
@@ -48,7 +48,7 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 
 	public PrvPins(DvDevice iDevice) {
 		super(iDevice);
-		PinManagerAccount.getInstance().observePinEvents(this);
+		PinManager.getInstance().observePinEvents(this);
 		iDeviceMax = Config.getInstance().getPinsDeviceMax();
 		for (int i = 0; i < iDeviceMax; i++) {
 			devicePins.put(i, dummyPinInfo);
@@ -126,6 +126,7 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 		JSONArray jsonArray = new JSONArray(idArray.values());
 		log.debug("Update IDArray: " + jsonArray.toString());
 		setPropertyIdArray(jsonArray.toString());
+		PinManager.getInstance().putPins(devicePins, accountPins);
 		if (save) {
 			savePins();
 		}
@@ -142,7 +143,7 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 				res.put(json);
 			}
 			String json = res.toString();
-			PinManagerAccount.getInstance().SavePins(json);
+			PinManager.getInstance().SavePins(json);
 			// saveToFile(json);
 			// saveToCloud(json);
 		} catch (Exception e) {
@@ -151,7 +152,7 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 	}
 
 	private void readPins() {
-		String content = PinManagerAccount.getInstance().getPins();
+		String content = PinManager.getInstance().getPins();
 		updatePins(content, false);
 	}
 
@@ -259,6 +260,8 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 	protected void invokeId(IDvInvocation paramIDvInvocation, long id) {
 		log.debug("invokeId: " + Utils.getLogText(paramIDvInvocation) + " Id: " + id);
 		try {
+			PlayManager.getInstance().playPinById(id);
+			/*
 			PinInfo pi = getPinInfo(id);
 			if (pi == null) {
 				return;
@@ -337,6 +340,7 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 				}
 
 			}
+			*/
 		}
 		catch(Exception e) {
 			log.error("Error invokeId", e);
@@ -344,6 +348,7 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 		
 	}
 
+	/*
 	public Map<String, String> decodeQueryString(String query) {
 		try {
 			Map<String, String> params = new LinkedHashMap<>();
@@ -361,7 +366,9 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 												// encoding.
 		}
 	}
+	*/
 
+	/*
 	private PinInfo getPinInfo(long id) {
 		PinInfo pi = null;
 		for (PinInfo p : devicePins.values()) {
@@ -378,9 +385,15 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 		}
 		return pi;
 	}
+	*/
 
+	/***
+	 * 
+	 */
 	protected void invokeIndex(IDvInvocation paramIDvInvocation, long id) {
 		log.debug("invokeIndex: " + Utils.getLogText(paramIDvInvocation) + " Id: " + id);
+		//Never seen this used, but just in case..
+		PlayManager.getInstance().playPinByIndex(id);
 	}
 
 	/*
@@ -522,7 +535,7 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 
 	@Override
 	public void dispose() {
-		PinManagerAccount.getInstance().unRegister();
+		PinManager.getInstance().unRegister();
 		super.dispose();
 	}
 

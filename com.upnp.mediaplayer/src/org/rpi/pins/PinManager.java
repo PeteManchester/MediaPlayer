@@ -1,11 +1,15 @@
 package org.rpi.pins;
 
 import java.io.FileWriter;
-
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Observer;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -20,14 +24,20 @@ import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
 /***
- * A class that handles the Pin service, using both a local file and if configured a web service based on Socket.io
+ * A class that handles the Pin service, using both a local file and if
+ * configured a web service based on Socket.io
+ * 
  * @author phoyle
  *
  */
 
-public class PinManagerAccount {
+public class PinManager {
 
 	private Logger log = Logger.getLogger(this.getClass());
+
+	Map<Integer, PinInfo> devicePins = new ConcurrentHashMap<Integer, PinInfo>();
+
+	Map<Integer, PinInfo> accountPins = new ConcurrentHashMap<Integer, PinInfo>();
 
 	private String originalPins = "";
 
@@ -35,24 +45,23 @@ public class PinManagerAccount {
 	// "http://192.168.1.205:8081/PinServiceManager1/webapi/broadcast";
 	private String pinManagerURL = Config.getInstance().getPinsServiceURL();
 
-	private static PinManagerAccount instance = null;
+	private static PinManager instance = null;
 	private ObservablePins obsvPinsChanged = new ObservablePins();
 
 	private Socket socket = null;
 
-	public static PinManagerAccount getInstance() {
+	public static PinManager getInstance() {
 		if (instance == null) {
-			instance = new PinManagerAccount();
+			instance = new PinManager();
 		}
 		return instance;
 	}
 
-	private PinManagerAccount() {
+	private PinManager() {
 		if (!Utils.isEmpty(pinManagerURL)) {
 			log.info("PinManger URL is configured, connect to the service");
 			connectToServer();
-		}
-		else {
+		} else {
 			log.info("PinManger URL is not configured, do  NOT connect to the service");
 		}
 	}
@@ -64,14 +73,14 @@ public class PinManagerAccount {
 			String host = url.getHost();
 			Options options = new Options();
 			options.path = path;
-			options.transports = new String[] {"websocket"};
+			options.transports = new String[] { "websocket" };
 			String sUrl = pinManagerURL.replace(path, "");
 			socket = IO.socket(sUrl, options);
 			socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
 				@Override
 				public void call(Object... args) {
 					log.debug("Connected: " + socket.connected());
-					//socket.emit("foo", "hi");
+					// socket.emit("foo", "hi");
 				}
 
 			}).on(Socket.EVENT_MESSAGE, new Emitter.Listener() {
@@ -80,7 +89,7 @@ public class PinManagerAccount {
 				public void call(Object... args) {
 					log.debug("Recieved: " + args);
 					String eventType = (String) args[0];
-					switch(eventType.toUpperCase()) {
+					switch (eventType.toUpperCase()) {
 					case "PINS":
 						try {
 							JSONObject pins = (JSONObject) args[1];
@@ -93,9 +102,9 @@ public class PinManagerAccount {
 								obsvPinsChanged.notifyChange(ev);
 							}
 						} catch (Exception e) {
-							log.error("Could not process event",e);
+							log.error("Could not process event", e);
 						}
-						
+
 						break;
 					}
 				}
@@ -127,7 +136,7 @@ public class PinManagerAccount {
 				public void call(Object... args) {
 					log.debug("Pins updated: " + args[0].toString());
 					try {
-						if(args[0] instanceof JSONArray) {
+						if (args[0] instanceof JSONArray) {
 							JSONArray pins = (JSONArray) args[0];
 							String json = pins.toString();
 							if (!json.equalsIgnoreCase(originalPins)) {
@@ -137,9 +146,9 @@ public class PinManagerAccount {
 								ev.setPinInfo(json);
 								obsvPinsChanged.notifyChange(ev);
 							}
-						}						
+						}
 					} catch (Exception e) {
-						log.error("Could not process event",e);
+						log.error("Could not process event", e);
 					}
 
 				}
@@ -174,13 +183,10 @@ public class PinManagerAccount {
 			saveToCloud(json);
 		}
 		/*
-		if(!json.equalsIgnoreCase(originalPins)) {
-			EventPinsChanged ev = new EventPinsChanged();
-			ev.setPinInfo(json);
-			obsvPinsChanged.notifyChange(ev);
-			originalPins = json;
-		}
-		*/		
+		 * if(!json.equalsIgnoreCase(originalPins)) { EventPinsChanged ev = new
+		 * EventPinsChanged(); ev.setPinInfo(json);
+		 * obsvPinsChanged.notifyChange(ev); originalPins = json; }
+		 */
 	}
 
 	/***
@@ -291,6 +297,126 @@ public class PinManagerAccount {
 	 */
 	public synchronized void observePinEvents(Observer o) {
 		obsvPinsChanged.addObserver(o);
+	}
+
+	public void putPins(Map<Integer, PinInfo> devicePins, Map<Integer, PinInfo> accountPins) {
+		setDevicePins(devicePins);
+		setAccountPins(accountPins);
+	}
+
+	/**
+	 * @return the devicePins
+	 */
+	public Map<Integer, PinInfo> getDevicePins() {
+		return devicePins;
+	}
+
+	/**
+	 * @param devicePins
+	 *            the devicePins to set
+	 */
+	private void setDevicePins(Map<Integer, PinInfo> devicePins) {
+		this.devicePins = devicePins;
+	}
+
+	/**
+	 * @return the accountPins
+	 */
+	public Map<Integer, PinInfo> getAccountPins() {
+		return accountPins;
+	}
+
+	/**
+	 * @param accountPins
+	 *            the accountPins to set
+	 */
+	private void setAccountPins(Map<Integer, PinInfo> accountPins) {
+		this.accountPins = accountPins;
+	}
+
+	/***
+	 * Get the PinInfo by the Pin Id
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public PinInfo getPinInfoById(long id) {
+		log.debug("getPinInfoById: " + id);
+		PinInfo pi = null;
+		for (PinInfo p : devicePins.values()) {
+			if (p.getId() == id) {
+				pi = p;
+				log.debug("getPinInfoById: " + id + " Found in DevicePins, returning: " + pi);
+				return pi;
+			}
+		}
+		for (PinInfo p : accountPins.values()) {
+			if (p.getId() == id) {
+				pi = p;
+				log.debug("getPinInfoById: " + id + " Found in AccountPins, returning: " + pi);
+				return pi;
+			}
+		}
+		log.debug("getPinInfoById: " + id + " Not Found ");
+		return pi;
+	}
+
+	/***
+	 * Get the PinInfo by the Index
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public PinInfo getPinInfoByIndex(int index) {
+		log.debug("getPinInfoByIndex: " + index);
+		int size = devicePins.size();
+		int i = 0;
+		if (index <= size) {
+			for (PinInfo pinfo : devicePins.values()) {
+				i++;
+				if (i == index) {
+					log.debug("getPinInfoByIndex: " + index + " Found in DevicePins, returning: " + pinfo);
+					return pinfo;
+				}
+			}
+		}
+		size = accountPins.size();
+		if (index <= size) {
+
+			for (PinInfo pinfo : accountPins.values()) {
+				i++;
+				if (i == index) {
+					log.debug("getPinInfoByIndex: " + index + " Found in AccountPins, returning: " + pinfo);
+					return pinfo;
+				}
+			}
+		}
+		log.debug("getPinInfoByIndex: " + index + " Not Found: ");
+		return null;
+	}
+
+	/***
+	 * Decode the Pin Query String
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public Map<String, String> decodeQueryString(String query) {
+		try {
+			Map<String, String> params = new LinkedHashMap<>();
+			for (String param : query.split("&")) {
+				String[] keyValue = param.split("=", 2);
+				String key = URLDecoder.decode(keyValue[0], "UTF-8");
+				String value = keyValue.length > 1 ? URLDecoder.decode(keyValue[1], "UTF-8") : "";
+				if (!key.isEmpty()) {
+					params.put(key, value);
+				}
+			}
+			return params;
+		} catch (UnsupportedEncodingException e) {
+			throw new IllegalStateException(e); // Cannot happen with UTF-8
+												// encoding.
+		}
 	}
 
 }

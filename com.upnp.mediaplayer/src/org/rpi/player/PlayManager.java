@@ -1,7 +1,13 @@
 package org.rpi.player;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
@@ -14,8 +20,11 @@ import org.rpi.channel.ChannelPlayList;
 import org.rpi.channel.ChannelRadio;
 import org.rpi.channel.ChannelSongcast;
 import org.rpi.config.Config;
+import org.rpi.kazo.server.KazooServer;
 import org.rpi.mpdplayer.MPDPlayerController;
 import org.rpi.mplayer.MPlayerController;
+import org.rpi.pins.PinInfo;
+import org.rpi.pins.PinManager;
 import org.rpi.player.events.EventAirPlayerStop;
 import org.rpi.player.events.EventAirplayVolumeChanged;
 import org.rpi.player.events.EventBase;
@@ -42,6 +51,8 @@ import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.player.events.EventVolumeChanged;
 import org.rpi.player.observers.*;
 import org.rpi.plugingateway.PluginGateWay;
+import org.rpi.radio.ChannelReaderJSON;
+import org.rpi.radio.parsers.ASHXParser;
 
 public class PlayManager implements Observer {
 
@@ -1337,5 +1348,123 @@ public class PlayManager implements Observer {
 	public boolean isHalted() {
 		return !isSongcastSending;
 	}
+	
+	public void playPinById(long id) {
+		try {
+			PinInfo pi = PinManager.getInstance().getPinInfoById(id);
+		if (pi == null) {
+			return;
+		}
+		playPin(pi);
+		}catch(Exception e) {
+			log.error("Error playPinById: " + id, e);
+		}
+		
+	}
+
+	/***
+	 * Play the Pin, by the Pin Index
+	 * @param index
+	 */
+	public void playPinByIndex(long index) {
+		try {
+			PinInfo pi = PinManager.getInstance().getPinInfoByIndex((int) index);
+			if (pi == null) {
+				return;
+			}
+			playPin(pi);
+			}
+		catch(Exception e) {
+			log.error("Error playPinByIndex: " + index, e);
+		}
+
+	}
+	
+	/***
+	 * 
+	 * @param pi
+	 */
+	private void playPin(PinInfo pi){
+		try {
+			PlayManager.getInstance().updateShuffle(pi.isShuffle());
+			String uri = pi.getUri();
+			log.debug(uri);
+			if (uri.startsWith("tunein://")) {
+				if (uri.startsWith("tunein://stream")) {
+					try {
+						Map<String, String> params = PinManager.getInstance().decodeQueryString(uri.substring("tunein://stream".length() + 1));
+						String presetId = "";
+						String image = pi.getArtworkUri();
+
+						ChannelReaderJSON cr = new ChannelReaderJSON(null);
+						String path = params.get("path");
+						log.debug("Play Radio: " + path);
+						String[] splits = path.split("\\?");
+						Map<String, String> paramsTuneIn = PinManager.getInstance().decodeQueryString(splits[1]);
+						presetId = paramsTuneIn.get("id");
+						String m = cr.getMetaDataForTuneInId(presetId, path, image);
+						int rId = -99;
+						try {
+							rId = Integer.parseInt(presetId.replaceAll("[^0-9]+", ""));
+						} catch (Exception e) {
+
+						}
+						ChannelRadio c = new ChannelRadio(path, m, rId, presetId);
+
+						ASHXParser parser = new ASHXParser();
+						if (c.getUri().toLowerCase().contains("opml.radiotime.com")) {
+							log.debug("Radio URL contains 'opml.radiotime.com' Get the Correct URL: " + c.getUri());
+							LinkedList<String> ashxURLs = parser.getStreamingUrl(c.getUri());
+							if (ashxURLs.size() > 0) {
+								c.setUri(ashxURLs.get(0));
+							}
+						}
+
+						PlayManager.getInstance().playRadio(c);
+					} catch (Exception e) {
+						log.error(e);
+					}
+
+				} else if (uri.startsWith("tunein://podcast")) {
+					Map<String, String> params = PinManager.getInstance().decodeQueryString(uri.substring("tunein://podcast".length() + 1));
+					String presetId = "";
+					String image = pi.getArtworkUri();
+					ChannelReaderJSON cr = new ChannelReaderJSON(null);
+					String path = params.get("path");
+					log.debug("Play Podcast: " + path);
+					String[] splits = path.split("\\?");
+					Map<String, String> paramsTuneIn = PinManager.getInstance().decodeQueryString(splits[1]);
+					presetId = paramsTuneIn.get("id");
+					List<ChannelPlayList> channels = cr.getPodcasts(path, image);
+					EventPlayListUpdateList epl = new EventPlayListUpdateList();
+					PlayManager.getInstance().podcastUpdatePlayList(channels);
+				}
+			} else if (uri.startsWith("openhome.me")) {
+				try {
+					String test = uri.replace("openhome.me", "http:");
+					URL url = new URL(test);
+					String path = url.getPath();
+					log.debug("Play Kazoo: " + path);
+					path = path.replace("://", "");
+					String query = url.getQuery();
+					Map<String, String> params = PinManager.getInstance().decodeQueryString(query);
+					KazooServer t = new KazooServer();
+					if (params.containsKey("browse") && params.containsKey("udn")) {
+						String browse = params.get("browse");
+						String udn = params.get("udn");
+						t.getTracks(udn, path, browse);
+					}
+				} catch (Exception e) {
+					log.error("Error Getting URL: " + uri);
+				}
+
+			}
+		} catch (Exception e) {
+			log.error("Error invokeId", e);
+		}	
+		
+	}
+
+
 
 }

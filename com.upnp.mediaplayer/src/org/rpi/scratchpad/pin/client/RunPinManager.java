@@ -1,19 +1,19 @@
 package org.rpi.scratchpad.pin.client;
 
 import org.apache.log4j.BasicConfigurator;
-import org.rpi.pins.PinManagerAccount;
+import org.rpi.pins.PinManager;
 
 public class RunPinManager {
 
 	public static void main(String[] args) {
 		BasicConfigurator.configure();
-		PinManagerAccount.getInstance();
+		PinManager.getInstance();
 		// pm.registerForEvent();
 
 		try {
 			for (int i = 1; i < 1000; i++) {
 				Thread.sleep(10000);
-				PinManagerAccount.getInstance().SavePins("{\"pin" + i + "\":\"ok\"}");
+				PinManager.getInstance().SavePins("{\"pin" + i + "\":\"ok\"}");
 			}
 
 			//

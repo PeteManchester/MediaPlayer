@@ -184,14 +184,60 @@ public class MediaPlayerRest {
 	{
 		log.debug("SetVolume: " + value);
 		StringBuilder sb = new StringBuilder();
+		sb.append(setVolumeInternal(value));
+		return sb.toString();
+	}
+	
+	/***
+	 * Used because even though Google Assistant gets a Number Webhooks sends a String!
+	 * @param value
+	 * @return
+	 */
+	@Path("setVolumeString")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String setVolumeString(@QueryParam("value") String value)
+	{
+		log.debug("SetVolumeString: " + value);
+		StringBuilder sb = new StringBuilder();
 		try {
-			PlayManager.getInstance().setVolume(value);
+			long vol = Integer.parseInt(value.trim());			
+			sb.append(setVolumeInternal(vol));
+		} catch (Exception e) {
+			sb.append("ERROR: " + e.getMessage());
+			log.error("Error creating Status JSON",e);
+		}
+		return sb.toString();
+	}
+	
+	@Path("playPin")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String playPin(@QueryParam("value") String value)
+	{
+		log.debug("PlayPin: " + value);
+		StringBuilder sb = new StringBuilder();
+		try {
+			long vol = Integer.parseInt(value.trim());			
+			PlayManager.getInstance().playPinByIndex(vol);
 			sb.append("OK");
 		} catch (Exception e) {
 			sb.append("ERROR: " + e.getMessage());
 			log.error("Error creating Status JSON",e);
 		}
 		return sb.toString();
+	}
+	
+	private String setVolumeInternal(long volume) {
+		String res = "";
+		try {
+			PlayManager.getInstance().setVolume(volume);
+			res = "OK";
+		} catch (Exception e) {
+			res = "ERROR: " + e.getMessage();
+			log.error("Error creating Status JSON",e);
+		}
+		return res;
 	}
 	
 	
