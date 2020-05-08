@@ -210,6 +210,11 @@ public class MediaPlayerRest {
 		return sb.toString();
 	}
 	
+	/***
+	 * Play the Pin by Index
+	 * @param value
+	 * @return
+	 */
 	@Path("playPin")
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
@@ -228,6 +233,11 @@ public class MediaPlayerRest {
 		return sb.toString();
 	}
 	
+	/***
+	 * Set the Volume
+	 * @param volume
+	 * @return
+	 */
 	private String setVolumeInternal(long volume) {
 		String res = "";
 		try {
