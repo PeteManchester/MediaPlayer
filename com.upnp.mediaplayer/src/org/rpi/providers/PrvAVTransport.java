@@ -4,8 +4,8 @@ import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderUpnpOrgAVTransport1;
+import org.rpi.channel.ChannelAV;
 import org.rpi.channel.ChannelBase;
-import org.rpi.channel.ChannelPlayList;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.*;
 import org.rpi.utils.Utils;
@@ -207,7 +207,7 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 			if (mStatus.equalsIgnoreCase("PAUSED_PLAYBACK")) {
 				PlayManager.getInstance().play();
 			} else {
-				ChannelPlayList c = new ChannelPlayList(track_uri, track_metadata, 0);
+				ChannelAV c = new ChannelAV(track_uri, track_metadata, 0);
 				PlayManager.getInstance().playAV(c);
 			}
 		} else {

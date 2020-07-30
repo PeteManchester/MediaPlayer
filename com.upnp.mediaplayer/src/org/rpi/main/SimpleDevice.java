@@ -226,7 +226,11 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 					}
 					Source airplay = new Source("AirPlay", "NetAux", "-99", false);
 					sources.put(airplay.getName(), airplay);
-					Source upnp = new Source(friendly_name, "UpnpAv", "-99", false);
+					boolean isUpnpAVEnabled = false;
+					if(iAVTransport != null) {
+						isUpnpAVEnabled = true;
+					}
+					Source upnp = new Source(friendly_name, "UpnpAv", "-99", isUpnpAVEnabled);
 					sources.put(friendly_name, upnp);
 				}
 				PluginGateWay.getInstance().setSources(sources);

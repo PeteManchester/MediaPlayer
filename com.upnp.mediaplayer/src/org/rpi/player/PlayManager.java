@@ -14,6 +14,7 @@ import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.log4j.Logger;
+import org.rpi.channel.ChannelAV;
 import org.rpi.channel.ChannelAirPlay;
 import org.rpi.channel.ChannelBase;
 import org.rpi.channel.ChannelPlayList;
@@ -143,6 +144,11 @@ public class PlayManager implements Observer {
 
 			if (t instanceof ChannelPlayList) {
 				PluginGateWay.getInstance().setSourceByname("Playlist");
+			}
+			
+			if (t instanceof ChannelAV) {
+				String avName = Config.getInstance().getMediaplayerFriendlyName().replace(":", " ");
+				PluginGateWay.getInstance().setSourceByname(avName);
 			}
 
 			if (t instanceof ChannelRadio) {
@@ -663,7 +669,7 @@ public class PlayManager implements Observer {
 		setCurrentTrack(track);
 	}
 
-	public synchronized void playAV(ChannelPlayList c) {
+	public synchronized void playAV(ChannelAV c) {
 		log.debug("Play AV Track :  " + c.getUri());
 		playThis(c);
 	}

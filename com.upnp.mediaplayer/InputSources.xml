@@ -8,7 +8,7 @@
 	<Source>
 	    <name>Default</name>
 	    <type>UpnpAv</type>
-	    <visible>false</visible>
+	    <visible>true</visible>
 	</Source>
 	<Source>
 		<name>Radio</name>

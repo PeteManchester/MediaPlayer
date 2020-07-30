@@ -135,7 +135,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct2 implements Obser
 			addSource(friendly_name, "Receiver", "Receiver", true);
 		}
 		if (Config.getInstance().isMediaplayerEnableAVTransport()) {
-			addSource(friendly_name, "UpnpAV", "UpnpAv", false);
+			addSource(friendly_name, "UpnpAV", "UpnpAv", true);
 		}
 		//addSource(friendly_name, "AirPlay", "AirPlay", false);
 	}

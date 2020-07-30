@@ -89,8 +89,13 @@ public class SourceReader {
 						if (!Config.getInstance().isMediaplayerEnableReceiver()) {
 							addToSource = false;
 						}
-					} else if (type.equalsIgnoreCase("UPNP")) {
-						source.setVisible(false);
+					} else if (type.equalsIgnoreCase("UpnpAv")) {
+						String vis = getElement(element, "visible");
+						String avName = Config.getInstance().getMediaplayerFriendlyName().replace(":", " ");
+						source.setName(avName);
+						if (!Utils.isEmpty(vis)) {
+							visible = Boolean.parseBoolean(vis);
+						}
 						if (!Config.getInstance().isMediaplayerEnableAVTransport()) {
 							addToSource = false;
 						}
