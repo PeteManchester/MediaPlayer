@@ -291,10 +291,12 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 			ChannelBase track = ec.getTrack();
 			String m_uri = "";
 			String m_metadata = "";
+			String m_track_metadata_html = ""; 
 			if (track != null) {
 				m_uri = track.getUri();
 				m_metadata = track.getMetadata();
-				if (!(m_uri.equalsIgnoreCase(track_uri)) || (!m_metadata.equalsIgnoreCase(track_metadata))) {
+				m_track_metadata_html = stringToHTMLString(m_metadata);
+				if ((!(m_uri.equalsIgnoreCase(track_uri)) || (!m_metadata.equalsIgnoreCase(track_metadata))) || (!m_track_metadata_html.equalsIgnoreCase(track_metadata_html))) {
 					track_uri = m_uri;
 					track_metadata = m_metadata;
 					track_metadata_html = stringToHTMLString(m_metadata);
