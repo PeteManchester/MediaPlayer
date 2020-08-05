@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="build_plugin" name="Create OLED Display" basedir="$basedir">
+    <property name="builddir" value="${basedir}/build" />
+    <property name="buildbeta" value="${builddir}/beta" />
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="build_plugin">
+        <jar destfile="${basedir}/plugins//OLEDDisplay/OLEDDisplay.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="${basedir}/bin">
+                <include name = "/org/rpi/plugin/oled/*" />
+            	<include name = "/org/rpi/plugin/oled/transport/*" />
+            </fileset>  
+            <zipfileset excludes="META-INF/*.SF" src="C:/Keep/Repository/java/pi4j/pi4j-1.0-SNAPSHOT/lib/pi4j-core.jar"/>    
+        </jar>
+        <!--copy file="${basedir}\src\org\rpi\plugin\lcddisplay\LCD.xml" todir="${basedir}/plugins/LCDDisplay"/-->
+    </target>
+    
+    <target name="deployStudy">
+		<antcall target="CopyFilesToRaspi">
+			<param name="server_name" value="rpistudy.local" />
+		</antcall>
+	</target>
+	
+    	<target name="CopyFilesToRaspi">
+		<echo>Sending to ${server_name} </echo>
+		<echo>Sending to ${server_name} Stopping mediaplayer</echo>
+		<sshexec host="${server_name}" username="root" password="root" command="sudo systemctl stop mediaplayer" trust="true" />
+		<echo>Sending to ${server_name} Copying files </echo>
+		<scp remoteTodir="root:root@${server_name}:/home/pi/mediaplayer/plugins/OLEDDisplay" trust="yes" sftp="true">
+			<fileset dir="${basedir}/plugins//OLEDDisplay">
+				<include name="OLEDDisplay.jar" />
+				<!--include name="LCD.xml" /-->
+			</fileset>
+		</scp>
+					
+		<echo>Sending to ${server_name} Starting mediaplayer</echo>
+		<sshexec host="${server_name}" username="root" password="root" command="sudo systemctl start mediaplayer" trust="true" />
+		
+	</target>
+	
+</project>

@@ -1,8 +1,12 @@
 package org.rpi.web.rest;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -44,28 +48,32 @@ public class ConfigRest {
 		JSONObject sb = new JSONObject();
 		try {
 			Properties pr = new Properties();
-			pr.load(new FileInputStream("app.properties"));
+			try (InputStream in = new FileInputStream(new File("app.properties")); InputStreamReader writer = new InputStreamReader(in, Charset.forName("UTF-8"))) {
+				pr = new Properties();
+				pr.load(writer);
+				Enumeration<?> e = pr.propertyNames();
+				while (e.hasMoreElements()) {
+					String key = (String) e.nextElement();
+					String value = pr.getProperty(key);
+					String s = value;
+					try {
+						s = StringEscapeUtils.escapeJson(value);
+					} catch (Exception ex) {
+						log.error("Error: ", ex);
+					}
 
-			Enumeration<?> e = pr.propertyNames();
-			while (e.hasMoreElements()) {
-				String key = (String) e.nextElement();
-				String value = pr.getProperty(key);
-				String s = value;
-				try {
-					s = StringEscapeUtils.escapeJson(value);
-				} catch (Exception ex) {
-					log.error("Error: ", ex);
+					sb.put(key, s);
 				}
-
-				sb.put(key, s);
+			} catch (Exception e) {
+				log.error("Error Loading Config", e);
 			}
+
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Error Loading Config", e);
 		}
 
 		return sb.toString();
 	}
-
 
 	/*
 	 * public String getIt() { StringBuilder sb = new StringBuilder(); try {

@@ -1,0 +1,11 @@
+Friendly Name :		Default
+Version :			0.0.9.8
+Host name  : 			FRM-PHOYLE-L
+StartTime :			Wed Aug 05 11:03:49 BST 2020
+LocalTime :			Wed Aug 05 11:03:49 BST 2020
+DST  :				Offset = 1
+Timezone :			Europe/London, Greenwich Mean Time, British Summer Time
+
+
+2020-08-05 11:03:49,637 [main] INFO  [org.rpi.config.Config] Logging Configured
+2020-08-05 11:03:49,637 [main] FATAL [org.rpi.config.Config] ###Start of app.properties###

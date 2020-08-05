@@ -1,0 +1,12 @@
+Pi4J will not work on Java 11, you need to use Java 8.
+
+/usr/lib/jvm/java-1.8.0-openjdk-armhf/bin/java -jar $SCRIPTPATH/mediaplayer.jar &
+
+
+/usr/lib/jvm/java-1.8.0-openjdk-armhf/bin/java -jar oled-core-2.0-jar-with-dependencies.jar &
+
+Install MS Fonts:
+
+apt install msttcorefonts
+
+Move the installed fonts to /usr/lib/jvm/java-8-openjdk-armhf/jre/lib/fonts

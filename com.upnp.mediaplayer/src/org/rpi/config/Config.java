@@ -5,8 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -130,7 +133,18 @@ public class Config {
 		return cal.getTime();
 	}
 
-	private static void getConfig() {
+	private void getConfig() {
+		
+		try (InputStream in = new FileInputStream(new File("app.properties"));
+			    InputStreamReader writer = new InputStreamReader(in,Charset.forName("UTF-8"))) {
+				pr = new Properties();
+			    pr.load(writer);
+			}
+		catch(Exception e) {
+			log.error("Error Loading Config", e);
+		}
+		
+		/*
 		FileInputStream fs =null;
 		try {
 			pr = new Properties();
@@ -147,6 +161,7 @@ public class Config {
 				}
 			}
 		}
+		*/
 	}
 
 	/**

@@ -551,7 +551,7 @@ public class ChannelReaderJSON implements Runnable {
 			JSONObject array = getJSONObject(url);
 			if(array.has("head")) {
 				JSONObject o = array.getJSONObject("head");
-				if(o.has("head")) {
+				if(o.has("title")) {
 					title = o.getString("title");
 				}
 				else {

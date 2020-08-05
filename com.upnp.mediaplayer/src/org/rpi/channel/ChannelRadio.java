@@ -5,11 +5,13 @@ public class ChannelRadio  extends ChannelBase implements Comparable<ChannelRadi
 	private String full_text = "";
 	private String name = "";
 	private int preset_number = 0;
+	private String full_details;
 
     public ChannelRadio(String uri, String metadata, int id,String name) {
         super(uri, metadata, id);
         setName(name);
         setFull_text(GetFullString());
+        setFullDetails();
     }
 
     public String getUniqueId()
@@ -110,6 +112,17 @@ public class ChannelRadio  extends ChannelBase implements Comparable<ChannelRadi
 	public String getName() {
 		return name;
 	}
+	
+
+    private void setFullDetails() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(getTitle());
+        full_details = sb.toString().trim();
+    }
+    
+    public String getFullDetails() {
+        return full_details;
+    }
 
 	/**
 	 * @param name the name to set

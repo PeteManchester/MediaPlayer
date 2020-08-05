@@ -12,16 +12,21 @@ import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventMuteChanged;
 import org.rpi.player.events.EventVolumeChanged;
 import org.rpi.utils.Utils;
+import org.rpi.volume.VolumeWriter;
 
 public class PrvVolume extends DvProviderAvOpenhomeOrgVolume3 implements Observer, IDisposableDevice {
 
 	private Logger log = Logger.getLogger(PrvVolume.class);
 
 	private PlayManager iPlayer = PlayManager.getInstance();
+	VolumeWriter vw =null;
 
 	public PrvVolume(DvDevice iDevice) {
 		super(iDevice);
 		log.debug("Creating CustomVolume");
+		
+		vw = new VolumeWriter();
+		vw.start();
 
 		enablePropertyVolume();
 		enablePropertyMute();
@@ -82,18 +87,21 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume3 implements Observe
 		if (volume < 0)
 			volume = 0;
 		setPropertyVolume(volume);
+		vw.trigger(volume);
 	}
 
 	protected void setVolume(IDvInvocation paramIDvInvocation, long volume) {
 
 		log.debug("setVolume: " + volume + Utils.getLogText(paramIDvInvocation));
 		iPlayer.setVolume(volume);
+		
 
 	}
 
 	protected void volumeInc(IDvInvocation paramIDvInvocation) {
 		log.debug("volumeInc: " + Utils.getLogText(paramIDvInvocation));
 		long volume = iPlayer.incVolume();
+		//vw.trigger(volume);
 		// propertiesLock();
 		// setPropertyVolume(volume);
 		// propertiesUnlock();
@@ -104,6 +112,7 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume3 implements Observe
 	protected void volumeDec(IDvInvocation paramIDvInvocation) {
 		log.debug("volumeDec: " + Utils.getLogText(paramIDvInvocation));
 		long volume = iPlayer.decVolume();
+		//vw.trigger(volume);
 		// propertiesLock();
 		// setPropertyVolume(volume);
 		// propertiesUnlock();
@@ -155,6 +164,12 @@ public class PrvVolume extends DvProviderAvOpenhomeOrgVolume3 implements Observe
 	@Override
 	public String getName() {
 		return "Volume";
+	}
+	
+	@Override
+	public void dispose() {
+		vw = null;
+		super.dispose();
 	}
 
 }
