@@ -142,4 +142,13 @@ public class I2CTransport implements Transport {
 		}
 		
 	}
+
+	@Override
+	public void  myData(byte[] data) {
+		try {
+			i2c.write(data);
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

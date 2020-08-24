@@ -6,13 +6,13 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.rpi.plugin.lcddisplay.ByteHolder;
+
 
 public class ScrollerThread implements Runnable {
 
@@ -33,185 +33,97 @@ public class ScrollerThread implements Runnable {
 	BufferedImage imgTime = null;
 
 	private int paddingSpace = 0;
-	private boolean updated = false;
+	private boolean bScroll = false;
+	
 	private int pauseTimer = 0;
+	
+	private final int DC_BIT = 6;
 
-	ByteBuffer buffScreen = null;
-	Queue<ByteHolder> queue = new ConcurrentLinkedQueue<ByteHolder>();
+	List<byte[]> titleImages = new ArrayList<byte[]>();
+	Raster timeRaster = null;
+	int timeHeight = 50;// At what height should the time be located.
+	
+	private String oldText = "";
+	
+
+
+
 
 	/***
 	 * 
 	 * @param ssd1306
 	 */
 	public ScrollerThread(SSD1306 ssd1306) {
-		buffScreen = ByteBuffer.allocate(1024);
 		this.ssd1306 = ssd1306;
-		setTimeText("00:05", new Font("Arial", Font.PLAIN, 10), 0, 50);
-		byte bit = buffScreen.get(0);
-		buffScreen.put(bit |= (1 << (0 & 7)));
-		byte after = buffScreen.get(0);
-
-	}
-
-	public void setTimeText(String text, Font font, int x, int y) {
-		// text = "";
-		int h = getTextHeight(font, text, 0);
-		int w = getTextWidth(font, text);
-
-		log.debug("Width: " + w + " Height: " + h);
-		BufferedImage i = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_BINARY);
-		Graphics2D g = i.createGraphics();
-		FontMetrics fm = g.getFontMetrics(font);
-		int maxDescent = fm.getMaxDescent();
-		g.setFont(font);
-		g.drawString(text, 0, h - maxDescent);
-		imgTime = i;
-		/*
-		 * Raster rt = i.getRaster(); int rht = rt.getHeight(); int rwt =
-		 * rt.getWidth();
-		 * 
-		 * ByteBuffer buff = ByteBuffer.allocate(((rht * rwt)/8)+1); int iCount
-		 * = 0; for (int rasterY = 0; rasterY <= rht - 1; rasterY++) { for (int
-		 * rasterX = 0; rasterX <= rwt - 1; rasterX++) { try { boolean isPixel =
-		 * rt.getSample(rasterX, rasterY, 0) > 0; // ssd1306.setPixel(rasterX +
-		 * displayWidth, rasterY + 55, // isPixel);
-		 * 
-		 * // int myY = (rasterY / 8) * width; int myY = (rasterY / 8) * width;
-		 * byte b = buff.get(myY + rasterX);
-		 * 
-		 * if (isPixel) { //byte b = buff.get(myY); b |= (1 << (rasterY & 7));
-		 * buff.put(myY + rasterX, b); } else { b &= ~(1 << (rasterY & 7));
-		 * buff.put(myY + rasterX,b); } //buff.put(iCount, b); iCount++;
-		 * System.out.println("ICount: " + iCount);
-		 * 
-		 * } catch (Exception e) { log.error("Error setPixel", e); } } }
-		 * ByteHolder bh = new ByteHolder(buff, rwt, rht, x, y,
-		 * buff.capacity()); queue.add(bh);
-		 */
 	}
 
 	/***
-	 * 
+	 * Set the Title of a Track
 	 * @param text
 	 * @param font
 	 * @param x
 	 * @param y
 	 */
-	public void setText(String text, Font font, int x, int y) {
-		log.debug("Set Text: " + text);
+	public void setTitle(String text, Font font, int x, int y) {
 		if (!text.equals(this.text)) {
-			stop();
-			log.debug("Text is Changing: " + text);
+			log.debug("SetTitle: " + text);
 			this.text = text;
 			this.font = font;
-
-			int space = getTextWidth(font, " ");
-
-			int screenSpaces = width / space;
-
-			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < screenSpaces; i++) {
-				sb.append(" ");
-			}
-
-			text = sb.toString() + text + sb.toString();
-
-			int h = getTextHeight(font, text, 0);
-			int w = getTextWidth(font, text);
-
-			//int remainder = h %8;
-			//if(remainder > 0) {
-			//	h += 8 - remainder;
-			//}
-			//h += h % 8;
-
-			// createBufferImage(x, y);
-			displayWidth = x;
-			displayHeight = y;
-
-			BufferedImage i = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_BINARY);
-			Graphics2D g = i.createGraphics();
-			FontMetrics fm = g.getFontMetrics(font);
-			int maxDescent = fm.getMaxDescent();
-			g.setFont(font);
-			g.drawString(text, 0, h - maxDescent);
-			imgTrack = i;
-
-			/*
-			Raster rt = i.getRaster();
-			int rht = rt.getHeight();
-			int rwt = rt.getWidth();
-			int size = (rht/8) * rwt * (rwt/2);
-			ByteBuffer buff = ByteBuffer.allocate(size);
-			//buff.order(ByteOrder.LITTLE_ENDIAN);
-			int bufferSize = rt.getDataBuffer().getSize();
-			int iCount = 0;
-			for (int iStep = 2; iStep <= (rwt-128); iStep = iStep + 2) {
-				for (int rasterY = 0; rasterY < rht  ; rasterY++) {
-					for (int rasterX = 0; rasterX < (width); rasterX++) {
-						try {
-
-							// boolean isPixel = rt.getSample(rasterX, rasterY,
-							// 0) > 0;
-							boolean isPixel = rt.getSample((rasterX + iStep)-1, rasterY, 0) > 0;
-							// ssd1306.setPixel(rasterX + displayWidth, rasterY
-							// + 55, isPixel);
-
-							// int myY = (rasterY / 8) * width;
-							int myY = (rasterY / 8) * width * iStep;
-							byte b = buff.get(myY + rasterX);
-
-							if (isPixel) {
-								b |= (1 << (rasterY & 7));
-							} else {
-								b &= ~(1 << (rasterY & 7));
-							}
-							
-							if(b== -64) {
-								System.out.println("Whoops BAD");
-							}
-							
-							if(myY+ rasterX == 126) {
-								System.out.println("What is the value of b: " + b);
-							}
-							
-							buff.put(myY + rasterX, b);
-							//System.out.println("Putting Byte: " + myY+rasterX);
-							iCount++;
-							//System.out.println("ICount: " + iCount);
-
-						} catch (Exception e) {
-							log.error("Error setPixel", e);
-							e.printStackTrace();
-						}
-					}
-				}
-				System.out.println("ICount FINAL: " + iCount + " iStep: " + iStep);
-			}
-
-			ByteHolder bh = new ByteHolder(buff, rwt, rht, x, y, rht/8 * rwt);
-			queue.add(bh);
-			*/
-			
-			
-
-			updated = true;
-		} else {
-			log.debug("Text is NOT Changing: " + text);
+			bScroll = false;
+			createTitleImages(x, y);
+			log.debug("SetTitle Ended: " + text);
+			bScroll = true;
 		}
 	}
 
 	/***
-	 * Create a BufferedImage of the Text.
+	 * Create a Raster for the Text, based on the Font.
+	 * @param text
+	 * @param x
+	 * @param y
+	 * @param font
+	 * @return
+	 */
+	private Raster createRaster(String text, int x, int y, Font font) {
+		//log.debug("Create Raster: " + text);
+		int heightOffset = 0;
+		TextHeight h = getTextHeight(font, text, heightOffset);
+		int w = getTextWidth(font, text);
+
+		//log.debug("Width: " + w + " Height: " + h);
+		BufferedImage i = new BufferedImage(w, h.getAscent(), BufferedImage.TYPE_BYTE_BINARY);
+		Graphics2D g = i.createGraphics();
+
+		FontMetrics fm = g.getFontMetrics(font);
+		int maxDescent = fm.getMaxDescent();
+
+		g.setFont(font);
+		g.drawString(text, 0, h.getAscent() - maxDescent);
+
+		Raster r = i.getRaster();
+		return r;
+	}
+
+	/***
+	 * Set the Time portion of the display
+	 * @param time
+	 */
+	public void setTime(String time) {
+		Raster r = createRaster(time, 0, 50, new Font("Arial", Font.PLAIN, 12));
+		timeRaster = r;
+	}
+
+	/***
+	 * Create a List of Image byte Arrays used to scroll the title text.
 	 * 
 	 * @param x
 	 * @param y
 	 */
-	private void createBufferImage(int x, int y) {
+	private void createTitleImages(int x, int y) {
 		log.debug("ScrollString: " + text);
 		// get the size of a space
 		int space = getTextWidth(font, " ");
-		int heightOffset = 0;
+		// int heightOffset = 2;
 
 		// How many spaces will fill the screen
 		paddingSpace = (width / space) + 3;
@@ -222,33 +134,72 @@ public class ScrollerThread implements Runnable {
 		}
 		// Pad the string on both sides
 		text = sb.toString() + text + sb.toString();
+		Raster r = createRaster(text, x, y, font);
+		int rh = r.getHeight();
+		int rw = r.getWidth();
 
-		int h = getTextHeight(font, text, heightOffset);
-		int w = getTextWidth(font, text);
+		int stepSize = 2;
 
-		log.debug("Width: " + w + " Height: " + h);
-		BufferedImage i = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_BINARY);
-		Graphics2D g = i.createGraphics();
-		// g.drawRect(x, y, w, h);
+		List<byte[]> list = new ArrayList<byte[]>();
 
-		// Get the MaxDescent so we can work out the height to draw the font.
-		FontMetrics fm = g.getFontMetrics(font);
-		int maxDescent = fm.getMaxDescent();
-
-		g.setFont(font);
-
-		g.drawString(text, 0, h - maxDescent);
-		log.debug("Setting new BufferedImage: " + text);
-		this.imgTrack = i;
-
-		// try {
-		// File outputfile = new File("saved.png");
-		// ImageIO.write(i, "png", outputfile);
-		// } catch (IOException e1) {
-		// e1.printStackTrace();
-		// }
+		if (rw > width) {
+			int iStep = paddingSpace;
+			// while (!text.equals(oldText)) {
+			while (iStep < rw) {
+				// The raster is wider than the screen so iterate around
+				// it.
+				byte[] buffer = new byte[1024 + 1];
+				buffer[0] = (byte) (1 << DC_BIT);
+				for (int rasterY = 0; rasterY <= rh - 1; rasterY++) {
+					for (int rasterX = 0; rasterX <= width; rasterX++) {
+						try {
+							boolean isPixel = r.getSample(rasterX + iStep, rasterY, 0) > 0;
+							setPixel(rasterX, rasterY, isPixel, buffer);
+						} catch (Exception e) {
+							// System.out.println("X= " + rasterX +
+							// iStep + " Y=
+							// " + rasterY);
+						}
+					}
+				}
+				list.add(buffer);
+				iStep = iStep + stepSize;
+			}
+			titleImages = list;
+			oldText = text;
+		}
 	}
 
+	/***
+	 * Set the Byte
+	 * 
+	 * @param x
+	 * @param y
+	 * @param on
+	 * @param buffer
+	 * @return
+	 */
+	public boolean setPixel(int x, int y, boolean on, byte[] buffer) {
+		if (x < 0 || x >= width || y < 0 || y >= height) {
+			return false;
+		}
+		int myY = ((y / 8) * width) + 1;
+
+		if (on) {
+			buffer[x + myY] |= (1 << (y & 7));
+		} else {
+			buffer[x + myY] &= ~(1 << (y & 7));
+		}
+
+		return true;
+	}
+
+	/***
+	 * Get the Expected Width of the Text
+	 * @param font
+	 * @param text
+	 * @return
+	 */
 	public int getTextWidth(java.awt.Font font, String text) {
 		FontMetrics metrics = new FontMetrics(font) {
 		};
@@ -256,172 +207,105 @@ public class ScrollerThread implements Runnable {
 		return (int) bounds.getWidth();
 	}
 
-	public int getTextHeight(java.awt.Font font, String text, int heightOffset) {
+	/***
+	 * Get the Expected Height of the Text
+	 * @param font
+	 * @param text
+	 * @param heightOffset
+	 * @return
+	 */
+	public TextHeight getTextHeight(java.awt.Font font, String text, int heightOffset) {
 		FontMetrics metrics = new FontMetrics(font) {
 		};
-		int ascent = metrics.getAscent();
-		int desecnt = metrics.getDescent();
-
-		return (int) heightOffset + ascent;
+		int ascent = metrics.getMaxAscent();
+		int descent = metrics.getMaxDescent();
+		TextHeight th = new TextHeight(ascent, descent);
+		return th;
 	}
 
 	@Override
 	public void run() {
-		ByteHolder bh = null;
 		while (isRunning) {
 
-			if (!queue.isEmpty()) {
-				bh = queue.poll();
-			}
 
-			if (bh != null) {
-				int bytesPerFrame = bh.getBytesPerFrame();
-				while(bh.getBuffer().remaining() > bytesPerFrame) {
-					try {
-						byte[] bytes = new byte[bytesPerFrame];
-						bh.getBuffer().get(bytes,  0, bytesPerFrame);
-						buffScreen.put(bytes, bh.getPositionX(), bh.getPositionX());
-						ssd1306.displayByteBuffer(buffScreen);					
-					}
-					catch(Exception e) {
-						e.printStackTrace();
-					}
-					
-				}
-				/*
-				for (int i = 0; i < bh.getBuffer().position() +(bytesPerFrame * 2); i= i+bytesPerFrame) {
-					try {
-						byte[] bytes = new byte[bytesPerFrame];
-						
-						//byte[] testBytes = new byte[bh.getBuffer().capacity()];
-						//bh.getBuffer().get(testBytes);
-						bh.getBuffer().get(bytes,  0, bytesPerFrame);
-						buffScreen.put(bytes, bh.getPositionX(), bh.getPositionX());
-						ssd1306.displayByteBuffer(buffScreen);
-					} catch (Exception e) {
-						//e.printStackTrace();
-						System.out.println("I= " + i);
-						break;
-					}
-				}
-				*/
-				System.out.println("End of FOR LOOP");
-				bh.getBuffer().clear();
-			} else {
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			
-
-			boolean isTrue = true;
-
-			if (isTrue) {
-
+			boolean isMe = true;
+			while (isMe) {
+				
 				if (pauseTimer > 0) {
-					updated = true;
+
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
 
 					}
 					pauseTimer--;
-					log.debug("Pause for : " + pauseTimer);
 
-				} else {
-					if (imgTrack == null) {
-						try {
-							Thread.sleep(500);
-						} catch (InterruptedException e) {
-							log.error("Error Sleep", e);
+
+				}else
+					
+				{
+				
+				try {
+					int lastHashCode = 0;
+					//Iterate each Frame.
+					for (byte[] b : titleImages) {
+						if(!bScroll) {
+							break;
 						}
-					} else {
-						log.debug("Loop");
-						loop();
+						// Sort out the time part..
+						if (timeRaster != null) {
+							int rh = timeRaster.getHeight();
+							int rw = timeRaster.getWidth();
+							for (int rasterY = 0; rasterY <= rh - 1; rasterY++) {
+								for (int rasterX = 0; rasterX <= rw - 1; rasterX++) {
+									try {
+										boolean isPixel = timeRaster.getSample(rasterX + 0, rasterY, 0) > 0;
+										setPixel(rasterX, rasterY + 50, isPixel, b);
+									} catch (Exception e) {
+										e.printStackTrace();
+									}
+								}
+							}
+						}
+
+						int hashCode = Arrays.hashCode(b);
+						if (lastHashCode != hashCode) {
+							ssd1306.myData(b);
+							// System.out.println("Write My Data!!");
+						} else {
+							//System.out.println("Has Code is the same!!");
+						}
+
+						lastHashCode = hashCode;
 					}
+					// }
+
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				}
 			}
 
 		}
 	}
-
-	private void loop() {
-		log.debug("Start of Loop");
-		Raster r = imgTrack.getRaster();
-		int rh = r.getHeight();
-		int rw = r.getWidth();
-		updated = false;
-		int stepSize = 2;
-		if (rw > width) {
-			int iStep = paddingSpace;
-			while (!updated) {
-				// The raster is wider than the screen so iterate
-				// around
-				// it.
-
-				for (int rasterY = 0; rasterY <= rh - 1; rasterY++) {
-					for (int rasterX = 0; rasterX <= width; rasterX++) {
-						try {
-							boolean isPixel = r.getSample(rasterX + iStep, rasterY, 0) > 0;
-							ssd1306.setPixel(rasterX + displayWidth, rasterY + displayHeight, isPixel);
-						} catch (Exception e) {
-							log.error("Error setPixel", e);
-						}
-					}
-				}
-
-				iStep = iStep + stepSize;
-
-				if (iStep + width >= rw) {
-					log.debug("Size: " + iStep + " Width: " + rw);
-					iStep = 0;
-				}
-
-				Raster rt = imgTime.getRaster();
-				int rht = rt.getHeight();
-				int rwt = rt.getWidth();
-
-				for (int rasterY = 0; rasterY <= rht - 1; rasterY++) {
-					for (int rasterX = 0; rasterX <= rwt - 1; rasterX++) {
-						try {
-							boolean isPixel = rt.getSample(rasterX, rasterY, 0) > 0;
-							ssd1306.setPixel(rasterX + displayWidth, rasterY + 55, isPixel);
-						} catch (Exception e) {
-							log.error("Error setPixel", e);
-						}
-					}
-				}
-
-				ssd1306.display();
-			}
-			log.debug("BufferImage was NULL");
-			// oldText = text;
-		} else {
-			log.info("RASTER IS NOT WIDER THAN THE SCREEN!!!!!!!");
-		}
-	}
-
+	
+	
 	/***
-	 * Stop the Scrolling
+	 * 
+	 * @param pauseTimer
 	 */
-	public void stop() {
-		log.debug("Stopping Scrolling");
-		imgTrack = null;
-		updated = true;
+	public void setPauseTimer(int pauseTimer) {
+		this.pauseTimer = pauseTimer;
+	}
+	
+	/***
+	 * 
+	 * @param bScroll
+	 */
+	public void setScroll(boolean bScroll) {
+		this.bScroll = bScroll;
 	}
 
-	public void pause(int pause) {
-		log.debug("PauseTimer Set: " + pause);
-		this.pauseTimer = pause;
-		updated = true;
-	}
-
-	public void setTimeTime(int time) {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

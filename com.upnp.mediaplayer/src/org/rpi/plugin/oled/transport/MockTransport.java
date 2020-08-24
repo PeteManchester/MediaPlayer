@@ -67,4 +67,10 @@ public class MockTransport implements Transport {
 		//	e.printStackTrace();
 		//}
 	}
+
+	@Override
+	public void myData(byte[] data) {
+		// TODO Auto-generated method stub
+		
+	}
 }

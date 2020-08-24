@@ -724,6 +724,10 @@ public class SSD1306 {
 	public void data(ByteBuffer data) {
 		transport.data(data);
 	}
+	
+	public void myData(byte[] data) {
+		transport.myData(data);
+	}
 
 	/**
 	 * Get the Graphics instance, creating it if necessary.

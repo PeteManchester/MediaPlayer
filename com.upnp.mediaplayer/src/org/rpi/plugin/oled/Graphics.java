@@ -1,5 +1,6 @@
 package org.rpi.plugin.oled;
 
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
@@ -103,21 +104,13 @@ public class Graphics {
 		g.dispose();
 	}
 
-	/***
-	 * Scroll the text
-	 * 
-	 * @param text
-	 * @param x
-	 * @param y
-	 * @param font
-	 */
-	public void scrollerMyText(String text, int x, int y, java.awt.Font font) {
-		scrollerThread.setText(text, font, x, y);
+
+	
+	public void setTitle(String text, int x, int y, java.awt.Font font) {
+		scrollerThread.setTitle(text, font, x, y);
 	}
 	
-	public void setTime(int time) {
-		scrollerThread.setTimeTime(time);
-	}
+
 
 	/***
 	 * OLD method
@@ -542,17 +535,27 @@ public class Graphics {
 	}
 
 	/***
-	 * Pause the scroller for x seconds
-	 * 
-	 * @param i
+	 * Set the Play Time
+	 * @param time
 	 */
-	public void pauseScroller(int i) {
-		scrollerThread.pause(i);
+	public void setTime(String time) {
+		scrollerThread.setTime(time);
+		
+	}
+	
+	public void setPauseTimer(int pauseTimer) {
+		scrollerThread.setPauseTimer(pauseTimer);
 	}
 
-	public void stopScroller() {
-		scrollerThread.stop();
-		clear();
+
+	public void showMessage(String text, int pause, Font font) {
+        setPauseTimer(pause);
+        clear();	        
+        drawStringFont(text, 0, 0,new Font("Arial", Font.PLAIN, 50));		
+	}
+	
+	public void setScroll(boolean bScroll) {
+		scrollerThread.setScroll(bScroll);
 	}
 
 }

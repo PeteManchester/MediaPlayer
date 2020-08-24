@@ -63,7 +63,7 @@ public class OLEDDisplayImplementation implements OLEDDisplayInterface, Observer
 		
 		PlayManager.getInstance().observeInfoEvents(this);
 		PlayManager.getInstance().observeVolumeEvents(this);
-		//PlayManager.getInstance().observeTimeEvents(this);
+		PlayManager.getInstance().observeTimeEvents(this);
 		PlayManager.getInstance().observeProductEvents(this);
 		
 		
@@ -94,7 +94,7 @@ public class OLEDDisplayImplementation implements OLEDDisplayInterface, Observer
 					String text =  track.getFullDetails();
 					log.debug("TrackChanged: " + text);
 					graphics.clear();
-					graphics.scrollerMyText(text, 0, 0,new Font("Arial", Font.PLAIN, 50));
+					graphics.setTitle(text, 0, 0,new Font("Arial", Font.PLAIN, 50));
 				} else {
 					log.debug("Track was NULL");
 				}
@@ -119,7 +119,8 @@ public class OLEDDisplayImplementation implements OLEDDisplayInterface, Observer
 					return;
 				}
 				
-				graphics.scrollerMyText(text, 0, 0,new Font("Arial", Font.ITALIC, 50));
+				graphics.setTitle(text, 0, 0,new Font("Arial", Font.ITALIC, 50));
+				log.info("TrackMetaText Changed FINISHED: " + et.getTitle() + " : " + et.getArtist());
 
 			} catch (Exception ex) {
 				log.error("UpdateMetaData", ex);
@@ -130,9 +131,10 @@ public class OLEDDisplayImplementation implements OLEDDisplayInterface, Observer
 				EventVolumeChanged ev = (EventVolumeChanged) e;
 				log.debug("Volume Changed: " + ev.getVolume());
 				String text =  ""+ ev.getVolume();
-				graphics.pauseScroller(4);
-				graphics.clear();
-				graphics.drawStringFont(text, 0, 0,new Font("Arial", Font.PLAIN, 50));
+				//graphics.setPause(4);
+				//graphics.clear();
+				//graphics.drawStringFont(text, 0, 0,new Font("Arial", Font.PLAIN, 50));
+				graphics.showMessage(text,  3,new Font("Arial", Font.PLAIN, 50));
 				/*
 				mVolume = ev.getVolume();
 				// updateVolume();
@@ -152,9 +154,10 @@ public class OLEDDisplayImplementation implements OLEDDisplayInterface, Observer
 					log.debug("MuteStateChanged: " + em.isMute());
 					if(em.isMute()) {
 						log.debug("Muted");
-						graphics.pauseScroller(4);
-						graphics.clear();
-						graphics.drawStringFont("Mute", 0, 0,new Font("Arial", Font.PLAIN, 50));
+						//graphics.pauseScroller(4);
+						//graphics.clear();
+						//graphics.drawStringFont("Mute", 0, 0,new Font("Arial", Font.PLAIN, 50));
+						graphics.showMessage("Mute",  3,new Font("Arial", Font.PLAIN, 50));
 					}
 					
 					/*
@@ -182,7 +185,7 @@ public class OLEDDisplayImplementation implements OLEDDisplayInterface, Observer
 				log.debug("Standby Changed: " + es.isStandby());
 				if(es.isStandby()) {
 					String text =  "Bye";
-					graphics.stopScroller();
+					graphics.setScroll(false);
 					graphics.drawStringFont(text, 0, 0,new Font("Arial", Font.PLAIN, 50));
 					graphics.dimContrast(50);
 					Thread.sleep(1000);
@@ -190,7 +193,7 @@ public class OLEDDisplayImplementation implements OLEDDisplayInterface, Observer
 				}
 				else {
 					
-					graphics.stopScroller();
+					graphics.setScroll(false);
 					String path = OSManager.getInstance().getFilePath(this.getClass(), false);
 					File img = new File(path + "mediaplayer240.jpg");
 				    BufferedImage image = ImageIO.read(img ); 				    
@@ -221,6 +224,7 @@ public class OLEDDisplayImplementation implements OLEDDisplayInterface, Observer
 				scroller.updateValues("[TIME]", mTime);
 				}
 				*/
+				graphics.setTime(""+etime.getTime());
 			} catch (Exception ex) {
 				log.error("TimeUpdated", ex);
 			}

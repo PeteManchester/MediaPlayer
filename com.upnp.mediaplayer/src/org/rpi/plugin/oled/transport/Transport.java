@@ -33,4 +33,6 @@ public interface Transport {
 	void data(byte[] data);
 	
 	void data(ByteBuffer data);
+	
+	void  myData(byte[] data);
 }
