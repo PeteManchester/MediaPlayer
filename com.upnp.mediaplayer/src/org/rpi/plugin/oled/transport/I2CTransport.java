@@ -3,6 +3,9 @@ package org.rpi.plugin.oled.transport;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+import org.rpi.plugin.oled.ScrollerThread;
+
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
@@ -21,6 +24,8 @@ public class I2CTransport implements Transport {
 	 * The Data/Command bit position.
 	 */
 	private static final int DC_BIT = 6;
+	
+	private Logger log = Logger.getLogger(I2CTransport.class);
 
 	/**
 	 * The internal GPIO instance.
@@ -85,7 +90,7 @@ public class I2CTransport implements Transport {
 		for(int i = 0; i < params.length; i++) {
 			commandBytes[i + 2] = (byte) params[i];
 		}
-
+		
 		try {
 			i2c.write(commandBytes);
 		} catch(IOException e) {
@@ -105,7 +110,7 @@ public class I2CTransport implements Transport {
 		*/
 		
 		
-		dataBytes[0] = (byte) (1 << DC_BIT);		
+		//dataBytes[0] = (byte) (1 << DC_BIT);		
 		ByteBuffer bb = ByteBuffer.allocate(dataBytes.length + data.length );
 		bb.put(dataBytes);
 		bb.put(data);
@@ -121,16 +126,19 @@ public class I2CTransport implements Transport {
 	@Override
 	public void data(ByteBuffer data) {
 		//byte[] dataBytes = new byte[ 1];
-		//dataBytes[0] = (byte) (1 << DC_BIT);		
-		ByteBuffer bb = ByteBuffer.allocate(dataBytes.length + data.position() );
+		//dataBytes[0] = (byte) (1 << DC_BIT);	
+		int length = data.capacity();
+		//log.debug("ByteBuffer Length: " + length);
+		ByteBuffer bb = ByteBuffer.allocate(dataBytes.length +length );
 		bb.put(dataBytes);
 		bb.put(data);
 
 		byte[] result = bb.array();
+		log.debug("Result: " + result);
 		try {
 			i2c.write(result);
 		} catch(IOException e) {
-			e.printStackTrace();
+			log.error("Error Writing to I2C", e);
 		}
 		
 	}
