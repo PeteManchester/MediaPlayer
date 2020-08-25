@@ -32,7 +32,7 @@
 		<scp remoteTodir="root:root@${server_name}:/home/pi/mediaplayer/plugins/OLEDDisplay" trust="yes" sftp="true">
 			<fileset dir="${basedir}/plugins//OLEDDisplay">
 				<include name="OLEDDisplay.jar" />
-				<!--include name="LCD.xml" /-->
+				<include name="mediaplayer240.jpg" />
 			</fileset>
 		</scp>
 					

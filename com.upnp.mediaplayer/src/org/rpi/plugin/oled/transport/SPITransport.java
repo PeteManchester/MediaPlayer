@@ -115,4 +115,10 @@ public class SPITransport implements Transport {
 		}
 		
 	}
+
+	@Override
+	public void myData(byte[] data) {
+		// TODO Auto-generated method stub
+		
+	}
 }

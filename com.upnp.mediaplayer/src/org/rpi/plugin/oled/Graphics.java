@@ -1,13 +1,14 @@
 package org.rpi.plugin.oled;
 
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
+////import java.nio.ByteBuffer;
+//import java.nio.charset.Charset;
 
 import org.apache.log4j.Logger;
 
@@ -21,7 +22,7 @@ public class Graphics {
 	 * The SSD1306 OLED display.
 	 */
 	private SSD1306 ssd1306;
-	
+
 	private Logger log = Logger.getLogger(OLEDDisplayImplementation.class);
 
 	protected Graphics2D graphics;
@@ -30,7 +31,7 @@ public class Graphics {
 	protected int height = 64;
 	private byte[] buffer;
 	protected int pages = 0;
-	
+
 	protected ScrollerThread scrollerThread = null;
 
 	/**
@@ -85,33 +86,35 @@ public class Graphics {
 	public void drawStringFont(String text, int x, int y, java.awt.Font font) {
 		log.debug("DrawString: " + text);
 		int heightOffset = 2;
-		//Get the expected size of the image
+		// Get the expected size of the image
 		int h = getTextHeight(font, text, heightOffset);
 		int w = getTextWidth(font, text);
 		log.debug("Width: " + w + " Height: " + h);
-		//Create a buffered image
+		// Create a buffered image
 		BufferedImage i = new BufferedImage(w, h + heightOffset, BufferedImage.TYPE_BYTE_BINARY);
-		//Create a grahpics object
+		// Create a grahpics object
 		Graphics2D g = i.createGraphics();
 		g.setFont(font);
-		g.drawString(text, 0, h);
+
+		FontMetrics fm = g.getFontMetrics(font);
+		int maxDescent = fm.getMaxDescent();
+
+		g.drawString(text, 0, h - maxDescent);
 		drawMyImage(i, w, h, x, y);
 		g.dispose();
 	}
+
+
 	
-	/***
-	 * Scroll the text
-	 * @param text
-	 * @param x
-	 * @param y
-	 * @param font
-	 */
-	public void scrollerMyText(String text, int x, int y, java.awt.Font font) {
-		scrollerThread.setText(text, font, x, y);
+	public void setTitle(String text, int x, int y, java.awt.Font font) {
+		scrollerThread.setTitle(text, font, x, y);
 	}
+	
+
 
 	/***
 	 * OLD method
+	 * 
 	 * @param text
 	 * @param x
 	 * @param y
@@ -119,7 +122,7 @@ public class Graphics {
 	 */
 	public void scrollMyText(String text, int x, int y, java.awt.Font font) {
 		log.debug("ScrollString: " + text);
-		//get the size of a space
+		// get the size of a space
 		int space = getTextWidth(font, " ");
 		int heightOffset = 2;
 
@@ -130,7 +133,7 @@ public class Graphics {
 		for (int i = 0; i < paddingSpace; i++) {
 			sb.append(" ");
 		}
-		//Pad the string on both sides
+		// Pad the string on both sides
 		text = sb.toString() + text + sb.toString();
 
 		int h = getTextHeight(font, text, heightOffset);
@@ -156,17 +159,17 @@ public class Graphics {
 		g.dispose();
 	}
 
-
 	/***
 	 * Scroll an image
+	 * 
 	 * @param i
 	 * @param displayWidth
 	 * @param displayHeight
 	 * @param iPadding
 	 */
 	public void scrollMyImage(BufferedImage i, int displayWidth, int displayHeight, int iPadding) {
-		ByteBuffer buff = ByteBuffer.allocate(1000);
-		buff.putDouble(2);
+		//ByteBuffer buff = ByteBuffer.allocate(1000);
+		//buff.putDouble(2);
 		Raster r = i.getRaster();
 		int rh = r.getHeight();
 		int rw = r.getWidth();
@@ -202,6 +205,7 @@ public class Graphics {
 
 	/***
 	 * Draw a BufferedImage
+	 * 
 	 * @param i
 	 * @param textWidth
 	 * @param textHeight
@@ -210,9 +214,9 @@ public class Graphics {
 	 */
 	private void drawMyImage(BufferedImage i, int textWidth, int textHeight, int displayWidth, int displayHeight) {
 		Raster r = i.getRaster();
-		//int rh = r.getHeight();
-		//int rw = r.getWidth();
-		//System.out.println("RasterWidth: " + rw + " RasterHeight: " + rh);
+		// int rh = r.getHeight();
+		// int rw = r.getWidth();
+		// System.out.println("RasterWidth: " + rw + " RasterHeight: " + rh);
 		for (int b = 0; b <= textHeight - 1; b++) {
 			for (int a = 0; a <= textWidth - 1; a++) {
 				boolean isPixel = r.getSample(a, b, 0) > 0;
@@ -224,6 +228,7 @@ public class Graphics {
 
 	/***
 	 * OLD Method to draw a string,wipes out all other text
+	 * 
 	 * @param text
 	 * @param x
 	 * @param y
@@ -239,6 +244,7 @@ public class Graphics {
 
 	/***
 	 * Get the expected width of the text
+	 * 
 	 * @param font
 	 * @param text
 	 * @return
@@ -252,6 +258,7 @@ public class Graphics {
 
 	/***
 	 * Get the expected height of the text, still some work to do..
+	 * 
 	 * @param font
 	 * @param text
 	 * @param heightOffset
@@ -300,40 +307,25 @@ public class Graphics {
 	 *            The font to use.
 	 * @param text
 	 *            The text to draw.
-	 
-	public void text(int x, int y, Font font, String text) {
-		int rows = font.getRows();
-		int cols = font.getColumns();
-		int[] glyphs = font.getGlyphs();
-		byte[] bytes = text.getBytes(Charset.forName(font.getName()));
-		System.out.println(text);
-
-		for (int i = 0; i < text.length(); i++) {
-			int p = (bytes[i] & 0xFF) * cols;
-			StringBuilder sb = new StringBuilder();
-			for (int col = 0; col < cols; col++) {
-				int mask = glyphs[p++];
-
-				for (int row = 0; row < rows; row++) {
-					boolean isTrue = (mask & 1) == 1;
-					String s = " ";
-					if (isTrue) {
-						s = "X";
-					}
-					sb.append(s);
-					ssd1306.setPixel(x, y + row, isTrue);
-					mask >>= 1;
-				}
-				sb.append(System.lineSeparator());
-				x++;
-			}
-			System.out.println(sb.toString());
-			System.out.println("                         ");
-			x++;
-		}
-	}
-
-*/
+	 * 
+	 *            public void text(int x, int y, Font font, String text) { int
+	 *            rows = font.getRows(); int cols = font.getColumns(); int[]
+	 *            glyphs = font.getGlyphs(); byte[] bytes =
+	 *            text.getBytes(Charset.forName(font.getName()));
+	 *            System.out.println(text);
+	 * 
+	 *            for (int i = 0; i < text.length(); i++) { int p = (bytes[i] &
+	 *            0xFF) * cols; StringBuilder sb = new StringBuilder(); for (int
+	 *            col = 0; col < cols; col++) { int mask = glyphs[p++];
+	 * 
+	 *            for (int row = 0; row < rows; row++) { boolean isTrue = (mask
+	 *            & 1) == 1; String s = " "; if (isTrue) { s = "X"; }
+	 *            sb.append(s); ssd1306.setPixel(x, y + row, isTrue); mask >>=
+	 *            1; } sb.append(System.lineSeparator()); x++; }
+	 *            System.out.println(sb.toString()); System.out.println(" ");
+	 *            x++; } }
+	 * 
+	 */
 	/**
 	 * Draw an image onto the display.
 	 *
@@ -358,6 +350,7 @@ public class Graphics {
 				ssd1306.setPixel(x + j, y + i, r.getSample(j, i, 0) > 0);
 			}
 		}
+		ssd1306.display();
 	}
 
 	/**
@@ -493,36 +486,39 @@ public class Graphics {
 
 	/***
 	 * Set the Contrast, between 0-255
+	 * 
 	 * @param contrast
 	 */
 	public void setContrast(int contrast) {
 		ssd1306.setContrast(contrast);
-		
+
 	}
-	
+
 	/***
 	 * Dim the dispaly in steps
+	 * 
 	 * @param endValue
 	 */
 	public void dimContrast(int endValue) {
-		for(int i = 255; i==endValue;i--) {
+		for (int i = 255; i > endValue; i--) {
 			try {
-				Thread.sleep(500);
+				Thread.sleep(5);
 			} catch (InterruptedException e) {
 
 			}
 			ssd1306.setContrast(i);
 		}
 	}
-	
+
 	/***
 	 * Bright the display in steps
+	 * 
 	 * @param endValue
 	 */
 	public void brightenContrast(int endValue) {
-		for(int i = 255; i==endValue;i++) {
+		for (int i = 0; i < endValue; i++) {
 			try {
-				Thread.sleep(500);
+				Thread.sleep(5);
 			} catch (InterruptedException e) {
 
 			}
@@ -535,20 +531,31 @@ public class Graphics {
 	 */
 	public void clear() {
 		ssd1306.clear();
-		ssd1306.display();		
+		ssd1306.display();
 	}
 
 	/***
-	 * Pause the scroller for x seconds
-	 * @param i
+	 * Set the Play Time
+	 * @param time
 	 */
-	public void pauseScroller(int i) {
-		scrollerThread.pause(i);		
+	public void setTime(String time) {
+		scrollerThread.setTime(time);
+		
 	}
 	
-	public void stopScroller() {
-		scrollerThread.stop();
-		clear();
+	public void setPauseTimer(int pauseTimer) {
+		scrollerThread.setPauseTimer(pauseTimer);
+	}
+
+
+	public void showMessage(String text, int pause, Font font) {
+        setPauseTimer(pause);
+        clear();	        
+        drawStringFont(text, 0, 0,new Font("Arial", Font.PLAIN, 50));		
+	}
+	
+	public void setScroll(boolean bScroll) {
+		scrollerThread.setScroll(bScroll);
 	}
 
 }

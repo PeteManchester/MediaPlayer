@@ -2,6 +2,7 @@ package org.rpi.plugin.oled;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
 import org.rpi.plugin.oled.transport.Transport;
 
 /**
@@ -39,6 +40,7 @@ public class SSD1306 {
 	 * The display buffer.
 	 */
 	private byte[] buffer;
+	//private ByteBuffer bb;
 
 	/**
 	 * Indicates whether the display has been started up.
@@ -109,6 +111,8 @@ public class SSD1306 {
 	 * The hardware configuration of the display's COM pins.
 	 */
 	private int comPins;
+	
+	private Logger log = Logger.getLogger(SSD1306.class);
 
 	/**
 	 * SSD1306 constructor.
@@ -125,6 +129,7 @@ public class SSD1306 {
 		this.height = height;
 		pages = height / 8;
 		buffer = new byte[width * pages];
+		//bb = ByteBuffer.allocate(width* pages);
 		this.transport = transport;
 	}
 
@@ -197,6 +202,7 @@ public class SSD1306 {
 	 */
 	public void clear() {
 		buffer = new byte[width * pages];
+		//bb = ByteBuffer.allocate(width*pages);
 	}
 
 	/**
@@ -206,6 +212,7 @@ public class SSD1306 {
 		command(Command.SET_COLUMN_ADDRESS, 0, width - 1);
 		command(Command.SET_PAGE_ADDRESS, 0, pages - 1);
 		data(buffer);
+		//data(bb);
 
 		// Jump start scrolling again if new data is written while enabled
 		if (isScrolling()) {
@@ -427,6 +434,7 @@ public class SSD1306 {
 	public void setContrast(int contrast) {
 		contrast = clamp(0, 255, contrast);
 		this.contrast = contrast;
+		log.debug("Set Contrast: " + contrast);
 		command(Command.SET_CONTRAST, contrast);
 	}
 
@@ -626,6 +634,7 @@ public class SSD1306 {
 			return false;
 		}
 
+		///return (bb.get(x + (y / 8) * width) & (1 << (y & 7))) != 0;
 		return (buffer[x + (y / 8) * width] & (1 << (y & 7))) != 0;
 	}
 
@@ -650,15 +659,22 @@ public class SSD1306 {
 		
 		//byte bon =   (byte) (1 << (y & 7));
 		int myY = (y / 8) * width;
-		
-		
-		
+		byte b = buffer[x+myY];
+		//byte b = bb.get(x+myY);
 		if (on) {
-			buffer[x + myY] |= (1 << (y & 7));
+			//buffer[x + myY] |= (1 << (y & 7));
+			b |= (1 << (y & 7));
 		} else {
-			buffer[x + myY] &= ~(1 << (y & 7));
+			//buffer[x + myY] &= ~(1 << (y & 7));
+			b &= ~(1 << (y & 7));
 		}
-
+		
+		//if(b== -64) {
+		//	log.debug("Whoops a daisy");
+		//}
+		
+		buffer[x+myY] = b;
+		//bb.put(x+myY,b);
 		return true;
 	}
 
@@ -666,20 +682,22 @@ public class SSD1306 {
 	 * Get the display buffer.
 	 *
 	 * @return The display buffer.
-	 */
+	 
 	public byte[] getBuffer() {
 		return buffer;
 	}
+	*/
 
 	/**
 	 * Set the display buffer.
 	 *
 	 * @param buffer
 	 *            The buffer to set.
-	 */
+	 
 	public void setBuffer(byte[] buffer) {
 		this.buffer = buffer;
 	}
+	*/
 
 	/**
 	 * Send a command to the display.
@@ -705,6 +723,10 @@ public class SSD1306 {
 	
 	public void data(ByteBuffer data) {
 		transport.data(data);
+	}
+	
+	public void myData(byte[] data) {
+		transport.myData(data);
 	}
 
 	/**
