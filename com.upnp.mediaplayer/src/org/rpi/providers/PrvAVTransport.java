@@ -1,5 +1,6 @@
 package org.rpi.providers;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
@@ -115,7 +116,7 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 		sb.append("<AVTransportURI val=\"\" />");
 		sb.append("<TransportState val=\"" + mStatus.toUpperCase() + "\" />");
 		// sb.append("<CurrentTrackMetaData val=\"&lt;DIDL-Lite xmlns=&quot;urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/&quot;>&lt;item id=&quot;d93277-co12&quot; parentID=&quot;co12&quot; restricted=&quot;0&quot;>&lt;dc:title xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;>Te Siento (Version espagnole de ''Ti Sento'')&lt;/dc:title>&lt;dc:creator xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;>Matia Bazar&lt;/dc:creator>&lt;dc:date xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;>2011-01-01&lt;/dc:date>&lt;upnp:artist role=&quot;AlbumArtist&quot; xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;>Matia Bazar&lt;/upnp:artist>&lt;upnp:artist role=&quot;Performer&quot; xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;>Matia Bazar&lt;/upnp:artist>&lt;upnp:album xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;>Fantasia - Best &amp;amp; Rarities&lt;/upnp:album>&lt;upnp:genre xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;>Italian Pop&lt;/upnp:genre>&lt;upnp:originalTrackNumber xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;>8&lt;/upnp:originalTrackNumber>&lt;upnp:originalDiscNumber xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;>2&lt;/upnp:originalDiscNumber>&lt;res duration=&quot;0:04:06.000&quot; size=&quot;9855919&quot; bitrate=&quot;40006&quot; bitsPerSample=&quot;16&quot; sampleFrequency=&quot;44100&quot; nrAudioChannels=&quot;2&quot; protocolInfo=&quot;http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01&quot;>http://192.168.1.205:26125/content/c2/b16/f44100/d93277-co12.mp3&lt;/res>&lt;res duration=&quot;0:04:06.000&quot; size=&quot;43457948&quot; bitrate=&quot;176400&quot; bitsPerSample=&quot;16&quot; sampleFrequency=&quot;44100&quot; nrAudioChannels=&quot;2&quot; protocolInfo=&quot;http-get:*:audio/wav:DLNA.ORG_PN=WAV;DLNA.ORG_OP=01&quot;>http://192.168.1.205:26125/content/c2/b16/f44100/d93277-co12.forced.wav&lt;/res>&lt;res duration=&quot;0:04:06.000&quot; size=&quot;43457904&quot; bitrate=&quot;176400&quot; bitsPerSample=&quot;16&quot; sampleFrequency=&quot;44100&quot; nrAudioChannels=&quot;2&quot; protocolInfo=&quot;http-get:*:audio/L16:DLNA.ORG_PN=LPCM;DLNA.ORG_OP=01;DLNA.ORG_CI=1&quot;>http://192.168.1.205:26125/content/c2/b16/f44100/d93277-co12.forced.l16&lt;/res>&lt;res duration=&quot;0:04:06.000&quot; size=&quot;9855919&quot; bitrate=&quot;40006&quot; bitsPerSample=&quot;16&quot; sampleFrequency=&quot;44100&quot; nrAudioChannels=&quot;2&quot; protocolInfo=&quot;http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01&quot;>http://192.168.1.205:26125/content/c2/b16/f44100/d93277-co12.mp3&lt;/res>&lt;upnp:class xmlns:upnp=&quot;urn:schemas-upnp-org:metadata-1-0/upnp/&quot;>object.item.audioItem.musicTrack&lt;/upnp:class>&lt;/item>&lt;/DIDL-Lite>\" />");
-		sb.append("<CurrentTrackMetaData val=\"" + track_metadata_html + "\" />");
+		sb.append("<CurrentTrackMetaData val=\"" + StringEscapeUtils.escapeXml11(track_metadata) + "\" />");
 		sb.append("<NextAVTransportURI val=\"NOT_IMPLEMENTED\" />");
 		sb.append("<PossibleRecordQualityModes val=\"NOT_IMPLEMENTED\" />");
 		sb.append("<CurrentTrack val=\"0\" />");
@@ -306,8 +307,13 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 				// m_uri = "";
 				// m_metadata = "";
 			}
-
 			break;
+		case EVENTUPDATETRACKMETATEXT:
+		    EventUpdateTrackMetaText tmc = (EventUpdateTrackMetaText) e;
+            track_metadata = tmc.getMetaText();
+            track_metadata_html = stringToHTMLString(track_metadata);
+            createEvent();
+		    break;
 		case EVENTTIMEUPDATED:
 			EventTimeUpdate etime = (EventTimeUpdate) e;
 			track_time = ConvertTime(etime.getTime());
