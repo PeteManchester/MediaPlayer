@@ -307,8 +307,13 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 				// m_uri = "";
 				// m_metadata = "";
 			}
-
 			break;
+		case EVENTUPDATETRACKMETATEXT:
+		    EventUpdateTrackMetaText tmc = (EventUpdateTrackMetaText) e;
+            track_metadata = tmc.getMetaText();
+            track_metadata_html = stringToHTMLString(track_metadata);
+            createEvent();
+		    break;
 		case EVENTTIMEUPDATED:
 			EventTimeUpdate etime = (EventTimeUpdate) e;
 			track_time = ConvertTime(etime.getTime());
