@@ -15,6 +15,7 @@ import org.rpi.player.events.EventDurationUpdate;
 import org.rpi.player.events.EventStatusChanged;
 import org.rpi.player.events.EventTimeUpdate;
 import org.rpi.player.events.EventTrackChanged;
+import org.rpi.player.events.EventUpdateTrackInfo;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.player.events.EventVolumeChanged;
 
@@ -33,6 +34,7 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 	private String current_title = "";
 	private String current_volume = "";
 	private TrackInfo ti = null;
+	private TrackInfo lastTrackInfo = null;
 
 	public StatusMonitor(TCPConnector tcp) {
 		this.tcp = tcp;
@@ -187,13 +189,22 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 					String bitrate = res.get("bitrate");
 					try {
 						long br = Long.valueOf(bitrate).longValue();
-						ti.setBitrate(br);
+						// MPD bitrate is: instantaneous bitrate in kbps
+						// UPnP bitrate should be : the bitrate in bytes/second of the resource, according to "ContentDirectory:1 Service Template Version 1.01"
+						// @TODO br = br * 1000 / 8; 
+						ti.setBitrate(br); 
 					} catch (Exception e) {
 
 					}
 				}
 				if (ti.isSet()) {
 					ti.setUpdated(true);
+					if (!ti.equals(lastTrackInfo)) {
+						lastTrackInfo = ti;
+						EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
+						ev.setTrackInfo(ti);
+						fireEvent(ev);
+					}
 				}
 				iCount++;
 			}

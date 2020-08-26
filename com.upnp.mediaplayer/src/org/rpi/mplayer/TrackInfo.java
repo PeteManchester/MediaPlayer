@@ -175,4 +175,18 @@ public class TrackInfo extends Observable {
 		return builder.toString();
 	}
 
+	/**
+	 * 
+	 * @return
+	 * 			cloned attribute values 
+	 */
+	public TrackInfo cloneToValueObject() {
+		TrackInfo cloned = new TrackInfo();
+		cloned.bitRate = bitRate;
+		cloned.codec = codec;
+		cloned.depth = depth;
+		cloned.duration = duration;
+		cloned.sampleRate = sampleRate;
+		return cloned;
+	}
 }
