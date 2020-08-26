@@ -245,9 +245,16 @@ public class ChannelBase {
             	itemList.appendChild(audioResource);
             	audioResource.setAttribute("protocolInfo", "http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01");
             }
-            audioResource.setAttribute("bitrate", Long.toString(trackInfo.getBitrate()));
-            audioResource.setAttribute("sampleFrequency", Long.toString(trackInfo.getSampleRate()));
-            audioResource.setAttribute("bitsPerSample", Long.toString(trackInfo.getBitDepth()));
+            
+            if (trackInfo.getBitrate() > 0) {
+            	audioResource.setAttribute("bitrate", Long.toString(trackInfo.getBitrate()));
+            }
+            if (trackInfo.getSampleRate() > 0) {
+            	audioResource.setAttribute("sampleFrequency", Long.toString(trackInfo.getSampleRate()));
+            }
+            if (trackInfo.getBitDepth() > 0) {
+            	audioResource.setAttribute("bitsPerSample", Long.toString(trackInfo.getBitDepth()));
+            }
             
             w = xmlDocumentToString(doc);
             return metatext;
