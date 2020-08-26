@@ -11,6 +11,7 @@ import org.rpi.main.SimpleDevice;
 import org.rpi.os.OSManager;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
+import org.rpi.player.events.EventDisposing;
 import org.rpi.player.events.EventSourceChanged;
 import org.rpi.plug.interfaces.AlarmClockInterface;
 import org.rpi.sources.Source;
@@ -201,5 +202,13 @@ public class PluginGateWay extends Observable implements Observer {
 			break;
 
 		}
+	}
+
+	/***
+	 * 
+	 */
+	public void dispose() {
+		EventDisposing ev = new EventDisposing();
+		fireEvent(ev);		
 	}
 }

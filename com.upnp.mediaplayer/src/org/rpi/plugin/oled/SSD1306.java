@@ -1,6 +1,5 @@
 package org.rpi.plugin.oled;
 
-import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
 import org.rpi.plugin.oled.transport.Transport;
@@ -202,7 +201,6 @@ public class SSD1306 {
 	 */
 	public void clear() {
 		buffer = new byte[width * pages];
-		//bb = ByteBuffer.allocate(width*pages);
 	}
 
 	/**
@@ -212,25 +210,12 @@ public class SSD1306 {
 		command(Command.SET_COLUMN_ADDRESS, 0, width - 1);
 		command(Command.SET_PAGE_ADDRESS, 0, pages - 1);
 		data(buffer);
-		//data(bb);
 
 		// Jump start scrolling again if new data is written while enabled
 		if (isScrolling()) {
 			noOp();
 		}
 	}
-	
-	public synchronized void displayByteBuffer(ByteBuffer buff) {
-		command(Command.SET_COLUMN_ADDRESS, 0, width - 1);
-		command(Command.SET_PAGE_ADDRESS, 0, pages - 1);
-		data(buff);
-
-		// Jump start scrolling again if new data is written while enabled
-		if (isScrolling()) {
-			noOp();
-		}
-	}
-	
 	
 
 	/**
@@ -720,10 +705,7 @@ public class SSD1306 {
 	public void data(byte[] data) {
 		transport.data(data);
 	}
-	
-	public void data(ByteBuffer data) {
-		transport.data(data);
-	}
+
 	
 	public void myData(byte[] data) {
 		transport.myData(data);

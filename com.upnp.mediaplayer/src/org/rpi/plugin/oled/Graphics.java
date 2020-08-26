@@ -104,13 +104,9 @@ public class Graphics {
 		g.dispose();
 	}
 
-
-	
 	public void setTitle(String text, int x, int y, java.awt.Font font) {
 		scrollerThread.setTitle(text, font, x, y);
 	}
-	
-
 
 	/***
 	 * OLD method
@@ -168,8 +164,8 @@ public class Graphics {
 	 * @param iPadding
 	 */
 	public void scrollMyImage(BufferedImage i, int displayWidth, int displayHeight, int iPadding) {
-		//ByteBuffer buff = ByteBuffer.allocate(1000);
-		//buff.putDouble(2);
+		// ByteBuffer buff = ByteBuffer.allocate(1000);
+		// buff.putDouble(2);
 		Raster r = i.getRaster();
 		int rh = r.getHeight();
 		int rw = r.getWidth();
@@ -536,26 +532,67 @@ public class Graphics {
 
 	/***
 	 * Set the Play Time
+	 * 
 	 * @param time
 	 */
 	public void setTime(String time) {
 		scrollerThread.setTime(time);
-		
+
 	}
-	
+
+	/***
+	 * 
+	 * @param pauseTimer
+	 */
 	public void setPauseTimer(int pauseTimer) {
 		scrollerThread.setPauseTimer(pauseTimer);
 	}
 
-
+	/***
+	 * Show a message for duration x
+	 * 
+	 * @param text
+	 * @param pause
+	 * @param font
+	 */
 	public void showMessage(String text, int pause, Font font) {
-        setPauseTimer(pause);
-        clear();	        
-        drawStringFont(text, 0, 0,new Font("Arial", Font.PLAIN, 50));		
+		setPauseTimer(pause);
+		clear();
+		drawStringFont(text, 0, 0, new Font("Arial", Font.PLAIN, 50));
 	}
-	
+
+	/***
+	 * True scroll False Don't scroll
+	 * 
+	 * @param bScroll
+	 */
 	public void setScroll(boolean bScroll) {
 		scrollerThread.setScroll(bScroll);
+	}
+
+	/***
+	 * 
+	 * @param duration
+	 */
+	public void setDuration(String duration) {
+		scrollerThread.setDuration(duration);
+
+	}
+
+	/***
+	 * 
+	 */
+	public void dispose() {
+		scrollerThread.stop();
+		clear();
+	}
+
+	/***
+	 * 
+	 * @param volume
+	 */
+	public void setVolume(String volume) {
+		scrollerThread.setVolume(volume);
 	}
 
 }

@@ -504,7 +504,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	}
 
 	public void dispose() {
-
+		PluginGateWay.getInstance().dispose();
 		try {
 			if (airplay != null) {
 				airplay.stopThread();
