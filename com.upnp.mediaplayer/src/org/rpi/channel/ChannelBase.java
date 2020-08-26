@@ -234,7 +234,8 @@ public class ChannelBase {
             for(int i = 0; i < resList.getLength(); i++ )
             {
             	Node resNode = resList.item(i);
-            	if (resNode.getAttributes().getNamedItem("protocolInfo").getTextContent().contains(":audio/")) {
+            	if (resNode.getAttributes().getNamedItem("protocolInfo") != null && 
+            			resNode.getAttributes().getNamedItem("protocolInfo").getTextContent().contains(":audio/")) {
             		audioResource = (Element) resList.item(i);
             		break;
             	}
