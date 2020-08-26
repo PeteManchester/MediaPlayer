@@ -9,15 +9,21 @@ import java.util.Vector;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.rpi.mplayer.TrackInfo;
 import org.rpi.utils.Utils;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -210,6 +216,63 @@ public class ChannelBase {
         return "";
     }
 
+	public String updateTrackInfo(TrackInfo trackInfo) {
+    	Writer w = null;
+        try {
+            Document doc = getDocument();
+            
+            if (doc.getFirstChild() == null) {
+            	// TODO create empty DIDL-Object
+            	log.warn("no metadata available.");
+            	return "";
+            }
+            
+            Element node = (Element) doc.getFirstChild();
+            Element itemList = (Element) node.getElementsByTagName("item").item(0);
+            NodeList resList = itemList.getElementsByTagName("res");
+            Element audioResource = null;
+            for(int i = 0; i < resList.getLength(); i++ )
+            {
+            	Node resNode = resList.item(i);
+            	if (resNode.getAttributes().getNamedItem("protocolInfo") != null && 
+            			resNode.getAttributes().getNamedItem("protocolInfo").getTextContent().contains(":audio/")) {
+            		audioResource = (Element) resList.item(i);
+            		break;
+            	}
+            }
+            if (audioResource == null) {
+            	audioResource = doc.createElement("res");
+            	itemList.appendChild(audioResource);
+            	audioResource.setAttribute("protocolInfo", "http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01");
+            }
+            
+            if (trackInfo.getBitrate() > 0) {
+            	audioResource.setAttribute("bitrate", Long.toString(trackInfo.getBitrate()));
+            }
+            if (trackInfo.getSampleRate() > 0) {
+            	audioResource.setAttribute("sampleFrequency", Long.toString(trackInfo.getSampleRate()));
+            }
+            if (trackInfo.getBitDepth() > 0) {
+            	audioResource.setAttribute("bitsPerSample", Long.toString(trackInfo.getBitDepth()));
+            }
+            
+            w = xmlDocumentToString(doc);
+            return metatext;
+        } catch (Exception e) {
+            log.error("Error Creating XML Doc", e);
+        }
+        finally {
+        	if(w !=null) {
+        		try {
+					w.close();
+				} catch (IOException e) {
+					log.error("Error closing Writer");
+				}
+        	}
+        }
+        return null;
+	}
+
     public String updateTrack(String title, String artist) {
     	Writer w = null;
         try {
@@ -238,12 +301,7 @@ public class ChannelBase {
                    log.info("ICY INFO Replacing dc:artist: " + artist);
                 }
             }
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            StreamResult result = new StreamResult(new StringWriter());
-            DOMSource source = new DOMSource(doc);
-            transformer.transform(source, result);
-            w = result.getWriter();
-            metatext = w.toString();
+            w = xmlDocumentToString(doc);
             return metatext;
         } catch (Exception e) {
             log.error("Error Creating XML Doc", e);
@@ -260,7 +318,19 @@ public class ChannelBase {
         return null;
     }
 
-    private String tidyUpString(String s) throws Exception {
+	private Writer xmlDocumentToString(Document doc)
+			throws TransformerConfigurationException, TransformerFactoryConfigurationError, TransformerException {
+		Writer w;
+		Transformer transformer = TransformerFactory.newInstance().newTransformer();
+		StreamResult result = new StreamResult(new StringWriter());
+		DOMSource source = new DOMSource(doc);
+		transformer.transform(source, result);
+		w = result.getWriter();
+		metatext = w.toString();
+		return w;
+	}
+
+	private String tidyUpString(String s) throws Exception {
         String string = "";
         if (s.equals(s.toUpperCase())) {
             // s = s.toLowerCase();
@@ -319,7 +389,13 @@ public class ChannelBase {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            InputSource insrc = new InputSource(new StringReader(metadata.trim()));
+            String textToParse = null;
+            if (StringUtils.isAllBlank(metatext)) {
+            	textToParse = metadata;
+            } else {
+            	textToParse = metatext;
+            }
+            InputSource insrc = new InputSource(new StringReader(textToParse));
             return builder.parse(insrc);
         } catch (Exception e) {
 
@@ -649,7 +725,5 @@ public class ChannelBase {
 	public void setKeepURL(boolean keep_url) {
 		this.keep_url = keep_url;
 	}
-	
-	
 
 }
