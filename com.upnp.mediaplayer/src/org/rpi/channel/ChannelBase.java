@@ -18,6 +18,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rpi.mplayer.TrackInfo;
 import org.rpi.utils.Utils;
@@ -380,7 +381,13 @@ public class ChannelBase {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
-            InputSource insrc = new InputSource(new StringReader(metadata.trim()));
+            String textToParse = null;
+            if (StringUtils.isAllBlank(metatext)) {
+            	textToParse = metadata;
+            } else {
+            	textToParse = metatext;
+            }
+            InputSource insrc = new InputSource(new StringReader(textToParse));
             return builder.parse(insrc);
         } catch (Exception e) {
 
