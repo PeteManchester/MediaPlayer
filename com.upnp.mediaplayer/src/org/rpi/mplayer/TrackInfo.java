@@ -84,12 +84,12 @@ public class TrackInfo extends Observable {
 
 	public boolean isSet() {
 		if (bitRate != -99 && sampleRate != -99 && codec != null && duration != -99) {
-			if (!bSentUpdate) {
-				EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
-				ev.setTrackInfo(this);
-				fireEvent(ev);
-				bSentUpdate = true;
-			}
+			//if (!bSentUpdate) {
+			//	EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
+			//	ev.setTrackInfo(this);
+			//	fireEvent(ev);
+			//	bSentUpdate = true;
+			//}
 			return true;
 		}
 		return false;

@@ -50,17 +50,17 @@ public class OLEDDisplayImplementation implements OLEDDisplayInterface, Observer
 
 	public OLEDDisplayImplementation() {
 		log.info("Init OLEDDisplayImpl");
-		
+
 		timer.scheduleAtFixedRate(new TimerTask() {
-	        public void run() {	
-	        	if(isStandby) {
-	        		//graphics.setTime(""+Calendar.getInstance().getTime().toGMTString());
-	        		LocalTime time = LocalTime.now();
-	        		String t = time.format(DateTimeFormatter.ofPattern("HH:mm"));
-	        		graphics.showMessage(t, 0, new Font("Arial", Font.PLAIN, 50));
-	        	}	        	
-	        }
-	    }, 1000L, 1000L);
+			public void run() {
+				if (isStandby) {
+					// graphics.setTime(""+Calendar.getInstance().getTime().toGMTString());
+					LocalTime time = LocalTime.now();
+					String t = time.format(DateTimeFormatter.ofPattern("HH:mm"));
+					graphics.showMessage(t, 0, new Font("Arial", Font.PLAIN, 50));
+				}
+			}
+		}, 1000L, 1000L);
 
 		Transport transport = null;
 
@@ -138,6 +138,9 @@ public class OLEDDisplayImplementation implements OLEDDisplayInterface, Observer
 			EventUpdateTrackMetaText et = (EventUpdateTrackMetaText) e;
 			try {
 				log.debug("TrackMetaText Changed: " + et.getTitle() + " : " + et.getArtist());
+				if (!et.isArtistAndTitleValid()) {
+					return;
+				}
 				String text = et.getTitle() + " : " + et.getArtist();
 				if (et.getTitle().equals(et.getArtist())) {
 					text = et.getTitle();
@@ -246,7 +249,8 @@ public class OLEDDisplayImplementation implements OLEDDisplayInterface, Observer
 				Thread.sleep(1000);
 				graphics.clear();
 			} else {
-				//TODO Move this to a thread so it does not block everything else
+				// TODO Move this to a thread so it does not block everything
+				// else
 				graphics.setScroll(false);
 				String path = OSManager.getInstance().getFilePath(this.getClass(), false);
 				File img = new File(path + "mediaplayer240.jpg");
@@ -257,7 +261,7 @@ public class OLEDDisplayImplementation implements OLEDDisplayInterface, Observer
 				graphics.brightenContrast(255);
 				graphics.clear();
 			}
-			
+
 		} catch (Exception e) {
 			log.error(e);
 		}
