@@ -53,7 +53,7 @@ public class ScrollerThread implements Runnable {
 	 */
 	public ScrollerThread(SSD1306 ssd1306) {
 		this.ssd1306 = ssd1306;
-		volume = ""+ PlayManager.getInstance().getVolume();
+		volume = "" + PlayManager.getInstance().getVolume();
 	}
 
 	/***
@@ -255,6 +255,7 @@ public class ScrollerThread implements Runnable {
 			while (isMe) {
 				if (pauseTimer > 0) {
 					try {
+						log.debug("Scroller Paused: " + pauseTimer);
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
 
@@ -266,7 +267,7 @@ public class ScrollerThread implements Runnable {
 						// int lastHashCode = 0;
 						// Iterate each Frame.
 						for (byte[] b : titleImages) {
-							if (!bScroll) {
+							if (!bScroll && pauseTimer > 0) {
 								break;
 							}
 							// Sort out the time part..
@@ -274,7 +275,13 @@ public class ScrollerThread implements Runnable {
 								int rh = timeRaster.getHeight();
 								int rw = timeRaster.getWidth();
 								for (int rasterY = 0; rasterY <= rh - 1; rasterY++) {
+									if (!bScroll && pauseTimer > 0) {
+										break;
+									}
 									for (int rasterX = 0; rasterX <= rw - 1; rasterX++) {
+										if (!bScroll && pauseTimer > 0) {
+											break;
+										}
 										try {
 											boolean isPixel = timeRaster.getSample(rasterX + 0, rasterY, 0) > 0;
 											setPixel(rasterX, rasterY + 50, isPixel, b);
@@ -286,7 +293,9 @@ public class ScrollerThread implements Runnable {
 							}
 							// int hashCode = Arrays.hashCode(b);
 							// if (lastHashCode != hashCode) {
-							ssd1306.myData(b);
+							if (bScroll && pauseTimer == 0) {
+								ssd1306.myData(b);
+							}
 							// }
 							// lastHashCode = hashCode;
 						}
@@ -296,6 +305,7 @@ public class ScrollerThread implements Runnable {
 				}
 			}
 		}
+		log.info("Scroller Stopped");
 	}
 
 	/***
@@ -320,6 +330,15 @@ public class ScrollerThread implements Runnable {
 	public void stop() {
 		log.info("Stopping the Scroller");
 		isRunning = false;
+	}
+
+	/***
+	 * Get the Value of the Pause Timer
+	 * 
+	 * @return
+	 */
+	public int getPauseTimer() {
+		return pauseTimer;
 	}
 
 }

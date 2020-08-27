@@ -205,9 +205,10 @@ public class PluginGateWay extends Observable implements Observer {
 	}
 
 	/***
-	 * 
+	 * Notify the Plugins that MediaPlayer is disposing
 	 */
 	public void dispose() {
+		log.debug("Send EventDisposing");
 		EventDisposing ev = new EventDisposing();
 		fireEvent(ev);		
 	}

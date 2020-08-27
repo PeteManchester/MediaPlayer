@@ -526,6 +526,7 @@ public class Graphics {
 	 * Clear the display
 	 */
 	public void clear() {
+		log.debug("Clear Display");
 		ssd1306.clear();
 		ssd1306.display();
 	}
@@ -556,9 +557,19 @@ public class Graphics {
 	 * @param font
 	 */
 	public void showMessage(String text, int pause, Font font) {
+		boolean isClear = false;
+		if(getPauseTimer()> 0) {
+			isClear = true;
+		}
 		setPauseTimer(pause);
-		clear();
+		if(isClear) {
+			clear();
+		}		
 		drawStringFont(text, 0, 0, new Font("Arial", Font.PLAIN, 50));
+	}
+
+	private int getPauseTimer() {
+		return scrollerThread.getPauseTimer();
 	}
 
 	/***

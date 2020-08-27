@@ -419,7 +419,7 @@ public class SSD1306 {
 	public void setContrast(int contrast) {
 		contrast = clamp(0, 255, contrast);
 		this.contrast = contrast;
-		log.debug("Set Contrast: " + contrast);
+		//log.debug("Set Contrast: " + contrast);
 		command(Command.SET_CONTRAST, contrast);
 	}
 
