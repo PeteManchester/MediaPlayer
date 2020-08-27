@@ -186,7 +186,6 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 					String bitrate = res.get("bitrate");
 					try {
 						long br = Long.valueOf(bitrate).longValue();
-						log.debug("SETTIN BITRATE: " + br);
 						// MPD bitrate is: instantaneous bitrate in kbps
 						// UPnP bitrate should be : the bitrate in bytes/second
 						// of the resource, according to "ContentDirectory:1
