@@ -191,7 +191,7 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 						// of the resource, according to "ContentDirectory:1
 						// Service Template Version 1.01"
 						// @TODO br = br * 1000 / 8;
-						br = br * 125;
+						//br = br * 125;
 						ti.setBitrate(br);
 					} catch (Exception e) {
 
