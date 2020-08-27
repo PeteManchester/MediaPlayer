@@ -7,7 +7,7 @@ import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventUpdateTrackInfo;
 
 public class TrackInfo extends Observable {
-	
+
 	private Logger log = Logger.getLogger(this.getClass());
 
 	private boolean bSentUpdate = false;
@@ -84,12 +84,12 @@ public class TrackInfo extends Observable {
 
 	public boolean isSet() {
 		if (bitRate != -99 && sampleRate != -99 && codec != null && duration != -99) {
-			//if (!bSentUpdate) {
-			//	EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
-			//	ev.setTrackInfo(this);
-			//	fireEvent(ev);
-			//	bSentUpdate = true;
-			//}
+			// if (!bSentUpdate) {
+			// EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
+			// ev.setTrackInfo(this);
+			// fireEvent(ev);
+			// bSentUpdate = true;
+			// }
 			return true;
 		}
 		return false;
@@ -119,38 +119,33 @@ public class TrackInfo extends Observable {
 	}
 
 	private void fireEvent(EventBase ev) {
-		try
-		{
-		setChanged();
-		notifyObservers(ev);
-		}
-		catch(Exception e)
-		{
-			log.error("Error notifyObservers",e);
+		try {
+			setChanged();
+			notifyObservers(ev);
+		} catch (Exception e) {
+			log.error("Error notifyObservers", e);
 		}
 	}
-	
+
 	@Override
 	public boolean equals(Object old) {
-		if(!(old instanceof TrackInfo)) {
+		if (!(old instanceof TrackInfo)) {
 			return false;
 		}
-		TrackInfo previous = (TrackInfo)old;
-		if(previous.getBitrate() != this.bitRate)
-		{
+		TrackInfo previous = (TrackInfo) old;
+		if (previous.getBitrate() != this.bitRate) {
 			return false;
 		}
-		if(!previous.getCodec().equals(this.codec))
-		{
+		if (!previous.getCodec().equals(this.codec)) {
 			return false;
 		}
-		if(previous.getBitDepth() != this.depth) {
+		if (previous.getBitDepth() != this.depth) {
 			return false;
 		}
-		if(previous.getDuration() != this.duration) {
+		if (previous.getDuration() != this.duration) {
 			return false;
 		}
-		if(previous.getSampleRate() != this.sampleRate) {
+		if (previous.getSampleRate() != this.sampleRate) {
 			return false;
 		}
 		return true;
@@ -177,8 +172,7 @@ public class TrackInfo extends Observable {
 
 	/**
 	 * 
-	 * @return
-	 * 			cloned attribute values 
+	 * @return cloned attribute values
 	 */
 	public TrackInfo cloneToValueObject() {
 		TrackInfo cloned = new TrackInfo();
@@ -188,5 +182,15 @@ public class TrackInfo extends Observable {
 		cloned.duration = duration;
 		cloned.sampleRate = sampleRate;
 		return cloned;
+	}
+
+	/***
+	 * Send an event to notify Observers
+	 */
+	public void sendEvent() {
+		log.debug("Send EventUpdateTrackInfo: " + this.toString());
+		EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
+		ev.setTrackInfo(this);
+		fireEvent(ev);
 	}
 }

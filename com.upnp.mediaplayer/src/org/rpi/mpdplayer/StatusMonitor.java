@@ -85,9 +85,8 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 				}
 			}
 			value = res.get("time");
-			//log.debug("Time: " + value);
-			if(value !=null)
-			{
+			// log.debug("Time: " + value);
+			if (value != null) {
 				String[] splits = value.split(":");
 				String mTime = splits[0];
 				String mDuration = splits[1];
@@ -120,9 +119,8 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 					}
 				}
 			}
-				String volume = res.get("volume");
-				if(volume !=null)
-				{
+			String volume = res.get("volume");
+			if (volume != null) {
 				if (!current_volume.equalsIgnoreCase(volume)) {
 					EventVolumeChanged ev = new EventVolumeChanged();
 					long l = Long.valueOf(volume).longValue();
@@ -130,36 +128,35 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 					fireEvent(ev);
 					current_volume = volume;
 				}
-				}
-				String full_title = res.get("Title");
-				if (full_title !=null && !current_title.equalsIgnoreCase(full_title)) {
-					String artist = "";
-					String title = full_title;
-					try {
-						String fulls[] = full_title.split("-");
-						if (fulls.length > 1) {
-							title = fulls[1].trim();
-							artist = fulls[0].trim();
-							if (title.endsWith("'")) {
-								title = title.substring(0, title.length() - 1);
-							}
+			}
+			String full_title = res.get("Title");
+			if (full_title != null && !current_title.equalsIgnoreCase(full_title)) {
+				String artist = "";
+				String title = full_title;
+				try {
+					String fulls[] = full_title.split("-");
+					if (fulls.length > 1) {
+						title = fulls[1].trim();
+						artist = fulls[0].trim();
+						if (title.endsWith("'")) {
+							title = title.substring(0, title.length() - 1);
 						}
-					} catch (Exception e) {
-
 					}
-					EventUpdateTrackMetaText ev = new EventUpdateTrackMetaText();
-					ev.setArtist(artist);
-					ev.setTitle(title);
-					fireEvent(ev);
-					current_title = full_title;
+				} catch (Exception e) {
+
 				}
+				EventUpdateTrackMetaText ev = new EventUpdateTrackMetaText();
+				ev.setArtist(artist);
+				ev.setTitle(title);
+				fireEvent(ev);
+				current_title = full_title;
+			}
 
 			if (bSongChanged) {
 				ti.setUpdated(false);
 			}
 			String audio = res.get("audio");
-			if(audio !=null)
-			{
+			if (audio != null) {
 				if (!ti.isUpdated() || iCount > 5) {
 
 					if (iCount > 5) {
@@ -189,10 +186,14 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 					String bitrate = res.get("bitrate");
 					try {
 						long br = Long.valueOf(bitrate).longValue();
+						log.debug("SETTIN BITRATE: " + br);
 						// MPD bitrate is: instantaneous bitrate in kbps
-						// UPnP bitrate should be : the bitrate in bytes/second of the resource, according to "ContentDirectory:1 Service Template Version 1.01"
-						// @TODO br = br * 1000 / 8; 
-						ti.setBitrate(br); 
+						// UPnP bitrate should be : the bitrate in bytes/second
+						// of the resource, according to "ContentDirectory:1
+						// Service Template Version 1.01"
+						// @TODO br = br * 1000 / 8;
+						br = br * 125;
+						ti.setBitrate(br);
 					} catch (Exception e) {
 
 					}
@@ -200,7 +201,9 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 				if (ti.isSet()) {
 					ti.setUpdated(true);
 					if (!ti.equals(lastTrackInfo)) {
-						lastTrackInfo = ti;
+						// Only send an Event if things have changed.
+						ti.sendEvent();
+						lastTrackInfo = ti.cloneToValueObject();
 						EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
 						ev.setTrackInfo(ti);
 						fireEvent(ev);
@@ -217,7 +220,6 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 		}
 
 	}
-
 
 	public boolean isRunning() {
 		return isRunning;

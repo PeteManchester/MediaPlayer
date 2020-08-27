@@ -23,7 +23,8 @@ public class PositionThread extends Thread {
 					try
 					{
 					mPlayer.getCommandWriter().sendCommand("get_time_pos");
-					if (!mPlayer.getTrackInfo().isSet()) {
+					//if (!mPlayer.getTrackInfo().isSet()) {
+					if(!mPlayer.trackInfoSet()) {
 						mPlayer.getCommandWriter().sendCommand("get_time_length");
 						mPlayer.getCommandWriter().sendCommand("get_audio_bitrate");
 						mPlayer.getCommandWriter().sendCommand("get_audio_codec");

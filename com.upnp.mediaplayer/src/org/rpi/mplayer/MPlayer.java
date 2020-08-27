@@ -9,16 +9,16 @@ import java.util.Observer;
 
 import org.apache.log4j.Logger;
 import org.rpi.channel.ChannelBase;
-import org.rpi.channel.ChannelPlayList;
 import org.rpi.config.Config;
 import org.rpi.player.IPlayer;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventFinishedCurrentTrack;
 import org.rpi.player.events.EventStatusChanged;
+import org.rpi.player.events.EventUpdateTrackInfo;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.radio.parsers.FileParser;
 
-public class MPlayer extends Observable   implements IPlayer, Observer  {
+public class MPlayer extends Observable implements IPlayer, Observer {
 
 	private Logger log = Logger.getLogger(MPlayer.class);
 	private Process process = null;
@@ -38,9 +38,11 @@ public class MPlayer extends Observable   implements IPlayer, Observer  {
 	private String uniqueId = "";
 
 	private ChannelBase current_track = null;
-	private boolean bMute;//Used to mute when playing a track
+	private boolean bMute;// Used to mute when playing a track
+
+	private boolean mute = false; // Used to keep track of mute status
 	
-	private boolean mute = false; //Used to keep track of mute status
+	TrackInfo lastTrackInfo = null;
 
 	/***
 	 * Plays the Custom Track
@@ -54,7 +56,7 @@ public class MPlayer extends Observable   implements IPlayer, Observer  {
 		this.bMute = mute;
 		current_track = track;
 		log.info("Starting to playTrack Id: " + uniqueId + " " + track.getFullDetails());
-		//String url = track.getUri();
+		// String url = track.getUri();
 		String url = checkURL(track.getUri());
 		log.debug("FileParser Returned: " + url);
 		try {
@@ -111,7 +113,6 @@ public class MPlayer extends Observable   implements IPlayer, Observer  {
 		startPlaying();
 	}
 
-
 	/***
 	 * Build the string to start the process
 	 * 
@@ -166,7 +167,7 @@ public class MPlayer extends Observable   implements IPlayer, Observer  {
 	 */
 	private boolean isPlayList(String url) {
 		List<String> pl = Config.getInstance().getMplayerPlayListDefinitions();
-		for (String s :pl ) {
+		for (String s : pl) {
 			if (url.toLowerCase().contains(s.toLowerCase())) {
 				return true;
 			}
@@ -293,10 +294,10 @@ public class MPlayer extends Observable   implements IPlayer, Observer  {
 	@Override
 	public void setVolume(long volume) {
 		this.volume = volume;
-		if(!mute)
+		if (!mute)
 			sendCommand("pausing_keep volume " + volume + " 1");
 	}
-	
+
 	@Override
 	public void seekAbsolute(long seconds) {
 		sendCommand("seek " + seconds + " 2");
@@ -380,14 +381,34 @@ public class MPlayer extends Observable   implements IPlayer, Observer  {
 
 	@Override
 	public void update(Observable o, Object evt) {
-		EventBase e = (EventBase)evt;
+		EventBase e = (EventBase) evt;
 		fireEvent(e);
 	}
-	
+
 	private String checkURL(String url) {
 		FileParser fp = new FileParser();
 		return fp.getURL(url);
 	}
 
+	
+	/***
+	 * Check if the TrackInfo is set, if so check to see if an Update should be
+	 * sent.
+	 * 
+	 * @return
+	 */
+	public boolean trackInfoSet() {
+		if (trackInfo.isSet()) {
+			trackInfo.setUpdated(true);
+			if (!trackInfo.equals(lastTrackInfo)) {
+				trackInfo.sendEvent();
+				lastTrackInfo = trackInfo.cloneToValueObject();
+				EventUpdateTrackInfo ev = new EventUpdateTrackInfo();
+				ev.setTrackInfo(trackInfo);
+				fireEvent(ev);
+			} 
+		}
+		return trackInfo.isSet();
+	}
 
 }
