@@ -247,7 +247,9 @@ public class ChannelBase {
             }
             
             if (trackInfo.getBitrate() > 0) {
-            	audioResource.setAttribute("bitrate", Long.toString(trackInfo.getBitrate()));
+				// MPD bitrate is: instantaneous bitrate in kbps
+				// UPnP bitrate is : the bitrate in bytes/second
+            	audioResource.setAttribute("bitrate", Long.toString(trackInfo.getBitrate() * 125 )); // * 1000/8
             }
             if (trackInfo.getSampleRate() > 0) {
             	audioResource.setAttribute("sampleFrequency", Long.toString(trackInfo.getSampleRate()));
