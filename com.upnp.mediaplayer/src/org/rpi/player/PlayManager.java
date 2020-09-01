@@ -48,6 +48,7 @@ import org.rpi.player.events.EventStatusChanged;
 import org.rpi.player.events.EventStopSongcast;
 import org.rpi.player.events.EventTimeUpdate;
 import org.rpi.player.events.EventTrackChanged;
+import org.rpi.player.events.EventUpdateTrackInfo;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.player.events.EventVolumeChanged;
 import org.rpi.player.observers.*;
@@ -1125,6 +1126,13 @@ public class PlayManager implements Observer {
 			break;
 		case EVENTUPDATETRACKINFO:
 			try {
+				EventUpdateTrackInfo eti = (EventUpdateTrackInfo) e;
+				if (current_track != null) {
+					EventUpdateTrackMetaText etm = new EventUpdateTrackMetaText();
+					String metatext = current_track.updateTrackInfo(eti.getTrackInfo());
+					etm.setMetaText(metatext);
+					obsvInfo.notifyChange(etm);
+				}
 				obsvInfo.notifyChange(e);
 			} catch (Exception eut) {
 				log.error("Error EVENTUPDATETRACKINFO", eut);

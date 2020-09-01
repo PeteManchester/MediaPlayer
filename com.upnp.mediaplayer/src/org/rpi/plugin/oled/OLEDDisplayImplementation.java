@@ -3,6 +3,9 @@ package org.rpi.plugin.oled;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Observable;
 import java.util.Observer;
 
