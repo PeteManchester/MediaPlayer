@@ -214,17 +214,15 @@ public class OLEDDisplayImplementation implements OLEDDisplayInterface, Observer
 		case EVENTTIMEUPDATED:
 			try {
 				EventTimeUpdate etime = (EventTimeUpdate) e;
-				/*
-				if (mTime != null) {
-					mTime = ConvertTime(etime.getTime());
-				}
+				//if (mTime != null) {
+				//	mTime = ConvertTime(etime.getTime());
+				//}
 				// updateVolume();
-				if(scroller !=null)
-				{
-				scroller.updateValues("[TIME]", mTime);
-				}
-				*/
-				graphics.setTime(""+etime.getTime());
+				//if(scroller !=null)
+				//{
+				//scroller.updateValues("[TIME]", mTime);
+				//}
+				graphics.setTime(ConvertTime(etime.getTime()));
 			} catch (Exception ex) {
 				log.error("TimeUpdated", ex);
 			}
@@ -232,6 +230,33 @@ public class OLEDDisplayImplementation implements OLEDDisplayInterface, Observer
 
 		}
 		
+	}
+	
+	/***
+	 * Convert seconds to Hours:Seconds
+	 * 
+	 * @param lTime
+	 * @return
+	 */
+	private String ConvertTime(long lTime) {
+		if (lTime == 0)
+			return "0:00";
+		try {
+			if (lTime <= Integer.MAX_VALUE) {
+				int minutes = (int) lTime / 60;
+				int seconds = (int) lTime % 60;
+				String sSeconds = "";
+				if (seconds < 10) {
+					sSeconds = "0" + seconds;
+				} else {
+					sSeconds = "" + seconds;
+				}
+				return "" + minutes + ":" + sSeconds;
+			}
+		} catch (Exception e) {
+
+		}
+		return "" + lTime;
 	}
 
 }
