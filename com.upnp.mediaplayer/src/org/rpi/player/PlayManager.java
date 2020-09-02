@@ -59,6 +59,8 @@ import org.rpi.radio.parsers.ASHXParser;
 public class PlayManager implements Observer {
 
 	private ChannelBase current_track = null;
+	private ChannelPlayList lastPlayedPlaylistTrack = null;
+
 	private CopyOnWriteArrayList<ChannelPlayList> tracks = new CopyOnWriteArrayList<ChannelPlayList>();
 	private CopyOnWriteArrayList<String> shuffled_tracks = new CopyOnWriteArrayList<String>();
 
@@ -197,6 +199,17 @@ public class PlayManager implements Observer {
 	 */
 	private ChannelPlayList getRandomTrack(int offset) {
 		if (current_track != null) {
+
+			// Check if we play a playlist track. If not, we're on a
+			// different input source. Start from last track item ...
+			if (!(current_track instanceof ChannelPlayList)) {
+				log.debug("switching from other input source to playlist ...");
+				current_track = lastPlayedPlaylistTrack;
+				if (current_track == null && tracks.size() > 0) {
+					return tracks.get(0);
+				}
+			}
+
 			if ((current_track instanceof ChannelPlayList)) {
 				try {
 					int i = 0;
@@ -252,6 +265,17 @@ public class PlayManager implements Observer {
 		if (current_track != null)
 			try {
 				log.debug("Getting Next Track, CurrentTrack is: " + current_track.getUri());
+
+				// Check if we play a playlist track. If not, we're on a
+				// different input source. Start from last track item ...
+				if (!(current_track instanceof ChannelPlayList)) {
+					log.debug("switching from other input source to playlist ...");
+					current_track = lastPlayedPlaylistTrack;
+					if (current_track == null && tracks.size() > 0) {
+						return tracks.get(0);
+					}
+				}
+
 				int i = 0;
 				for (ChannelPlayList t : getTracks()) {
 					if (current_track.getId() == t.getId()) {
@@ -461,6 +485,7 @@ public class PlayManager implements Observer {
 	 */
 	public synchronized void setTracks(CopyOnWriteArrayList<ChannelPlayList> tracks) {
 		this.tracks = (CopyOnWriteArrayList<ChannelPlayList>) tracks.clone();
+		lastPlayedPlaylistTrack = null;
 	}
 
 	public synchronized void setCurrentTrack(ChannelBase track) {
@@ -509,6 +534,7 @@ public class PlayManager implements Observer {
 	public synchronized void deletedAllTracks() {
 		tracks.clear();
 		shuffled_tracks.clear();
+		lastPlayedPlaylistTrack = null;
 	}
 
 	public synchronized void deletedTrack(long iD) {
@@ -517,6 +543,9 @@ public class PlayManager implements Observer {
 			tracks.remove(index);
 		if (shuffled_tracks.contains("" + iD)) {
 			shuffled_tracks.remove("" + iD);
+		}
+		if (lastPlayedPlaylistTrack.getId() == iD) {
+			lastPlayedPlaylistTrack = null;
 		}
 	}
 
@@ -602,23 +631,19 @@ public class PlayManager implements Observer {
 	 * play it
 	 */
 	public synchronized void play(boolean isStopping) {
-		if (isPaused()) {
+		if ((status.equalsIgnoreCase("STOPPED") || status.equalsIgnoreCase("PAUSED"))) {
 			if (mPlayer.isPlaying()) {
 				mPlayer.resume();
 			}
 			setStatus("Playing", "PLAYER");
 			setPaused(false);
 		} else {
-			// if (!(status.equalsIgnoreCase("PLAYING") ||
-			// status.equalsIgnoreCase("BUFFERING"))) {
-			if (current_track == null) {
-				log.debug("CurrentTrack was NULL");
-			}
-			if (shuffle)
-				shuffleTracks();
-			ChannelPlayList t = getNextTrack(1);
-			if (t != null) {
-				playThis(t);
+			if ((status.equalsIgnoreCase("PLAYING") || status.equalsIgnoreCase("BUFFERING"))) {
+				if (lastPlayedPlaylistTrack != null) {
+					playThis(lastPlayedPlaylistTrack);
+				} else {
+					playThis(getNextTrack(1));
+				}
 			}
 		}
 	}
