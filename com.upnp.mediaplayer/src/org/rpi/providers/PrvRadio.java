@@ -34,13 +34,24 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	int counter_id = 0;
 
 	private List<ChannelRadio> channels = new ArrayList<ChannelRadio>();
-	private int current_channel = -99;
+	private int current_channel = 0;
 	private ChannelRadio current_channel_radio = null;
 	private long last_updated = 0;
 
-	// "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='6000' nrAudioChannels='2' protocolInfo='http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01'>http://cast.secureradiocast.co.uk:8004/;stream.mp3</res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>http://www.mediauk.com/logos/100/226.png</upnp:albumArtURI></item></DIDL-Lite>";
+	// "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item
+	// id=''><dc:title
+	// xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:class
+	// xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res
+	// bitrate='6000' nrAudioChannels='2'
+	// protocolInfo='http-get:*:audio/mpeg:DLNA.ORG_PN=MP3;DLNA.ORG_OP=01'>http://cast.secureradiocast.co.uk:8004/;stream.mp3</res><upnp:albumArtURI
+	// xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>http://www.mediauk.com/logos/100/226.png</upnp:albumArtURI></item></DIDL-Lite>";
 	// private String metaData =
-	// "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item id=''><dc:title xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:class xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res bitrate='' nrAudioChannels='' protocolInfo=''></res><upnp:albumArtURI xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:albumArtURI></item></DIDL-Lite>";
+	// "<DIDL-Lite xmlns='urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/'><item
+	// id=''><dc:title
+	// xmlns:dc='http://purl.org/dc/elements/1.1/'></dc:title><upnp:class
+	// xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'>object.item.audioItem</upnp:class><res
+	// bitrate='' nrAudioChannels='' protocolInfo=''></res><upnp:albumArtURI
+	// xmlns:upnp='urn:schemas-upnp-org:metadata-1-0/upnp/'></upnp:albumArtURI></item></DIDL-Lite>";
 
 	public PrvRadio(DvDevice iDevice) {
 		super(iDevice);
@@ -130,16 +141,28 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 
 	protected void play(IDvInvocation paramIDvInvocation) {
 		log.debug("Play" + Utils.getLogText(paramIDvInvocation));
+		ChannelRadio cr = null;
 		if (current_channel >= 0) {
 			log.debug("Play Channel Set: " + current_channel);
-			getChannelById();
-		} else {
-			log.debug("Current Channel " + current_channel + " Not Playing..");
-			if(current_channel_radio !=null) {
-				if (current_channel_radio.getId() == current_channel) {
-					playChannel(current_channel_radio);
-				}
+			cr = getChannelById();
+		}
+		// log.debug("Current Channel " + current_channel + " Not Playing..");
+		if (cr == null && current_channel_radio != null) {
+			if (current_channel_radio.getId() == current_channel) {
+				// playChannel(current_channel_radio);
+				cr = current_channel_radio;
 			}
+		}
+
+		if (cr == null) {
+			// Default to first configured Radio Channel if none are found
+			// above..
+			if (channels.size() > 0) {
+				cr = channels.get(0);
+			}
+		}
+		if (cr != null) {
+			playChannel(cr);
 		}
 	};
 
@@ -158,8 +181,8 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 
 	@Override
 	protected void setChannel(IDvInvocation paramIDvInvocation, String uri, String metadata) {
-		log.debug("SetChannel" + Utils.getLogText(paramIDvInvocation));		
-		current_channel_radio = new ChannelRadio(uri,metadata,-99,"");
+		log.debug("SetChannel" + Utils.getLogText(paramIDvInvocation));
+		current_channel_radio = new ChannelRadio(uri, metadata, -99, "");
 		current_channel = -99;
 	}
 
@@ -198,7 +221,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 				log.debug("Read: " + id + " Returning : " + t.getFullText());
 				return t.getMetadata();
 			}
-		}	
+		}
 		log.debug("Read: " + id + " Could Not Find Radio Channel");
 		ActionError ae = new ActionError("Id not found", 800);
 		throw ae;
@@ -232,21 +255,25 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	protected void setId(IDvInvocation paramIDvInvocation, long id, String uri) {
 		log.debug("Set ID: " + id + " URI: " + uri + Utils.getLogText(paramIDvInvocation));
 		current_channel = (int) id;
-		getChannelById();
+		ChannelRadio c = getChannelById();
+		if (c != null) {
+			playChannel(c);
+		}
 	}
 
 	/**
 	 * Find the Channel by Id
 	 */
-	private void getChannelById() {
+	private ChannelRadio getChannelById() {
 		if (current_channel > 0) {
 			for (ChannelRadio c : channels) {
 				if (c.getId() == current_channel) {
-					playChannel(c);
-					break;
+					// playChannel(c);
+					return c;
 				}
 			}
 		}
+		return null;
 	}
 
 	/**
@@ -279,8 +306,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 			}
 			i++;
 		}
-		if(channels.size()<=i+1)
-		{
+		if (channels.size() <= i + 1) {
 			return;
 		}
 		ChannelRadio cr = channels.get(i + 1);
@@ -381,6 +407,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 
 	private void playingTrack(int iD) {
 		setPropertyId(iD);
+		current_channel = iD;
 	}
 
 	private void setStatus(String status) {
@@ -420,7 +447,7 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 	}
 
 	public void getChannels() {
-		//if ((System.currentTimeMillis() - last_updated) > 30000) {
+		// if ((System.currentTimeMillis() - last_updated) > 30000) {
 		if ((System.currentTimeMillis() - last_updated) > 300000000) {
 			try {
 				ChannelReaderJSON cr = new ChannelReaderJSON(this);

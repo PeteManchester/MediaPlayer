@@ -99,9 +99,41 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 
 	protected void play(IDvInvocation paramIDvInvocation) {
 		log.debug("Play" + Utils.getLogText(paramIDvInvocation));
-		if (tracker.setRequest("PLAY")) {
-			iPlayer.play();
+		if(getPropertyTransportState().equalsIgnoreCase("PAUSED")) {
+			if (tracker.setRequest("PLAY")) {
+				iPlayer.play();
+			}
 		}
+		else {
+			long id = getPropertyId();
+			if(id == 0) {
+				boolean isFound = false;
+				for(ChannelPlayList cpl : tracks) {
+					if(cpl.getId() == 0) {
+						isFound = true;
+						break;
+					}
+				}
+				if(!isFound) {
+					ChannelPlayList cpl = iPlayer.getNextTrack(1);
+					if(cpl != null)
+					{
+						id = cpl.getId();
+						isFound = true;
+					}
+				}
+				if(!isFound) {
+					if(tracks.size()> 0) {
+						ChannelPlayList cpl = tracks.get(0);
+						id = cpl.getId();
+					}
+				}
+			}
+			
+			iPlayer.playTrackId(id);
+		}
+		//PlayManager.getInstance().set
+		
 	};
 
 	protected void stop(IDvInvocation paramIDvInvocation) {
@@ -427,7 +459,9 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 
 		case EVENTPLAYLISTPLAYINGTRACKID:
 			EventPlayListPlayingTrackID eri = (EventPlayListPlayingTrackID) e;
-			playingTrack(eri.getId());
+			if(eri.getChannel() instanceof ChannelPlayList) {
+				playingTrack(eri.getId());
+			}			
 			break;
 
 		case EVENTPLAYLISTUPDATESHUFFLE:
