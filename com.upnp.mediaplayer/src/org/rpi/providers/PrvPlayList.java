@@ -99,39 +99,37 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 
 	protected void play(IDvInvocation paramIDvInvocation) {
 		log.debug("Play" + Utils.getLogText(paramIDvInvocation));
-		if(getPropertyTransportState().equalsIgnoreCase("PAUSED")) {
+		if (getPropertyTransportState().equalsIgnoreCase("PAUSED")) {
 			if (tracker.setRequest("PLAY")) {
 				iPlayer.play();
 			}
-		}
-		else {
+		} else {
 			long id = getPropertyId();
-				boolean isFound = false;
-				for(ChannelPlayList cpl : tracks) {
-					if(cpl.getId() == 0) {
-						isFound = true;
-						break;
-					}
+			boolean isFound = false;
+			for (ChannelPlayList cpl : tracks) {
+				if (cpl.getId() == 0) {
+					isFound = true;
+					break;
 				}
-				if(!isFound) {
-					ChannelPlayList cpl = iPlayer.getNextTrack(1);
-					if(cpl != null)
-					{
-						id = cpl.getId();
-						isFound = true;
-					}
+			}
+			if (!isFound) {
+				ChannelPlayList cpl = iPlayer.getNextTrack(1);
+				if (cpl != null) {
+					id = cpl.getId();
+					isFound = true;
 				}
-				if(!isFound) {
-					if(tracks.size()> 0) {
-						ChannelPlayList cpl = tracks.get(0);
-						id = cpl.getId();
-					}
+			}
+			if (!isFound) {
+				if (tracks.size() > 0) {
+					ChannelPlayList cpl = tracks.get(0);
+					id = cpl.getId();
 				}
-			
+			}
+
 			iPlayer.playTrackId(id);
 		}
-		//PlayManager.getInstance().set
-		
+		// PlayManager.getInstance().set
+
 	};
 
 	protected void stop(IDvInvocation paramIDvInvocation) {
@@ -194,7 +192,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		log.debug("DeleteAll" + Utils.getLogText(paramIDvInvocation));
 		deleteAllTracks();
 	};
-	
+
 	private void deleteAllTracks() {
 		tracks.clear();
 		UpdateIdArray();
@@ -417,9 +415,8 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 
 	private String getList(String ids) {
 		int i = 0;
-		HashMap<String, String> trackIds = new HashMap<String,String>();
-		for(String key:ids.split(" "))
-		{
+		HashMap<String, String> trackIds = new HashMap<String, String>();
+		for (String key : ids.split(" ")) {
 			trackIds.put(key, key);
 		}
 		StringBuilder sb = new StringBuilder();
@@ -457,16 +454,16 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 
 		case EVENTPLAYLISTPLAYINGTRACKID:
 			EventPlayListPlayingTrackID eri = (EventPlayListPlayingTrackID) e;
-			if(eri.getChannel() instanceof ChannelPlayList) {
+			if (eri.getChannel() instanceof ChannelPlayList) {
 				playingTrack(eri.getId());
-			}			
+			}
 			break;
 
 		case EVENTPLAYLISTUPDATESHUFFLE:
 			EventPlayListUpdateShuffle eps = (EventPlayListUpdateShuffle) e;
 			updateShuffle(eps.isShuffle());
 			break;
-			
+
 		case EVENTPLAYLISTUPDATELIST:
 			EventPlayListUpdateList epl = (EventPlayListUpdateList) e;
 			log.debug("PETE!!!!!!!!!!!!!!!!!!!!!!!!!Clear Tracks");
@@ -475,19 +472,19 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 			log.debug("PETE!!!!!!!!!!!!!!!!!!!!!!!!Tracks Clear");
 
 			log.debug("PETE!!!!!!!!!!!!!!!!!!!!!!!!!Set Tracks");
-			this.tracks = (CopyOnWriteArrayList<ChannelPlayList>) epl.getChannels().clone();			
+			this.tracks = (CopyOnWriteArrayList<ChannelPlayList>) epl.getChannels().clone();
 			UpdateIdArray();
-			log.debug("PETE!!!!!!!!!!!!!!!!!!!!!!!!!Tracks Set");		
-			iPlayer.setTracks(epl.getChannels());	
+			log.debug("PETE!!!!!!!!!!!!!!!!!!!!!!!!!Tracks Set");
+			iPlayer.setTracks(epl.getChannels());
 			PlayManager.getInstance().play(false);
-			
+
 		}
 
 	}
 
-    @Override
-    public String getName() {
-        return "PlayList";
-    }
+	@Override
+	public String getName() {
+		return "PlayList";
+	}
 
 }
