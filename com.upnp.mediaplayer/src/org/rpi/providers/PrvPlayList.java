@@ -106,7 +106,6 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		}
 		else {
 			long id = getPropertyId();
-			if(id == 0) {
 				boolean isFound = false;
 				for(ChannelPlayList cpl : tracks) {
 					if(cpl.getId() == 0) {
@@ -128,7 +127,6 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 						id = cpl.getId();
 					}
 				}
-			}
 			
 			iPlayer.playTrackId(id);
 		}
