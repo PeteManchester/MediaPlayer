@@ -107,7 +107,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 			long id = getPropertyId();
 			boolean isFound = false;
 			for (ChannelPlayList cpl : tracks) {
-				if (cpl.getId() == 0) {
+				if (cpl.getId() == id) {
 					isFound = true;
 					break;
 				}

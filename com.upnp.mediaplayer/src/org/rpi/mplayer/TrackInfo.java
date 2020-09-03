@@ -3,6 +3,7 @@ package org.rpi.mplayer;
 import java.util.Observable;
 
 import org.apache.log4j.Logger;
+import org.rpi.config.Config;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventUpdateTrackInfo;
 
@@ -11,9 +12,11 @@ public class TrackInfo extends Observable {
 	private Logger log = Logger.getLogger(this.getClass());
 
 	private boolean bSentUpdate = false;
+	
+	private boolean bBitRateAsBytesPerSec = false;
 
 	public TrackInfo() {
-
+		bBitRateAsBytesPerSec = Config.getInstance().getReportBitRateInBytesSec();
 	}
 
 	private String codec = null;
@@ -50,6 +53,9 @@ public class TrackInfo extends Observable {
 	 */
 	public void setBitrate(long bitrate) {
 		this.bitRate = bitrate;
+		if(bBitRateAsBytesPerSec) {
+			this.bitRate = bitrate * 125;
+		}
 	}
 
 	/**

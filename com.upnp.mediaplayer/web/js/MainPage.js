@@ -225,8 +225,11 @@ function checkStatusConfig() {
 							decode(data.java_sound_software_mixer_enabled));
 					$("#java_sound_software_mixer_enabled").slider("refresh");
 
+					$("#bytePerSec").val(decode(data.report_bitrate_in_bytes_sec));
+					$("#bytePerSec").slider("refresh");
+							
 					$("#songcast_latency").val(
-							decode(data.songcast_latency));
+							decode(data.songcast_latency));		
 
 					$("#http_web_port").val(decode(data.web_server_port));
 					
@@ -310,7 +313,9 @@ function updateConfig() {
 		config_json.java_sound_software_mixer_enabled = $("#java_sound_software_mixer_enabled").val();
 
 		config_json.songcast_latency = $("#songcast_latency").val();
-
+		
+		config_json.report_bitrate_in_bytes_sec = $("#bytePerSec").val();
+		
 		config_json.web_server_port = $("#http_web_port").val();
 
 		config_json.radio_tunein_username = $("#tunein_username").val();
