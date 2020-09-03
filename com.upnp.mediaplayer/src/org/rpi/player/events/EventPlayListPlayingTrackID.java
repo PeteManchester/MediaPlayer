@@ -1,5 +1,7 @@
 package org.rpi.player.events;
 
+import org.rpi.channel.ChannelBase;
+
 public class EventPlayListPlayingTrackID implements EventBase {
 
 	@Override
@@ -16,5 +18,14 @@ public class EventPlayListPlayingTrackID implements EventBase {
 	}
 
 	private int id = -99;
+	private ChannelBase channel = null;
+
+	public void setChannel(ChannelBase t) {
+		this.channel = t;		
+	}
+	
+	public ChannelBase getChannel() {
+		return channel;
+	}
 
 }

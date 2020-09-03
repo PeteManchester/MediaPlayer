@@ -217,9 +217,12 @@ public class MPDPlayer extends Observable implements IPlayer, Observer {
 				removeTrack(ev.getMPD_id());
 				ev.setTrack(t);
 				fireEvent(ev);
-				EventPlayListPlayingTrackID ep = new EventPlayListPlayingTrackID();
-				ep.setId(t.getId());
-				fireEvent(ep);
+				if(t instanceof ChannelPlayList) {
+					EventPlayListPlayingTrackID ep = new EventPlayListPlayingTrackID();
+					ep.setId(t.getId());
+					//ep.setChannel(t);
+					fireEvent(ep);
+				}				
 			}
 			break;
 		case EVENTCURRENTTRACKFINISHING:

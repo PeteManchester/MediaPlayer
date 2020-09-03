@@ -730,11 +730,12 @@ public class PlayManager implements Observer {
 	/***
 	 * Play the Next Track
 	 */
-	public synchronized void nextTrack() {
+	public synchronized long nextTrack() {
 		ChannelPlayList t = getNextTrack(1);
 		if (t != null) {
 			playThis(t);
 		}
+		return t.getId();
 	}
 
 	/***
@@ -1046,6 +1047,7 @@ public class PlayManager implements Observer {
 		} else {
 			EventPlayListPlayingTrackID evrp = new EventPlayListPlayingTrackID();
 			evrp.setId(iD);
+			evrp.setChannel(current_track);
 			obsvPlayList.notifyChange(evrp);
 		}
 	}
