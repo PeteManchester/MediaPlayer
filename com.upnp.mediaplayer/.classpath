@@ -20,5 +20,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/socketio"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/vorbis"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jabx"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jLyrics"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

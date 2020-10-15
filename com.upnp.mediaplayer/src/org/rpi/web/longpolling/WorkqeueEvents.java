@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.ExecutionException;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,6 +32,8 @@ import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.utils.Utils;
 
 import com.echonest.api.v4.EchoNestException;
+import com.jagrosh.jlyrics.Lyrics;
+import com.jagrosh.jlyrics.LyricsClient;
 
 public class WorkqeueEvents implements Runnable {
 	private Logger log = Logger.getLogger(this.getClass());
@@ -279,6 +282,8 @@ public class WorkqeueEvents implements Runnable {
 			info.setLyrics("Cannot Find Lyrics");
 			return info;
 		}
+		
+		
 
 		info.setLyrics("Unable to find Lyrics");
 		try {
@@ -306,11 +311,21 @@ public class WorkqeueEvents implements Runnable {
 							Integer.parseInt(splits[0]);
 							sURL = first_part + artist.trim() + ":" + splits[1].trim();
 							sURL = sURL.replace(" ", "_");
-							res = makeHTTPQuery(sURL);
+							
+							//res = makeHTTPQuery(sURL);
 						} catch (Exception ep) {
 							log.debug("Could Not Find Lyrics: " + sURL);
 						}
 					}
+				}
+				try {
+					LyricsClient client = new LyricsClient();
+					Lyrics lyricsTest = client.getLyrics(artist + " " + title).get();
+					log.debug("Lyrics: " + lyricsTest);
+					lyrics = lyricsTest.getContent();
+					res = lyrics;
+				}catch(Exception e) {
+					log.error("Error Getting Lyrics",e);
 				}
 			}
 			if (res == null) {
