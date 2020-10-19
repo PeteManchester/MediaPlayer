@@ -5,7 +5,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Timer;
@@ -145,7 +147,10 @@ public class OLEDDisplayImplementation implements OLEDDisplayInterface, Observer
                                                           if (et.getTitle().equals(et.getArtist())) {
                                                                         text = et.getTitle();
                                                           }
-                                                          if (text.trim().equalsIgnoreCase("http://radiomonitor.com :")) {
+                                                          List<String> blackList = new ArrayList<String>();
+                                                          blackList.add("Streaming from http://radiomonitor.com :".toUpperCase());
+                                                          String test = text.trim().toUpperCase();
+                                                          if (blackList.contains(test)) {
                                                                         return;
                                                           }
                                                           graphics.setTitle(text, 0, 0, new Font("Arial", Font.ITALIC, 50));

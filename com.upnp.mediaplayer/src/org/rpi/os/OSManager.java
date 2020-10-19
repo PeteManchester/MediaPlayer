@@ -38,10 +38,10 @@ public class OSManager {
 	protected OSManager() {
 		log.debug("Initializing OSManager");
 		setJavaPath();
-		//if (isRaspi()) {
-		//	log.debug("This is a Raspi so Attempt to initialize Pi4J");
-			// initPi4J();
-		//}
+		// if (isRaspi()) {
+		// log.debug("This is a Raspi so Attempt to initialize Pi4J");
+		// initPi4J();
+		// }
 	}
 
 	// private void initPi4J()
@@ -81,12 +81,14 @@ public class OSManager {
 		newPaths[newPaths.length - 1] = pathToAdd;
 		usrPathsField.set(null, newPaths);
 	}
-	
+
 	public void addLibraryPath1(String pathToAdd) throws Exception {
-		//https://stackoverflow.com/questions/15409223/adding-new-paths-for-native-libraries-at-runtime-in-java
-		//Lookup cl = MethodHandles.privateLookupIn(ClassLoader.class, MethodHandles.lookup());
-		//VarHandle sys_paths = cl.findStaticVarHandle(ClassLoader.class, "sys_paths", String[].class);
-		//sys_paths.set(null);
+		// https://stackoverflow.com/questions/15409223/adding-new-paths-for-native-libraries-at-runtime-in-java
+		// Lookup cl = MethodHandles.privateLookupIn(ClassLoader.class,
+		// MethodHandles.lookup());
+		// VarHandle sys_paths = cl.findStaticVarHandle(ClassLoader.class,
+		// "sys_paths", String[].class);
+		// sys_paths.set(null);
 	}
 
 	/**
@@ -244,6 +246,11 @@ public class OSManager {
 				}
 			}
 			log.debug("Find File: Returning FilePath: " + temp);
+
+			if (temp.startsWith("/")) {
+				temp = temp.substring(1);
+			}
+
 			return temp;
 		} else {
 			log.debug("Find Class, URL Not Found");

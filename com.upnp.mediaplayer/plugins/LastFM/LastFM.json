@@ -1,0 +1,23 @@
+{
+	"config": {
+		"UserName": "Test",
+		"Password": "password",
+		"ProxyType": "DIRECT",
+		"Proxy_IP": "",
+		"Proxy_Port": 0
+	},
+	"BlackList": [
+	  {
+		"artist": "Psy",
+		"title": ""
+	  },
+	  {
+		"artist": "Back",
+		"title": "Soon"
+	  },
+	  {
+		"artist": "",
+		"title": "We'll be right back..."
+	  }
+	]
+}

@@ -173,6 +173,7 @@ public class WorkqeueEvents implements Runnable {
 						break;
 					case EVENTUPDATETRACKMETATEXT:
 						EventUpdateTrackMetaText et = (EventUpdateTrackMetaText) base;
+						log.debug("EVENTUPDATETRACKMETATEXT: " + et.toString());
 						try {
 							setTitle(et.getTitle());
 							setArtist(et.getArtist());
@@ -193,12 +194,25 @@ public class WorkqeueEvents implements Runnable {
 					}
 
 				} catch (Exception e) {
-					log.error("Error in Run Method");
+					log.error("Error in Run Method", e);
 				}
 			} else {
 				sleep(10);
 			}
 		}
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("WorkqeueEvents [getTitle()=");
+		builder.append(getTitle());
+		builder.append(", getArtist()=");
+		builder.append(getArtist());
+		builder.append(", getJson()=");
+		builder.append(getJson());
+		builder.append("]");
+		return builder.toString();
 	}
 
 	/**
@@ -261,6 +275,11 @@ public class WorkqeueEvents implements Runnable {
 	}
 
 	private TrackInfo getLyrics(TrackInfo info, boolean bGetArtistInfo) {
+		
+		if(title ==null || artist == null) {
+			info.setLyrics("Not Found");
+			return info;
+		}
 
 		if (title.equalsIgnoreCase(last_title) && artist.equalsIgnoreCase(last_artist)) {
 			if (!lyrics.equalsIgnoreCase("")) {
@@ -283,25 +302,33 @@ public class WorkqeueEvents implements Runnable {
 			return info;
 		}
 		
-		
+		LyricsClient client = new LyricsClient();
 
 		info.setLyrics("Unable to find Lyrics");
 		try {
 			String mArtist = artist;
 			String mSong = title;
 			//String first_part = "http://lyrics.wikia.com/";
-			String first_part = "https://lyrics.fandom.com/";
-			String sURL = first_part + mArtist + ":" + mSong;
+			//String first_part = "https://lyrics.fandom.com/";
+			//String sURL = first_part + mArtist + ":" + mSong;
 			if (mArtist.equalsIgnoreCase("") || mSong.equalsIgnoreCase("")) {
 
 				return info;
 			}
-			sURL = sURL.replace(" ", "_");
-			log.debug(sURL);
+			//sURL = sURL.replace(" ", "_");
+			//log.debug(sURL);
 			// Try Artist, Song first
-			String res = makeHTTPQuery(sURL);
+			//String res = makeHTTPQuery(sURL);
+			String res = "";
+			Lyrics lyricsTest = client.getLyrics(title + " " + artist).get();
+			log.debug("Lyrics: " + lyricsTest);
+			if(lyricsTest != null) {
+				lyrics = lyricsTest.getContent();
+				res = lyrics;
+			}
+			
 
-			if (res == null) {
+			if (res == null || lyricsTest == null) {
 				mArtist = artist;
 				mSong = title;
 				if (title.contains(".")) {
@@ -309,24 +336,24 @@ public class WorkqeueEvents implements Runnable {
 					if (splits.length == 2) {
 						try {
 							Integer.parseInt(splits[0]);
-							sURL = first_part + artist.trim() + ":" + splits[1].trim();
-							sURL = sURL.replace(" ", "_");
-							
+							//sURL = first_part + artist.trim() + ":" + splits[1].trim();
+							//sURL = sURL.replace(" ", "_");
+							lyricsTest = client.getLyrics(splits[1].trim() + " " + artist ).get();
+							log.debug("Lyrics: " + lyricsTest);
+							lyrics = lyricsTest.getContent();
+							res = lyrics;
 							//res = makeHTTPQuery(sURL);
 						} catch (Exception ep) {
-							log.debug("Could Not Find Lyrics: " + sURL);
+							log.debug("Could Not Find Lyrics: " + ep);
 						}
 					}
 				}
-				try {
-					LyricsClient client = new LyricsClient();
-					Lyrics lyricsTest = client.getLyrics(artist + " " + title).get();
-					log.debug("Lyrics: " + lyricsTest);
-					lyrics = lyricsTest.getContent();
-					res = lyrics;
-				}catch(Exception e) {
-					log.error("Error Getting Lyrics",e);
-				}
+				//try {
+					
+					
+				//}catch(Exception e) {
+				//	log.error("Error Getting Lyrics",e);
+				//}
 			}
 			if (res == null) {
 				res = "";
@@ -334,6 +361,15 @@ public class WorkqeueEvents implements Runnable {
 			lyrics = res;
 			if (lyrics.equalsIgnoreCase("")) {
 				lyrics = "Not Found";
+			}
+			else {
+				if(lyricsTest !=null) {
+					lyrics += System.lineSeparator();
+					lyrics += System.lineSeparator();
+					lyrics += System.lineSeparator() + " Obtained From: " + lyricsTest.getSource();
+					lyrics += System.lineSeparator() + " By: " + lyricsTest.getAuthor();
+				}
+				
 			}
 			info.setLyrics(res);
 			if (bGetArtistInfo) {

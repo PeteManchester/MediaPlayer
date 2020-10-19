@@ -1130,10 +1130,16 @@ public class PlayManager implements Observer {
 			try {
 				EventUpdateTrackInfo eti = (EventUpdateTrackInfo) e;
 				if (current_track != null) {
-					EventUpdateTrackMetaText etm = new EventUpdateTrackMetaText();
-					String metatext = current_track.updateTrackInfo(eti.getTrackInfo());
-					etm.setMetaText(metatext);
-					obsvInfo.notifyChange(etm);
+					if(current_track.getArtist() !=null && current_track.getTitle() !=null) {
+						EventUpdateTrackMetaText etm = new EventUpdateTrackMetaText();
+						String metatext = current_track.updateTrackInfo(eti.getTrackInfo());
+						etm.setMetaText(metatext);
+
+						etm.setArtist(current_track.getArtist());
+						etm.setTitle(current_track.getTitle());
+						obsvInfo.notifyChange(etm);
+					}
+					
 				}
 				obsvInfo.notifyChange(e);
 			} catch (Exception eut) {

@@ -14,7 +14,7 @@
             </fileset>  
             <zipfileset excludes="META-INF/*.SF" src="C:/Keep/Repository/java/lastFM/lastfm-java-0.1.2.jar"/>    
         </jar>
-        <copy file="${basedir}\src\org\rpi\plugin\lastFM\LastFM.xml" todir="${basedir}/plugins/LastFM"/>
+        <copy file="${basedir}\src\org\rpi\plugin\lastFM\LastFM.json" todir="${basedir}/plugins/LastFM"/>
     </target>
     
     <target name="deployStudy">
@@ -49,7 +49,7 @@
 		<scp remoteTodir="root:root@${server_name}:/home/pi/mediaplayer/plugins/LastFM" trust="yes" sftp="true">
 			<fileset dir="${basedir}/plugins/LastFM">
 				<include name="LastFM.jar" />
-				<!--include name="LastFM.xml" /-->
+				<!--include name="LastFM.json" /-->
 			</fileset>
 		</scp>
 					

@@ -99,6 +99,9 @@ public class TrackInfo {
 	}
 
 	private String cleanString(String value) {
+		if(value ==null) {
+			return "";
+		}
 		value =  value.replace("\"", "'");
 		try
 		{
