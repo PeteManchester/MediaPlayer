@@ -276,7 +276,7 @@ public class ChannelBase {
     public String updateTrack(String title, String artist) {
     	Writer w = null;
         try {
-            String full_title = title + " - " + artist;
+            String full_title = title; // + " - " + artist;
             full_title = tidyUpString(full_title);
             Document doc = getDocument();
             Node node = doc.getFirstChild();
@@ -299,6 +299,9 @@ public class ChannelBase {
                 {
                    n.setTextContent(artist);
                    log.info("ICY INFO Replacing dc:artist: " + artist);
+                }else if(n.getNodeName() == "upnp:class")
+                {
+                   n.setTextContent("object.item.audioItem.musicTrack");
                 }
             }
             w = xmlDocumentToString(doc);
