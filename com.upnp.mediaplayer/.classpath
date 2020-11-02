@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_31"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jspf"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/pi4j"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/netty"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/airplay"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Log4J"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/echopass"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/log4J"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/joda"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Grizzly"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Quartz"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jehrico"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/lastFM"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/fullscreen"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jaxb"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ohNet"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JSON"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JerseyClient"/>
@@ -20,5 +19,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/socketio"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/vorbis"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jLyrics"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/imagescalr"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/echopass"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_31"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
