@@ -205,7 +205,7 @@ public class PrvInfo extends DvProviderAvOpenhomeOrgInfo1 implements Observer, I
 			try {
 				EventUpdateTrackInfo euti = (EventUpdateTrackInfo)e;
 				TrackInfo i = (TrackInfo) euti.getTrackInfo();
-				log.debug("EVENTUPDATETRACKINFO: " + i.toString());
+				//log.debug("EVENTUPDATETRACKINFO: " + i.toString());
 				//setDetails(i.getDuration(), i.getBitrate(), i.getBitDepth(), i.getSampleRate(), false, i.getCodec());
 				if(!previousTrackInfo.equals(i.toString()))
 				{

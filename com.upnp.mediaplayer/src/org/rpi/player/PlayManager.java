@@ -1129,7 +1129,9 @@ public class PlayManager implements Observer {
 		case EVENTUPDATETRACKINFO:
 			try {
 				EventUpdateTrackInfo eti = (EventUpdateTrackInfo) e;
-				if (current_track != null) {
+				//PETE Not sure why this is here, 
+				//Do not update track info if this is a radio channel because this overwrites the ICY INFO
+				if (current_track != null && !(current_track instanceof ChannelRadio )) {
 					if(current_track.getArtist() !=null && current_track.getTitle() !=null) {
 						EventUpdateTrackMetaText etm = new EventUpdateTrackMetaText();
 						String metatext = current_track.updateTrackInfo(eti.getTrackInfo());
@@ -1141,6 +1143,7 @@ public class PlayManager implements Observer {
 					}
 					
 				}
+				
 				obsvInfo.notifyChange(e);
 			} catch (Exception eut) {
 				log.error("Error EVENTUPDATETRACKINFO", eut);
