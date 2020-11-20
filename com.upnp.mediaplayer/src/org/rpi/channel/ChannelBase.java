@@ -21,6 +21,7 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rpi.mplayer.TrackInfo;
+import org.rpi.player.events.EventTrackChanged;
 import org.rpi.utils.Utils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -69,6 +70,8 @@ public class ChannelBase {
     private Long duration = new Long(0);
     private String full_details;
 
+    private String musicBrainzIdUpdatedForMpdId = "";
+    
     public ChannelBase(String uri, String metadata, int id) {
         // long startTime = System.nanoTime();
     	setUri(uri);
@@ -121,7 +124,7 @@ public class ChannelBase {
     	
         return metadata;
     }
-
+    
     public String getMetaClean() {
         return protectSpecialCharacters(getMetadata());
     }
@@ -273,6 +276,96 @@ public class ChannelBase {
         return null;
 	}
 
+	public String updateTrackChange(EventTrackChanged trackChanged) {
+	    if (!trackChanged.getMPD_id().equals(musicBrainzIdUpdatedForMpdId) && hasMusicBrainzTags(trackChanged))
+	    {
+	        musicBrainzIdUpdatedForMpdId = trackChanged.getMPD_id();
+	        Writer w = null;
+	        try {
+	            Document doc = getDocument();
+	            
+	            if (doc.getFirstChild() == null) {
+	                // TODO create empty DIDL-Object
+	                log.warn("no metadata available.");
+	                return "";
+	            }
+	            
+	            Element node = (Element) doc.getFirstChild();
+	            Element itemList = (Element) node.getElementsByTagName("item").item(0);
+	            NodeList resList = itemList.getElementsByTagName("desc");
+	            Element descMetadata = null;
+	            for(int i = 0; i < resList.getLength(); i++ )
+	            {
+	                Node resNode = resList.item(i);
+	                if (resNode.getAttributes().getNamedItem("nameSpace") != null && 
+	                        resNode.getAttributes().getNamedItem("nameSpace").getTextContent().startsWith("http://mediaplayer/mpd")) {
+	                    descMetadata = (Element) resList.item(i);
+	                    break;
+	                }
+	            }
+	            if (descMetadata == null) {
+	                descMetadata = doc.createElement("desc");
+	                itemList.appendChild(descMetadata);
+	                descMetadata.setAttribute("id", "1");
+	                descMetadata.setAttribute("type", "mpd-tags");
+	                descMetadata.setAttribute("nameSpace", "http://mediaplayer/mpd");
+	            }
+	            
+	            addDescElement("musicBrainzIdAlbumId", trackChanged.MUSICBRAINZ_ALBUMID, descMetadata, doc);
+	            addDescElement("musicBrainzIdArtistId", trackChanged.MUSICBRAINZ_ARTISTID, descMetadata, doc);
+	            addDescElement("musicBrainzIdAlbumArtistId", trackChanged.MUSICBRAINZ_ALBUMARTISTID, descMetadata, doc);
+	            addDescElement("musicBrainzIdReleaseTrackId", trackChanged.MUSICBRAINZ_RELEASETRACKID, descMetadata, doc);
+	            addDescElement("musicBrainzIdWorkId", trackChanged.MUSICBRAINZ_WORKID, descMetadata, doc);
+	            addDescElement("musicBrainzIdTrackId", trackChanged.MUSICBRAINZ_TRACKID, descMetadata, doc);
+	            
+	            w = xmlDocumentToString(doc);
+	            return metatext;
+	        } catch (Exception e) {
+	            log.error("Error Creating XML Doc", e);
+	        }
+	        finally {
+	            if(w !=null) {
+	                try {
+	                    w.close();
+	                } catch (IOException e) {
+	                    log.error("Error closing Writer");
+	                }
+	            }
+	        }
+	    }
+	    if (StringUtils.isNoneBlank(metatext)) {
+	        return metatext;
+	    }
+        return metadata;
+	}
+
+    private boolean hasMusicBrainzTags(EventTrackChanged trackChanged)
+    {
+        if (StringUtils.isNoneBlank(trackChanged.MUSICBRAINZ_ALBUMARTISTID)) {
+            return true;
+        } else if (StringUtils.isNoneBlank(trackChanged.MUSICBRAINZ_ALBUMID)) {
+            return true;
+        } else if (StringUtils.isNoneBlank(trackChanged.MUSICBRAINZ_ARTISTID)) {
+            return true;
+        } else if (StringUtils.isNoneBlank(trackChanged.MUSICBRAINZ_RELEASETRACKID)) {
+            return true;
+        } else if (StringUtils.isNoneBlank(trackChanged.MUSICBRAINZ_TRACKID)) {
+            return true;
+        } else if (StringUtils.isNoneBlank(trackChanged.MUSICBRAINZ_WORKID)) {
+            return true;
+        } 
+        return false;
+    }
+
+    private void addDescElement(String elementName, String elementValue, Element descMetadata, Document doc)
+    {
+        if (! StringUtils.isBlank(elementValue)) {
+            Element tag = doc.createElement(elementName);
+            tag.setTextContent(elementValue);
+            descMetadata.appendChild(tag);
+        }
+    }
+	
     public String updateTrack(String title, String artist) {
     	Writer w = null;
         try {

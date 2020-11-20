@@ -40,6 +40,17 @@ public class EventTrackChanged implements EventBase {
 
 	private ChannelBase track = null;
 
+	// MusicBrainz tag support
+	
+	public String MUSICBRAINZ_TRACKID = "";
+	
+	public String MUSICBRAINZ_ALBUMID = "";
+	
+	public String MUSICBRAINZ_ARTISTID = "";
+	
+	public String MUSICBRAINZ_WORKID = "";
+	
+	public String MUSICBRAINZ_RELEASETRACKID = "";
 
-
+	public String MUSICBRAINZ_ALBUMARTISTID = "";
 }
