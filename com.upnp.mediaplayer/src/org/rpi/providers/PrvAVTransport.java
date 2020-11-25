@@ -295,7 +295,7 @@ public class PrvAVTransport extends DvProviderUpnpOrgAVTransport1 implements Obs
 			String m_track_metadata_html = ""; 
 			if (track != null) {
 				m_uri = track.getUri();
-				m_metadata = track.getMetadata();
+				m_metadata = track.updateTrackChange(ec);
 				m_track_metadata_html = stringToHTMLString(m_metadata);
 				if ((!(m_uri.equalsIgnoreCase(track_uri)) || (!m_metadata.equalsIgnoreCase(track_metadata))) || (!m_track_metadata_html.equalsIgnoreCase(track_metadata_html))) {
 					track_uri = m_uri;
