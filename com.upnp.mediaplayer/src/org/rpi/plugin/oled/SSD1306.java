@@ -148,25 +148,55 @@ public class SSD1306 {
 	 */
 	public void startup(boolean externalVcc) {
 		reset();
-		setDisplayOn(false);
-		command(Command.SET_DISPLAY_CLOCK_DIV, width);
-		command(Command.SET_MULTIPLEX_RATIO, height - 1);
-		setOffset(0);
-		setStartLine(0);
-		command(Command.SET_CHARGE_PUMP, externalVcc ? Constant.CHARGE_PUMP_DISABLE : Constant.CHARGE_PUMP_ENABLE);
-		setMemoryMode(Constant.MEMORY_MODE_HORIZONTAL);
-		setHFlipped(false);
-		setVFlipped(false);
-		setCOMPinsConfiguration(height == 64 ? Constant.COM_PINS_ALTERNATING : Constant.COM_PINS_SEQUENTIAL);
-		setContrast(externalVcc ? 0x9F : 0xCF);
-		command(Command.SET_PRECHARGE_PERIOD, externalVcc ? 0x22 : 0xF1);
-		command(Command.SET_VCOMH_DESELECT, Constant.VCOMH_DESELECT_LEVEL_00);
-		command(Command.DISPLAY_ALL_ON_RESUME);
-		setInverted(false);
-		setDisplayOn(true);
+		//setDisplayOn(false);
+		//command(Command.SET_DISPLAY_CLOCK_DIV, width);
+		//command(Command.SET_MULTIPLEX_RATIO, height - 1);
+		//setOffset(0);
+		//setStartLine(0);
+		//command(Command.SET_CHARGE_PUMP, externalVcc ? Constant.CHARGE_PUMP_DISABLE : Constant.CHARGE_PUMP_ENABLE);
+		//setMemoryMode(Constant.MEMORY_MODE_HORIZONTAL);
+		//setHFlipped(false);
+		//setVFlipped(false);
+		//setCOMPinsConfiguration(height == 64 ? Constant.COM_PINS_ALTERNATING : Constant.COM_PINS_SEQUENTIAL);
+		//setContrast(externalVcc ? 0x9F : 0xCF);
+		//command(Command.SET_PRECHARGE_PERIOD, externalVcc ? 0x22 : 0xF1);
+		//command(Command.SET_VCOMH_DESELECT, Constant.VCOMH_DESELECT_LEVEL_00);
+		//command(Command.DISPLAY_ALL_ON_RESUME);
+		//setInverted(false);
+		//setDisplayOn(true);
+		init();
 		clear();
 		display();
 		initialised = true;
+	}
+	
+	
+	private void init() {
+		command(Command.SET_DISPLAY_CLOCK_DIV);            // 0xD5
+		command((byte) 0x80);                           // the suggested ratio 0x80
+		command(Command.SET_MULTIPLEX_RATIO);                  // 0xA8
+		command((byte) 0x3F);
+		command(Command.SET_DISPLAY_OFFSET);              // 0xD3
+		command((byte) 0x0);                            // no offset
+		command((byte) (Command.SET_START_LINE | 0x0));   // line #0
+		command(Command.SET_CHARGE_PUMP);                    // 0x8D
+		command((byte) 0x14);
+		command(Command.SET_MEMORY_MODE);                    // 0x20
+        command((byte) 0x00);                           // 0x0 act like ks0108
+        command((byte) (Command.SET_SEGMENT_REMAP | 0x1));
+        command(Command.SET_COM_SCAN_DEC);
+        command(Command.SET_COM_PINS);                    // 0xDA
+        command((byte) 0x12);
+        command(Command.SET_CONTRAST);                   // 0x81
+        command((byte) 0xCF);
+        command(Command.SET_PRECHARGE_PERIOD);                  // 0xd9
+        command((byte) 0xF1);
+        command(Command.SET_VCOMH_DESELECT);                 // 0xDB
+        command((byte) 0x40);
+        command(Command.DISPLAY_ALL_ON_RESUME);           // 0xA4
+        command(Command.NORMAL_DISPLAY);
+
+        command(Command.DISPLAY_ALL_ON);//--turn on oled panel
 	}
 
 	/**
