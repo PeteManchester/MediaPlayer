@@ -1183,6 +1183,7 @@ public class PlayManager implements Observer {
 		case EVENTTRACKCHANGED:
 			EventTrackChanged etc = (EventTrackChanged) e;
 			current_track = etc.getTrack();
+            obsvInfo.notifyChange(etc);			
 			break;
 		case EVENTVOLUMECHANGED:
 			try {

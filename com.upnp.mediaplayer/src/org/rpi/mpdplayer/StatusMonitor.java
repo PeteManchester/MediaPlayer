@@ -57,6 +57,12 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 				log.debug("Song Changed From : " + current_songid + " To: " + value);
 				EventTrackChanged ev = new EventTrackChanged();
 				ev.setMPD_id(value);
+				ev.MUSICBRAINZ_ALBUMARTISTID = res.get("MUSICBRAINZ_ALBUMARTISTID");
+                ev.MUSICBRAINZ_ALBUMID = res.get("MUSICBRAINZ_ALBUMID");
+                ev.MUSICBRAINZ_ARTISTID = res.get("MUSICBRAINZ_ARTISTID");
+                ev.MUSICBRAINZ_RELEASETRACKID = res.get("MUSICBRAINZ_RELEASETRACKID");
+                ev.MUSICBRAINZ_TRACKID = res.get("MUSICBRAINZ_TRACKID");
+                ev.MUSICBRAINZ_WORKID = res.get("MUSICBRAINZ_WORKID");
 				fireEvent(ev);
 				current_songid = value;
 				sentFinishingEvent = false;
