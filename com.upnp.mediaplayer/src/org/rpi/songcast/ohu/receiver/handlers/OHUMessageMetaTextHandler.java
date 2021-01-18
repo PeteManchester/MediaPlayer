@@ -38,6 +38,8 @@ public class OHUMessageMetaTextHandler extends SimpleChannelInboundHandler<OHUMe
 			}
 		} catch (Exception e) {
 			log.error("Error Releasing MetaText ByteBuf");
+		}finally {
+			msg.release();
 		}
 	}
 	

@@ -21,6 +21,8 @@ import org.rpi.songcast.ohz.common.OHZConnector;
 import org.rpi.utils.NetworkUtils;
 import org.rpi.utils.Utils;
 
+import io.netty.handler.logging.LogLevel;
+
 public class PrvSongcastReceiver extends DvProviderAvOpenhomeOrgReceiver1 implements IDisposableDevice, Observer {
 
 	private Logger log = Logger.getLogger(PrvSongcastReceiver.class);
@@ -84,6 +86,10 @@ public class PrvSongcastReceiver extends DvProviderAvOpenhomeOrgReceiver1 implem
 		setPropertyMetadata(metadata);
 
 		if (bPlay = true) {
+			if(Utils.isEmpty(uri)) {
+				log.info("PETE#### SetSenderURI is Empty" + uri);
+				return;
+			}
 			String ip = Utils.getAdapterIP(paramIDvInvocation.getAdapter());
 			String nic = "";
 			ChannelSongcast track = new ChannelSongcast(uri, metadata, 1);

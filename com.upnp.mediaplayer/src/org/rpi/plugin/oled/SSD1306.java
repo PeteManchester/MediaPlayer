@@ -147,7 +147,7 @@ public class SSD1306 {
 	 *            power source.
 	 */
 	public void startup(boolean externalVcc) {
-		reset();
+		//reset();
 		//setDisplayOn(false);
 		//command(Command.SET_DISPLAY_CLOCK_DIV, width);
 		//command(Command.SET_MULTIPLEX_RATIO, height - 1);
@@ -165,7 +165,7 @@ public class SSD1306 {
 		//setInverted(false);
 		//setDisplayOn(true);
 		init();
-		clear();
+		//clear();
 		display();
 		initialised = true;
 	}

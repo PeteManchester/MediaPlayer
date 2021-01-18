@@ -54,20 +54,7 @@ public class OLEDDisplayImplementation implements OLEDDisplayInterface, Observer
 
 	public OLEDDisplayImplementation() {
 		log.info("Init OLEDDisplayImpl");
-
-		timer.scheduleAtFixedRate(new TimerTask() {
-			public void run() {
-				if (isStandby) {
-					// graphics.setTime(""+Calendar.getInstance().getTime().toGMTString());
-					LocalTime time = LocalTime.now();
-					String t = time.format(DateTimeFormatter.ofPattern("HH:mm"));
-					graphics.showMessage(t, 0, new Font("Arial", Font.PLAIN, 50));
-				}
-			}
-		}, 1000L, 1000L);
-
 		Transport transport = null;
-
 		try {
 			initPi4J();
 			transport = new I2CTransport(RaspiPin.GPIO_15, I2CBus.BUS_1, 0x3D);
@@ -92,11 +79,22 @@ public class OLEDDisplayImplementation implements OLEDDisplayInterface, Observer
 		PlayManager.getInstance().observeTimeEvents(this);
 		PlayManager.getInstance().observeProductEvents(this);
 		PluginGateWay.getInstance().addObserver(this);
+		
+		timer.scheduleAtFixedRate(new TimerTask() {
+			public void run() {
+				if (isStandby) {
+					// graphics.setTime(""+Calendar.getInstance().getTime().toGMTString());
+					LocalTime time = LocalTime.now();
+					String t = time.format(DateTimeFormatter.ofPattern("HH:mm"));
+					graphics.showMessage(t, 0, new Font("Arial", Font.PLAIN, 50));
+				}
+			}
+		}, 1000L, 1000L);
 
 	}
 
 	/***
-	 * Initialisa Pi4J
+	 * Initialise Pi4J
 	 * 
 	 * @throws Exception
 	 */

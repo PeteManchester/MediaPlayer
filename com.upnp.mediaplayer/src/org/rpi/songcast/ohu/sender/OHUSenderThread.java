@@ -37,6 +37,8 @@ public class OHUSenderThread implements Runnable, Observer {
 	private boolean isHalted = false;
 	private boolean isLastHalted = false;
 
+	private String metaTextOriginal = "";
+
 	/***
 	 * 
 	 * @param ohu
@@ -80,7 +82,7 @@ public class OHUSenderThread implements Runnable, Observer {
 								ohu.sendMessage(tab);
 								iCount++;
 							} else {
-								//Sending is halted, just release the ByteBuf.
+								// Sending is halted, just release the ByteBuf.
 								int iRef = b.refCnt();
 								if (iRef > 0) {
 									b.release(iRef);
@@ -108,7 +110,7 @@ public class OHUSenderThread implements Runnable, Observer {
 							Instant.now();
 
 							long nanoSeconds = System.nanoTime() - now;
-							
+
 							/*
 							 * if (iSendTime < nanoSeconds) { iSendTime =
 							 * nanoSeconds; }
@@ -191,13 +193,17 @@ public class OHUSenderThread implements Runnable, Observer {
 					return;
 				}
 				EventUpdateTrackMetaText et = (EventUpdateTrackMetaText) e;
-				OHUSenderMetaTextResponse mtr = new OHUSenderMetaTextResponse(iMetaTextSequence, et.getMetaText());
-				ohu.sendMessage(mtr);
-				iMetaTextSequence++;
-				if (iMetaTextSequence >= Integer.MAX_VALUE) {
-					iMetaTextSequence = 0;
+				String text = et.getMetaText();
+				if (!metaTextOriginal.equals(text)) {
+					OHUSenderMetaTextResponse mtr = new OHUSenderMetaTextResponse(iMetaTextSequence, text);
+					ohu.sendMessage(mtr);
+					iMetaTextSequence++;
+					if (iMetaTextSequence >= Integer.MAX_VALUE) {
+						iMetaTextSequence = 0;
+					}
+					log.debug("TrackMetaDataChanged: " + et.getMetaText());
+					metaTextOriginal = text;
 				}
-				log.debug("TrackMetaDataChanged: " + et.getMetaText());
 			} catch (Exception ex) {
 				log.error("MetaText Changed", ex);
 			}

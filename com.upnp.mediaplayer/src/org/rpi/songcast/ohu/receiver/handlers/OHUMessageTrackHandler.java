@@ -35,7 +35,7 @@ public class OHUMessageTrackHandler extends SimpleChannelInboundHandler<OHUMessa
 				log.debug("meta_text was Empty");
 			}
 			//PlayManager.getInstance().setStatus("Playing", "SONGCAST");
-			//msg.getData().release();
+			msg.release();
 		} catch (Exception e) {
 			log.error("Error Handling OHUMessageTrack: ", e);
 		}

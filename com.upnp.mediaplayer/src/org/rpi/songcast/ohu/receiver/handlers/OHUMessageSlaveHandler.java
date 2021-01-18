@@ -23,7 +23,7 @@ public class OHUMessageSlaveHandler extends SimpleChannelInboundHandler<OHUMessa
 			{
 				OHUMessageSlave slave = (OHUMessageSlave)msg;
 				log.debug(slave.toString());
-				
+				msg.release();
 				//slave.getData().release();
 			}
 		} catch (Exception e) {
