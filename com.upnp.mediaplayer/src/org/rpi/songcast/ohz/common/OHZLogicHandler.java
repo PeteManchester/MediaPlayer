@@ -17,6 +17,7 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import io.netty.channel.socket.DatagramPacket;
+import io.netty.util.ReferenceCountUtil;
 
 public class OHZLogicHandler extends ChannelDuplexHandler {
 
@@ -81,8 +82,8 @@ public class OHZLogicHandler extends ChannelDuplexHandler {
 			} else {
 				log.info("Zone URI Message was received with no corresponding Zone QueryRequest ");
 				statusZoneQueryRequest = "NONE";
+				ReferenceCountUtil.release(msg);
 			}
-
 		} else if (msg instanceof OHZZoneQueryMessage) {
 			OHZZoneQueryMessage ohz = (OHZZoneQueryMessage) msg;
 			if (ohz.getZoneId().equals(myZoneId)) {
@@ -108,7 +109,7 @@ public class OHZLogicHandler extends ChannelDuplexHandler {
 				if (statusZoneQueryRequest.equalsIgnoreCase("FIRSTTIME")) {
 					log.debug("Timer Fired for the first time, resend the ZoneQueryRequest");
 					if (ctx != null && zoneQueryRequestPacket != null) {
-						log.debug("Resending the ZoneQueryRequest");
+						log.debug("Resending the ZoneQueryRequest: " + zoneQueryRequestPacket);
 						ctx.writeAndFlush(zoneQueryRequestPacket);
 						startTimer("SECONDTIME", ctx);
 					}
@@ -120,7 +121,7 @@ public class OHZLogicHandler extends ChannelDuplexHandler {
 					log.debug("Timer Fired, no status: " + statusZoneQueryRequest);
 				}
 			}
-		}, 1000, TimeUnit.MILLISECONDS);
+		}, 3000, TimeUnit.MILLISECONDS);
 	}
 	
 

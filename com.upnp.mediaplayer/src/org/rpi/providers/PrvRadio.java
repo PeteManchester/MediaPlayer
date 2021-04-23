@@ -307,13 +307,15 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 			i++;
 		}
 		if (channels.size() <= i + 1) {
-			return;
+			i = -1;
+			//return;
 		}
 		ChannelRadio cr = channels.get(i + 1);
 		playChannel(cr);
 	}
 
 	private void playPrevious() {
+		log.debug("PlayPrevioius: Radio Channel ");
 		if (channels.size() < 1) {
 			return;
 		}
@@ -323,14 +325,17 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 		int i = 0;
 		for (ChannelRadio c : channels) {
 			if (current_channel == c.getId()) {
+				log.debug("PlayPrevioius: Radio Channel Found: " + i);
 				break;
 			}
 			i++;
 		}
 		if (i - 1 < 0) {
-			return;
+			//return;
+			i = channels.size();
+			log.debug("PlayPrevioius: Radio Channel was less than zero: " + i);
 		}
-
+		log.debug("PlayPrevioius: Playing Radio Channel " + (i -1));
 		ChannelRadio cr = channels.get(i - 1);
 		playChannel(cr);
 

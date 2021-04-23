@@ -36,9 +36,12 @@ public class OHUSlaveForwarder extends SimpleChannelInboundHandler<SongcastMessa
 	protected void channelRead0(ChannelHandlerContext ctx, SongcastMessage msg) throws Exception {
 		if (msg instanceof OHUMessageSlave) {
 			// Don't send Slave messages to the Slaves..
+			log.debug("Slave Message in OHUSlaveForwarder: " + msg );
 			OHUMessageSlave slave = (OHUMessageSlave) msg;
 			endpoints = slave.getEndpoints();
 			initializer.setEndpoints(endpoints);
+			slave.release();
+			msg.release();
 		} else {
 			if (endpoints.size() > 0) {
 				ByteBuf buf = Unpooled.copiedBuffer(msg.getData());

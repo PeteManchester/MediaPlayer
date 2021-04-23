@@ -17,14 +17,14 @@ public class OHUMessageSlaveHandler extends SimpleChannelInboundHandler<OHUMessa
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, OHUMessageSlave msg) throws Exception {
-		log.debug("Slave Message");
+		log.debug("Slave Message in OHUMessageSlaveHandler");
 		try {
 			if(msg instanceof OHUMessageSlave)
 			{
 				OHUMessageSlave slave = (OHUMessageSlave)msg;
-				log.debug(slave.toString());
+				log.debug("PETE# Slave Message: " + slave.toString());
 				msg.release();
-				//slave.getData().release();
+				slave.release();
 			}
 		} catch (Exception e) {
 			log.error("Error Slave Message:", e);

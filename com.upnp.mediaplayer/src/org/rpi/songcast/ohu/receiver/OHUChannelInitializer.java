@@ -13,6 +13,8 @@ import org.rpi.songcast.ohu.receiver.handlers.OHUSlaveForwarder;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 public class OHUChannelInitializer extends ChannelInitializer<NioDatagramChannel> {
 	
@@ -25,7 +27,7 @@ public class OHUChannelInitializer extends ChannelInitializer<NioDatagramChannel
 		//https://stackoverflow.com/questions/9637436/lot-of-udp-requests-lost-in-udp-server-with-netty
 		//p.addLast(new LoggingHandler(LogLevel.DEBUG));
 		//p.addLast("OHUMessageTester", new OHUMessageTester());
-		
+		//p.addLast(new LoggingHandler(LogLevel.DEBUG));
 		p.addLast("OHUDecoder",new OHUMessageDecoder());
 		p.addLast("OHUSlaveForwarder",new OHUSlaveForwarder(this));
 		p.addLast("OHUMessageBuffer", new OHUMessageBuffefHandler());		

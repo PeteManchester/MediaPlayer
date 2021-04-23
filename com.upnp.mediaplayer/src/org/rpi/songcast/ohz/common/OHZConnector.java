@@ -161,6 +161,7 @@ public class OHZConnector {
 		//ch.writeAndFlush(zoneQuery).sync();
 		ch.writeAndFlush(zoneQuery);
 		log.debug("Sent ZoneQuery Request");
+		//zoneQuery.getBuffer().release();
 	}
 
 	/***

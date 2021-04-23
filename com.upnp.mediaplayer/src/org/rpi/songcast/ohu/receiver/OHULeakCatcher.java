@@ -16,6 +16,7 @@ public class OHULeakCatcher extends SimpleChannelInboundHandler<Object> {
 		{
 			if(obj instanceof SongcastMessage)
 			{
+				log.debug("Message got to OHULeakCatcher: " + obj);
 				SongcastMessage msg = (SongcastMessage) obj;
 				int refCnt = msg.getData().refCnt();
 				if(refCnt>0)

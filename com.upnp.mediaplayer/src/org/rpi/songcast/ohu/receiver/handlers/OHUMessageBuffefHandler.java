@@ -38,7 +38,7 @@ public class OHUMessageBuffefHandler extends MessageToMessageDecoder<OHUMessageA
 					maxConsecutivesMisses = missed;
 				}
 				
-				log.debug("Missed a Frame: " + frameId + " Last Frame: " + lastHandledMessage + "  " + ((frameId - lastHandledMessage) - 1) + System.lineSeparator()  + history.toString());
+				//log.debug("Missed a Frame: " + frameId + " Last Frame: " + lastHandledMessage + "  " + ((frameId - lastHandledMessage) - 1) + System.lineSeparator()  + history.toString());
 			}
 			
 			int bufferSize = msg.getData().readableBytes();
