@@ -69,6 +69,7 @@ public class PinManager {
 	private void connectToServer() {
 		try {
 			URL url = new URL(pinManagerURL);
+			log.info("Pin URL: " + pinManagerURL);
 			String path = url.getPath();
 			String host = url.getHost();
 			Options options = new Options();
@@ -113,21 +114,21 @@ public class PinManager {
 
 				@Override
 				public void call(Object... args) {
-					log.debug("DisConnected: " + socket.connected());
+					log.debug("DisConnected: " + socket.toString());
 				}
 
 			}).on(Socket.EVENT_RECONNECT, new Emitter.Listener() {
 
 				@Override
 				public void call(Object... args) {
-					log.debug("Reconnect");
+					log.debug("Reconnect: " + socket.toString());
 
 				}
 			}).on(Socket.EVENT_RECONNECT_ATTEMPT, new Emitter.Listener() {
 
 				@Override
 				public void call(Object... args) {
-					log.debug("Reconnect Attempt: " + args);
+					log.debug("Reconnect Attempt: " + socket.toString());
 
 				}
 			}).on("pins", new Emitter.Listener() {

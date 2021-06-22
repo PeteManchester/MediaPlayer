@@ -70,6 +70,12 @@
 			<param name="server_name" value="rpipi2.local" />
 		</antcall>
 	</target>
+	
+	<target name="deployRaspberryPi">
+		<antcall target="CopyFilesToRaspi">
+			<param name="server_name" value="raspberrypi" />
+		</antcall>
+	</target>
 
 	<target name="deploySoftFloat">
 		<antcall target="CopyFilesToRaspi">

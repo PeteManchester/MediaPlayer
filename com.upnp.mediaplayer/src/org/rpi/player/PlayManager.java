@@ -1131,7 +1131,8 @@ public class PlayManager implements Observer {
 				EventUpdateTrackInfo eti = (EventUpdateTrackInfo) e;
 				//PETE Not sure why this is here, 
 				//Do not update track info if this is a radio channel because this overwrites the ICY INFO
-				if (current_track != null && !(current_track instanceof ChannelRadio )) {
+				//PETE REMOVED THIS FOR PLAYLIST TRACK, IT CAUSES KAZOO TO DISPLAY TRACK INFO INSTEAD OF ARTIST
+				if (current_track != null && !((current_track instanceof ChannelRadio )|| (current_track instanceof ChannelPlayList))) {
 					if(current_track.getArtist() !=null && current_track.getTitle() !=null) {
 						EventUpdateTrackMetaText etm = new EventUpdateTrackMetaText();
 						String metatext = current_track.updateTrackInfo(eti.getTrackInfo());
@@ -1139,6 +1140,7 @@ public class PlayManager implements Observer {
 
 						etm.setArtist(current_track.getArtist());
 						etm.setTitle(current_track.getTitle());
+						
 						obsvInfo.notifyChange(etm);
 					}
 					
@@ -1181,6 +1183,10 @@ public class PlayManager implements Observer {
 			}
 			break;
 		case EVENTTRACKCHANGED:
+			//Send an empty metatext message to clear any old data
+			EventUpdateTrackMetaText emt = new EventUpdateTrackMetaText();
+			obsvInfo.notifyChange(emt);		
+			
 			EventTrackChanged etc = (EventTrackChanged) e;
 			current_track = etc.getTrack();
             obsvInfo.notifyChange(etc);			

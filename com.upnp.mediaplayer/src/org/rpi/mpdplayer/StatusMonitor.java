@@ -154,6 +154,7 @@ public class StatusMonitor extends Observable implements Runnable, Observer {
 				EventUpdateTrackMetaText ev = new EventUpdateTrackMetaText();
 				ev.setArtist(artist);
 				ev.setTitle(title);
+				//PETE THIS IS FOR ICY INFO CHANGES
 				fireEvent(ev);
 				current_title = full_title;
 			}
