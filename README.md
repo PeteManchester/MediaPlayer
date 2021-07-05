@@ -27,7 +27,7 @@ We support the following UPnP and OpenHome Functionality:
 * [Radio](http://www.openhome.org/wiki/Av:Developer:RadioService)
 * [SongCast (Receiver)](http://www.linn.co.uk/software#songcast)
 
-Also supported is the Apple AirPlay Receiver. 
+MediaPlayer also contains an Apple AirPlay receiver: other audio sources are supported by the ability to have [custom input sources](https://github.com/PeteManchester/MediaPlayer/wiki/Custom-Sources).
 
 We have implemented a http-daemon to make it possible to:  
 

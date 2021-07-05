@@ -9,6 +9,8 @@
 
 [Radio Stations](https://github.com/PeteManchester/MediaPlayer/wiki/Radio-Provider)
 
+[Custom Sources](https://github.com/PeteManchester/MediaPlayer/wiki/Custom-Sources)
+
 # Plugins
 
 * [Plugins LCD Display](https://github.com/PeteManchester/MediaPlayer/wiki/Plugins-Display)
