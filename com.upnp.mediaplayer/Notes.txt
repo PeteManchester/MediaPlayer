@@ -470,4 +470,10 @@ netstat -suna
 Yet another guide on how to tune the linux network card:
 https://blog.packagecloud.io/eng/2016/06/22/monitoring-tuning-linux-networking-stack-receiving-data/
 
+A list of BBC Radio urls
+
+http://steveseear.org/high-quality-bbc-radio-streams/
+
+http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high/ak/bbc_radio_manchester.m3u8
+
 

@@ -51,6 +51,7 @@ import org.rpi.providers.PrvInfo;
 import org.rpi.providers.PrvPins;
 import org.rpi.providers.PrvPlayList;
 import org.rpi.providers.PrvProduct;
+import org.rpi.providers.PrvProductV2;
 import org.rpi.providers.PrvRadio;
 import org.rpi.providers.PrvRenderingControl;
 import org.rpi.providers.PrvSongcastReceiver;
@@ -192,6 +193,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			// iDevice.setAttribute("Upnp.ModelImageUri","http://upload.wikimedia.org/wikipedia/en/thumb/0/04/Joy_Division.JPG/220px-Joy_Division.JPG");
 			iConnectionManager = new PrvConnectionManager(iDevice);
 			iProduct = new PrvProduct(iDevice);
+			//IProviderProduct iProduct2 = new PrvProductV2(iDevice);
 			iPins = new PrvPins(iDevice);
 			iVolume = new PrvVolume(iDevice);
 			iPlayList = new PrvPlayList(iDevice);
@@ -206,7 +208,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 				iAVTransport = new PrvAVTransport(iDevice);
 				iRenderingControl = new PrvRenderingControl(iDevice);
 			}
-			// iConfig = new PrvConfig(iDevice);
+			//iConfig = new PrvConfig(iDevice);
 			iSongcastSender = new PrvSongcastSender(iDevice);
 			iCredentials = new PrvCredentials(iDevice);
 			// updateRadioList();
@@ -562,7 +564,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		// this.disposeDevice(iConfig);
 		this.disposeDevice(iPins);
 		this.disposeDevice(iCredentials);
-		this.disposeDevice(iProduct);
+		//this.disposeDevice(iProduct);
 		this.disposeDevice(iInfo);
 
 		this.disposeDevice(iRadio);

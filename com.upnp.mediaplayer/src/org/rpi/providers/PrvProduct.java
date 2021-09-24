@@ -7,7 +7,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
-import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgProduct2;
+import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgProduct1;
 import org.rpi.config.Config;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
@@ -17,7 +17,7 @@ import org.rpi.plugingateway.PluginGateWay;
 import org.rpi.utils.NetworkUtils;
 import org.rpi.utils.Utils;
 
-public class PrvProduct extends DvProviderAvOpenhomeOrgProduct2 implements Observer, IDisposableDevice {
+public class PrvProduct extends DvProviderAvOpenhomeOrgProduct1 implements Observer, IDisposableDevice {
 
 	
 	private Logger log = Logger.getLogger(PrvProduct.class);
@@ -112,7 +112,7 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct2 implements Obser
 		enableActionSetStandby();
 		enableActionSourceCount();
 		enableActionSourceXml();
-		enableActionSetSourceBySystemName();
+		//enableActionSetSourceBySystemName();
 		enableActionSourceIndex();
 		enableActionSetSourceIndex();
 		enableActionSetSourceIndexByName();
@@ -245,10 +245,10 @@ public class PrvProduct extends DvProviderAvOpenhomeOrgProduct2 implements Obser
 
 	}
 	
-	@Override
-	protected void setSourceBySystemName(IDvInvocation paramIDvInvocation, String name) {
-		log.debug("SetSourceBySystemName: " + name);
-	}
+//	@Override
+//	protected void setSourceBySystemName(IDvInvocation paramIDvInvocation, String name) {
+//		log.debug("SetSourceBySystemName: " + name);
+//	}
 	
 	/**
 	 * Private method to change the Source Index and fire an event
