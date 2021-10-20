@@ -137,6 +137,8 @@ public class PrvRadio extends DvProviderAvOpenhomeOrgRadio1 implements Observer,
 
 	protected void pause(IDvInvocation paramIDvInvocation) {
 		log.debug("Pause" + Utils.getLogText(paramIDvInvocation));
+		//PETE Should this be allowed for a Radio Channel??
+		PlayManager.getInstance().stop();
 	};
 
 	protected void play(IDvInvocation paramIDvInvocation) {
