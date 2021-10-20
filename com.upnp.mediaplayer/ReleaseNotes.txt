@@ -42,3 +42,4 @@ If in standby no input source pins are high
 23 April 2021 v0.0.9.9 - Changed RESTful methods radioNextChannel and radioPreviousChannel to cycle back to the when then end of the list is reached.
 22 June 2011  v0.0.1.0 - Changed when metatext is updated, now it is not updated for Playlist tracks, this broke Kazoo which would not display the Artist
 24 Sept 2021  v0.0.1.1 - Lumin does not support PrvProduct v2, so downgraded PrvProduct to version 1.
+20 October 2021 v0.0.1.2 - Lumin wants to pause a radio channel rather than stop a radio channel, modified the RadioProvider to stop the channel when pause is received.
