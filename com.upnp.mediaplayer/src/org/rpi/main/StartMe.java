@@ -27,6 +27,7 @@ public class StartMe {
 	private static Logger log = Logger.getLogger(StartMe.class);
 
 	// private static PluginManager pm = null;
+	// Pete
 
 	/**
 	 * @param args

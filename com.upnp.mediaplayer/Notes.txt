@@ -476,4 +476,8 @@ http://steveseear.org/high-quality-bbc-radio-streams/
 
 http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high/ak/bbc_radio_manchester.m3u8
 
+https://en.everybodywiki.com/List_of_BBC_radio_stream_URLs
+http://www.radiofeeds.co.uk/
+https://gist.github.com/bpsib/67089b959e4fa898af69fea59ad74bc3
+
 

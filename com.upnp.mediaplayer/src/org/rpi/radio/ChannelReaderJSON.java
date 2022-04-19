@@ -91,7 +91,8 @@ public class ChannelReaderJSON implements Runnable {
 				// + partnerId + "&username=" +
 				// Config.getInstance().getRadioTuneinUsername() +
 				// "&render=json" + "&formats=mp3,wma,aac,wmvideo,ogg,hls";
-				getJsonFromURL(url);
+				//PETE TuneIn does not support BBC Radio so is no longer useful..
+				//getJsonFromURL(url);
 				// getBody(object);
 			}
 			prvRadio.addChannels(channels);

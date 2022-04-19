@@ -238,6 +238,7 @@ public class NetworkUtils {
 		resList.put("192.168.32.1", "192.168.32.1");
 		resList.put("192.168.10.1", "192.168.10.1");
 		resList.put("192.168.213.1", "192.168.213.1");
+		resList.put("192.168.41.1", "192.168.41.1");
 		boolean isNetworkFound = false;
 		while(!isNetworkFound) {
 			try {
