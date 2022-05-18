@@ -487,7 +487,7 @@ public class ChannelReaderJSON implements Runnable {
 	 * @param image
 	 * @return
 	 */
-	private String createMetaData(String name, String url, String image) {
+	public String createMetaData(String name, String url, String image) {
 		String res = "";
 
 		try {

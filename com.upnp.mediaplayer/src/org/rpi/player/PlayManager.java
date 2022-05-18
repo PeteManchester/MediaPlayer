@@ -1432,9 +1432,22 @@ public class PlayManager implements Observer {
 						String path = params.get("path");
 						log.debug("Play Radio: " + path);
 						String[] splits = path.split("\\?");
-						Map<String, String> paramsTuneIn = PinManager.getInstance().decodeQueryString(splits[1]);
+						int index = 1;
+						if (splits.length == 1){
+							//This is a custom track in TuneIn.
+							index = 0 ;
+						}
+						
+						Map<String, String> paramsTuneIn = PinManager.getInstance().decodeQueryString(splits[index]);
 						presetId = paramsTuneIn.get("id");
-						String m = cr.getMetaDataForTuneInId(presetId, path, image);
+						String m = "";
+						if(index > 0) {
+							m = cr.getMetaDataForTuneInId(presetId, path, image);
+						}
+						else {
+							//If a TuneIn custom track create the meta data differently
+							m = cr.createMetaData(pi.getTitle(), pi.getUri(), pi.getArtworkUri());
+						}
 						int rId = -99;
 						try {
 							rId = Integer.parseInt(presetId.replaceAll("[^0-9]+", ""));
