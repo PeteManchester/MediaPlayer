@@ -430,6 +430,9 @@ function checkSleepStatus() {
 }
 
 function decode(encoded) {
+	if(encoded === undefined){
+		return encoded;
+	}
 	return decodeURIComponent(encoded.replace(/\+/g, " "));
 }
 

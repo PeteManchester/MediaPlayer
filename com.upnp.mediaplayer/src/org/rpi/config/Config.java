@@ -47,7 +47,7 @@ enum Props {
 
 public class Config {
 
-	private String version = "0.0.1.2";
+	private String version = "0.0.1.3";
 
 	private Logger log = Logger.getLogger(this.getClass());
 
@@ -846,7 +846,7 @@ public class Config {
 			tmp.store(fw, "Modified Using the Web Page");
 
 		} catch (Exception e) {
-
+			log.error("Error Updating Config", e);
 		} finally {
 			if (out != null) {
 				try {
