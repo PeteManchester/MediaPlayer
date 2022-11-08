@@ -86,6 +86,11 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 	}
 
 	private void loadPlayList() {
+		if(Config.getInstance().isClearPlaylistOnStartupEnbled()) {
+			log.info("Option 'clear_playlist_onstart_enabled' is enabled do not read the playlist from Playlist.xml");
+			plw.clearTracks();
+			return;
+		}
 		if (Config.getInstance().isMediaplayerSaveLocalPlaylist()) {
 			PlayListReader plr = new PlayListReader(this);
 			plr.getXML();

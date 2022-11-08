@@ -23,6 +23,24 @@ public class PlayListWriter extends Thread {
 		save = true;
 		counter = 0;
 	}
+	
+	/***
+	 * Clear the tracks in the Playlist
+	 */
+	public void clearTracks() {
+		log.info("Clearing the Playlist");
+		try {
+			if(tracks ==null) {
+				tracks = new CopyOnWriteArrayList<ChannelPlayList>();
+			}
+			tracks.clear();
+			save = true;
+			counter=6;
+		}
+		catch(Exception e) {
+			log.error("Error Clearing the Playlist",e);
+		}		
+	}
 
 	private String getList() {
 		int i = 0;

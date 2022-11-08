@@ -257,6 +257,9 @@ function checkStatusConfig() {
 							decode(data.airplay_master_volume_enabled));
 					$("#airplay_master_volume_enabled").slider("refresh");
 					
+					$("#clear_playlist_onstart_enabled").val(
+							decode(data.clear_playlist_onstart_enabled));
+					$("#clear_playlist_onstart_enabled").slider("refresh");
 					
 				},
 				error : function(result,errorThrown) {
@@ -331,6 +334,8 @@ function updateConfig() {
 		config_json.airplay_audio_start_delay = $("#airplay_audio_start_delay").val();
 		
 		config_json.airplay_master_volume_enabled = $("#airplay_master_volume_enabled").val();
+		
+		config_json.clear_playlist_onstart_enabled = $("#clear_playlist_onstart_enabled").val();
 
 		$.ajax({
 			type : 'POST',
