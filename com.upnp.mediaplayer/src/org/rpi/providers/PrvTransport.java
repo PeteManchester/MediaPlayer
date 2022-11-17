@@ -27,7 +27,7 @@ import org.rpi.utils.Utils;
 
 
 public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements Observer, IDisposableDevice {
-	private Logger log = Logger.getLogger(PrvAVTransport.class);
+	private Logger log = Logger.getLogger(this.getClass());
 	private String track_uri = "";
 	private String track_metadata_html = "";
 	private String track_metadata = "";
@@ -63,7 +63,7 @@ public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements O
 		setPropertyCanSkipPrevious(true);
 		setPropertyModes(modes);
 		setPropertyCanSeek(true);
-		setPropertyRepeat(false);
+		setPropertyRepeat(true);
 		setPropertyShuffle(false);
 		setPropertyTransportState("Stopped");
 		
@@ -124,6 +124,12 @@ public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements O
 	protected void play(IDvInvocation paramIDvInvocation) {
 		log.debug("Play: " + Utils.getLogText(paramIDvInvocation));
 		PlayManager.getInstance().play();
+	}
+	
+	@Override
+	protected void pause(IDvInvocation paramIDvInvocation) {
+		log.debug("Pause: " + Utils.getLogText(paramIDvInvocation));
+		PlayManager.getInstance().pause();
 	}
 	
 	@Override
@@ -264,12 +270,12 @@ public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements O
 			String statuss = esc.getStatus();
 			log.debug("Status: " + statuss);
 			if (statuss != null) {
-				if (statuss.equalsIgnoreCase("PAUSED")) {
-					statuss = "PAUSED_PLAYBACK";
-				}
-				if (statuss.equalsIgnoreCase("BUFFERING")) {
-					statuss = "TRANSITIONING";
-				}
+				//if (statuss.equalsIgnoreCase("PAUSED")) {
+				//	statuss = "PAUSED_PLAYBACK";
+				//}
+				//if (statuss.equalsIgnoreCase("BUFFERING")) {
+				//	statuss = "TRANSITIONING";
+				//}
 				if (!mStatus.equalsIgnoreCase(statuss)) {
 					mStatus = statuss;
 					createEvent();
