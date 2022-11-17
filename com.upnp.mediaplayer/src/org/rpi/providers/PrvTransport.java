@@ -63,7 +63,7 @@ public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements O
 		setPropertyCanSkipPrevious(true);
 		setPropertyModes(modes);
 		setPropertyCanSeek(true);
-		setPropertyRepeat(true);
+		setPropertyRepeat(false);
 		setPropertyShuffle(false);
 		setPropertyTransportState("Stopped");
 		

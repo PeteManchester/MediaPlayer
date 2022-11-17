@@ -285,8 +285,10 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 	};
 
 	protected boolean repeat(IDvInvocation paramIDvInvocation) {
-		boolean repeat = getPropertyRepeat();
-		log.debug("Repeat: " + repeat + Utils.getLogText(paramIDvInvocation));
+		log.debug("Repeat: " + Utils.getLogText(paramIDvInvocation));
+		boolean repeat = !getPropertyRepeat();
+		setPropertyRepeat(repeat);
+		iPlayer.setRepeatPlayList(repeat);		
 		return repeat;
 	};
 
@@ -324,8 +326,10 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 	};
 
 	protected boolean shuffle(IDvInvocation paramIDvInvocation) {
-		boolean shuffle = getPropertyShuffle();
-		log.debug("GetShuffle: " + shuffle + Utils.getLogText(paramIDvInvocation));
+		log.debug("shuffle: " +  Utils.getLogText(paramIDvInvocation));
+		boolean shuffle = !getPropertyShuffle();		
+		setPropertyShuffle(shuffle);
+		iPlayer.setShuffle(shuffle);
 		return shuffle;
 	};
 

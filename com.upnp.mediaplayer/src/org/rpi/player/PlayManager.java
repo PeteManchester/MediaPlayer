@@ -531,6 +531,9 @@ public class PlayManager implements Observer {
 			setPaused(bPause);
 			setStatus("Paused", "PLAYER");
 		}
+		else {
+			log.info("CANNOT PAUSE PLAYER, because it's not playing");
+		}
 	}
 
 	/**
