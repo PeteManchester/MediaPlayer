@@ -76,7 +76,8 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 		enableActionSetAccount();
 		enableActionClear();
 		enableActionSwap();
-		enableActionGetDeviceAccountMax();
+		//enableActionGetDeviceAccountMax();
+
 
 
 		propertiesLock();
@@ -228,12 +229,14 @@ public class PrvPins extends DvProviderAvOpenhomeOrgPins1 implements Observer, I
 		return getPropertyModes();
 	}
 	
+	/*
 	protected GetDeviceAccountMax getDeviceAccountMax(IDvInvocation paramIDvInvocation) {
 		log.debug("GetDeviceAccountMax: " + Utils.getLogText(paramIDvInvocation));
 		GetDeviceAccountMax max = new GetDeviceAccountMax(getPropertyDeviceMax(), getPropertyAccountMax());
 		return max;
 	}
-
+	*/
+	
 	protected String getIdArray(IDvInvocation paramIDvInvocation) {
 		log.debug("GetIdArray: " + Utils.getLogText(paramIDvInvocation));
 		return getPropertyIdArray();

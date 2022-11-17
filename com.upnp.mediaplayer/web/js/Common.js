@@ -41,7 +41,7 @@
   function restartMediaPlayer()
   {
 	  var JSONObject= {
-	      "command":"sudo service mediaplayer restart"
+	      "command":"sudo systemctl restart mediaplayer"
 	  };
 	  
 	  $.ajax({  

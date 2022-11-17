@@ -52,12 +52,15 @@ import org.rpi.providers.PrvPins;
 import org.rpi.providers.PrvPlayList;
 import org.rpi.providers.PrvProduct;
 import org.rpi.providers.PrvProductV2;
+import org.rpi.providers.PrvProductV3;
 import org.rpi.providers.PrvRadio;
 import org.rpi.providers.PrvRenderingControl;
 import org.rpi.providers.PrvSongcastReceiver;
 import org.rpi.providers.PrvSongcastSender;
 import org.rpi.providers.PrvTime;
+import org.rpi.providers.PrvTransport;
 import org.rpi.providers.PrvVolume;
+import org.rpi.providers.PrvVolumeV4;
 import org.rpi.songcast.ohz.common.OHZConnector;
 import org.rpi.sources.Source;
 import org.rpi.sources.SourceReader;
@@ -79,6 +82,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 	private PrvInfo iInfo = null;
 	private PrvTime iTime = null;
 	private PrvRadio iRadio = null;
+	private PrvTransport iTransport = null;
 	private PrvSongcastReceiver iReceiver = null;
 	private PrvAVTransport iAVTransport = null;
 	private PrvRenderingControl iRenderingControl = null;
@@ -200,6 +204,7 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 			iInfo = new PrvInfo(iDevice);
 			iTime = new PrvTime(iDevice);
 			iRadio = new PrvRadio(iDevice);
+			iTransport = new PrvTransport(iDevice);
 			// iInput = new PrvRadio(iDevice);
 			if (Config.getInstance().isMediaplayerEnableReceiver()) {
 				iReceiver = new PrvSongcastReceiver(iDevice);
@@ -564,8 +569,9 @@ public class SimpleDevice implements IResourceManager, IDvDeviceListener, IMessa
 		// this.disposeDevice(iConfig);
 		this.disposeDevice(iPins);
 		this.disposeDevice(iCredentials);
-		//this.disposeDevice(iProduct);
+		this.disposeDevice(iProduct);
 		this.disposeDevice(iInfo);
+		this.disposeDevice(iTransport);
 
 		this.disposeDevice(iRadio);
 		this.disposeDevice(iReceiver);
