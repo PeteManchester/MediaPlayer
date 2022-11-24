@@ -17,6 +17,7 @@ import org.rpi.channel.ChannelAV;
 import org.rpi.channel.ChannelBase;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
+import org.rpi.player.events.EventPlayListStatusChanged;
 import org.rpi.player.events.EventStatusChanged;
 import org.rpi.player.events.EventTimeUpdate;
 import org.rpi.player.events.EventTrackChanged;
@@ -82,36 +83,16 @@ public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements O
 		enableActionSkipPrevious();
 		enableActionStop();
 
-		PlayManager.getInstance().observeInfoEvents(this);
-		PlayManager.getInstance().observeTimeEvents(this);
+		//PlayManager.getInstance().observeInfoEvents(this);
+		//PlayManager.getInstance().observeTimeEvents(this);
 		PlayManager.getInstance().observePlayListEvents(this);
 		PlayManager.getInstance().observeAVEvents(this);
 
 	}
 	
-	private void createEventState() {
-		setPropertyTransportState(mStatus.toUpperCase());
-	}
-
-	
 	private void createEvent() {
 		setPropertyTransportState(mStatus);
 		setPropertyStreamId(id);
-	}
-
-	private long getSeconds(String t) {
-		// String timestampStr = "14:35:06";
-		int duration = 0;
-		try {
-			String[] tokens = t.split(":");
-			int hours = Integer.parseInt(tokens[0]);
-			int minutes = Integer.parseInt(tokens[1]);
-			int seconds = Integer.parseInt(tokens[2]);
-			duration = 3600 * hours + 60 * minutes + seconds;
-		} catch (Exception e) {
-
-		}
-		return (long) duration;
 	}
 	
 	@Override
@@ -210,72 +191,65 @@ public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements O
 	public void update(Observable arg0, Object ev) {
 		EventBase e = (EventBase) ev;
 		switch (e.getType()) {
-		case EVENTTRACKCHANGED:
-			EventTrackChanged ec = (EventTrackChanged) e;
-			ChannelBase track = ec.getTrack();
-			String m_uri = "";
-			String m_metadata = "";
-			String m_track_metadata_html = ""; 
-			
-			if (track != null) {
-				m_uri = track.getUri();
-				m_metadata = track.updateTrackChange(ec);
-				m_track_metadata_html = stringToHTMLString(m_metadata);
-				if ((!(m_uri.equalsIgnoreCase(track_uri)) || (!m_metadata.equalsIgnoreCase(track_metadata))) || (!m_track_metadata_html.equalsIgnoreCase(track_metadata_html))) {
-					track_uri = m_uri;
-					track_metadata = m_metadata;
-					track_metadata_html = stringToHTMLString(m_metadata);
-					id++;
-					createEvent();
-				}
-			} else {
-				// m_uri = "";
-				// m_metadata = "";
-			}
-			break;
-		case EVENTUPDATETRACKMETATEXT:
-		    EventUpdateTrackMetaText tmc = (EventUpdateTrackMetaText) e;
-            track_metadata = tmc.getMetaText();
-            track_metadata_html = stringToHTMLString(track_metadata);
-            createEvent();
-		    break;
-		case EVENTTIMEUPDATED:
-			EventTimeUpdate etime = (EventTimeUpdate) e;
-			track_time = ConvertTime(etime.getTime());
-			// createEvent();
-			break;
-		case EVENTUPDATETRACKINFO:
-			try {
-				EventUpdateTrackInfo eti = (EventUpdateTrackInfo) e;
-				track_duration = ConvertTime(eti.getTrackInfo().getDuration());
-				createEvent();
-			} catch (Exception ex) {
-				log.error("Error EventUpdateTrackInfo", ex);
-			}
-			break;
-		// case EVENTPLAYLISTSTATUSCHANGED:
-		// EventPlayListStatusChanged eps = (EventPlayListStatusChanged) e;
-		// String status = eps.getStatus();
-		// if (status != null) {
-		// if (status.equalsIgnoreCase("PAUSED")) {
-		// status = "PAUSED_PLAYBACK";
-		// }
-		// if (!mStatus.equalsIgnoreCase(status)) {
-		// createEvent();
-		// }
-		// mStatus = status;
-		// }
+//		case EVENTTRACKCHANGED:
+//			EventTrackChanged ec = (EventTrackChanged) e;
+//			ChannelBase track = ec.getTrack();
+//			String m_uri = "";
+//			String m_metadata = "";
+//			String m_track_metadata_html = ""; 
+//			
+//			if (track != null) {
+//				m_uri = track.getUri();
+//				m_metadata = track.updateTrackChange(ec);
+//				m_track_metadata_html = stringToHTMLString(m_metadata);
+//				if ((!(m_uri.equalsIgnoreCase(track_uri)) || (!m_metadata.equalsIgnoreCase(track_metadata))) || (!m_track_metadata_html.equalsIgnoreCase(track_metadata_html))) {
+//					track_uri = m_uri;
+//					track_metadata = m_metadata;
+//					track_metadata_html = stringToHTMLString(m_metadata);
+//					id++;
+//					createEvent();
+//				}
+//			} else {
+//				// m_uri = "";
+//				// m_metadata = "";
+//			}
+//			break;
+//		case EVENTUPDATETRACKMETATEXT:
+//		    EventUpdateTrackMetaText tmc = (EventUpdateTrackMetaText) e;
+//            track_metadata = tmc.getMetaText();
+//            track_metadata_html = stringToHTMLString(track_metadata);
+//            createEvent();
+//		    break;
+//		case EVENTTIMEUPDATED:
+//			EventTimeUpdate etime = (EventTimeUpdate) e;
+//			track_time = ConvertTime(etime.getTime());
+//			// createEvent();
+//			break;
+//		case EVENTUPDATETRACKINFO:
+//			try {
+//				EventUpdateTrackInfo eti = (EventUpdateTrackInfo) e;
+//				track_duration = ConvertTime(eti.getTrackInfo().getDuration());
+//				createEvent();
+//			} catch (Exception ex) {
+//				log.error("Error EventUpdateTrackInfo", ex);
+//			}
+//			break;
+		 case EVENTPLAYLISTSTATUSCHANGED:
+		 EventPlayListStatusChanged eps = (EventPlayListStatusChanged) e;
+		 String status = eps.getStatus();
+		 if (status != null) {
+
+		 if (!mStatus.equalsIgnoreCase(status)) {
+			 mStatus = status;
+			 createEvent();
+		 }
+		 mStatus = status;
+		 }
 		case EVENTSTATUSCHANGED:
 			EventStatusChanged esc = (EventStatusChanged) e;
 			String statuss = esc.getStatus();
 			log.debug("Status: " + statuss);
 			if (statuss != null) {
-				//if (statuss.equalsIgnoreCase("PAUSED")) {
-				//	statuss = "PAUSED_PLAYBACK";
-				//}
-				//if (statuss.equalsIgnoreCase("BUFFERING")) {
-				//	statuss = "TRANSITIONING";
-				//}
 				if (!mStatus.equalsIgnoreCase(statuss)) {
 					mStatus = statuss;
 					createEvent();
