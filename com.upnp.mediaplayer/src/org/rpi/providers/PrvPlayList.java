@@ -13,6 +13,7 @@ import org.rpi.player.events.EventPlayListPlayingTrackID;
 import org.rpi.player.events.EventPlayListStatusChanged;
 import org.rpi.player.events.EventPlayListUpdateList;
 import org.rpi.player.events.EventPlayListUpdateShuffle;
+import org.rpi.player.events.EventStatusChanged;
 import org.rpi.playlist.PlayListReader;
 import org.rpi.playlist.PlayListWriter;
 import org.rpi.utils.Utils;
@@ -29,6 +30,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 	private PlayListWriter plw = null;
 	private int playlist_max = Config.getInstance().getMediaplayerPlaylistMax();
 	private CommandTracker tracker = new CommandTracker();
+	private String mStatus = "Stopped";
 
 	private CopyOnWriteArrayList<ChannelPlayList> tracks = new CopyOnWriteArrayList<ChannelPlayList>();
 
@@ -82,6 +84,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		enableActionIdArrayChanged();
 		enableActionProtocolInfo();
 		PlayManager.getInstance().observePlayListEvents(this);
+		PlayManager.getInstance().observeAVEvents(this);
 		loadPlayList();
 	}
 
@@ -486,6 +489,16 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 			log.debug("PETE!!!!!!!!!!!!!!!!!!!!!!!!!Tracks Set");
 			iPlayer.setTracks(epl.getChannels());
 			PlayManager.getInstance().play(false);
+		case EVENTSTATUSCHANGED:
+			EventStatusChanged esc = (EventStatusChanged) e;
+			String statuss = esc.getStatus();
+			log.debug("Status: " + statuss);
+			if (statuss != null) {
+				if (!mStatus.equalsIgnoreCase(statuss)) {
+					mStatus = statuss;
+					setStatus(mStatus);
+				}
+			}
 
 		}
 

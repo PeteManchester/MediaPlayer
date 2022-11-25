@@ -712,8 +712,9 @@ public class PlayManager implements Observer {
 		ChannelPlayList t = getNextTrack(1);
 		if (t != null) {
 			playThis(t);
+			return t.getId();
 		}
-		return t.getId();
+		return 0;
 	}
 
 	/***

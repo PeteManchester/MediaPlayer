@@ -83,7 +83,7 @@ public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements O
 		enableActionSkipPrevious();
 		enableActionStop();
 
-		//PlayManager.getInstance().observeInfoEvents(this);
+		PlayManager.getInstance().observeInfoEvents(this);
 		//PlayManager.getInstance().observeTimeEvents(this);
 		PlayManager.getInstance().observePlayListEvents(this);
 		PlayManager.getInstance().observeAVEvents(this);
@@ -92,7 +92,11 @@ public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements O
 	
 	private void createEvent() {
 		setPropertyTransportState(mStatus);
-		setPropertyStreamId(id);
+		//setPropertyStreamId(id);
+	}
+	
+	private void updateStreamId() {
+		setPropertyStreamId(getPropertyStreamId()+1);
 	}
 	
 	@Override
@@ -191,35 +195,36 @@ public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements O
 	public void update(Observable arg0, Object ev) {
 		EventBase e = (EventBase) ev;
 		switch (e.getType()) {
-//		case EVENTTRACKCHANGED:
-//			EventTrackChanged ec = (EventTrackChanged) e;
-//			ChannelBase track = ec.getTrack();
-//			String m_uri = "";
-//			String m_metadata = "";
-//			String m_track_metadata_html = ""; 
-//			
-//			if (track != null) {
-//				m_uri = track.getUri();
-//				m_metadata = track.updateTrackChange(ec);
-//				m_track_metadata_html = stringToHTMLString(m_metadata);
-//				if ((!(m_uri.equalsIgnoreCase(track_uri)) || (!m_metadata.equalsIgnoreCase(track_metadata))) || (!m_track_metadata_html.equalsIgnoreCase(track_metadata_html))) {
-//					track_uri = m_uri;
-//					track_metadata = m_metadata;
-//					track_metadata_html = stringToHTMLString(m_metadata);
-//					id++;
-//					createEvent();
-//				}
-//			} else {
-//				// m_uri = "";
-//				// m_metadata = "";
-//			}
-//			break;
-//		case EVENTUPDATETRACKMETATEXT:
-//		    EventUpdateTrackMetaText tmc = (EventUpdateTrackMetaText) e;
-//            track_metadata = tmc.getMetaText();
-//            track_metadata_html = stringToHTMLString(track_metadata);
-//            createEvent();
-//		    break;
+		case EVENTTRACKCHANGED:
+			EventTrackChanged ec = (EventTrackChanged) e;
+			ChannelBase track = ec.getTrack();
+			String m_uri = "";
+			String m_metadata = "";
+			String m_track_metadata_html = ""; 
+			
+			if (track != null) {
+				m_uri = track.getUri();
+				m_metadata = track.updateTrackChange(ec);
+				m_track_metadata_html = stringToHTMLString(m_metadata);
+				if ((!(m_uri.equalsIgnoreCase(track_uri)) || (!m_metadata.equalsIgnoreCase(track_metadata))) || (!m_track_metadata_html.equalsIgnoreCase(track_metadata_html))) {
+					track_uri = m_uri;
+					track_metadata = m_metadata;
+					track_metadata_html = stringToHTMLString(m_metadata);
+					id++;
+					updateStreamId();
+					//createEvent();
+				}
+			} else {
+				// m_uri = "";
+				// m_metadata = "";
+			}
+			break;
+		case EVENTUPDATETRACKMETATEXT:
+		    EventUpdateTrackMetaText tmc = (EventUpdateTrackMetaText) e;
+            track_metadata = tmc.getMetaText();
+            track_metadata_html = stringToHTMLString(track_metadata);
+            //createEvent();
+		    break;
 //		case EVENTTIMEUPDATED:
 //			EventTimeUpdate etime = (EventTimeUpdate) e;
 //			track_time = ConvertTime(etime.getTime());
