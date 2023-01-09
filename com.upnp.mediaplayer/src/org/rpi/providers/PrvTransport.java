@@ -179,6 +179,17 @@ public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements O
 	   PlayManager.getInstance().setShuffle(isShuffle);
    }
    
+   @Override
+   protected void seekSecondAbsolute(IDvInvocation paramIDvInvocation, long var2, long var4) {
+	   log.debug("SeekAbsolue: " + var2 +   " : " + var4 + Utils.getLogText(paramIDvInvocation));
+	   PlayManager.getInstance().seekAbsolute(var4);
+	}
+   
+   @Override
+	protected void seekSecondRelative(IDvInvocation paramIDvInvocation, long var2, int var4) {
+	   log.debug("SeekRelative: " + var2 +   " : " + var4 + Utils.getLogText(paramIDvInvocation));
+	}
+   
    protected boolean shuffle(IDvInvocation paramIDvInvocation) {
 	   log.debug("shuffle" +  Utils.getLogText(paramIDvInvocation));
 	   return getPropertyShuffle();
