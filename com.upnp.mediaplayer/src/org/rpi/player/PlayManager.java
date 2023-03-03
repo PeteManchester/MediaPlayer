@@ -34,6 +34,7 @@ import org.rpi.player.events.EventMuteChanged;
 import org.rpi.player.events.EventPlayListPlayingTrackID;
 import org.rpi.player.events.EventPlayListStatusChanged;
 import org.rpi.player.events.EventPlayListUpdateList;
+import org.rpi.player.events.EventPlayListUpdateRepeat;
 import org.rpi.player.events.EventPlayListUpdateShuffle;
 import org.rpi.player.events.EventRadioPlayName;
 import org.rpi.player.events.EventRadioPlayNext;
@@ -48,6 +49,9 @@ import org.rpi.player.events.EventStatusChanged;
 import org.rpi.player.events.EventStopSongcast;
 import org.rpi.player.events.EventTimeUpdate;
 import org.rpi.player.events.EventTrackChanged;
+import org.rpi.player.events.EventTransportStatusChanged;
+import org.rpi.player.events.EventTransportUpdateRepeat;
+import org.rpi.player.events.EventTransportUpdateShuffle;
 import org.rpi.player.events.EventUpdateTrackInfo;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.player.events.EventVolumeChanged;
@@ -345,6 +349,12 @@ public class PlayManager implements Observer {
 	 */
 	public void setRepeatPlayList(boolean repeatPlayList) {
 		this.repeatPlayList = repeatPlayList;
+		EventPlayListUpdateRepeat ev = new EventPlayListUpdateRepeat();
+		EventTransportUpdateRepeat evt = new EventTransportUpdateRepeat();
+		ev.setRepeat(repeatPlayList);
+		evt.setRepeat(repeatPlayList);
+		obsvPlayList.notifyChange(ev);
+		obsvPlayList.notifyChange(evt);
 	}
 
 	/**
@@ -367,8 +377,11 @@ public class PlayManager implements Observer {
 	public void updateShuffle(boolean shuffle) {
 		setShuffle(shuffle);
 		EventPlayListUpdateShuffle ev = new EventPlayListUpdateShuffle();
+		EventTransportUpdateShuffle evt = new EventTransportUpdateShuffle();
 		ev.setShuffle(shuffle);
+		evt.setShuffle(shuffle);
 		obsvPlayList.notifyChange(ev);
+		obsvPlayList.notifyChange(evt);
 	}
 
 	public void podcastUpdatePlayList(List<ChannelPlayList> channels) {
@@ -1000,7 +1013,10 @@ public class PlayManager implements Observer {
 		} else if (current_track instanceof ChannelPlayList) {
 			EventPlayListStatusChanged evr = new EventPlayListStatusChanged();
 			evr.setStatus(status);
+			EventTransportStatusChanged evrt = new EventTransportStatusChanged();
+			evrt.setStatus(status);
 			obsvPlayList.notifyChange(evr);
+			obsvPlayList.notifyChange(evrt);
 		}
 	}
 

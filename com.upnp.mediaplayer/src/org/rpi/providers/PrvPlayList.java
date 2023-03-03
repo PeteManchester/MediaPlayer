@@ -12,6 +12,7 @@ import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventPlayListPlayingTrackID;
 import org.rpi.player.events.EventPlayListStatusChanged;
 import org.rpi.player.events.EventPlayListUpdateList;
+import org.rpi.player.events.EventPlayListUpdateRepeat;
 import org.rpi.player.events.EventPlayListUpdateShuffle;
 import org.rpi.player.events.EventStatusChanged;
 import org.rpi.playlist.PlayListReader;
@@ -31,6 +32,8 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 	private int playlist_max = Config.getInstance().getMediaplayerPlaylistMax();
 	private CommandTracker tracker = new CommandTracker();
 	private String mStatus = "Stopped";
+	private boolean isShuffle = false;
+	private boolean isRepeat = false;
 
 	private CopyOnWriteArrayList<ChannelPlayList> tracks = new CopyOnWriteArrayList<ChannelPlayList>();
 
@@ -53,8 +56,8 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		byte[] array = new byte[0];
 		setPropertyId(0);
 		setPropertyProtocolInfo(Config.getInstance().getProtocolInfo());
-		setPropertyRepeat(false);
-		setPropertyShuffle(false);
+		setPropertyRepeat(isRepeat);
+		setPropertyShuffle(isShuffle);
 		setPropertyTracksMax(playlist_max);
 		setPropertyTransportState("");
 		setPropertyIdArray(array);
@@ -289,10 +292,10 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 
 	protected boolean repeat(IDvInvocation paramIDvInvocation) {
 		log.debug("Repeat: " + Utils.getLogText(paramIDvInvocation));
-		boolean repeat = !getPropertyRepeat();
-		setPropertyRepeat(repeat);
-		iPlayer.setRepeatPlayList(repeat);		
-		return repeat;
+		//boolean repeat = !getPropertyRepeat();
+		//setPropertyRepeat(repeat);
+		//iPlayer.setRepeatPlayList(repeat);		
+		return isRepeat;
 	};
 
 	protected void seekId(IDvInvocation paramIDvInvocation, long id) {
@@ -318,21 +321,24 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 
 	protected void setRepeat(IDvInvocation paramIDvInvocation, boolean repeat) {
 		log.debug("SetRepeat: " + repeat + Utils.getLogText(paramIDvInvocation));
-		setPropertyRepeat(repeat);
+		this.isRepeat = repeat;
 		iPlayer.setRepeatPlayList(repeat);
 	};
 
 	protected void setShuffle(IDvInvocation paramIDvInvocation, boolean paramBoolean) {
 		log.debug("SetShuffle: " + paramBoolean + Utils.getLogText(paramIDvInvocation));
+		this.isShuffle = paramBoolean;
 		setPropertyShuffle(paramBoolean);
-		iPlayer.setShuffle(paramBoolean);
+		//iPlayer.setShuffle(paramBoolean);
+		iPlayer.updateShuffle(paramBoolean);
 	};
 
 	protected boolean shuffle(IDvInvocation paramIDvInvocation) {
 		log.debug("shuffle: " +  Utils.getLogText(paramIDvInvocation));
-		boolean shuffle = !getPropertyShuffle();		
-		setPropertyShuffle(shuffle);
-		iPlayer.setShuffle(shuffle);
+		//boolean shuffle = !getPropertyShuffle();		
+		//setPropertyShuffle(shuffle);
+		//iPlayer.setShuffle(shuffle);
+		boolean shuffle = isShuffle;
 		return shuffle;
 	};
 
@@ -352,6 +358,7 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		int size = tracks.size() * 4;
 		StringBuilder sb = new StringBuilder();
 		byte[] bytes = new byte[size];
+		setPropertyIdArray(bytes);
 		for (ChannelPlayList t : tracks) {
 			try {
 				int intValue = (int) t.getId();
@@ -451,17 +458,37 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 	}
 
 	public void updateShuffle(boolean shuffle) {
-		setPropertyShuffle(shuffle);
+		this.isShuffle = shuffle;
+		//UpdateIdArray(false);
+		setPropertyShuffle(shuffle);		
+	}
+	
+	public void updateRepeat(boolean repeat) {
+		this.isRepeat = repeat;
+		//UpdateIdArray(false);
+		setPropertyRepeat(repeat);		
+	}
+	
+	private void createEvent() {
+		setPropertyTransportState(mStatus);
+		//setPropertyStreamId(id);
 	}
 
 	@Override
 	public void update(Observable o, Object arg) {
 		EventBase e = (EventBase) arg;
 		switch (e.getType()) {
-
 		case EVENTPLAYLISTSTATUSCHANGED:
-			EventPlayListStatusChanged ers = (EventPlayListStatusChanged) e;
-			setStatus(ers.getStatus());
+			 EventPlayListStatusChanged eps = (EventPlayListStatusChanged) e;
+			 String status = eps.getStatus();
+			 if (status != null) {
+
+			 if (!mStatus.equalsIgnoreCase(status)) {
+				 mStatus = status;
+				 createEvent();
+			 }
+			 mStatus = status;
+			 }
 			break;
 
 		case EVENTPLAYLISTPLAYINGTRACKID:
@@ -472,8 +499,13 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 			break;
 
 		case EVENTPLAYLISTUPDATESHUFFLE:
-			EventPlayListUpdateShuffle eps = (EventPlayListUpdateShuffle) e;
-			updateShuffle(eps.isShuffle());
+			EventPlayListUpdateShuffle epsh = (EventPlayListUpdateShuffle) e;
+			updateShuffle(epsh.isShuffle());
+			break;
+			
+		case EVENTPLAYLISTUPDATEREPEAT:
+			EventPlayListUpdateRepeat epr = (EventPlayListUpdateRepeat) e;
+			updateRepeat(epr.isRepeat());
 			break;
 
 		case EVENTPLAYLISTUPDATELIST:

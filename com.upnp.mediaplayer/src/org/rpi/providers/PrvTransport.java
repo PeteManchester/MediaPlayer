@@ -3,25 +3,20 @@ package org.rpi.providers;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.openhome.net.device.DvDevice;
 import org.openhome.net.device.IDvInvocation;
 import org.openhome.net.device.providers.DvProviderAvOpenhomeOrgTransport1;
-import org.openhome.net.device.providers.DvProviderUpnpOrgAVTransport1.GetDeviceCapabilities;
-import org.openhome.net.device.providers.DvProviderUpnpOrgAVTransport1.GetMediaInfo;
-import org.openhome.net.device.providers.DvProviderUpnpOrgAVTransport1.GetPositionInfo;
-import org.openhome.net.device.providers.DvProviderUpnpOrgAVTransport1.GetTransportInfo;
-import org.openhome.net.device.providers.DvProviderUpnpOrgAVTransport1.GetTransportSettings;
-import org.rpi.channel.ChannelAV;
 import org.rpi.channel.ChannelBase;
 import org.rpi.player.PlayManager;
 import org.rpi.player.events.EventBase;
 import org.rpi.player.events.EventPlayListStatusChanged;
+import org.rpi.player.events.EventPlayListUpdateRepeat;
+import org.rpi.player.events.EventPlayListUpdateShuffle;
 import org.rpi.player.events.EventStatusChanged;
-import org.rpi.player.events.EventTimeUpdate;
 import org.rpi.player.events.EventTrackChanged;
-import org.rpi.player.events.EventUpdateTrackInfo;
+import org.rpi.player.events.EventTransportStatusChanged;
+import org.rpi.player.events.EventTransportUpdateShuffle;
 import org.rpi.player.events.EventUpdateTrackMetaText;
 import org.rpi.utils.Utils;
 
@@ -37,6 +32,8 @@ public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements O
 	private String mStatus = "STOPPED";
 	private int id = 0;
 	private String modes = "[\"Playlist\",\"Radio\",\"UpnpAv\",\"Receiver\"]";
+	private boolean isShuffle = false;
+	private boolean isRepeat = false;
 
 	public PrvTransport(DvDevice iDevice) {
 		super(iDevice);
@@ -64,8 +61,8 @@ public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements O
 		setPropertyCanSkipPrevious(true);
 		setPropertyModes(modes);
 		setPropertyCanSeek(true);
-		setPropertyRepeat(false);
-		setPropertyShuffle(false);
+		setPropertyRepeat(isRepeat);
+		setPropertyShuffle(isShuffle);
 		setPropertyTransportState("Stopped");
 		
 
@@ -74,6 +71,9 @@ public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements O
 		enableActionPlayAs();
 		enableActionPlay();
 		enableActionRepeat();
+		enableActionSetRepeat();
+		enableActionShuffle();
+		enableActionSetShuffle();
 		enableActionSeekSecondAbsolute();
 		enableActionSeekSecondRelative();
 		enableActionModes();
@@ -82,6 +82,7 @@ public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements O
 		enableActionTransportState();
 		enableActionSkipPrevious();
 		enableActionStop();
+
 
 		PlayManager.getInstance().observeInfoEvents(this);
 		//PlayManager.getInstance().observeTimeEvents(this);
@@ -163,20 +164,22 @@ public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements O
    @Override 
    protected void setRepeat(IDvInvocation paramIDvInvocation, boolean isRepeat) {
 	   log.debug("setRepeat: " + isRepeat +   Utils.getLogText(paramIDvInvocation));
-	   setPropertyRepeat(isRepeat);
+	   //setPropertyRepeat(isRepeat);
+	   this.isRepeat = isRepeat;
 	   PlayManager.getInstance().setRepeatPlayList(isRepeat);
    }
    
    protected boolean repeat(IDvInvocation paramIDvInvocation) {
 	   log.debug("repeat" +  Utils.getLogText(paramIDvInvocation));
-	   return getPropertyRepeat();
+	   return isRepeat;
    }
    
    @Override 
    protected void setShuffle(IDvInvocation paramIDvInvocation, boolean isShuffle) {
 	   log.debug("setShuffle: " + isShuffle +  Utils.getLogText(paramIDvInvocation));
-	   setPropertyShuffle(isShuffle);
-	   PlayManager.getInstance().setShuffle(isShuffle);
+	   //setPropertyShuffle(isShuffle);
+	   this.isShuffle = isShuffle;
+	   PlayManager.getInstance().updateShuffle(isShuffle);
    }
    
    @Override
@@ -192,7 +195,7 @@ public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements O
    
    protected boolean shuffle(IDvInvocation paramIDvInvocation) {
 	   log.debug("shuffle" +  Utils.getLogText(paramIDvInvocation));
-	   return getPropertyShuffle();
+	   return isShuffle;
    }
    
    protected long streamId(IDvInvocation paramIDvInvocation) {
@@ -200,7 +203,16 @@ public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements O
 	   return getPropertyStreamId();
    }
 
+	public void updateShuffle(boolean shuffle) {
+		isShuffle = shuffle;
+		setPropertyShuffle(isShuffle);
+	}
 	
+	public void updateRepeat(boolean repeat) {
+		this.isRepeat = repeat;
+		//UpdateIdArray(false);
+		setPropertyRepeat(repeat);		
+	}
 
 	@Override
 	public void update(Observable arg0, Object ev) {
@@ -250,8 +262,8 @@ public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements O
 //				log.error("Error EventUpdateTrackInfo", ex);
 //			}
 //			break;
-		 case EVENTPLAYLISTSTATUSCHANGED:
-		 EventPlayListStatusChanged eps = (EventPlayListStatusChanged) e;
+		 case EVENTTRANSPORTSTATUSCHANGED:
+		 EventTransportStatusChanged eps = (EventTransportStatusChanged) e;
 		 String status = eps.getStatus();
 		 if (status != null) {
 
@@ -271,6 +283,15 @@ public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements O
 					createEvent();
 				}
 			}
+		case EVENTTRANSPORTUPDATEDSHUFFLE:
+			EventTransportUpdateShuffle epshuffle = (EventTransportUpdateShuffle) e;
+			updateShuffle(epshuffle.isShuffle());
+			break;
+			
+		case EVENTPLAYLISTUPDATEREPEAT:
+			EventPlayListUpdateRepeat epr = (EventPlayListUpdateRepeat) e;
+			updateRepeat(epr.isRepeat());
+			break;
 		default:
 		}
 	}
@@ -361,7 +382,7 @@ public class PrvTransport extends DvProviderAvOpenhomeOrgTransport1 implements O
 
 	@Override
 	public String getName() {
-		return "AVTransport";
+		return "Transport";
 	}
 	
 
