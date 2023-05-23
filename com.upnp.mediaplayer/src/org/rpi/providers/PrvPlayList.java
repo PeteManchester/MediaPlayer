@@ -71,8 +71,8 @@ public class PrvPlayList extends DvProviderAvOpenhomeOrgPlaylist1 implements Obs
 		enableActionRepeat();
 		enableActionSetShuffle();
 		enableActionShuffle();
-		//enableActionSeekSecondAbsolute();
-		//enableActionSeekSecondRelative();
+		enableActionSeekSecondAbsolute();
+		enableActionSeekSecondRelative();
 		enableActionSeekId();
 		enableActionSeekIndex();
 		enableActionTransportState();
