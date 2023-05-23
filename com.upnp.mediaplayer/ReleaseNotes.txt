@@ -45,3 +45,4 @@ If in standby no input source pins are high
 20 October 2021 v0.0.1.2 - Lumin wants to pause a radio channel rather than stop a radio channel, modified the RadioProvider to stop the channel when pause is received.
 04 November 2022 v0.0.1.3 - Fix issue with empty config options.
 09 November 2022 v0.0.1.4 - Added config option clear_playlist_onstart_enabled, if set to true the playlist will be cleared on startup.
+23 May 2023 v0.0.1.5_beta_4 - Fix for Kazoo not being able to seek track.
