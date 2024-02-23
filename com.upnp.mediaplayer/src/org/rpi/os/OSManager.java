@@ -67,6 +67,7 @@ public class OSManager {
 	 * @throws IllegalAccessException
 	 */
 	public void addLibraryPath(String pathToAdd) throws Exception {
+		try {
 		log.debug("Adding Path: " + pathToAdd);
 		Field usrPathsField = ClassLoader.class.getDeclaredField("usr_paths");
 		usrPathsField.setAccessible(true);
@@ -80,6 +81,10 @@ public class OSManager {
 		String[] newPaths = Arrays.copyOf(paths, paths.length + 1);
 		newPaths[newPaths.length - 1] = pathToAdd;
 		usrPathsField.set(null, newPaths);
+		}
+		catch(Exception e) {
+			log.error("Error Adding path to usr_paths: " + pathToAdd, e);
+		}
 	}
 
 	public void addLibraryPath1(String pathToAdd) throws Exception {

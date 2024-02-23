@@ -10,6 +10,7 @@ TURNOFF_WLAN=true
 DIRNAME="$( dirname "$0" )"
 cd "${DIRNAME}"
 #export LD_LIBRARY_PATH=/usr/local/lib/
+export PATH=/home/pi/mediaplayer/mediaplayer_lib/ohNet/linux/armv6hf:$PATH 
 java -jar $SCRIPTPATH/mediaplayer.jar &
 _wlanexist=$(ifconfig | grep wlan) || true
 if [ "$_wlanexist" ] && [ "$TURNOFF_WLAN" ]; then
