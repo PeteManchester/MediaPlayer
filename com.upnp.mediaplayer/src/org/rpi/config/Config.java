@@ -47,7 +47,7 @@ enum Props {
 
 public class Config {
 
-	private String version = "0.0.1.6_beta_1";
+	private String version = "0.0.1.6_beta_2";
 
 	private Logger log = Logger.getLogger(this.getClass());
 

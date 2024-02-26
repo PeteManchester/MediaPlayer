@@ -13,5 +13,6 @@ echo ${SCRIPTPATH}
 #xset s off
 #xset -dpms
 
-
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SCRIPTPATH/mediaplayer_lib/ohNet/linux/armv6hf
+echo Java LibPath: $LD_LIBRARY_PATH
 java -jar "${SCRIPTPATH}"/mediaplayer.jar > /dev/null &

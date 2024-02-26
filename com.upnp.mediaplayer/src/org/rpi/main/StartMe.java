@@ -94,7 +94,7 @@ public class StartMe {
 						log.error(e.getMessage(), e);
 					}
 				} catch (Exception e) {
-
+					log.error("Error Creating SimpleDevice",e);
 				} finally {
 					if (in != null) {
 						CloseMe.close(in);
