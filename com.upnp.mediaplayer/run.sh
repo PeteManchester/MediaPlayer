@@ -9,8 +9,10 @@ TURNOFF_WLAN=true
 
 DIRNAME="$( dirname "$0" )"
 cd "${DIRNAME}"
-#export LD_LIBRARY_PATH=/usr/local/lib/
-export PATH=/home/pi/mediaplayer/mediaplayer_lib/ohNet/linux/armv6hf:$PATH 
+#andrum993 Generate lib path dynamically, since Java can't do this itself now :(
+arch=`uname -m`
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SCRIPTPATH/mediaplayer_lib/ohNet/linux/$arch
+echo Java LibPath: $LD_LIBRARY_PATH
 java -jar $SCRIPTPATH/mediaplayer.jar &
 _wlanexist=$(ifconfig | grep wlan) || true
 if [ "$_wlanexist" ] && [ "$TURNOFF_WLAN" ]; then

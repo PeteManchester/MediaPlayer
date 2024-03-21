@@ -13,5 +13,7 @@ echo ${SCRIPTPATH}
 #xset s off
 #xset -dpms
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SCRIPTPATH/mediaplayer_lib/ohNet/linux/armv6hf
+#andrum993 Generate lib path dynamically, since Java can't do this itself now :(.
+arch=`uname -m`
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SCRIPTPATH/mediaplayer_lib/ohNet/linux/$arch
 java -jar "${SCRIPTPATH}"/mediaplayer.jar > /dev/null &

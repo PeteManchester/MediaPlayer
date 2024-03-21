@@ -9,9 +9,9 @@ TURNOFF_WLAN=true
 
 DIRNAME="$( dirname "$0" )"
 cd "${DIRNAME}"
-#export LD_LIBRARY_PATH=/usr/local/lib/
-#PETE  Test to see if we can set the Path environment variable here..
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SCRIPTPATH/mediaplayer_lib/ohNet/linux/armv6hf
+#andrum993 Generate lib path dynamically, since Java can't do this itself now :(
+arch=`uname -m`
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SCRIPTPATH/mediaplayer_lib/ohNet/linux/$arch
 echo Java LibPath: $LD_LIBRARY_PATH
 java -jar $SCRIPTPATH/mediaplayer.jar &
 _wlanexist=$(ifconfig | grep wlan) || true
