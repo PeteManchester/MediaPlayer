@@ -14,7 +14,7 @@ echo ${SCRIPTPATH}
 #xset -dpms
 
 #andrum993 Generate lib path dynamically, since Java can't do this itself now :(
-ARCH=`uname -m`
+ARCH=$(uname -m)
 #mightyoakbob tidy up arch variable to ensure we use an available library
 case $ARCH in
     armv5*)
