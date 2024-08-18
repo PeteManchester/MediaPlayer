@@ -29,7 +29,7 @@ case $ARCH in
     ARCH="amd64"
 esac
 echo "$ARCH"
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SCRIPTPATH/mediaplayer_lib/ohNet/linux/$arch
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$SCRIPTPATH/mediaplayer_lib/ohNet/linux/$ARCH
 echo Java LibPath: $LD_LIBRARY_PATH
 java -jar $SCRIPTPATH/mediaplayer.jar &
 _wlanexist=$(ifconfig | grep wlan) || true
