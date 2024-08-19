@@ -31,6 +31,6 @@ case $ARCH in
     ARCH="amd64"
 esac
 echo "$ARCH"
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$MEDIAPLAYER_DIR/mediaplayer_lib/ohNet/linux/$arch
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$MEDIAPLAYER_DIR/mediaplayer_lib/ohNet/linux/$ARCH
 echo Java LibPath: $LD_LIBRARY_PATH
 exec java -jar mediaplayer.jar
