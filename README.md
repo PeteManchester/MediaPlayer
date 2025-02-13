@@ -61,7 +61,7 @@ We have a [Wiki](https://github.com/PeteManchester/MediaPlayer/wiki) where you c
 
 ## Installation Instructions
 
-* [Raspberry Pi / Debian](https://github.com/PeteManchester/MediaPlayer/wiki/Install-Raspberry-Pi)
+* [Raspberry Pi / Debian](https://github.com/PeteManchester/MediaPlayer/wiki/Install-on-Raspberry-Pi)
 * [Raspberry Pi / ArchLinux](/MediaPlayer/docs/archlinux-setup.html)
 * [Fullscreen Plugin / ArchLinux](/MediaPlayer/docs/fullscreen-setup.html)
 
